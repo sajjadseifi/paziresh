@@ -1,0 +1,28 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">پذیرش با کد ملی</h3>
+        </div>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="input-group input-group-sm">
+                    {{ SarbazCodeMeli.code_meli }}
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-info btn-flat">بررسی</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+
+        <!-- /.box-body -->
+    </div>
+{% endblock %}

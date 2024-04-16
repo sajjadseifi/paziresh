@@ -1,0 +1,289 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+
+{% block main %}
+    <div class="box box-warning">
+        <div class="box-header with-border">
+            <h3 class="box-title">اطلاعات سرباز</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form">
+                <div class="form-group">
+                    <label>کدملی</label>
+                    <input type="text" class="form-control" placeholder="کدملی" disabled=""
+                           value="{{ sarbaz.National_Code }}">
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label>نام</label>
+                            <input type="text" class="form-control" placeholder="نام" value="{{ sarbaz.name }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>نام خانوادگی</label>
+                            <input type="text" class="form-control" placeholder="نام خانوادگی"
+                                   value="{{ sarbaz.family }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>نام پدر</label>
+                            <input type="text" class="form-control" placeholder="نام پدر"
+                                   value="{{ sarbaz.fathers_name }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label>تاریخ تولد</label>
+                            <input type="text" class="form-control" placeholder="تاریخ تولد"
+                                   value="{{ sarbaz.Date_of_birth }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>محل تولد</label>
+                            <input type="text" class="form-control" placeholder="محل تولد"
+                                   value="{{ sarbaz.place_of_birth }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>محل صدور</label>
+                            <input type="text" class="form-control" placeholder="محل صدور"
+                                   value="{{ sarbaz.place_of_birth }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>نام استان</label>
+                            <input type="text" class="form-control" placeholder="نام استان"
+                                   value="{{ sarbaz.province_name }}">
+                        </div>
+                        <div class="col-xs-6">
+                            <label>نام شهر</label>
+                            <input type="text" class="form-control" placeholder="نام شهر"
+                                   value="{{ sarbaz.city_name }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>آدرس</label>
+                        <textarea class="form-control" rows="3" placeholder="آدرس">{{ sarbaz.Address }}</textarea>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>شماره موبایل</label>
+                            <input type="text" class="form-control" placeholder="شماره موبایل"
+                                   value="{{ sarbaz.phone_number }}">
+                        </div>
+                        <div class="col-xs-6">
+                            <label>شماره منزل</label>
+                            <input type="text" class="form-control" placeholder="شماره منزل"
+                                   value="{{ sarbaz.home_phone_number }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <p>اطلاعات تماس بستگان درجه یک</p>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>نسبت با فراگیر</label>
+                            <input type="text" class="form-control" placeholder="نسبت با فراگیر"
+                                   value="{{ sarbaz.Relative_to_inclusive }}">
+                        </div>
+                        <div class="col-xs-6">
+                            <label>شماره تماس</label>
+                            <input type="text" class="form-control" placeholder="شماره تماس"
+                                   value="{{ sarbaz.Relative_to_inclusive_number }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label>وضعیت تاهل</label>
+                                <select class="form-control">
+                                    <option>مجرد</option>
+                                    <option>متاهل</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label>مذهب</label>
+                                <select class="form-control">
+                                    <option>شیعه</option>
+                                    <option>اهل تسنن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <label>مقطع تحصیلی</label>
+                            <input type="text" class="form-control" placeholder="مقطع تحصیلی"
+                                   value="{{ sarbaz.Grade }}">
+                        </div>
+                        <div class="col-xs-3">
+                            <label>مقطع تحصیلی دقیق</label>
+                            <input type="text" class="form-control" placeholder="مقطع تحصیلی دقیق"
+                                   value="{{ sarbaz.Grade_precise }}">
+                        </div>
+                        <div class="col-xs-3">
+                            <label>مقطع تحصیلی سامانه</label>
+                            <input type="text" class="form-control" placeholder="مقطع تحصیلی سامانه"
+                                   value="{{ sarbaz.educational_level_of_the_system }}">
+                        </div>
+                        <div class="col-xs-3">
+                            <label>گروه تحصیلی</label>
+                            <input type="text" class="form-control" placeholder="گروه تحصیلی"
+                                   value="{{ sarbaz.Study_group }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <label>تاریخ تولد</label>
+                            <input type="text" class="form-control" placeholder="تاریخ تولد"
+                                   value="{{ sarbaz.Date_of_birth }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>محل تولد</label>
+                            <input type="text" class="form-control" placeholder="محل تولد"
+                                   value="{{ sarbaz.place_of_birth }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>محل صدور</label>
+                            <input type="text" class="form-control" placeholder="محل صدور"
+                                   value="{{ sarbaz.place_of_birth }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label>وضعیت جسمانی</label>
+                                <select class="form-control">
+                                    <option>سالم</option>
+                                    <option>معاف از رزم</option>
+                                    <option>گروه ب</option>
+                                    <option>معاف+گروه ب</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <label>نوع بیماری</label>
+                            <input type="text" class="form-control" placeholder="نوع بیماری"
+                                   value="{{ sarbaz.Type_of_disease }}">
+                        </div>
+                        <div class="col-xs-4">
+                            <label>دفترچه بیمه</label>
+                            <input type="text" class="form-control" placeholder="دفترچه بیمه"
+                                   value="{{ sarbaz.health_insurance_card }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>قد</label>
+                            <input type="text" class="form-control" placeholder="قد"
+                                   value="{{ sarbaz.height }}">
+                        </div>
+                        <div class="col-xs-6">
+                            <label>وزن</label>
+                            <input type="text" class="form-control" placeholder="وزن"
+                                   value="{{ sarbaz.Weight }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>امریه</label>
+                            <select class="form-control">
+                                <option>دارد</option>
+                                <option>ندارد</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <label>سازمان امریه</label>
+                            <input type="text" class="form-control" placeholder="سازمان امریه"
+                                   value="{{ sarbaz.Amriye_organization }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>جذبی سپاه و مامور</label>
+                            <select class="form-control">
+                                <option>می باشد</option>
+                                <option>نمی باشد</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <label>جذبی نیروی زمینی</label>
+                            <select class="form-control">
+                                <option>می باشد</option>
+                                <option>نمی باشد</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>تجدید دوره المهدی کد دوره</label>
+                            <input type="text" class="form-control" placeholder="تجدید دوره المهدی کد دوره"
+                                   value="{{ sarbaz.Course_renewal_almahdi }}">
+                        </div>
+                        <div class="col-xs-6">
+                            <label>علت تجدید دوره المهدی</label>
+                            <select class="form-control">
+                                <option>کمیسیون پزشکی</option>
+                                <option>فرار</option>
+                                <option>انضباطی</option>
+                                <option>نامشخص</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>کفایت بسیج</label>
+                            <select class="form-control">
+                                <option>بله</option>
+                                <option>خیر</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <label>ساتر</label>
+                            <select class="form-control">
+                                <option>مجوز دارد</option>
+                                <option>نیاز به بررسی</option>
+                                <option>مجوز ندارد</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success pull-right"> تایید و
+                    ثبت پذیرش
+                </button>
+            </form>
+
+        </div>
+        <!-- /.box-body -->
+    </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+from django.db import models
+
+
+# Create your models here.
+
+
+class Soldier(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام')
+    family = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام خانوادگی')
+    fathers_name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام پدر')
+    National_Code = models.CharField(null=True, blank=True, max_length=20, verbose_name='کد ملی')
+    physical_condition = models.CharField(null=True, blank=True, max_length=100, verbose_name='وضعیت جسمانی')
+    Type_of_disease = models.CharField(null=True, blank=True, max_length=250, verbose_name='نوع بیماری')
+    health_insurance_card = models.CharField(null=True, blank=True, max_length=120, verbose_name='دفترچه بیمه')
+    Grade = models.CharField(null=True, blank=True, max_length=200, verbose_name='مقطع تحصیلی')
+    Grade_precise = models.CharField(null=True, blank=True, max_length=200, verbose_name='مقطع تحصیلی دقیق')
+    educational_level_of_the_system = models.CharField(null=True, blank=True, max_length=200,
+                                                       verbose_name='مقطع تحصیلی سامانه')
+    Study_group = models.CharField(null=True, blank=True, max_length=200, verbose_name='گروه تحصیلی')
+    marital_status = models.CharField(null=True, blank=True, max_length=200, verbose_name='وضعیت تاهل')
+    Religion = models.CharField(null=True, blank=True, max_length=50, verbose_name='مذهب')
+    Date_of_birth = models.CharField(null=True, blank=True, max_length=100, verbose_name='تاریخ تولد')
+    place_of_birth = models.CharField(null=True, blank=True, max_length=120, verbose_name='محل تولد')
+    phone_number = models.CharField(null=True, blank=True, max_length=11, verbose_name='شماره موبایل')
+    home_phone_number = models.CharField(null=True, blank=True, max_length=11, verbose_name='شماره منزل')
+    Date_of_dispatch = models.CharField(null=True, blank=True, max_length=100, verbose_name='تاریخ اعزام')
+    province_name = models.CharField(null=True, blank=True, max_length=150, verbose_name='نام استان')
+    city_name = models.CharField(null=True, blank=True, max_length=150, verbose_name='نام شهر')
+    Address = models.CharField(null=True, blank=True, max_length=250, verbose_name='ادرس')
+    Place_of_Issue = models.CharField(null=True, blank=True, max_length=150, verbose_name='محل صدور')
+    height = models.CharField(null=True, blank=True, max_length=10, verbose_name='قد')
+    Weight = models.CharField(null=True, blank=True, max_length=10, verbose_name='وزن')
+
+    Renewal_of_the_previous_period = models.CharField(null=True, blank=True, max_length=10,
+                                                      verbose_name='تجدید دوره قبل')
+    Course_renewal_date = models.CharField(null=True, blank=True, max_length=100,
+                                           verbose_name='تاریخ تجدید دوره قبل')
+    willing_to_learn = models.BooleanField(default=False, verbose_name='حاضر به آموزش')
+    Amriye = models.BooleanField(default=False, verbose_name='امریه دار')
+    Amriye_organization = models.CharField(max_length=250, verbose_name='سازمان امریه')
+    Sufficiency_of_mobilization = models.BooleanField(default=False, verbose_name='کفایت بسیج')
+    the_medical_commission = models.BooleanField(default=False, verbose_name='کمیسیون پزشکی')
+    has_been_accepted = models.BooleanField(default=False, verbose_name='پذیرش شده است')
+    acceptance_code = models.IntegerField(null=True, blank=True, verbose_name='کد پذیرش')
+    Course_renewal_almahdi = models.CharField(null=True, blank=True, max_length=100,
+                                              verbose_name='تجدید دوره المهدی کد دوره')
+    Course_renewal_almahdi_date = models.CharField(null=True, blank=True, max_length=100,
+                                                   verbose_name='تاریخ تجدید دوره المهدی')
+    Reason_for_renewing_the_course_almahdi = models.CharField(null=True, blank=True, max_length=150,
+                                                              verbose_name='علت تجدید دوره المهدی')
+
+    Previous_service_record = models.BooleanField(default=False, verbose_name='سابقه خدمت قبلی')
+    Ground_force_absorption = models.BooleanField(default=False, verbose_name='جذبی نیروی زمینی')
+
+    Successful_recruitment = models.BooleanField(default=False, verbose_name='جذب موفق')
+    The_recruitment_of_the_army_and_the_agent = models.BooleanField(default=False, verbose_name='جذبی سپاه و مامور')
+    Relative_to_inclusive = models.CharField(null=True, blank=True, max_length=120, verbose_name='نسبت با فراگیر')
+    Relative_to_inclusive_number = models.CharField(null=True, blank=True, max_length=100,
+                                                    verbose_name='شماره تماس نسبت فراگیر')
+    Sutter = models.CharField(null=True, blank=True, max_length=150, verbose_name='ساتر')

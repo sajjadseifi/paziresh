@@ -1,0 +1,643 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="RTL">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <style>
+        @font-face {
+            font-family: B Nazanin;
+            src: url({% static 'BNazanin.woff' %});
+            font-weight: normal;
+        }
+         @font-face {
+            font-family: B Nazanin;
+            src: url({% static 'BNazanin.woff' %});
+            font-weight: bold;
+        }
+
+        <!--
+        table {
+            mso-displayed-decimal-separator: "\.";
+            mso-displayed-thousand-separator: "\,";
+        }
+
+        @page {
+            mso-header-data: "";
+            mso-footer-data: "";
+            margin: 0.75in 0.7in 0.75in 0.7in;
+            mso-header-margin: 0.3in;
+            mso-footer-margin: 0.3in;
+            mso-page-orientation: Portrait;
+        }
+
+        tr {
+            mso-height-source: auto;
+            mso-ruby-visibility: none;
+        }
+
+        col {
+            mso-width-source: auto;
+            mso-ruby-visibility: none;
+        }
+
+        br {
+            mso-data-placement: same-cell;
+        }
+
+        ruby {
+            ruby-align: left;
+        }
+
+        .style0 {
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 400;
+            font-style: normal;
+            font-family: Calibri, sans-serif;
+            mso-protection: locked visible;
+            mso-style-name: Normal;
+            mso-style-id: 0;
+        }
+
+        td {
+            mso-style-parent: style0;
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 400;
+            font-style: normal;
+            font-family: Calibri, sans-serif;
+            mso-protection: locked visible;
+            mso-ignore: padding;
+        }
+
+        .x15 {
+            mso-number-format: General;
+            text-align: general;
+            vertical-align: bottom;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 400;
+            font-style: normal;
+            font-family: Calibri, sans-serif;
+            mso-protection: locked visible;
+        }
+
+        .x21 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 4px double windowtext;
+            border-right: none;
+            border-bottom: none;
+            border-left: 4px double windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x22 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 4px double windowtext;
+            border-right: none;
+            border-bottom: none;
+            border-left: none;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x23 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 4px double windowtext;
+            border-right: 4px double windowtext;
+            border-bottom: none;
+            border-left: none;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x24 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: #FFFF00;
+            mso-pattern: auto none;
+            color: #000000;
+            font-size: 14pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 3px solid windowtext;
+            border-right: none;
+            border-bottom: 3px solid windowtext;
+            border-left: 3px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x25 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: #FFFF00;
+            mso-pattern: auto none;
+            color: #000000;
+            font-size: 14pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 3px solid windowtext;
+            border-right: none;
+            border-bottom: 3px solid windowtext;
+            border-left: none;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x26 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: #FFFF00;
+            mso-pattern: auto none;
+            color: #000000;
+            font-size: 14pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 3px solid windowtext;
+            border-right: 3px solid windowtext;
+            border-bottom: 3px solid windowtext;
+            border-left: none;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x27 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: none;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x28 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: none;
+            border-right: 4px double windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x29 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x30 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 4px double windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x31 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x32 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 11pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 4px double windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x33 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 14pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x34 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 14pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 4px double windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x35 {
+            mso-number-format: 'HH\:mm';
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x36 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 4px double windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x37 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 4px double windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x38 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 700;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 4px double windowtext;
+            border-bottom: 4px double windowtext;
+            border-left: 1px solid windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x39 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 400;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: none;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 4px double windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x40 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 9pt;
+            font-weight: 400;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 1px solid windowtext;
+            border-left: 4px double windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        .x41 {
+            mso-number-format: General;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            background: auto;
+            mso-pattern: auto;
+            color: #000000;
+            font-size: 12pt;
+            font-weight: 400;
+            font-style: normal;
+            font-family: 'B Nazanin', sans-serif;
+            border-top: 1px solid windowtext;
+            border-right: 1px solid windowtext;
+            border-bottom: 4px double windowtext;
+            border-left: 4px double windowtext;
+            mso-diagonal-down: none;
+            mso-diagonal-up: none;
+            mso-protection: locked visible;
+        }
+
+        -->
+    </style>
+
+</head>
+
+<body link='blue' vlink='purple'>
+
+<table border='0' cellpadding='0' cellspacing='0' width='192' style='border-collapse:
+ collapse;table-layout:fixed;width:144pt'>
+    <col width='64' span='3' style='width:48pt'/>
+    <tr height='30' style='mso-height-source:userset;height:22.5pt'>
+        <td colspan='3' height='26' class='x21' width='192'
+            style='border-right:4px double windowtext;height:19.5pt;'></td>
+    </tr>
+    <tr height='34' style='mso-height-source:userset;height:25.5pt'>
+        <td colspan='3' height='28' class='x24'
+            style='border-right:3px solid windowtext;border-bottom:3px solid windowtext;border-top:3px solid windowtext;height:21pt;'>
+            739
+        </td>
+    </tr>
+    <tr height='27' style='mso-height-source:userset;height:20.25pt'>
+        <td dir='RTL' align='right' height='26' class='x39' style='height:19.5pt;'>گردان</td>
+        <td colspan='2' class='x27' style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'></td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>گروهان</td>
+        <td colspan='2' class='x29' style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'></td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>کد&nbsp;</td>
+        <td colspan='2' class='x29'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.pk }}</td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>کد ملی</td>
+        <td colspan='2' class='x29'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.National_Code }}</td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>نام</td>
+        <td colspan='2' class='x31'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.name }}</td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>نام خانوادگی</td>
+        <td colspan='2' class='x31' style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>
+            {{ sarbaz.family }}
+        </td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>نام پدر</td>
+        <td colspan='2' class='x31'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.fathers_name }}</td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>مقطع تحصیلی</td>
+        <td colspan='2' class='x31'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.Grade }}</td>
+    </tr>
+    <tr height='26' style='mso-height-source:userset;height:19.5pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'>مذهب</td>
+        <td colspan='2' class='x31'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.Religion }}</td>
+    </tr>
+    <tr height='32' style='mso-height-source:userset;height:24pt'>
+        <td dir='RTL' align='right' height='24' class='x40' style='height:18pt;'> وضعیت جسمانی</td>
+        <td colspan='2' class='x33'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.physical_condition }}</td>
+    </tr>
+    <tr height='32' style='mso-height-source:userset;height:24pt'>
+        <td dir='RTL' align='right' height='30' class='x40' style='height:22.5pt;'>امریه دار</td>
+        <td colspan='2' class='x33'
+            style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'>{{ sarbaz.Amriye }}</td>
+    </tr>
+    <tr height='28' style='mso-height-source:userset;height:21pt'>
+        <td dir='RTL' align='right' height='26' class='x40' style='height:19.5pt;'>تاریخ</td>
+        <td colspan='2' class='x35' style='border-right:4px double windowtext;border-bottom:1px solid windowtext;'></td>
+    </tr>
+    <tr height='29' style='mso-height-source:userset;height:21.75pt'>
+        <td dir='RTL' align='right' height='26' class='x40' style='height:19.5pt;'>توضیحات</td>
+        <td colspan='2' class='x37'
+            style='border-right:4px double windowtext;border-bottom:4px double windowtext;'></td>
+    </tr>
+    <![if supportMisalignedColumns]>
+    <tr height='0' style='display:none'>
+        <td width='192' colspan='3' style='width:144pt;mso-ignore:colspan;'></td>
+    </tr>
+    <![endif]>
+</table>
+
+</body>
+
+</html>
