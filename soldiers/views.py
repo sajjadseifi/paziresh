@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -19,7 +20,7 @@ def paziresh_code_meli(request, *args, **kwargs):
     return render(request, 'soldiers/paziresh_idcode_view.html', context={'SarbazCodeMeli': sarbaz_code_meli})
 
 
-class sabte_paziresh(View):
+class sabte_paziresh(LoginRequiredMixin, View):
     template = 'soldiers/sabte_paziresh_view.html'
 
     def get(self, request, pk):
@@ -32,7 +33,7 @@ class sabte_paziresh(View):
         return render(request, self.template, cx)
 
 
-class moarefi_be_gordan(View):
+class moarefi_be_gordan(LoginRequiredMixin, View):
     template = 'soldiers/moarefi_be_gordan.html'
 
     def get(self, request, pk):
@@ -45,10 +46,9 @@ class moarefi_be_gordan(View):
         return render(request, self.template, cx)
 
 
-class sater(View):
+class sater(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(National_Code=pk).first()
         cx = {'sarbaz': my_sarbaz}
         return render(request, 'soldiers/sater_adi_page.html', cx)
-

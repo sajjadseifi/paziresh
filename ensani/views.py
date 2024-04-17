@@ -1,8 +1,15 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
+from django.views import View
 
 
-def panel_home(request, *args, **kwargs):
-    return render(request, 'ensani/panel_home_page.html')
+class panel_home(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'ensani/panel_home_page.html')
+
+
+# def panel_home(request, *args, **kwargs):
+#     return render(request, 'ensani/panel_home_page.html')
 
 
 # Create your views here.

@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from .models import battalion, battalion_group
 from django.views import View
@@ -8,14 +9,14 @@ from .forms import *
 # Create your views here.
 
 
-class MainViewBattalion(View):
+class MainViewBattalion(LoginRequiredMixin, View):
     def get(self, request):
         gordan = battalion.objects.filter().all()
         cx = {'gordan': gordan, }
         return render(request, 'battalions/gordan_list.html', cx)
 
 
-class BattalionCreate(View):
+class BattalionCreate(LoginRequiredMixin, View):
     template = 'battalions/gordan_form.html'
     success_url = reverse_lazy('all-Battalion')
 
@@ -38,7 +39,7 @@ class BattalionCreate(View):
         return redirect(self.success_url)
 
 
-class BattalionUpdate(View):
+class BattalionUpdate(LoginRequiredMixin, View):
     template = 'battalions/gordan_form.html'
     success_url = reverse_lazy('all-Battalion')
 
@@ -69,5 +70,3 @@ class MainViewBattalionGroup(View):
         grohan = battalion_group.objects.filter().all()
         cx = {'grohan': grohan, }
         return render(request, 'battalions/grohan_list.html', cx)
-
-

@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('soldiers.urls')),
     path('', include('accounts.urls')),
-    path('', panel_home, name='home_page'),
+    path('', panel_home.as_view(), name='home_page'),
     re_path(r'^header_partial_view',
             header_partial_view,
             name='header_partial_view'),
