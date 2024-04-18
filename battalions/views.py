@@ -65,8 +65,92 @@ class BattalionUpdate(LoginRequiredMixin, View):
         return redirect(self.success_url)
 
 
-class MainViewBattalionGroup(View):
+class MainViewBattalionGroup(LoginRequiredMixin, View):
     def get(self, request):
         grohan = battalion_group.objects.filter().all()
         cx = {'grohan': grohan, }
         return render(request, 'battalions/grohan_list.html', cx)
+
+
+class CreateBattalionGroup(View):
+    template = 'battalions/gordan_form.html'
+    success_url = 'battalions/grohan_list.html'
+
+    def get(self, request):
+        bg_f = BattalionGroupForm()
+        cx = {'form': bg_f}
+        return render(request, self.template, cx)
+
+    def post(self, request):
+        bg_f = BattalionGroupForm(request.POST, request.FILES or None)
+        if not bg_f.is_valid():
+            cx = {'form': bg_f}
+            return render(request, self.template, cx)
+        bg = battalion_group()
+        bg.name = bg_f.cleaned_data['name']
+        gordan = battalion.objects.filter(name=bg_f.gordan).first()
+        bg.gordan.pk = gordan.pk
+        bg.ebtedai = bg_f.cleaned_data['ebtedai']
+        bg.rahnamai = bg_f.cleaned_data['rahnamai']
+        bg.dabirestan = bg_f.cleaned_data['dabirestan']
+        bg.zirediplom = bg_f.cleaned_data['zirediplom']
+        bg.diplom = bg_f.cleaned_data['diplom']
+        bg.ofghdiplom = bg_f.cleaned_data['ofghdiplom']
+        bg.lisans = bg_f.cleaned_data['lisans']
+        bg.ofghlisans = bg_f.cleaned_data['ofghlisans']
+        bg.doctra = bg_f.cleaned_data['doctra']
+        bg.shie = bg_f.cleaned_data['shie']
+        bg.ahle_tasnon = bg_f.cleaned_data['ahle_tasnon']
+        bg.zarfiat = bg_f.cleaned_data['zarfiat']
+        bg.takmilzarmit = bg_f.cleaned_data['takmilzarmit']
+        bg.save()
+
+
+class BattalionGroupUpdate(View):
+    template = 'battalions/gordan_form.html'
+    success_url = 'battalions/grohan_list.html'
+
+    def get(self, request, pk):
+        bg_f = BattalionGroupForm()
+        bg = battalion_group.objects.filter(pk=pk).first()
+        bg_f.name = bg.name
+        bg_f.gordan = bg.gordan.name
+        bg_f.ebtedai = bg.ebtedai
+        bg_f.rahnamai = bg.rahnamai
+        bg_f.dabirestan = bg.dabirestan
+        bg_f.zirediplom = bg.zirediplom
+        bg_f.diplom = bg.diplom
+        bg_f.ofghdiplom = bg.ofghdiplom
+        bg_f.lisans = bg.lisans
+        bg_f.doctra = bg.doctra
+        bg_f.shie = bg.shie
+        bg_f.ahle_tasnon = bg.ahle_tasnon
+        bg_f.zarfiat = bg.zarfiat
+        bg_f.takmilzarmi = bg.takmilzarmit
+        bg_f.order = bg.order
+        cx = {'form': bg_f}
+        return render(request, self.template, cx)
+
+    def post(self, request, pk):
+        bg_f = BattalionGroupForm(request.POST, request.FILES or None)
+        if not bg_f.is_valid():
+            cx = {'form': bg_f}
+            return render(request, self.template, cx)
+        bg = battalion_group.objects.filter(pk=pk).first()
+        bg.name = bg_f.cleaned_data['name']
+        gordan = battalion.objects.filter(name=bg_f.gordan).first()
+        bg.gordan.pk = gordan.pk
+        bg.ebtedai = bg_f.cleaned_data['ebtedai']
+        bg.rahnamai = bg_f.cleaned_data['rahnamai']
+        bg.dabirestan = bg_f.cleaned_data['dabirestan']
+        bg.zirediplom = bg_f.cleaned_data['zirediplom']
+        bg.diplom = bg_f.cleaned_data['diplom']
+        bg.ofghdiplom = bg_f.cleaned_data['ofghdiplom']
+        bg.lisans = bg_f.cleaned_data['lisans']
+        bg.ofghlisans = bg_f.cleaned_data['ofghlisans']
+        bg.doctra = bg_f.cleaned_data['doctra']
+        bg.shie = bg_f.cleaned_data['shie']
+        bg.ahle_tasnon = bg_f.cleaned_data['ahle_tasnon']
+        bg.zarfiat = bg_f.cleaned_data['zarfiat']
+        bg.takmilzarmit = bg_f.cleaned_data['takmilzarmit']
+        bg.save()
