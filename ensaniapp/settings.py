@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'battalions',
     'django_jalali',
     'accounts',
+    'ensani_statistics',
 ]
 
 MIDDLEWARE = [
