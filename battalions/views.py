@@ -73,23 +73,34 @@ class MainViewBattalionGroup(LoginRequiredMixin, View):
 
 
 class CreateBattalionGroup(View):
-    template = 'battalions/gordan_form.html'
-    success_url = 'battalions/grohan_list.html'
+    template = 'battalions/grohan_form.html'
+    success_url = reverse_lazy('MainViewBattalionGroup')
 
     def get(self, request):
         bg_f = BattalionGroupForm()
+        bt_list = []
+        my_bt = battalion.objects.filter().all()
+        for item in my_bt:
+            bt_list.append((item.id, item.name))
+        bg_f.fields['gordan'].choices = bt_list
         cx = {'form': bg_f}
         return render(request, self.template, cx)
 
     def post(self, request):
         bg_f = BattalionGroupForm(request.POST, request.FILES or None)
+        bt_list = []
+        my_bt = battalion.objects.filter().all()
+        for item in my_bt:
+            bt_list.append((item.id, item.name))
+        bg_f.fields['gordan'].choices = bt_list
         if not bg_f.is_valid():
             cx = {'form': bg_f}
             return render(request, self.template, cx)
         bg = battalion_group()
         bg.name = bg_f.cleaned_data['name']
-        gordan = battalion.objects.filter(name=bg_f.gordan).first()
-        bg.gordan.pk = gordan.pk
+        gordan_id = bg_f.cleaned_data['gordan']
+        gordan = battalion.objects.filter(pk=gordan_id).first()
+        bg.gordan = gordan
         bg.ebtedai = bg_f.cleaned_data['ebtedai']
         bg.rahnamai = bg_f.cleaned_data['rahnamai']
         bg.dabirestan = bg_f.cleaned_data['dabirestan']
@@ -103,43 +114,57 @@ class CreateBattalionGroup(View):
         bg.ahle_tasnon = bg_f.cleaned_data['ahle_tasnon']
         bg.zarfiat = bg_f.cleaned_data['zarfiat']
         bg.takmilzarmit = bg_f.cleaned_data['takmilzarmit']
+        bg.order = bg_f.cleaned_data['order']
         bg.save()
+        return redirect(self.success_url)
 
 
 class BattalionGroupUpdate(View):
-    template = 'battalions/gordan_form.html'
-    success_url = 'battalions/grohan_list.html'
+    template = 'battalions/grohan_form.html'
+    success_url = reverse_lazy('MainViewBattalionGroup')
 
     def get(self, request, pk):
         bg_f = BattalionGroupForm()
         bg = battalion_group.objects.filter(pk=pk).first()
-        bg_f.name = bg.name
-        bg_f.gordan = bg.gordan.name
-        bg_f.ebtedai = bg.ebtedai
-        bg_f.rahnamai = bg.rahnamai
-        bg_f.dabirestan = bg.dabirestan
-        bg_f.zirediplom = bg.zirediplom
-        bg_f.diplom = bg.diplom
-        bg_f.ofghdiplom = bg.ofghdiplom
-        bg_f.lisans = bg.lisans
-        bg_f.doctra = bg.doctra
-        bg_f.shie = bg.shie
-        bg_f.ahle_tasnon = bg.ahle_tasnon
-        bg_f.zarfiat = bg.zarfiat
-        bg_f.takmilzarmi = bg.takmilzarmit
-        bg_f.order = bg.order
+        bt_list = []
+        my_bt = battalion.objects.filter().all()
+        for item in my_bt:
+            bt_list.append((item.id, item.name))
+        bg_f.initial['name'] = bg.name
+        bg_f.fields['gordan'].choices = bt_list
+        bg_f.fields['gordan'].initial = bg.gordan.id
+        bg_f.initial['ebtedai'] = bg.ebtedai
+        bg_f.initial['rahnamai'] = bg.rahnamai
+        bg_f.initial['dabirestan'] = bg.dabirestan
+        bg_f.initial['zirediplom'] = bg.zirediplom
+        bg_f.initial['diplom'] = bg.diplom
+        bg_f.initial['ofghdiplom'] = bg.ofghdiplom
+        bg_f.initial['lisans'] = bg.lisans
+        bg_f.initial['doctra'] = bg.doctra
+        bg_f.initial['shie'] = bg.shie
+        bg_f.initial['ahle_tasnon'] = bg.ahle_tasnon
+        bg_f.initial['zarfiat'] = bg.zarfiat
+        bg_f.initial['takmilzarmit'] = bg.takmilzarmit
+        bg_f.initial['order'] = bg.order
         cx = {'form': bg_f}
         return render(request, self.template, cx)
 
     def post(self, request, pk):
         bg_f = BattalionGroupForm(request.POST, request.FILES or None)
+        bg = battalion_group.objects.filter(pk=pk).first()
+        bt_list = []
+        my_bt = battalion.objects.filter().all()
+        for item in my_bt:
+            bt_list.append((item.id, item.name))
+        bg_f.fields['gordan'].choices = bt_list
+        bg_f.fields['gordan'].initial = bg.gordan.id
         if not bg_f.is_valid():
             cx = {'form': bg_f}
             return render(request, self.template, cx)
-        bg = battalion_group.objects.filter(pk=pk).first()
         bg.name = bg_f.cleaned_data['name']
-        gordan = battalion.objects.filter(name=bg_f.gordan).first()
-        bg.gordan.pk = gordan.pk
+        gordan_id = bg_f.cleaned_data['gordan']
+        gordan = battalion.objects.filter(pk=gordan_id).first()
+        bg.gordan = gordan
         bg.ebtedai = bg_f.cleaned_data['ebtedai']
         bg.rahnamai = bg_f.cleaned_data['rahnamai']
         bg.dabirestan = bg_f.cleaned_data['dabirestan']
@@ -153,4 +178,6 @@ class BattalionGroupUpdate(View):
         bg.ahle_tasnon = bg_f.cleaned_data['ahle_tasnon']
         bg.zarfiat = bg_f.cleaned_data['zarfiat']
         bg.takmilzarmit = bg_f.cleaned_data['takmilzarmit']
+        bg.order = bg_f.cleaned_data['order']
         bg.save()
+        return redirect(self.success_url)

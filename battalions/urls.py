@@ -8,6 +8,6 @@ urlpatterns = [
     path('b/<int:pk>/update/', views.BattalionUpdate.as_view(), name='BattalionUpdate'),
     path('bg/', views.MainViewBattalionGroup.as_view(), name='MainViewBattalionGroup'),
     path('bg/create/', views.CreateBattalionGroup.as_view(), name='CreateBattalionGroup'),
-    path('bg/<int:pk>/update/', views.BattalionUpdate.as_view(), name='BattalionUpdate'),
+    path('bg/<int:pk>/update/', views.BattalionGroupUpdate.as_view(), name='BattalionGroupUpdate'),
 
 ]

@@ -1,10 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
 
-</body>
-</html>
+
+{% block main %}
+    <div class="box box-warning">
+        <div class="box-header with-border">
+            <h3 class="box-title">اطلاعات سرباز</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {{ form.name.label }}
+                            {{ form.name }}
+
+                        </div>
+                        <div class="col-xs-6">
+                            {{ form.gordan.label }}
+                            {{ form.gordan }}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {{ form.zarfiat.label }}
+                            {{ form.zarfiat }}
+
+                        </div>
+                        <div class="col-xs-6">
+                            {{ form.order.label }}
+                            {{ form.order }}
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            {{ form.ebtedai.label }}
+                            {{ form.ebtedai }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.rahnamai.label }}
+                            {{ form.rahnamai }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.dabirestan.label }}
+                            {{ form.dabirestan }}
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            {{ form.zirediplom.label }}
+                            {{ form.zirediplom }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.diplom.label }}
+                            {{ form.diplom }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.ofghdiplom.label }}
+                            {{ form.ofghdiplom }}
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            {{ form.lisans.label }}
+                            {{ form.lisans }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.ofghlisans.label }}
+                            {{ form.ofghlisans }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.doctra.label }}
+                            {{ form.doctra }}
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            {{ form.shie.label }}
+                            {{ form.shie }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.ahle_tasnon.label }}
+                            {{ form.ahle_tasnon }}
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.takmilzarmit.label }}
+                            {{ form.takmilzarmit }}
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success pull-right">ایجاد</button>
+            </form>
+
+        </div>
+        <!-- /.box-body -->
+    </div>
+{% endblock %}

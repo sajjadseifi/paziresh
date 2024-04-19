@@ -18,19 +18,22 @@
                             <th>تعداد سرباز</th>
                             <th></th>
                         </tr>
-                        <tr>
-                            <td>آپدیت نرم افزار</td>
-                            <td><span class="badge bg-red">100</span></td>
-                            <td>
-                                <a class="btn btn-app" href="{% url 'BattalionUpdate' pk=1 %}">
-                                    <i class="fa fa-edit"></i> ویرایش
-                                </a>
-                            </td>
-                        </tr>
+                        {% for foo in gordan %}
+                            <tr>
+                                <td>{{ foo.name }}</td>
+                                <td><span class="badge bg-red">100</span></td>
+                                <td>
+                                    <a class="btn btn-app" href="{% url 'BattalionUpdate' pk=foo.pk %}">
+                                        <i class="fa fa-edit"></i> ویرایش
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <!-- /.box-body -->
             </div>
+        </div>
     </section>
 {% endblock %}
