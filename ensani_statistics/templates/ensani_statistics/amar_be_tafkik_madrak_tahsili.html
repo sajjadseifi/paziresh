@@ -1,0 +1,885 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+    <style>
+
+
+        a.comment-indicator:hover + div.comment {
+            background: #ffd;
+            position: absolute;
+            display: block;
+            border: 1px solid black;
+            padding: 0.5em
+        }
+
+        a.comment-indicator {
+            background: red;
+            display: inline-block;
+            border: 1px solid black;
+            width: 0.5em;
+            height: 0.5em
+        }
+
+        div.comment {
+            display: none
+        }
+
+        table {
+            border-collapse: collapse;
+            page-break-after: always;
+            font-size: 10px;
+        }
+
+        .gridlines td {
+            border: 1px dotted black
+        }
+
+        .gridlines th {
+            border: 1px dotted black
+        }
+
+        .b {
+            text-align: center
+        }
+
+        .e {
+            text-align: center
+        }
+
+        .f {
+            text-align: right
+        }
+
+        .inlineStr {
+            text-align: left
+        }
+
+        .n {
+            text-align: right
+        }
+
+        .s {
+            text-align: left
+        }
+
+        td.style0 {
+            vertical-align: bottom;
+            border-bottom: none #000000;
+            border-top: none #000000;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        th.style0 {
+            vertical-align: bottom;
+            border-bottom: none #000000;
+            border-top: none #000000;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        td.style1 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style1 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style2 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style2 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style3 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style3 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style4 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style4 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style5 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style5 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style6 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style6 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style7 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style7 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style8 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style8 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style9 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style9 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style10 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style10 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style11 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style11 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style12 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style12 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style13 {
+            vertical-align: middle;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: none #000000;
+
+        }
+
+        th.style13 {
+            vertical-align: middle;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: none #000000;
+
+        }
+
+        td.style14 {
+            vertical-align: middle;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        th.style14 {
+            vertical-align: middle;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        td.style15 {
+            vertical-align: middle;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style15 {
+            vertical-align: middle;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style16 {
+            vertical-align: middle;
+            border-bottom: 1px solid #000000 !important;
+            border-top: none #000000;
+            border-left: 1px solid #000000 !important;
+            border-right: none #000000;
+
+        }
+
+        th.style16 {
+            vertical-align: middle;
+            border-bottom: 1px solid #000000 !important;
+            border-top: none #000000;
+            border-left: 1px solid #000000 !important;
+            border-right: none #000000;
+
+        }
+
+        td.style17 {
+            vertical-align: middle;
+            border-bottom: 1px solid #000000 !important;
+            border-top: none #000000;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        th.style17 {
+            vertical-align: middle;
+            border-bottom: 1px solid #000000 !important;
+            border-top: none #000000;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        td.style18 {
+            vertical-align: middle;
+            border-bottom: 1px solid #000000 !important;
+            border-top: none #000000;
+            border-left: none #000000;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style18 {
+            vertical-align: middle;
+            border-bottom: 1px solid #000000 !important;
+            border-top: none #000000;
+            border-left: none #000000;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style19 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style19 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style20 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style20 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style21 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style21 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style22 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style22 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style23 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style23 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style24 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style24 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: none #000000;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        td.style25 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: none #000000;
+
+        }
+
+        th.style25 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: none #000000;
+
+        }
+
+        td.style26 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        th.style26 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: none #000000;
+
+        }
+
+        td.style27 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        th.style27 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: none #000000;
+            border-right: 1px solid #000000 !important;
+
+        }
+
+        table.sheet0 col.col0 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col1 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col2 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col3 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col4 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col5 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col6 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col7 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col8 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col9 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col10 {
+            width: 42pt
+        }
+
+        table.sheet0 tr {
+            height: 15pt
+        }
+
+        table.sheet0 tr.row0 {
+            height: 21.75pt
+        }
+
+        table.sheet0 tr.row1 {
+            height: 21pt
+        }
+
+        table.sheet0 tr.row2 {
+            height: 21pt
+        }
+
+        table.sheet0 tr.row3 {
+            height: 21pt
+        }
+
+        table.sheet0 tr.row4 {
+            height: 21pt
+        }
+
+        table.sheet0 tr.row5 {
+            height: 21pt
+        }
+
+        table.sheet0 tr.row6 {
+            height: 21.75pt
+        }
+
+        table.sheet0 tr.row7 {
+            height: 22.5pt
+        }
+
+        table.sheet0 tr.row8 {
+            height: 15.75pt
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+    <section class="content">
+        <div class='row'>
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">فراگیران به تفکیک مقطع تحصیلی</h3>
+                        <br>
+                        <br>
+                        <br>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                <tbody>
+                                <tr class="row0">
+                                    <td class="column0 style1 s style3" colspan="11">فراگیران پذیرش شده به تفکیک مقطع
+                                        تحصیلی
+                                    </td>
+                                </tr>
+                                <tr class="row1">
+                                    <td class="column0 style4 s">بیسواد</td>
+                                    <td class="column1 style5 s">نهضت سواد آموزی</td>
+                                    <td class="column2 style5 s">ابتدایی</td>
+                                    <td class="column3 style5 s">راهنمایی</td>
+                                    <td class="column4 style5 s">سیکل</td>
+                                    <td class="column5 style5 s">دبیرستان</td>
+                                    <td class="column6 style5 s">دیپلم</td>
+                                    <td class="column7 style5 s">فوق دیپلم</td>
+                                    <td class="column8 style5 s">لیسانس</td>
+                                    <td class="column9 style5 s">فوق لیسانس</td>
+                                    <td class="column10 style6 s">دکتری</td>
+                                </tr>
+                                <tr class="row2">
+                                    <td class="column0 style7 n">0</td>
+                                    <td class="column1 style8 n">0</td>
+                                    <td class="column2 style8 n">0</td>
+                                    <td class="column3 style8 n">0</td>
+                                    <td class="column4 style8 n">0</td>
+                                    <td class="column5 style8 n">0</td>
+                                    <td class="column6 style8 n">0</td>
+                                    <td class="column7 style8 n">0</td>
+                                    <td class="column8 style8 n">0</td>
+                                    <td class="column9 style9 n">0</td>
+                                    <td class="column10 style10 n">0</td>
+                                </tr>
+                                <tr class="row3">
+                                    <td class="column0 style11 s style12" colspan="6">زیر دیپلم</td>
+                                    <td class="column6 style13 null"></td>
+                                    <td class="column7 style14 null"></td>
+                                    <td class="column8 style14 null"></td>
+                                    <td class="column9 style14 null"></td>
+                                    <td class="column10 style15 null"></td>
+                                </tr>
+                                <tr class="row4">
+                                    <td class="column0 style11 n style12" colspan="6">0</td>
+                                    <td class="column6 style16 null"></td>
+                                    <td class="column7 style17 null"></td>
+                                    <td class="column8 style17 null"></td>
+                                    <td class="column9 style17 null"></td>
+                                    <td class="column10 style18 null"></td>
+                                </tr>
+                                <tr class="row5">
+                                    <td class="column0 style11 s style12" colspan="9">غیر تحصیلاتی</td>
+                                    <td class="column9 style19 s style20" colspan="2">تحصیلاتی</td>
+                                </tr>
+                                <tr class="row6">
+                                    <td class="column0 style21 n style22" colspan="9">0</td>
+                                    <td class="column9 style23 n style24" colspan="2">0</td>
+                                </tr>
+                                <tr class="row7">
+                                    <td class="column0 style25 n style27" colspan="11">0</td>
+                                </tr>
+                                <tr class="row8">
+                                    <td class="column0">&nbsp;</td>
+                                    <td class="column1">&nbsp;</td>
+                                    <td class="column2">&nbsp;</td>
+                                    <td class="column3">&nbsp;</td>
+                                    <td class="column4">&nbsp;</td>
+                                    <td class="column5">&nbsp;</td>
+                                    <td class="column6">&nbsp;</td>
+                                    <td class="column7">&nbsp;</td>
+                                    <td class="column8">&nbsp;</td>
+                                    <td class="column9">&nbsp;</td>
+                                    <td class="column10">&nbsp;</td>
+                                </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">فراگیران به تفکیک مقطع تحصیلی</h3>
+                        <br>
+                        <br>
+                        <br>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                <tbody>
+                                <tr class="row0">
+                                    <td class="column0 style1 s style3" colspan="11">فراگیران پذیرش شده به تفکیک مقطع
+                                        تحصیلی
+                                    </td>
+                                </tr>
+                                <tr class="row1">
+                                    <td class="column0 style4 s">بیسواد</td>
+                                    <td class="column1 style5 s">نهضت سواد آموزی</td>
+                                    <td class="column2 style5 s">ابتدایی</td>
+                                    <td class="column3 style5 s">راهنمایی</td>
+                                    <td class="column4 style5 s">سیکل</td>
+                                    <td class="column5 style5 s">دبیرستان</td>
+                                    <td class="column6 style5 s">دیپلم</td>
+                                    <td class="column7 style5 s">فوق دیپلم</td>
+                                    <td class="column8 style5 s">لیسانس</td>
+                                    <td class="column9 style5 s">فوق لیسانس</td>
+                                    <td class="column10 style6 s">دکتری</td>
+                                </tr>
+                                <tr class="row2">
+                                    <td class="column0 style7 n">0</td>
+                                    <td class="column1 style8 n">0</td>
+                                    <td class="column2 style8 n">0</td>
+                                    <td class="column3 style8 n">0</td>
+                                    <td class="column4 style8 n">0</td>
+                                    <td class="column5 style8 n">0</td>
+                                    <td class="column6 style8 n">0</td>
+                                    <td class="column7 style8 n">0</td>
+                                    <td class="column8 style8 n">0</td>
+                                    <td class="column9 style9 n">0</td>
+                                    <td class="column10 style10 n">0</td>
+                                </tr>
+                                <tr class="row3">
+                                    <td class="column0 style11 s style12" colspan="6">زیر دیپلم</td>
+                                    <td class="column6 style13 null"></td>
+                                    <td class="column7 style14 null"></td>
+                                    <td class="column8 style14 null"></td>
+                                    <td class="column9 style14 null"></td>
+                                    <td class="column10 style15 null"></td>
+                                </tr>
+                                <tr class="row4">
+                                    <td class="column0 style11 n style12" colspan="6">0</td>
+                                    <td class="column6 style16 null"></td>
+                                    <td class="column7 style17 null"></td>
+                                    <td class="column8 style17 null"></td>
+                                    <td class="column9 style17 null"></td>
+                                    <td class="column10 style18 null"></td>
+                                </tr>
+                                <tr class="row5">
+                                    <td class="column0 style11 s style12" colspan="9">غیر تحصیلاتی</td>
+                                    <td class="column9 style19 s style20" colspan="2">تحصیلاتی</td>
+                                </tr>
+                                <tr class="row6">
+                                    <td class="column0 style21 n style22" colspan="9">0</td>
+                                    <td class="column9 style23 n style24" colspan="2">0</td>
+                                </tr>
+                                <tr class="row7">
+                                    <td class="column0 style25 n style27" colspan="11">0</td>
+                                </tr>
+                                <tr class="row8">
+                                    <td class="column0">&nbsp;</td>
+                                    <td class="column1">&nbsp;</td>
+                                    <td class="column2">&nbsp;</td>
+                                    <td class="column3">&nbsp;</td>
+                                    <td class="column4">&nbsp;</td>
+                                    <td class="column5">&nbsp;</td>
+                                    <td class="column6">&nbsp;</td>
+                                    <td class="column7">&nbsp;</td>
+                                    <td class="column8">&nbsp;</td>
+                                    <td class="column9">&nbsp;</td>
+                                    <td class="column10">&nbsp;</td>
+                                </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+{% endblock %}
