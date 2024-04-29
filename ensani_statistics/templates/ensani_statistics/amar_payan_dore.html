@@ -1,0 +1,1112 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+
+
+
+
+{% block header %}
+
+    <style>
+        html {
+            font-family: Calibri, Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            background-color: white
+        }
+
+        a.comment-indicator:hover + div.comment {
+            background: #ffd;
+            position: absolute;
+            display: block;
+            border: 1px solid black;
+            padding: 0.5em
+        }
+
+        a.comment-indicator {
+            background: red;
+            display: inline-block;
+            border: 1px solid black;
+            width: 0.5em;
+            height: 0.5em
+        }
+
+        div.comment {
+            display: none
+        }
+
+        table {
+            border-collapse: collapse;
+            page-break-after: always
+        }
+
+        .gridlines td {
+            border: 1px dotted black
+        }
+
+        .gridlines th {
+            border: 1px dotted black
+        }
+
+        .b {
+            text-align: center
+        }
+
+        .e {
+            text-align: center
+        }
+
+        .f {
+            text-align: right
+        }
+
+        .inlineStr {
+            text-align: left
+        }
+
+        .n {
+            text-align: right
+        }
+
+        .s {
+            text-align: left
+        }
+
+        td.style0 {
+            vertical-align: bottom;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            color: #000000;
+
+            background-color: white
+        }
+
+        th.style0 {
+            vertical-align: bottom;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            color: #000000;
+
+            background-color: white
+        }
+
+        td.style1 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+
+            background-color: white
+        }
+
+        th.style1 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style2 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style2 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style3 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style3 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style4 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style4 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style5 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style5 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style6 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style6 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style7 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style7 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style8 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style8 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style9 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style9 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style10 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style10 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style11 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style11 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style12 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style12 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style13 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #FF0000;
+1p
+            background-color: white
+        }
+
+        th.style13 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #FF0000;
+1p
+            background-color: white
+        }
+
+        td.style14 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style14 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style15 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #FF0000;
+1p
+            background-color: white
+        }
+
+        th.style15 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #FF0000;
+1p
+            background-color: white
+        }
+
+        td.style16 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFD965
+        }
+
+        th.style16 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFD965
+        }
+
+        td.style17 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #BDD6EE
+        }
+
+        th.style17 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #BDD6EE
+        }
+
+        td.style18 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFFF00
+        }
+
+        th.style18 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFFF00
+        }
+
+        td.style19 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style19 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style20 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #BDD6EE
+        }
+
+        th.style20 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #BDD6EE
+        }
+
+        td.style21 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFFF00
+        }
+
+        th.style21 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFFF00
+        }
+
+        td.style22 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style22 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style23 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style23 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style24 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style24 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style25 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style25 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style26 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style26 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style27 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        th.style27 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: white
+        }
+
+        td.style28 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFD965
+        }
+
+        th.style28 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;
+            border-left: 1px solid #000000 !important;;
+            border-right: 1px solid #000000 !important;;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFD965
+        }
+
+        td.style29 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #BDD6EE
+        }
+
+        th.style29 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #BDD6EE
+        }
+
+        td.style30 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFFF00
+        }
+
+        th.style30 {
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #000000 !important;
+            border-top: 1px solid #000000 !important;;
+            border-left: 1px solid #000000 !important;
+            border-right: 1px solid #000000 !important;
+            font-weight: bold;
+            color: #000000;
+1p
+            background-color: #FFFF00
+        }
+
+        table.sheet0 col.col0 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col1 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col2 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col3 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col4 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col5 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col6 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col7 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col8 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col9 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col10 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col11 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col12 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col13 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col14 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col15 {
+            width: 42pt
+        }
+
+        table.sheet0 col.col16 {
+            width: 42pt
+        }
+
+        table.sheet0 tr {
+            height: 15pt
+        }
+
+        table.sheet0 tr.row0 {
+            height: 21pt
+        }
+
+        table.sheet0 tr.row1 {
+            height: 20.25pt
+        }
+
+        table.sheet0 tr.row2 {
+            height: 19.5pt
+        }
+
+        table.sheet0 tr.row3 {
+            height: 20.25pt
+        }
+
+        table.sheet0 tr.row4 {
+            height: 20.25pt
+        }
+
+        table.sheet0 tr.row5 {
+            height: 19.5pt
+        }
+
+        table.sheet0 tr.row6 {
+            height: 20.25pt
+        }
+
+        table.sheet0 tr.row7 {
+            height: 15.75pt
+        }
+    </style>
+{% endblock %}
+
+
+
+
+
+{% block main %}
+
+    <section class="content">
+        <div class='row'>
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">آمار پایان دوره</h3>
+                        <br>
+                        <br>
+                        <br>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                <tbody>
+                                <tr class="row0">
+                                    <td class="column0 style1 s style3" colspan="17">پایان دوره</td>
+                                </tr>
+                                <tr class="row1">
+                                    <td class="column0 style4 s style5" colspan="9">سپاه</td>
+                                    <td class="column9 style6 s style8" colspan="5">کاهش سپاه</td>
+                                    <td class="column14 style9 s">آمار شروع دوره</td>
+                                    <td class="column15 style10 s">جمع کاهش دوره</td>
+                                    <td class="column16 style11 s">آمار پایان دوره</td>
+                                </tr>
+                                <tr class="row2">
+                                    <td class="column0 style12 s">سالم</td>
+                                    <td class="column1 style12 s">معاف از رزم</td>
+                                    <td class="column2 style12 s">گروه ب</td>
+                                    <td class="column3 style12 s">معاف+گروه ب</td>
+                                    <td class="column4 style12 s">تجدید دوره از قبل</td>
+                                    <td class="column5 style12 s">خدمت قبلی</td>
+                                    <td class="column6 style12 s">کفایت بسیج</td>
+                                    <td class="column7 style12 s">کمیسیون پزشکی</td>
+                                    <td class="column8 style13 s">جمع</td>
+                                    <td class="column9 style14 s">خدمت قبلی</td>
+                                    <td class="column10 style12 s">کفایت بسیج</td>
+                                    <td class="column11 style12 s">کمیسیون پزشکی</td>
+                                    <td class="column12 style12 s">تجدید حین دوره</td>
+                                    <td class="column13 style15 s">جمع</td>
+                                    <td class="column14 style16 n style28" rowspan="5">0</td>
+                                    <td class="column15 style17 n style29" rowspan="5">0</td>
+                                    <td class="column16 style18 n style30" rowspan="5">0</td>
+                                </tr>
+                                <tr class="row3">
+                                    <td class="column0 style19 n">0</td>
+                                    <td class="column1 style19 n">0</td>
+                                    <td class="column2 style19 n">0</td>
+                                    <td class="column3 style19 n">0</td>
+                                    <td class="column4 style19 n">0</td>
+                                    <td class="column5 style19 n">0</td>
+                                    <td class="column6 style19 n">0</td>
+                                    <td class="column7 style19 n">0</td>
+                                    <td class="column8 style19 n">0</td>
+                                    <td class="column9 style19 n">0</td>
+                                    <td class="column10 style19 n">0</td>
+                                    <td class="column11 style19 n">0</td>
+                                    <td class="column12 style19 n">0</td>
+                                    <td class="column13 style19 n">0</td>
+                                </tr>
+                                <tr class="row4">
+                                    <td class="column0 style22 s style23" colspan="9">مامور</td>
+                                    <td class="column9 style24 s style26" colspan="5">کاهش مامور</td>
+                                </tr>
+                                <tr class="row5">
+                                    <td class="column0 style12 s">سالم</td>
+                                    <td class="column1 style12 s">معاف از رزم</td>
+                                    <td class="column2 style12 s">گروه ب</td>
+                                    <td class="column3 style12 s">معاف+گروه ب</td>
+                                    <td class="column4 style12 s">تجدید دوره از قبل</td>
+                                    <td class="column5 style12 s">خدمت قبلی</td>
+                                    <td class="column6 style12 s">کفایت بسیج</td>
+                                    <td class="column7 style12 s">کمیسیون پزشکی</td>
+                                    <td class="column8 style13 s">جمع</td>
+                                    <td class="column9 style14 s">خدمت قبلی</td>
+                                    <td class="column10 style12 s">کفایت بسیج</td>
+                                    <td class="column11 style12 s">کمیسیون پزشکی</td>
+                                    <td class="column12 style12 s">تجدید حین دوره</td>
+                                    <td class="column13 style15 s">جمع</td>
+                                </tr>
+                                <tr class="row6">
+                                    <td class="column0 style27 n">0</td>
+                                    <td class="column1 style27 n">0</td>
+                                    <td class="column2 style27 n">0</td>
+                                    <td class="column3 style27 n">0</td>
+                                    <td class="column4 style27 n">0</td>
+                                    <td class="column5 style27 n">0</td>
+                                    <td class="column6 style27 n">0</td>
+                                    <td class="column7 style27 n">0</td>
+                                    <td class="column8 style27 n">0</td>
+                                    <td class="column9 style27 n">0</td>
+                                    <td class="column10 style27 n">0</td>
+                                    <td class="column11 style27 n">0</td>
+                                    <td class="column12 style27 n">0</td>
+                                    <td class="column13 style27 n">0</td>
+                                </tr>
+                                <tr class="row7">
+                                    <td class="column0">&nbsp;</td>
+                                    <td class="column1">&nbsp;</td>
+                                    <td class="column2">&nbsp;</td>
+                                    <td class="column3">&nbsp;</td>
+                                    <td class="column4">&nbsp;</td>
+                                    <td class="column5">&nbsp;</td>
+                                    <td class="column6">&nbsp;</td>
+                                    <td class="column7">&nbsp;</td>
+                                    <td class="column8">&nbsp;</td>
+                                    <td class="column9">&nbsp;</td>
+                                    <td class="column10">&nbsp;</td>
+                                    <td class="column11">&nbsp;</td>
+                                    <td class="column12">&nbsp;</td>
+                                    <td class="column13">&nbsp;</td>
+                                    <td class="column14">&nbsp;</td>
+                                    <td class="column15">&nbsp;</td>
+                                    <td class="column16">&nbsp;</td>
+                                </tr>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
