@@ -1092,7 +1092,7 @@
                         <br>
                         <!-- /.box-header -->
                         <div class="box-body table-responsive no-padding">
-                            <table class="table table-hover">
+                            <table class="table table-hover" id="htmlTable">
                                 <tbody>
                                 <tr class="row0">
                                     <td class="column0 style1 s style3" colspan="16">شروع دوره</td>
@@ -1199,5 +1199,16 @@
                 </div>
             </div>
         </div>
+        <button onclick="exportToExcel()">خروجی اکسل</button>
+        <!-- use version 0.20.2 -->
+        <script lang="javascript" src="{% static 'plugins/xlsx.full.min.js' %}"></script>
+
+        <script>
+            function exportToExcel() {
+                var htmlTable = document.getElementById('htmlTable');
+                var wb = XLSX.utils.table_to_book(htmlTable, {sheet: "Sheet1"});
+                XLSX.writeFile(wb, 'table.xlsx');
+            }
+        </script>
     </section>
 {% endblock %}

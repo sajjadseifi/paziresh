@@ -7,7 +7,7 @@ from django.shortcuts import resolve_url
 from django.urls import reverse
 from django.views import View
 from soldiers.models import Soldier as sarbaz
-from .forms import SarbazCodeMeli
+from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate
 
 
 def paziresh_code_meli(request, *args, **kwargs):
@@ -51,4 +51,14 @@ class sater(LoginRequiredMixin, View):
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(National_Code=pk).first()
         cx = {'sarbaz': my_sarbaz}
-        return render(request, 'soldiers/sater_adi_page.html', cx)
+        return render(request, 'soldiers/CreatePazireshForm.html', cx)
+        # return render(request, 'soldiers/sater_adi_page.html', cx)
+
+
+class CreatePaziresh(LoginRequiredMixin, View):
+    template = 'soldiers/CreatePazireshForm.html'
+
+    def get(self, request):
+        form_soldiers = FormSoldiersCreate()
+        cx = {'form': form_soldiers}
+        return render(request, self.template, cx)

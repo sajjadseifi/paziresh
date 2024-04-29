@@ -32,7 +32,9 @@ class Soldier(models.Model):
     Weight = models.CharField(null=True, blank=True, max_length=10, verbose_name='وزن')
 
     Renewal_of_the_previous_period = models.CharField(null=True, blank=True, max_length=10,
-                                                      verbose_name='تجدید دوره قبل')
+                                                      verbose_name='تجدید دوره')
+    Renewal_of_the_previous_period_code = models.CharField(null=True, blank=True, max_length=150,
+                                                           verbose_name='کد تجدید دوره')
     Course_renewal_date = models.CharField(null=True, blank=True, max_length=100,
                                            verbose_name='تاریخ تجدید دوره قبل')
     willing_to_learn = models.BooleanField(default=False, verbose_name='حاضر به آموزش')
@@ -42,12 +44,9 @@ class Soldier(models.Model):
     the_medical_commission = models.BooleanField(default=False, verbose_name='کمیسیون پزشکی')
     has_been_accepted = models.BooleanField(default=False, verbose_name='پذیرش شده است')
     acceptance_code = models.IntegerField(null=True, blank=True, verbose_name='کد پذیرش')
-    Course_renewal_almahdi = models.CharField(null=True, blank=True, max_length=100,
-                                              verbose_name='تجدید دوره المهدی کد دوره')
-    Course_renewal_almahdi_date = models.CharField(null=True, blank=True, max_length=100,
-                                                   verbose_name='تاریخ تجدید دوره المهدی')
-    Reason_for_renewing_the_course_almahdi = models.CharField(null=True, blank=True, max_length=150,
-                                                              verbose_name='علت تجدید دوره المهدی')
+
+    Reason_for_renewing_the_course = models.CharField(null=True, blank=True, max_length=150,
+                                                      verbose_name='علت تجدید دوره')
 
     Previous_service_record = models.BooleanField(default=False, verbose_name='سابقه خدمت قبلی')
     Ground_force_absorption = models.BooleanField(default=False, verbose_name='جذبی نیروی زمینی')
