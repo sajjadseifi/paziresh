@@ -49,10 +49,9 @@ class Soldier(models.Model):
                                                       verbose_name='علت تجدید دوره')
 
     Previous_service_record = models.BooleanField(default=False, verbose_name='سابقه خدمت قبلی')
-    Ground_force_absorption = models.BooleanField(default=False, verbose_name='جذبی نیروی زمینی')
 
+    attraction_of_the_organization = models.BooleanField(default=False, verbose_name='جذبی')
     Successful_recruitment = models.BooleanField(default=False, verbose_name='جذب موفق')
-    The_recruitment_of_the_army_and_the_agent = models.BooleanField(default=False, verbose_name='جذبی سپاه و مامور')
     Relative_to_inclusive = models.CharField(null=True, blank=True, max_length=120, verbose_name='نسبت با فراگیر')
     Relative_to_inclusive_number = models.CharField(null=True, blank=True, max_length=100,
                                                     verbose_name='شماره تماس نسبت فراگیر')

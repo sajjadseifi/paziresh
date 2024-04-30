@@ -186,7 +186,7 @@ class FormSoldiersCreate(forms.Form):
     )
     Type_of_disease = forms.ChoiceField(
         widget=forms.Select(
-            attrs={'class': "form-control"}
+            attrs={'class': "form-control select2", 'style': "width: 100%;"}
         ),
         label='نوع بیماری'
     )
@@ -206,8 +206,10 @@ class FormSoldiersCreate(forms.Form):
         ),
         label='مقطع تحصیلی دقیق'
     )
-    educational_level_of_the_system = forms.CharField(
-        widget=forms.TextInput(attrs={'class': "form-control", 'id': "educational_level_of_the_system"}),
+    educational_level_of_the_system = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control"}
+        ),
         label='مقطع تحصیلی سامانه'
     )
     Study_group = forms.CharField(
@@ -248,7 +250,7 @@ class FormSoldiersCreate(forms.Form):
     )
     province_name = forms.ChoiceField(
         widget=forms.Select(
-            attrs={'class': "form-control"}
+            attrs={'class': "form-control select2", 'style': "width: 100%;"}
         ),
         label='نام استان'
     )
@@ -323,17 +325,11 @@ class FormSoldiersCreate(forms.Form):
         ),
         label='نام گروهان'
     )
-    Ground_force_absorption = forms.ChoiceField(
+    attraction_of_the_organization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='جذبی نیروی زمینی'
-    )
-    The_recruitment_of_the_army_and_the_agent = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': "form-control"}
-        ),
-        label='جذبی سپاه و مامور'
+        label='جذبی'
     )
     Sutter = forms.ChoiceField(
         widget=forms.Select(

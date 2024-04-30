@@ -1,15 +1,20 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
 
+{% block header %}
+    <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+{% endblock %}
 
 {% block main %}
+
     <div class="box box-warning">
         <div class="box-header with-border">
             <h3 class="box-title">اطلاعات سرباز</h3>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <form role="form">
+            <form role="form" action="POST">
+                {% csrf_token %}
                 <div class="form-group">
                     {{ form.National_Code.label }}
                     {{ form.National_Code }}
@@ -186,13 +191,9 @@
 
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.The_recruitment_of_the_army_and_the_agent.label }}
-                            {{ form.The_recruitment_of_the_army_and_the_agent }}
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form.Ground_force_absorption.label }}
-                            {{ form.Ground_force_absorption }}
+                        <div class="col-xs-12">
+                            {{ form.attraction_of_the_organization.label }}
+                            {{ form.attraction_of_the_organization }}
                         </div>
                     </div>
                 </div>
@@ -236,4 +237,14 @@
         </div>
         <!-- /.box-body -->
     </div>
+
+{% endblock %}
+
+
+{% block footer %}
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
 {% endblock %}
