@@ -1,11 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.shortcuts import resolve_url
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
+
+from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
 from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate
 
@@ -164,10 +166,16 @@ Grade_precise_list = [
     (13, 'نامشخص')
 ]
 Amriye_list = [(1, 'بله'), (2, 'خیر')]
+Amriye_organization_lsit = [(1, 'test1'), (2, 'test2')]
+battalion_group_list = []
+g = battalion_group.objects.filter().all()
+for item in g:
+    battalion_group_list.append((item.id, item.name))
 
 
 class CreatePaziresh(LoginRequiredMixin, View):
     template = 'soldiers/CreatePazireshForm.html'
+    success_url = reverse_lazy('MainViewSoldires')
 
     def get(self, request):
         form_soldiers = FormSoldiersCreate()
@@ -186,44 +194,66 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Reason_for_renewing_the_course'].choices = Reason_for_renewing_the_course_list
         form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
+        form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list
         cx = {'form': form_soldiers}
         return render(request, self.template, cx)
 
     def post(self, request):
         form_soldiers = FormSoldiersCreate(request.POST, request.FILES or None)
-        cx = {'form': form_soldiers}
+        form_soldiers.fields['Religion'].choices = Religion_list
+        form_soldiers.fields['province_name'].choices = province_name_list
+        form_soldiers.fields['marital_status'].choices = marital_status_list
+        form_soldiers.fields['physical_condition'].choices = physical_condition_list
+        form_soldiers.fields['Grade'].choices = Grade_list
+        form_soldiers.fields['Grade_precise'].choices = Grade_precise_list
+        form_soldiers.fields['Type_of_disease'].choices = Type_of_disease_list
+        form_soldiers.fields['Amriye'].choices = Amriye_list
+        form_soldiers.fields['Sufficiency_of_mobilization'].choices = Sufficiency_of_mobilization_list
+        form_soldiers.fields['Sutter'].choices = Sutter_list
+        form_soldiers.fields['attraction_of_the_organization'].choices = attraction_of_the_organization_list
+        form_soldiers.fields['Reason_for_renewing_the_course'].choices = Reason_for_renewing_the_course_list
+        form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
+        form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
+        form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+
         if not form_soldiers.is_valid():
+            print("eeeeeeeeeeeeeror")
+            print(form_soldiers.errors)
+            cx = {'form': form_soldiers}
             return render(request, self.template, cx)
         code = form_soldiers.cleaned_data['National_Code']
-        s = sarbaz.objects.filter(National_Code=code).all()
-        if s is not None:
-            return render(request, self.template, cx)
+        # # s1 = sarbaz.objects.filter(National_Code=code).first()
+        # # if s1 is None:
+        # #     cx = {'form': form_soldiers}
+        #     return render(request, self.template, cx)
         name = form_soldiers.cleaned_data['name']
         family = form_soldiers.cleaned_data['family']
         fathers_name = form_soldiers.cleaned_data['fathers_name']
         National_Code = form_soldiers.cleaned_data['National_Code']
         physical_condition_id = form_soldiers.cleaned_data['physical_condition']
-        physical_condition = physical_condition_list[physical_condition_id - 1][1]
+        physical_condition = physical_condition_list[int(physical_condition_id) - 1][1]
         Type_of_disease_id = form_soldiers.cleaned_data['Type_of_disease']
-        Type_of_disease = Type_of_disease_list[Type_of_disease_id - 1][1]
+        Type_of_disease = Type_of_disease_list[int(Type_of_disease_id) - 1][1]
         health_insurance_card = form_soldiers.cleaned_data['health_insurance_card']
         Grade_id = form_soldiers.cleaned_data['Grade']
-        Grade = Grade_list[Grade_id - 1][1]
+        Grade = Grade_list[int(Grade_id) - 1][1]
         Grade_precise_id = form_soldiers.cleaned_data['Grade_precise']
-        Grade_precise = Grade_precise_list[Grade_precise_id - 1][1]
+        Grade_precise = Grade_precise_list[int(Grade_precise_id) - 1][1]
         educational_level_of_the_system = form_soldiers.cleaned_data['educational_level_of_the_system']
         Study_group = form_soldiers.cleaned_data['Study_group']
         marital_status_id = form_soldiers.cleaned_data['marital_status']
-        marital_status = marital_status_list[marital_status_id - 1][1]
+        marital_status = marital_status_list[int(marital_status_id) - 1][1]
         Religion_id = form_soldiers.cleaned_data['Religion']
-        Religion = Religion_list[Religion_id - 1][1]
+        Religion = Religion_list[int(Religion_id) - 1][1]
         Date_of_birth = form_soldiers.cleaned_data['Date_of_birth']
         place_of_birth = form_soldiers.cleaned_data['place_of_birth']
         phone_number = form_soldiers.cleaned_data['phone_number']
         home_phone_number = form_soldiers.cleaned_data['home_phone_number']
         Date_of_dispatch = form_soldiers.cleaned_data['Date_of_dispatch']
         province_name_id = form_soldiers.cleaned_data['province_name']
-        province_name = province_name_list[province_name_id - 1][1]
+        province_name = province_name_list[int(province_name_id) - 1][1]
         city_name = form_soldiers.cleaned_data['city_name']
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
@@ -231,10 +261,72 @@ class CreatePaziresh(LoginRequiredMixin, View):
         Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
-        Amriye = Amriye_list[Amriye_id - 1][1]
+        Amriye = Amriye_list[int(Amriye_id) - 1][1]
         Amriye_organization_id = form_soldiers.cleaned_data['Amriye_organization']
-        Amriye_organization = 'هیج'
+        Amriye_organization = Amriye_organization_lsit[int(Amriye_organization_id) - 1][1]
         Sufficiency_of_mobilization_id = form_soldiers.cleaned_data['Sufficiency_of_mobilization']
-        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[Sufficiency_of_mobilization_id - 1][1]
+        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[int(Sufficiency_of_mobilization_id) - 1][1]
+        Place_of_Issue = form_soldiers.cleaned_data['Place_of_Issue']
+        Renewal_of_the_previous_period_code = form_soldiers.cleaned_data['Renewal_of_the_previous_period_code']
+        attraction_of_the_organization_id = form_soldiers.cleaned_data['attraction_of_the_organization']
+        attraction_of_the_organization = \
+            attraction_of_the_organization_list[int(attraction_of_the_organization_id) - 1][1]
+        Sutter_id = form_soldiers.cleaned_data['Sutter']
+        Sutter = Sutter_list[int(Sutter_id) - 1][1]
+        f_battalion_group = form_soldiers.cleaned_data['battalion_group']
+        s = sarbaz()
+        s.name = name
+        s.family = family
+        s.fathers_name = fathers_name
+        s.National_Code = National_Code
+        s.physical_condition = physical_condition
+        s.Type_of_disease = Type_of_disease
+        s.health_insurance_card = health_insurance_card
+        s.Grade = s.Grade
+        s.Grade_precise = Grade_precise
+        s.educational_level_of_the_system = educational_level_of_the_system
+        s.Study_group = Study_group
+        s.marital_status = marital_status
+        s.Religion = Religion
+        s.Date_of_birth = Date_of_birth
+        s.place_of_birth = place_of_birth
+        s.phone_number = phone_number
+        s.home_phone_number = home_phone_number
+        s.Date_of_dispatch = Date_of_dispatch
+        s.province_name = province_name
+        s.city_name = city_name
+        s.Address = Address
+        s.Place_of_Issue = Place_of_Issue
+        s.height = height
+        s.Weight = Weight
+        s.Renewal_of_the_previous_period = Renewal_of_the_previous_period
+        s.Course_renewal_date = Course_renewal_date
+        s.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
+        if Amriye == 'بله':
+            s.Amriye = True
+        else:
+            s.Amriye = False
+        s.Amriye_organization = Amriye_organization
+        if Sufficiency_of_mobilization == 'خیر':
+            s.Sufficiency_of_mobilization = False
+        else:
+            s.Sufficiency_of_mobilization = True
+        b = battalion_group.objects.filter(id=f_battalion_group).first()
+        s.battalion_group = b
+        s.Gordan = b.gordan
+        s.attraction_of_the_organization = attraction_of_the_organization
+        s.Sutter = Sutter
+        s.Grade = Grade
+        s.save()
+        return redirect(self.success_url)
 
-        return render(request, self.template, cx)
+
+class MainViewSoldires(LoginRequiredMixin, View):
+    def get(self, request):
+        s = sarbaz.objects.filter().all()
+        cx = {'s': s}
+        return render(request, 'soldiers/MainViewSoldires.html', cx)
+
+#
+# <ul class="errorlist"><li>Date_of_dispatch<ul class="errorlist"><li>این فیلد لازم است.</li></ul></li><li>content<ul class="errorlist"><li>این فیلد لازم است.</li></ul></li><li>the_medical_commission<ul class="errorlist"><li>این فیلد
+# لازم است.</li></ul></li><li>battalion_group<ul class="errorlist"><li>این فیلد لازم است.</li></ul></li></ul>

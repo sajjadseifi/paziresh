@@ -13,7 +13,7 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <form role="form" action="POST">
+            <form role="form" method="post">
                 {% csrf_token %}
                 <div class="form-group">
                     {{ form.National_Code.label }}
@@ -51,7 +51,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-6">
@@ -129,23 +128,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form.Date_of_birth.label }}
-                            {{ form.Date_of_birth }}
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.place_of_birth.label }}
-                            {{ form.place_of_birth }}
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.place_of_birth.label }}
-                            {{ form.place_of_birth }}
-                        </div>
-                    </div>
-                </div>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-4">
@@ -188,7 +170,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-12">
@@ -197,7 +178,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-3">
@@ -227,6 +207,22 @@
                         <div class="col-xs-6">
                             {{ form.Sutter.label }}
                             {{ form.Sutter }}
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form.battalion_group.label }}
+                            {{ form.battalion_group }}
+                        </div>
+                    </div>
+                </div>
+                  <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form.Date_of_dispatch.label }}
+                            {{ form.Date_of_dispatch }}
                         </div>
                     </div>
                 </div>

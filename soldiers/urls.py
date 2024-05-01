@@ -7,5 +7,6 @@ urlpatterns = [
     path('sarbaz/p/<int:pk>', moarefi_be_gordan.as_view(), name='moarefi_be_gordan'),
     path('sarbaz/sater/<int:pk>', sater.as_view(), name='sater'),
     path('sarbaz/create/', CreatePaziresh.as_view(), name='CreatePaziresh'),
+    path('sarbaz/all/', MainViewSoldires.as_view(), name='MainViewSoldires'),
 
 ]

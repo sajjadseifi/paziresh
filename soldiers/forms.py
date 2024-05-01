@@ -135,12 +135,6 @@ class FormSoldiers(forms.Form):
         ),
         label='کفایت بسیج'
     )
-    the_medical_commission = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': "form-control"}
-        ),
-        label='کمیسیون پزشکی'
-    )
     Course_renewal_almahdi = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Course_renewal_almahdi"}),
         label='تجدید دوره المهدی کد دوره'
@@ -258,7 +252,7 @@ class FormSoldiersCreate(forms.Form):
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "city_name"}),
         label='نام شهر'
     )
-    Address = content = forms.CharField(
+    Address = forms.CharField(
         label='ادرس',
         widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"})
     )
@@ -312,19 +306,6 @@ class FormSoldiersCreate(forms.Form):
         ),
         label='کفایت بسیج'
     )
-    the_medical_commission = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': "form-control"}
-        ),
-        label='کمیسیون پزشکی'
-    )
-
-    battalion_group = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': "form-control"}
-        ),
-        label='نام گروهان'
-    )
     attraction_of_the_organization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
@@ -336,6 +317,12 @@ class FormSoldiersCreate(forms.Form):
             attrs={'class': "form-control"}
         ),
         label='ساتر'
+    )
+    battalion_group = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control"}
+        ),
+        label='نام گروهان'
     )
 
 

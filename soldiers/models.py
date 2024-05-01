@@ -1,7 +1,7 @@
 from django.db import models
 
-
 # Create your models here.
+from battalions.models import battalion, battalion_group
 
 
 class Soldier(models.Model):
@@ -50,9 +50,11 @@ class Soldier(models.Model):
 
     Previous_service_record = models.BooleanField(default=False, verbose_name='سابقه خدمت قبلی')
 
-    attraction_of_the_organization = models.BooleanField(default=False, verbose_name='جذبی')
+    attraction_of_the_organization = models.CharField(max_length=200, verbose_name='جذبی', null=True)
     Successful_recruitment = models.BooleanField(default=False, verbose_name='جذب موفق')
     Relative_to_inclusive = models.CharField(null=True, blank=True, max_length=120, verbose_name='نسبت با فراگیر')
     Relative_to_inclusive_number = models.CharField(null=True, blank=True, max_length=100,
                                                     verbose_name='شماره تماس نسبت فراگیر')
     Sutter = models.CharField(null=True, blank=True, max_length=150, verbose_name='ساتر')
+    Gordan = models.ForeignKey(battalion, on_delete=models.CASCADE, verbose_name='گردان', null=True)
+    battalion_group = models.ForeignKey(battalion_group, models.CASCADE, verbose_name='گروهان', null=True)
