@@ -317,6 +317,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.attraction_of_the_organization = attraction_of_the_organization
         s.Sutter = Sutter
         s.Grade = Grade
+        s.willing_to_learn = True
         s.save()
         return redirect(self.success_url)
 
