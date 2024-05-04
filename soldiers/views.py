@@ -1,12 +1,11 @@
+from datetime import datetime
+
+import jdatetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-
-# Create your views here.
-from django.shortcuts import resolve_url
 from django.urls import reverse, reverse_lazy
 from django.views import View
-
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
 from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate
@@ -16,7 +15,6 @@ def paziresh_code_meli(request, *args, **kwargs):
     sarbaz_code_meli = SarbazCodeMeli(request.POST or None)
     if sarbaz_code_meli.is_valid():
         code_meli = sarbaz_code_meli.cleaned_data.get('code_meli')
-        print(code_meli)
         return HttpResponseRedirect(reverse("get_sarbaz", args=[code_meli]))
 
     return render(request, 'soldiers/paziresh_idcode_view.html', context={'SarbazCodeMeli': sarbaz_code_meli})
@@ -27,7 +25,6 @@ class sabte_paziresh(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(National_Code=pk).first()
-        cx = {'sarbaz': my_sarbaz}
         return render(request, self.template, cx)
 
     def post(self, request):
@@ -35,15 +32,17 @@ class sabte_paziresh(LoginRequiredMixin, View):
         return render(request, self.template, cx)
 
 
-class moarefi_be_gordan(LoginRequiredMixin, View):
-    template = 'soldiers/moarefi_be_gordan.html'
+class moarefi_be_gordan_va_sater(LoginRequiredMixin, View):
+    template = 'soldiers/moarefi_be_gordan_va_sater.html'
 
     def get(self, request, pk):
-        my_sarbaz = sarbaz.objects.filter(National_Code=pk).first()
-        cx = {'sarbaz': my_sarbaz}
+        my_sarbaz = sarbaz.objects.filter(pk=pk).first()
+        time = my_sarbaz.tarikh_paziresh.time()
+        date = my_sarbaz.tarikh_paziresh.date()
+        cx = {'sarbaz': my_sarbaz, 'time': time, 'date': date}
         return render(request, self.template, cx)
 
-    def post(self, request):
+    def post(self, request, pk):
         cx = {}
         return render(request, self.template, cx)
 
@@ -53,8 +52,7 @@ class sater(LoginRequiredMixin, View):
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(National_Code=pk).first()
         cx = {'sarbaz': my_sarbaz}
-        return render(request, 'soldiers/CreatePazireshForm.html', cx)
-        # return render(request, 'soldiers/sater_adi_page.html', cx)
+        return render(request, 'soldiers/sater_adi_page.html', cx)
 
 
 province_name_list = [
@@ -175,7 +173,7 @@ for item in g:
 
 class CreatePaziresh(LoginRequiredMixin, View):
     template = 'soldiers/CreatePazireshForm.html'
-    success_url = reverse_lazy('MainViewSoldires')
+    success_url = reverse_lazy('moarefi_be_gordan_va_sater')
 
     def get(self, request):
         form_soldiers = FormSoldiersCreate()
@@ -219,11 +217,9 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['battalion_group'].choices = battalion_group_list
 
         if not form_soldiers.is_valid():
-            print("eeeeeeeeeeeeeror")
-            print(form_soldiers.errors)
             cx = {'form': form_soldiers}
             return render(request, self.template, cx)
-        code = form_soldiers.cleaned_data['National_Code']
+        # code = form_soldiers.cleaned_data['National_Code']
         # # s1 = sarbaz.objects.filter(National_Code=code).first()
         # # if s1 is None:
         # #     cx = {'form': form_soldiers}
@@ -318,8 +314,26 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.Sutter = Sutter
         s.Grade = Grade
         s.willing_to_learn = True
+
+        c_s = sarbaz.objects.all()
+        find_max_code_list = [0]
+        for iteam in c_s:
+            if iteam.code_paziresh is not None:
+                find_max_code_list.append(int(iteam.code_paziresh))
+        code_paziresh_max = max(find_max_code_list)
+        s.code_paziresh = code_paziresh_max + 1
+        s.tarikh_paziresh = jdatetime.datetime.now()
+        code_gorhan_list = [0]
+        c_s = sarbaz.objects.filter(battalion_group=s.battalion_group, Gordan=s.Gordan).all()
+        for item in c_s:
+            if item.code_gorhan is not None:
+                code_gorhan_list.append(int(item.code_gorhan))
+        s.code_gorhan = max(code_gorhan_list) + 1
         s.save()
-        return redirect(self.success_url)
+        b.zarfiat = int(b.zarfiat) - 1
+
+        b.save()
+        return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
 
 class MainViewSoldires(LoginRequiredMixin, View):
@@ -327,7 +341,3 @@ class MainViewSoldires(LoginRequiredMixin, View):
         s = sarbaz.objects.filter().all()
         cx = {'s': s}
         return render(request, 'soldiers/MainViewSoldires.html', cx)
-
-#
-# <ul class="errorlist"><li>Date_of_dispatch<ul class="errorlist"><li>این فیلد لازم است.</li></ul></li><li>content<ul class="errorlist"><li>این فیلد لازم است.</li></ul></li><li>the_medical_commission<ul class="errorlist"><li>این فیلد
-# لازم است.</li></ul></li><li>battalion_group<ul class="errorlist"><li>این فیلد لازم است.</li></ul></li></ul>

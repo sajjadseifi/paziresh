@@ -1,0 +1,82 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+
+{% block main %}
+
+    <section class="invoice">
+        <!-- title row -->
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="page-header">
+                    <i class="fa fa-globe"></i>
+                    <small class="pull-left">۳ مرداد ۱۳۹۶</small>
+                </h2>
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- info row -->
+        <div class="row invoice-info">
+            <div class="col-sm-4 invoice-col">
+                <address>
+                    <strong>{{ sarbaz.National_Code }}</strong><br>
+                    نام : {{ sarbaz.name }}<br>
+                    نام خانوادگی : {{ sarbaz.family }}<br>
+                </address>
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-4 invoice-col">
+
+                <address>
+                    <strong>گردان : {{ sarbaz.Gordan.name }}</strong><br>
+                    گروهان : {{ sarbaz.battalion_group.name }}<br>
+                    کد فردی : {{ sarbaz.code_gorhan }}<br>
+                </address>
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-4 invoice-col">
+                <b>کد پذیرش:</b> {{ sarbaz.code_paziresh }}<br>
+                <b>تاریخ پذیرش:</b><span style="unicode-bidi:embed">{{ date }}</span><br>
+                <b>زمان پذیرش:</b>{{ time }}<br>
+            </div>
+            <!-- /.col -->
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-6">
+                <p class="lead">وضعیت ساتر:</p>
+                <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                    {{ sarbaz.name }} {{ sarbaz.family }} مجاز به دریافت برگه ساتر می باشد
+                </p>
+                <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i>
+                    پرینت برگه ساتر</a>
+            </div>
+            <!-- /.col -->
+            <div class="col-xs-6">
+                <p class="lead">وضعیت گردان:</p>
+                <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                    {{ sarbaz.name }} {{ sarbaz.family }} در گردان:{{ sarbaz.Gordan.name }} و
+                    گروهان:{{ sarbaz.battalion_group.name }} باکد فردی :{{ sarbaz.code_gorhan }} مجاز به پذیرش می باشد
+                </p>
+                <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i>
+                    پرینت معرفی به گردان</a>
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <br>
+        <br>
+        <br>
+        <!-- this row will not appear when printing -->
+        <div class="row no-print">
+
+            <div class="col-xs-12">
+                <button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>پذیرش باکد ملی
+                </button>
+                <button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>پذیرش دستی
+                </button>
+            </div>
+        </div>
+    </section>
+{% endblock %}

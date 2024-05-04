@@ -1,4 +1,7 @@
 from django import forms
+from django.core.exceptions import ValidationError
+
+from soldiers.models import Soldier as sarbaz
 
 
 class FormSoldiers(forms.Form):
@@ -324,6 +327,15 @@ class FormSoldiersCreate(forms.Form):
         ),
         label='نام گروهان'
     )
+
+    def clean_National_Code(self):
+        s = sarbaz.objects.filter(National_Code=self.cleaned_data['National_Code']).first()
+        if s is not None:
+            if s.willing_to_learn is False:
+                raise ValidationError("این سرباز باید از طریق کد ملی پذیرش شود")
+            raise forms.ValidationError("کد ملی تکراری می باشد")
+        else:
+            return self.cleaned_data['National_Code']
 
 
 class SarbazCodeMeli(forms.Form):

@@ -1,7 +1,7 @@
 from django.db import models
 
-
 # Create your models here.
+
 
 class battalion(models.Model):
     name = models.CharField(max_length=150, verbose_name='نام گردان')
@@ -26,3 +26,5 @@ class battalion_group(models.Model):
     zarfiat = models.CharField(max_length=250, verbose_name='ظرفیت گروهان')
     takmilzarmit = models.BooleanField(default=False, verbose_name='تکمیل بودن ظرفیت')
     order = models.IntegerField(null=True, blank=True, verbose_name='اولویت مرتب سازی')
+
+

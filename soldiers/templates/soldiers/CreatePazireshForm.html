@@ -18,6 +18,7 @@
                 <div class="form-group">
                     {{ form.National_Code.label }}
                     {{ form.National_Code }}
+                    <span style='color: red'>{{ form.National_Code.errors }}</span>
                 </div>
                 <div class="box-body">
                     <div class="row">
@@ -218,7 +219,7 @@
                         </div>
                     </div>
                 </div>
-                  <div class="box-body">
+                <div class="box-body">
                     <div class="row">
                         <div class="col-xs-12">
                             {{ form.Date_of_dispatch.label }}

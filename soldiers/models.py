@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from battalions.models import battalion, battalion_group
+from django_jalali.db import models as jmodels
 
 
 class Soldier(models.Model):
@@ -58,3 +59,8 @@ class Soldier(models.Model):
     Sutter = models.CharField(null=True, blank=True, max_length=150, verbose_name='ساتر')
     Gordan = models.ForeignKey(battalion, on_delete=models.CASCADE, verbose_name='گردان', null=True)
     battalion_group = models.ForeignKey(battalion_group, models.CASCADE, verbose_name='گروهان', null=True)
+
+    code_paziresh = models.CharField(max_length=100, verbose_name='کدپذیرش', null=True)
+    code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True)
+    code_gorhan_nahai = models.CharField(max_length=100, verbose_name='کدگروهان علامی از گردان', null=True)
+    tarikh_paziresh = jmodels.jDateTimeField(null=True, verbose_name='تاریخ و زمان پذیرش')
