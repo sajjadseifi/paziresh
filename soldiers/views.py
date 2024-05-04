@@ -331,7 +331,6 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.code_gorhan = max(code_gorhan_list) + 1
         s.save()
         b.zarfiat = int(b.zarfiat) - 1
-
         b.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
