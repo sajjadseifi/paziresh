@@ -64,3 +64,5 @@ class Soldier(models.Model):
     code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True)
     code_gorhan_nahai = models.CharField(max_length=100, verbose_name='کدگروهان علامی از گردان', null=True)
     tarikh_paziresh = jmodels.jDateTimeField(null=True, verbose_name='تاریخ و زمان پذیرش')
+
+

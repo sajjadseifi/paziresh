@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import jdatetime
+import xlrd
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -8,7 +9,8 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
-from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate
+from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb
+from saterapps.models import Sater
 
 
 def paziresh_code_meli(request, *args, **kwargs):
@@ -50,8 +52,25 @@ class moarefi_be_gordan_va_sater(LoginRequiredMixin, View):
 class sater(LoginRequiredMixin, View):
 
     def get(self, request, pk):
-        my_sarbaz = sarbaz.objects.filter(National_Code=pk).first()
+        my_sarbaz = sarbaz.objects.filter(pk=pk).first()
+        my_sater = Sater.objects.filter(sarbaz=my_sarbaz).first()
+        if my_sater is None:
+            my_sater = Sater()
+        my_sater.sarbaz = my_sarbaz
+        my_sater.date = jdatetime.datetime.now()
+        my_sater.sub_user = request.user
         cx = {'sarbaz': my_sarbaz}
+        if my_sarbaz.Sufficiency_of_mobilization == True:
+            my_sater.sater_type = 'کفایت بسیج'
+            my_sater.save()
+            return render(request, 'soldiers/sater_kefaytbasij.html', cx)
+        else:
+            if my_sarbaz.Amriye == True:
+                my_sater.sater_type = 'امریه'
+                my_sater.save()
+                return render(request, 'soldiers/sater_amriye.html', cx)
+        my_sater.sater_type = 'عادلی'
+        my_sater.save()
         return render(request, 'soldiers/sater_adi_page.html', cx)
 
 
@@ -89,6 +108,7 @@ province_name_list = [
     (32, 'نامشخص'),
 ]
 educational_level_of_the_system_list = [
+    (0, ""),
     (1, "حوزوی سطح ىو اهل سنت"),
     (2, "دکتری پزشکی پیوسته(دیپلم به دکتری)"),
     (3, "دکتری تخصصی پزشکی ناپیوسته"),
@@ -115,7 +135,7 @@ educational_level_of_the_system_list = [
     (24, 'پایه یازدهم'),
     (25, 'پایه دوازدهم'),
 ]
-Renewal_of_the_previous_period_list = [(1, 'المهدی'), (2, 'شیراز')]
+Renewal_of_the_previous_period_list = [(0, ""), (1, 'المهدی'), (2, 'شیراز')]
 Reason_for_renewing_the_course_list = [(1, 'کمیسیون پزشکی'), (2, 'فرار'), (3, 'تجدید دوره'), (4, 'انضباطی'),
                                        (5, 'نامشخص')]
 attraction_of_the_organization_list = [(1, 'هیچکدام'), (2, 'جذبی سپاه و مامور'), (3, 'جذبی نیروی زمینی'), ]
@@ -340,3 +360,38 @@ class MainViewSoldires(LoginRequiredMixin, View):
         s = sarbaz.objects.filter().all()
         cx = {'s': s}
         return render(request, 'soldiers/MainViewSoldires.html', cx)
+
+
+class exel_add_to_db(View):
+    def get(self, request):
+        form = FormAddExelToDb()
+        cx = {'form': form}
+        return render(request, 'soldiers/AddExelToDb.html', cx)
+
+    def post(self, request):
+        form = FormAddExelToDb(request.POST, request.FILES or None)
+        cx = {'form': form}
+
+        if form.is_valid():
+            exel = request.FILES['file']
+
+            # Workbook را باز کنید
+            workbook = xlrd.open_workbook(file_contents=exel.read())
+
+            # شیت مورد نظر خود را انتخاب کنید (مثلاً شیت اول)
+            sheet = workbook.sheet_by_index(0)
+
+            # تعداد ردیف‌ها و ستون‌های شیت را بدست آورید
+            num_rows = sheet.nrows
+            num_cols = sheet.ncols
+
+            # برای هر سطر
+            for row_idx in range(num_rows):
+                # برای هر ستون در هر سطر
+                for col_idx in range(num_cols):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell_value(row_idx, col_idx)
+                    # چاپ مقدار سلول
+                    print(f"Row {row_idx + 1}, Column {col_idx + 1}: {cell_value}")
+
+        return render(request, 'soldiers/AddExelToDb.html', cx)

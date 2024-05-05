@@ -7,15 +7,18 @@ from soldiers.models import Soldier as sarbaz
 class FormSoldiers(forms.Form):
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
-        label='نام'
+        label='نام',
+        required=False
     )
     family = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "family"}),
-        label='نام خانوادگی'
+        label='نام خانوادگی',
+        required=False
     )
     fathers_name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "fathers_name"}),
-        label='نام پدر'
+        label='نام پدر',
+        required=False
     )
     National_Code = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "National_Code", "disabled": ""}),
@@ -25,126 +28,152 @@ class FormSoldiers(forms.Form):
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='وضعیت جسمانی'
+        label='وضعیت جسمانی',
+        required=False
     )
     Type_of_disease = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='نوع بیماری'
+        label='نوع بیماری',
+        required=False
     )
     health_insurance_card = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "health_insurance_card"}),
-        label='دفترچه بیمه'
+        label='دفترچه بیمه',
+        required=False
     )
     Grade = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مقطع تحصیلی'
+        label='مقطع تحصیلی',
+        required=False
     )
     Grade_precise = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مقطع تحصیلی دقیق'
+        label='مقطع تحصیلی دقیق',
+        required=False
     )
     educational_level_of_the_system = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "educational_level_of_the_system"}),
-        label='مقطع تحصیلی سامانه'
+        label='مقطع تحصیلی سامانه',
+        required=False
     )
     Study_group = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Study_group"}),
-        label='گروه تحصیلی'
+        label='گروه تحصیلی',
+        required=False
     )
     marital_status = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='وضعیت تاهل'
+        label='وضعیت تاهل',
+        required=False
     )
     Religion = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مذهب'
+        label='مذهب',
+        required=False
     )
     Date_of_birth = place_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_birth"}),
-        label='تاریخ تولد'
+        label='تاریخ تولد',
+        required=False
     )
     place_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "place_of_birth"}),
-        label='محل تولد'
+        label='محل تولد',
+        required=False
     )
     phone_number = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "place_of_birth"}),
-        label='شماره موبایل'
+        label='شماره موبایل',
+        required=False
     )
     home_phone_number = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "home_phone_number"}),
-        label='شماره منزل'
+        label='شماره منزل',
+        required=False
     )
     Date_of_dispatch = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_dispatch"}),
-        label='تاریخ اعزام'
+        label='تاریخ اعزام',
+        required=False
     )
     province_name = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='نام استان'
+        label='نام استان',
+        required=False
     )
     city_name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "city_name"}),
-        label='نام شهر'
+        label='نام شهر',
+        required=False
     )
     Address = forms.CharField()
     Place_of_Issue = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Place_of_Issue"}),
-        label='ادرس'
+        label='ادرس',
+        required=False
     )
     height = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "height"}),
-        label='قد'
+        label='قد',
+        required=False
     )
     Weight = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Weight"}),
-        label='وزن'
+        label='وزن',
+        required=False
     )
     Renewal_of_the_previous_period = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Renewal_of_the_previous_period"}),
-        label='تجدید دوره قبل'
+        label='تجدید دوره قبل',
+        required=False
     )
     Course_renewal_date = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Course_renewal_date"}),
-        label='تاریخ تجدید دوره قبل'
+        label='تاریخ تجدید دوره قبل',
+        required=False
     )
     Amriye = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='امریه دار'
+        label='امریه دار',
+        required=False,
     )
     Amriye_organization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='سازمان امریه'
+        label='سازمان امریه',
+        required=False
     )
     Sufficiency_of_mobilization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='کفایت بسیج'
+        label='کفایت بسیج',
+        required=False
     )
     Course_renewal_almahdi = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Course_renewal_almahdi"}),
-        label='تجدید دوره المهدی کد دوره'
+        label='تجدید دوره المهدی کد دوره',
+        required=False
     )
     Course_renewal_almahdi_date = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Course_renewal_almahdi_date"}),
-        label='تاریخ تجدید دوره المهدی'
+        label='تاریخ تجدید دوره المهدی',
+
     )
     Reason_for_renewing_the_course_almahdi = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Reason_for_renewing_the_course_almahdi"}),
@@ -161,171 +190,204 @@ class FormSoldiers(forms.Form):
 class FormSoldiersCreate(forms.Form):
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
-        label='نام'
+        label='نام',
+        required=False
     )
     family = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "family"}),
-        label='نام خانوادگی'
+        label='نام خانوادگی',
+        required=False
     )
     fathers_name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "fathers_name"}),
-        label='نام پدر'
+        label='نام پدر',
+        required=False
     )
     National_Code = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "National_Code"}),
-        label='کد ملی'
+        label='کد ملی',
+        required=False
     )
     physical_condition = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='وضعیت جسمانی'
+        label='وضعیت جسمانی',
+        required=False
     )
     Type_of_disease = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control select2", 'style': "width: 100%;"}
         ),
-        label='نوع بیماری'
+        label='نوع بیماری',
+        required=False
     )
     health_insurance_card = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "health_insurance_card"}),
-        label='دفترچه بیمه'
+        label='دفترچه بیمه',
+        required=False
     )
     Grade = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مقطع تحصیلی'
+        label='مقطع تحصیلی',
+        required=False
     )
     Grade_precise = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مقطع تحصیلی دقیق'
+        label='مقطع تحصیلی دقیق',
+        required=False
     )
     educational_level_of_the_system = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مقطع تحصیلی سامانه'
+        label='مقطع تحصیلی سامانه',
+        required=False
     )
     Study_group = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Study_group"}),
-        label='گروه تحصیلی'
+        label='گروه تحصیلی',
+        required=False
     )
     marital_status = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='وضعیت تاهل'
+        label='وضعیت تاهل',
+        required=False
     )
     Religion = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='مذهب'
+        label='مذهب',
+        required=False
     )
     Date_of_birth = place_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_birth"}),
-        label='تاریخ تولد'
+        label='تاریخ تولد',
+        required=False
     )
     place_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "place_of_birth"}),
-        label='محل تولد'
+        label='محل تولد',
+        required=False
     )
     phone_number = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "place_of_birth"}),
-        label='شماره موبایل'
+        label='شماره موبایل',
+        required=False
     )
     home_phone_number = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "home_phone_number"}),
-        label='شماره منزل'
+        label='شماره منزل',
+        required=False
     )
     Date_of_dispatch = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_dispatch"}),
-        label='تاریخ اعزام'
+        label='تاریخ اعزام',
+        required=False
     )
     province_name = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control select2", 'style': "width: 100%;"}
         ),
-        label='نام استان'
+        label='نام استان',
+        required=False
     )
     city_name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "city_name"}),
-        label='نام شهر'
+        label='نام شهر',
+        required=False
     )
     Address = forms.CharField(
         label='ادرس',
-        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"})
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
     )
     Place_of_Issue = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Place_of_Issue"}),
-        label='محل صدور'
+        label='محل صدور',
+        required=False
     )
     height = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "height"}),
-        label='قد'
+        label='قد',
+        required=False
     )
     Weight = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Weight"}),
-        label='وزن'
+        label='وزن',
+        required=False
     )
     Renewal_of_the_previous_period = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='تجدید دوره'
+        label='تجدید دوره',
+        required=False
     )
     Course_renewal_date = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Course_renewal_date"}),
-        label='تاریخ تجدید دوره قبل'
+        label='تاریخ تجدید دوره قبل',
+        required=False
     )
     Reason_for_renewing_the_course = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='علت تجدید دوره'
+        label='علت تجدید دوره',
+        required=False
     )
     Renewal_of_the_previous_period_code = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Renewal_of_the_previous_period_code"}),
-        label='کد دوره'
+        label='کد دوره',
+        required=False
     )
     Amriye = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='امریه دار'
+        label='امریه دار',
+        required=False
     )
     Amriye_organization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='سازمان امریه'
+        label='سازمان امریه',
+        required=False
     )
     Sufficiency_of_mobilization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='کفایت بسیج'
+        label='کفایت بسیج',
+        required=False
     )
     attraction_of_the_organization = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='جذبی'
+        label='جذبی',
+        required=False
     )
     Sutter = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='ساتر'
+        label='ساتر',
+        required=False
     )
     battalion_group = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='نام گروهان'
+        label='نام گروهان',
     )
 
     def clean_National_Code(self):
@@ -343,3 +405,7 @@ class SarbazCodeMeli(forms.Form):
         attrs={'type': 'text', 'class': 'form-control', 'id': 'codemeli',
                'placeholder': 'کدملی وارد کنید'}),
         label='کدملی', )
+
+
+class FormAddExelToDb(forms.Form):
+    file = forms.FileField()

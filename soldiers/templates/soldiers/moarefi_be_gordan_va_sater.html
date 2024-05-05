@@ -49,7 +49,8 @@
                 <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
                     {{ sarbaz.name }} {{ sarbaz.family }} مجاز به دریافت برگه ساتر می باشد
                 </p>
-                <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i>
+                <a href="{% url 'sater' pk=sarbaz.pk %}" target="_blank" class="btn btn-default"><i
+                        class="fa fa-print"></i>
                     پرینت برگه ساتر</a>
             </div>
             <!-- /.col -->

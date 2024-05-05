@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_jalali',
     'accounts',
     'ensani_statistics',
+    'saterapps',
 ]
 
 MIDDLEWARE = [
