@@ -9,7 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
-from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb
+from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate
 from saterapps.models import Sater
 
 
@@ -353,6 +353,84 @@ class CreatePaziresh(LoginRequiredMixin, View):
         b.zarfiat = int(b.zarfiat) - 1
         b.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
+
+
+class UpdatePazireshPage(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = SarbazCodeMeli()
+        cx = {'form': form}
+        return render(request, 'soldiers/updatepaziresh_idcode_page.html', cx)
+
+    def post(self, request):
+        form = SarbazCodeMeli(request.POST, request.FILES or None)
+        if not form.is_valid():
+
+            cx = {'from': form}
+            return render(request, 'soldiers/updatepaziresh_idcode_page.html', cx)
+        else:
+            codemeli = form.cleaned_data['code_meli']
+            return HttpResponseRedirect(reverse("updatePazireshpage", kwargs={'pk': int(codemeli)}))
+
+
+class UpdatePaziresh(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        sb = sarbaz.objects.filter(National_Code=pk).first()
+        form_soldiers = FormSoldiersUpdate()
+        cx = {'form': form_soldiers}
+        form_soldiers.fields['Religion'].choices = Religion_list
+        form_soldiers.fields['province_name'].choices = province_name_list
+        form_soldiers.fields['marital_status'].choices = marital_status_list
+        form_soldiers.fields['physical_condition'].choices = physical_condition_list
+        form_soldiers.fields['Grade'].choices = Grade_list
+        form_soldiers.fields['Grade_precise'].choices = Grade_precise_list
+        form_soldiers.fields['Type_of_disease'].choices = Type_of_disease_list
+        form_soldiers.fields['Amriye'].choices = Amriye_list
+        form_soldiers.fields['Sufficiency_of_mobilization'].choices = Sufficiency_of_mobilization_list
+        form_soldiers.fields['Sutter'].choices = Sutter_list
+        form_soldiers.fields['attraction_of_the_organization'].choices = attraction_of_the_organization_list
+        form_soldiers.fields['Reason_for_renewing_the_course'].choices = Reason_for_renewing_the_course_list
+        form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
+        form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
+        form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+
+        # initial
+        form_soldiers.initial['name'] = sb.name
+        form_soldiers.initial['family'] = sb.family
+        form_soldiers.initial['fathers_name'] = sb.fathers_name
+        form_soldiers.initial['National_Code'] = sb.National_Code
+        form_soldiers.initial['physical_condition'] = sb.physical_condition
+        form_soldiers.initial['Type_of_disease'] = sb.Type_of_disease
+        form_soldiers.initial['health_insurance_card'] = sb.health_insurance_card
+        form_soldiers.initial['Grade'] = sb.Grade
+        form_soldiers.initial['Grade_precise'] = sb.Grade_precise
+        form_soldiers.initial['educational_level_of_the_system'] = sb.educational_level_of_the_system
+        form_soldiers.initial['Study_group'] = sb.Study_group
+        form_soldiers.initial['marital_status'] = sb.marital_status
+        form_soldiers.initial['Religion'] = sb.Religion
+        form_soldiers.initial['Date_of_birth'] = sb.Date_of_birth
+        form_soldiers.initial['place_of_birth'] = sb.place_of_birth
+        form_soldiers.initial['phone_number']  = sb.phone_number
+        form_soldiers.initial['home_phone_number']  = sb.home_phone_number
+        form_soldiers.initial['Date_of_dispatch']  = sb.Date_of_dispatch
+        form_soldiers.initial['province_name']  = sb.province_name
+        form_soldiers.initial['city_name']  = sb.city_name
+        form_soldiers.initial['Address']  = sb.Address
+        form_soldiers.initial['Place_of_Issue']  = sb.Place_of_Issue
+        form_soldiers.initial['height']  = sb.height
+        form_soldiers.initial['Weight']  = sb.Weight
+        form_soldiers.initial['Renewal_of_the_previous_period']  = sb.Renewal_of_the_previous_period
+        form_soldiers.initial['Course_renewal_date']  = sb.Course_renewal_date
+        form_soldiers.initial['Reason_for_renewing_the_course']  = sb.Reason_for_renewing_the_course
+        form_soldiers.initial['Renewal_of_the_previous_period_code']  = sb.Renewal_of_the_previous_period_code
+        form_soldiers.initial['Amriye']  = sb.Amriye
+        form_soldiers.initial['Amriye_organization']  = sb.Amriye_organization
+        form_soldiers.initial['Sufficiency_of_mobilization']  = sb.Sufficiency_of_mobilization
+        form_soldiers.initial['attraction_of_the_organization']  = sb.attraction_of_the_organization
+        form_soldiers.initial['Sutter']  = sb.Sutter
+        form_soldiers.initial['battalion_group']  = sb.battalion_group
+        return render(request, 'soldiers/UpdatePazireshForm.html', cx)
 
 
 class MainViewSoldires(LoginRequiredMixin, View):
