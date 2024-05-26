@@ -11,6 +11,7 @@ from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
 from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate
 from saterapps.models import Sater
+from django.db.models import Q
 
 
 def paziresh_code_meli(request, *args, **kwargs):
@@ -108,7 +109,7 @@ province_name_list = [
     (32, 'نامشخص'),
 ]
 educational_level_of_the_system_list = [
-    (0, ""),
+    (0, "نامشخص"),
     (1, "حوزوی سطح ىو اهل سنت"),
     (2, "دکتری پزشکی پیوسته(دیپلم به دکتری)"),
     (3, "دکتری تخصصی پزشکی ناپیوسته"),
@@ -136,16 +137,18 @@ educational_level_of_the_system_list = [
     (25, 'پایه دوازدهم'),
 ]
 Renewal_of_the_previous_period_list = [(0, ""), (1, 'المهدی'), (2, 'شیراز')]
-Reason_for_renewing_the_course_list = [(1, 'کمیسیون پزشکی'), (2, 'فرار'), (3, 'تجدید دوره'), (4, 'انضباطی'),
+Reason_for_renewing_the_course_list = [(0, ''), (1, 'کمیسیون پزشکی'), (2, 'فرار'), (3, 'تجدید دوره'),
+                                       (4, 'انضباطی'),
                                        (5, 'نامشخص')]
 attraction_of_the_organization_list = [(1, 'هیچکدام'), (2, 'جذبی سپاه و مامور'), (3, 'جذبی نیروی زمینی'), ]
-Sutter_list = [(1, 'مجوز دارد'), (2, 'نیاز به بررسی'), (3, 'مجوز ندارد')]
+Sutter_list = [(0, 'نامشخص'), (1, 'مجوز دارد'), (2, 'نیاز به بررسی'), (3, 'مجوز ندارد')]
 Sufficiency_of_mobilization_list = [(1, 'خیر'), (2, 'بله')]
 marital_status_list = [(1, 'مجرد'), (2, 'متاهل'), (3, 'نامشخص')]
 Religion_list = [(1, 'شیعه'), (2, 'اهل تسنن'), (3, 'نامشخص')]
 physical_condition_list = [(1, 'سالم'), (2, 'معاف از رزم'), (3, 'گروه ب'), (4, 'معاف+گروه ب'),
-                           (4, 'نامشخص'), ]
+                           (0, 'نامشخص'), ]
 Type_of_disease_list = [
+    (0, 'سالم'),
     (1, 'عمومی'),
     (2, 'اعصاب و روان'),
     (3, 'ارتوپدی'),
@@ -184,7 +187,7 @@ Grade_precise_list = [
     (13, 'نامشخص')
 ]
 Amriye_list = [(1, 'بله'), (2, 'خیر')]
-Amriye_organization_lsit = [(1, 'test1'), (2, 'test2')]
+Amriye_organization_lsit = [(0, ''), (1, 'test1'), (2, 'test2')]
 battalion_group_list = []
 g = battalion_group.objects.filter().all()
 for item in g:
@@ -214,6 +217,15 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
         form_soldiers.fields['battalion_group'].choices = battalion_group_list
+        form_soldiers.initial['province_name'] = 32
+        form_soldiers.initial['Religion'] = 0
+        form_soldiers.initial['marital_status'] = 3
+        form_soldiers.initial['physical_condition'] = 0
+        form_soldiers.initial['Grade'] = 7
+        form_soldiers.initial['Grade_precise'] = 13
+        form_soldiers.initial['Type_of_disease'] = 0
+        form_soldiers.initial['Amriye'] = 2
+        form_soldiers.initial['Sufficiency_of_mobilization'] = 0
         cx = {'form': form_soldiers}
         return render(request, self.template, cx)
 
@@ -235,7 +247,6 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
         form_soldiers.fields['battalion_group'].choices = battalion_group_list
-
         if not form_soldiers.is_valid():
             cx = {'form': form_soldiers}
             return render(request, self.template, cx)
@@ -373,6 +384,13 @@ class UpdatePazireshPage(LoginRequiredMixin, View):
             return HttpResponseRedirect(reverse("updatePazireshpage", kwargs={'pk': int(codemeli)}))
 
 
+def get_battalion_group(n):
+    for number, name in battalion_group_list:
+        if name == n:
+            return number
+    return None
+
+
 class UpdatePaziresh(LoginRequiredMixin, View):
     def get(self, request, pk):
         sb = sarbaz.objects.filter(National_Code=pk).first()
@@ -411,32 +429,198 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form_soldiers.initial['Religion'] = sb.Religion
         form_soldiers.initial['Date_of_birth'] = sb.Date_of_birth
         form_soldiers.initial['place_of_birth'] = sb.place_of_birth
-        form_soldiers.initial['phone_number']  = sb.phone_number
-        form_soldiers.initial['home_phone_number']  = sb.home_phone_number
-        form_soldiers.initial['Date_of_dispatch']  = sb.Date_of_dispatch
-        form_soldiers.initial['province_name']  = sb.province_name
-        form_soldiers.initial['city_name']  = sb.city_name
-        form_soldiers.initial['Address']  = sb.Address
-        form_soldiers.initial['Place_of_Issue']  = sb.Place_of_Issue
-        form_soldiers.initial['height']  = sb.height
-        form_soldiers.initial['Weight']  = sb.Weight
-        form_soldiers.initial['Renewal_of_the_previous_period']  = sb.Renewal_of_the_previous_period
-        form_soldiers.initial['Course_renewal_date']  = sb.Course_renewal_date
-        form_soldiers.initial['Reason_for_renewing_the_course']  = sb.Reason_for_renewing_the_course
-        form_soldiers.initial['Renewal_of_the_previous_period_code']  = sb.Renewal_of_the_previous_period_code
-        form_soldiers.initial['Amriye']  = sb.Amriye
-        form_soldiers.initial['Amriye_organization']  = sb.Amriye_organization
-        form_soldiers.initial['Sufficiency_of_mobilization']  = sb.Sufficiency_of_mobilization
-        form_soldiers.initial['attraction_of_the_organization']  = sb.attraction_of_the_organization
-        form_soldiers.initial['Sutter']  = sb.Sutter
-        form_soldiers.initial['battalion_group']  = sb.battalion_group
+        form_soldiers.initial['phone_number'] = sb.phone_number
+        form_soldiers.initial['home_phone_number'] = sb.home_phone_number
+        form_soldiers.initial['Date_of_dispatch'] = sb.Date_of_dispatch
+        form_soldiers.initial['province_name'] = sb.province_name
+        form_soldiers.initial['city_name'] = sb.city_name
+        form_soldiers.initial['Address'] = sb.Address
+        form_soldiers.initial['Place_of_Issue'] = sb.Place_of_Issue
+        form_soldiers.initial['height'] = sb.height
+        form_soldiers.initial['Weight'] = sb.Weight
+        form_soldiers.initial['Renewal_of_the_previous_period'] = sb.Renewal_of_the_previous_period
+        form_soldiers.initial['Course_renewal_date'] = sb.Course_renewal_date
+        form_soldiers.initial['Reason_for_renewing_the_course'] = sb.Reason_for_renewing_the_course
+        form_soldiers.initial['Renewal_of_the_previous_period_code'] = sb.Renewal_of_the_previous_period_code
+        form_soldiers.initial['Amriye'] = sb.Amriye
+        form_soldiers.initial['Amriye_organization'] = sb.Amriye_organization
+        form_soldiers.initial['Sufficiency_of_mobilization'] = sb.Sufficiency_of_mobilization
+        form_soldiers.initial['attraction_of_the_organization'] = sb.attraction_of_the_organization
+        form_soldiers.initial['Sutter'] = sb.Sutter
+        form_soldiers.initial['battalion_group'] = sb.battalion_group.pk
         return render(request, 'soldiers/UpdatePazireshForm.html', cx)
+
+    def post(self, request, pk):
+        form = FormSoldiersUpdate(request.POST, request.FILES or None)
+        sb = sarbaz.objects.filter(National_Code=pk).first()
+        form.fields['Religion'].choices = Religion_list
+        form.fields['province_name'].choices = province_name_list
+        form.fields['marital_status'].choices = marital_status_list
+        form.fields['physical_condition'].choices = physical_condition_list
+        form.fields['Grade'].choices = Grade_list
+        form.fields['Grade_precise'].choices = Grade_precise_list
+        form.fields['Type_of_disease'].choices = Type_of_disease_list
+        form.fields['Amriye'].choices = Amriye_list
+        form.fields['Sufficiency_of_mobilization'].choices = Sufficiency_of_mobilization_list
+        form.fields['Sutter'].choices = Sutter_list
+        form.fields['attraction_of_the_organization'].choices = attraction_of_the_organization_list
+        form.fields['Reason_for_renewing_the_course'].choices = Reason_for_renewing_the_course_list
+        form.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
+        form.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
+        form.fields['Amriye_organization'].choices = Amriye_organization_lsit
+        form.fields['battalion_group'].choices = battalion_group_list
+        form.initial['name'] = sb.name
+        form.initial['family'] = sb.family
+        form.initial['fathers_name'] = sb.fathers_name
+        form.initial['National_Code'] = sb.National_Code
+        form.initial['physical_condition'] = sb.physical_condition
+        form.initial['Type_of_disease'] = sb.Type_of_disease
+        form.initial['health_insurance_card'] = sb.health_insurance_card
+        form.initial['Grade'] = sb.Grade
+        form.initial['Grade_precise'] = sb.Grade_precise
+        form.initial['educational_level_of_the_system'] = sb.educational_level_of_the_system
+        form.initial['Study_group'] = sb.Study_group
+        form.initial['marital_status'] = sb.marital_status
+        form.initial['Religion'] = sb.Religion
+        form.initial['Date_of_birth'] = sb.Date_of_birth
+        form.initial['place_of_birth'] = sb.place_of_birth
+        form.initial['phone_number'] = sb.phone_number
+        form.initial['home_phone_number'] = sb.home_phone_number
+        form.initial['Date_of_dispatch'] = sb.Date_of_dispatch
+        form.initial['province_name'] = sb.province_name
+        form.initial['city_name'] = sb.city_name
+        form.initial['Address'] = sb.Address
+        form.initial['Place_of_Issue'] = sb.Place_of_Issue
+        form.initial['height'] = sb.height
+        form.initial['Weight'] = sb.Weight
+        form.initial['Renewal_of_the_previous_period'] = sb.Renewal_of_the_previous_period
+        form.initial['Course_renewal_date'] = sb.Course_renewal_date
+        form.initial['Reason_for_renewing_the_course'] = sb.Reason_for_renewing_the_course
+        form.initial['Renewal_of_the_previous_period_code'] = sb.Renewal_of_the_previous_period_code
+        form.initial['Amriye'] = sb.Amriye
+        form.initial['Amriye_organization'] = sb.Amriye_organization
+        form.initial['Sufficiency_of_mobilization'] = sb.Sufficiency_of_mobilization
+        form.initial['attraction_of_the_organization'] = sb.attraction_of_the_organization
+        form.initial['Sutter'] = sb.Sutter
+        form.initial['battalion_group'] = sb.battalion_group.pk
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request, 'soldiers/UpdatePazireshForm.html', cx)
+        name = form.cleaned_data['name']
+        family = form.cleaned_data['family']
+        fathers_name = form.cleaned_data['fathers_name']
+        National_Code = form.cleaned_data['National_Code']
+        physical_condition_id = form.cleaned_data['physical_condition']
+        physical_condition = physical_condition_list[int(physical_condition_id) - 1][1]
+        Type_of_disease_id = form.cleaned_data['Type_of_disease']
+        Type_of_disease = Type_of_disease_list[int(Type_of_disease_id) - 1][1]
+        health_insurance_card = form.cleaned_data['health_insurance_card']
+        Grade_id = form.cleaned_data['Grade']
+        Grade = Grade_list[int(Grade_id) - 1][1]
+        Grade_precise_id = form.cleaned_data['Grade_precise']
+        Grade_precise = Grade_precise_list[int(Grade_precise_id) - 1][1]
+        educational_level_of_the_system = form.cleaned_data['educational_level_of_the_system']
+        Study_group = form.cleaned_data['Study_group']
+        marital_status_id = form.cleaned_data['marital_status']
+        marital_status = marital_status_list[int(marital_status_id) - 1][1]
+        Religion_id = form.cleaned_data['Religion']
+        Religion = Religion_list[int(Religion_id) - 1][1]
+        Date_of_birth = form.cleaned_data['Date_of_birth']
+        place_of_birth = form.cleaned_data['place_of_birth']
+        phone_number = form.cleaned_data['phone_number']
+        home_phone_number = form.cleaned_data['home_phone_number']
+        Date_of_dispatch = form.cleaned_data['Date_of_dispatch']
+        province_name_id = form.cleaned_data['province_name']
+        province_name = province_name_list[int(province_name_id) - 1][1]
+        city_name = form.cleaned_data['city_name']
+        Address = form.cleaned_data['Address']
+        height = form.cleaned_data['height']
+        Weight = form.cleaned_data['Weight']
+        Renewal_of_the_previous_period = form.cleaned_data['Renewal_of_the_previous_period']
+        Course_renewal_date = form.cleaned_data['Course_renewal_date']
+        Amriye_id = form.cleaned_data['Amriye']
+        Amriye = Amriye_list[int(Amriye_id) - 1][1]
+        Amriye_organization_id = form.cleaned_data['Amriye_organization']
+        Amriye_organization = Amriye_organization_lsit[int(Amriye_organization_id) - 1][1]
+        Sufficiency_of_mobilization_id = form.cleaned_data['Sufficiency_of_mobilization']
+        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[int(Sufficiency_of_mobilization_id) - 1][1]
+        Place_of_Issue = form.cleaned_data['Place_of_Issue']
+        Renewal_of_the_previous_period_code = form.cleaned_data['Renewal_of_the_previous_period_code']
+        attraction_of_the_organization_id = form.cleaned_data['attraction_of_the_organization']
+        attraction_of_the_organization = \
+            attraction_of_the_organization_list[int(attraction_of_the_organization_id) - 1][1]
+        Sutter_id = form.cleaned_data['Sutter']
+        Sutter = Sutter_list[int(Sutter_id) - 1][1]
+        f_battalion_group = form.cleaned_data['battalion_group']
+        sb.name = name
+        sb.family = family
+        sb.fathers_name = fathers_name
+        sb.National_Code = National_Code
+        sb.physical_condition = physical_condition
+        sb.Type_of_disease = Type_of_disease
+        sb.health_insurance_card = health_insurance_card
+        sb.Grade = Grade
+        sb.Grade_precise = Grade_precise
+        sb.educational_level_of_the_system = educational_level_of_the_system
+        sb.Study_group = Study_group
+        sb.marital_status = marital_status
+        sb.Religion = Religion
+        sb.Date_of_birth = Date_of_birth
+        sb.place_of_birth = place_of_birth
+        sb.phone_number = phone_number
+        sb.home_phone_number = home_phone_number
+        sb.Date_of_dispatch = Date_of_dispatch
+        sb.province_name = province_name
+        sb.city_name = city_name
+        sb.Address = Address
+        sb.height = height
+        sb.Weight = Weight
+        sb.Renewal_of_the_previous_period = Renewal_of_the_previous_period
+        sb.Course_renewal_date = Course_renewal_date
+        if Amriye == 'بله':
+            sb.Amriye = True
+        else:
+            sb.Amriye = False
+        sb.Amriye_organization = Amriye_organization
+
+        if Sufficiency_of_mobilization == 'خیر':
+            sb.Sufficiency_of_mobilization = False
+        else:
+            sb.Sufficiency_of_mobilization = True
+        sb.Place_of_Issue = Place_of_Issue
+        sb.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
+        sb.attraction_of_the_organization = attraction_of_the_organization
+        sb.Sutter = Sutter
+        if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
+            b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
+            b_change.zarfiat = int(b_change.zarfiat) + 1
+            a_change = battalion_group.objects.filter(id=f_battalion_group).first()
+            a_change.zarfiat = int(a_change.zarfiat) - 1
+            sb.battalion_group = a_change
+            sb.Gordan = a_change.gordan
+            b_change.save()
+            a_change.save()
+        sb.save()
+        return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': sb.id}))
 
 
 class MainViewSoldires(LoginRequiredMixin, View):
     def get(self, request):
-        s = sarbaz.objects.filter().all()
-        cx = {'s': s}
+        search = request.GET.get('table_search')
+        if search is None:
+            soldire = sarbaz.objects.filter().all()
+            cx = {'s': soldire}
+            return render(request, 'soldiers/MainViewSoldires.html', cx)
+        if str(search).find('ی'):
+            search_y = str(search).replace('ی', 'ي')
+        else:
+            search_y = search
+
+        soldire = sarbaz.objects.filter(
+            Q(name__icontains=search) | Q(family__icontains=search) | Q(name__icontains=search_y) | Q(
+                family__icontains=search_y) |
+            Q(National_Code__icontains=search) | Q(id__icontains=search)).all()
+        cx = {'s': soldire}
         return render(request, 'soldiers/MainViewSoldires.html', cx)
 
 

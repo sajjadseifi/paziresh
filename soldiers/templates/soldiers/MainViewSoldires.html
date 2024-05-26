@@ -1,16 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<ul>
-    {% for foo in s %}
-        <li>{{ foo.name }}{{ foo.family }}{{ foo.National_Code }}</li>
-    {% endfor %}
-</ul>
+{% extends 'shared/_PanelMain.html' %}
 
+{% block main %}
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">لیست سربازان</h3>
 
-</body>
-</html>
+                        <div class="box-tools">
+                            <form>
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="table_search" class="form-control pull-right"
+                                           placeholder="جستجو">
+
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                                <th>کد داخلی</th>
+                                <th>نام</th>
+                                <th>نام خانوادگی</th>
+                                <th>کدملی</th>
+                                <th>گردان</th>
+                                <th>گروهان</th>
+                                <th>وضعیت پذیرش</th>
+                                <th>عملیات</th>
+                            </tr>
+                            {% for sodire in s %}
+                                <tr>
+                                    <td>{{ sodire.pk }}</td>
+                                    <td>{{ sodire.name }}</td>
+                                    <td>{{ sodire.family }}</td>
+                                    <td>{{ sodire.National_Code }}</td>
+                                    {% if sodire.Gordan %}
+                                        <th>{{ sodire.Gordan.name }}</th>
+                                    {% else %}
+                                        <th></th>
+                                    {% endif %}
+                                    {% if sodire.Gordan %}
+                                        <th>{{ sodire.battalion_group.name }}</th>
+                                    {% else %}
+                                        <th></th>
+                                    {% endif %}
+
+                                    {% if sodire.willing_to_learn %}
+                                        <td><span class="label label-success">شده</span></td>
+                                    {% else %}
+                                        <td><span class="label label-danger">نشده</span></td>
+                                    {% endif %}
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'updatePaziresh' pk=sodire.National_Code %}"
+                                               class="btn btn-default">ویرایش</a>
+                                            {#                                            <a href="{% url 'SoldireProfile' %}"#}
+                                            {#                                               class="btn btn-default">پذیرش</a>#}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </section>
+{% endblock %}
