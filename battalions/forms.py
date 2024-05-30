@@ -31,27 +31,6 @@ class BattalionGroupForm(forms.Form):
         ),
         label='گردان'
     )
-    ebtedai = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={'type': "checkbox", 'name': "ebtedai", 'id': "ebtedai"}
-        ),
-        label='ابتدایی',
-        required=False
-    )
-    rahnamai = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={'type': "checkbox", 'name': "rahnamai", 'id': "rahnamai"}
-        ),
-        label='راهنمایی',
-        required=False
-    )
-    dabirestan = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={'type': "checkbox", 'name': "dabirestan", 'id': "dabirestan"}
-        ),
-        label='دبیرستان',
-        required=False
-    )
     zirediplom = forms.BooleanField(
         widget=forms.CheckboxInput(
             attrs={'type': "checkbox", 'name': "zirediplom", 'id': "zirediplom"}
@@ -122,4 +101,32 @@ class BattalionGroupForm(forms.Form):
     order = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "order"}),
         label='اولویت مرتب سازی'
+    )
+    salemm = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={'type': "checkbox", 'name': "takmilzarmit", 'id': "takmilzarmit"}
+        ),
+        label='سالم',
+        required=False
+    )
+    moafazrazm = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={'type': "checkbox", 'name': "takmilzarmit", 'id': "takmilzarmit"}
+        ),
+        label='معاف ازرزم',
+        required=False
+    )
+    gorehbe = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={'type': "checkbox", 'name': "takmilzarmit", 'id': "takmilzarmit"}
+        ),
+        label='گروه ب',
+        required=False
+    )
+    moafazrazm_gorehbe = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={'type': "checkbox", 'name': "takmilzarmit", 'id': "takmilzarmit"}
+        ),
+        label='معاف از رزم + گروه ب',
+        required=False
     )

@@ -60,8 +60,19 @@
                                     {% endif %}
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{% url 'updatePaziresh' pk=sodire.National_Code %}"
-                                               class="btn btn-default">ویرایش</a>
+                                            {% if sodire.willing_to_learn %}
+                                                <a href="{% url 'updatePaziresh' pk=sodire.National_Code %}"
+                                                   class="btn btn-default">ویرایش</a>
+                                                <a href=""
+                                                   class="btn btn-default" disabled="True">ثبت پذیرش</a>
+                                            {% else %}
+                                                <a href=""
+                                                   class="btn btn-default" disabled="True">ویرایش</a>
+                                                <a href="{% url 'get_sarbaz' pk=sodire.National_Code %}"
+                                                   class="btn btn-default">ثبت پذیرش</a>
+                                            {% endif %}
+
+
                                             {#                                            <a href="{% url 'SoldireProfile' %}"#}
                                             {#                                               class="btn btn-default">پذیرش</a>#}
                                         </div>

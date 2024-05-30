@@ -101,9 +101,6 @@ class CreateBattalionGroup(View):
         gordan_id = bg_f.cleaned_data['gordan']
         gordan = battalion.objects.filter(pk=gordan_id).first()
         bg.gordan = gordan
-        bg.ebtedai = bg_f.cleaned_data['ebtedai']
-        bg.rahnamai = bg_f.cleaned_data['rahnamai']
-        bg.dabirestan = bg_f.cleaned_data['dabirestan']
         bg.zirediplom = bg_f.cleaned_data['zirediplom']
         bg.diplom = bg_f.cleaned_data['diplom']
         bg.ofghdiplom = bg_f.cleaned_data['ofghdiplom']
@@ -113,7 +110,11 @@ class CreateBattalionGroup(View):
         bg.shie = bg_f.cleaned_data['shie']
         bg.ahle_tasnon = bg_f.cleaned_data['ahle_tasnon']
         bg.zarfiat = bg_f.cleaned_data['zarfiat']
+        bg.salemm = bg_f.cleaned_data['salemm']
         bg.takmilzarmit = bg_f.cleaned_data['takmilzarmit']
+        bg.moafazrazm = bg_f.cleaned_data['moafazrazm']
+        bg.moafazrazm_gorehbe = bg_f.cleaned_data['moafazrazm_gorehbe']
+        bg.gorehbe = bg_f.cleaned_data['gorehbe']
         bg.order = bg_f.cleaned_data['order']
         bg.save()
         return redirect(self.success_url)
@@ -133,9 +134,6 @@ class BattalionGroupUpdate(View):
         bg_f.initial['name'] = bg.name
         bg_f.fields['gordan'].choices = bt_list
         bg_f.fields['gordan'].initial = bg.gordan.id
-        bg_f.initial['ebtedai'] = bg.ebtedai
-        bg_f.initial['rahnamai'] = bg.rahnamai
-        bg_f.initial['dabirestan'] = bg.dabirestan
         bg_f.initial['zirediplom'] = bg.zirediplom
         bg_f.initial['diplom'] = bg.diplom
         bg_f.initial['ofghdiplom'] = bg.ofghdiplom
@@ -146,6 +144,10 @@ class BattalionGroupUpdate(View):
         bg_f.initial['zarfiat'] = bg.zarfiat
         bg_f.initial['takmilzarmit'] = bg.takmilzarmit
         bg_f.initial['order'] = bg.order
+        bg_f.initial['salemm'] = bg.salemm
+        bg_f.initial['moafazrazm'] = bg.moafazrazm
+        bg_f.initial['moafazrazm_gorehbe'] = bg.moafazrazm_gorehbe
+        bg_f.initial['gorehbe'].gorehbe = bg.gorehbe
         cx = {'form': bg_f}
         return render(request, self.template, cx)
 
@@ -165,9 +167,6 @@ class BattalionGroupUpdate(View):
         gordan_id = bg_f.cleaned_data['gordan']
         gordan = battalion.objects.filter(pk=gordan_id).first()
         bg.gordan = gordan
-        bg.ebtedai = bg_f.cleaned_data['ebtedai']
-        bg.rahnamai = bg_f.cleaned_data['rahnamai']
-        bg.dabirestan = bg_f.cleaned_data['dabirestan']
         bg.zirediplom = bg_f.cleaned_data['zirediplom']
         bg.diplom = bg_f.cleaned_data['diplom']
         bg.ofghdiplom = bg_f.cleaned_data['ofghdiplom']
@@ -179,5 +178,9 @@ class BattalionGroupUpdate(View):
         bg.zarfiat = bg_f.cleaned_data['zarfiat']
         bg.takmilzarmit = bg_f.cleaned_data['takmilzarmit']
         bg.order = bg_f.cleaned_data['order']
+        bg.salemm = bg_f.cleaned_data['salemm']
+        bg.moafazrazm = bg_f.cleaned_data['moafazrazm']
+        bg.moafazrazm_gorehbe = bg_f.cleaned_data['moafazrazm_gorehbe']
+        bg.gorehbe = bg_f.cleaned_data['gorehbe']
         bg.save()
         return redirect(self.success_url)
