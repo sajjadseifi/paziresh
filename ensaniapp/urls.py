@@ -19,7 +19,7 @@ from django.conf import settings
 from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from ensani.views import header_partial_view, header_references_partial_view, footer_partial_view, navbar_partial_view, \
-    footer_references_partial_view, panel_home
+    footer_references_partial_view, panel_home, support
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('amar/', include('ensani_statistics.urls')),
     path('', panel_home.as_view(), name='home_page'),
+    path('support', support, name='support'),
 
     re_path(r'^header_partial_view',
             header_partial_view,

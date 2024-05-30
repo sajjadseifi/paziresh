@@ -8,8 +8,8 @@ class panel_home(LoginRequiredMixin, View):
         return render(request, 'ensani/panel_home_page.html')
 
 
-# def panel_home(request, *args, **kwargs):
-#     return render(request, 'ensani/panel_home_page.html')
+def support(request, *args, **kwargs):
+    return render(request, 'ensani/poshtibani.html')
 
 
 # Create your views here.

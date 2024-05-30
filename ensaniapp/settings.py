@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'ensani_statistics',
     'saterapps',
+    'ensani_letter',
 ]
 
 MIDDLEWARE = [
