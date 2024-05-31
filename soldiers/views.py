@@ -329,7 +329,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         if soldire is None:
             cx = {}
             return render(request, self.template, cx)
-        form_soldiers = FormSoldiers()
+        form_soldiers = FormSoldiers(request.POST or None)
         form_soldiers.fields['Religion'].choices = Religion_list
         form_soldiers.fields['province_name'].choices = province_name_list
         form_soldiers.fields['marital_status'].choices = marital_status_list
@@ -475,9 +475,115 @@ class sabte_paziresh(LoginRequiredMixin, View):
         if not form_soldiers.is_valid():
             cx = {'form': form_soldiers}
             return render(request, self.template, cx)
+        name = form_soldiers.cleaned_data['name']
+        family = form_soldiers.cleaned_data['family']
+        fathers_name = form_soldiers.cleaned_data['fathers_name']
+        National_Code = form_soldiers.cleaned_data['National_Code']
+        physical_condition_id = form_soldiers.cleaned_data['physical_condition']
+        physical_condition = physical_condition_list[int(physical_condition_id) - 1][1]
+        Type_of_disease_id = form_soldiers.cleaned_data['Type_of_disease']
+        Type_of_disease = Type_of_disease_list[int(Type_of_disease_id) - 1][1]
+        health_insurance_card = form_soldiers.cleaned_data['health_insurance_card']
+        Grade_id = form_soldiers.cleaned_data['Grade']
+        Grade = Grade_list[int(Grade_id) - 1][1]
+        Grade_precise_id = form_soldiers.cleaned_data['Grade_precise']
+        Grade_precise = Grade_precise_list[int(Grade_precise_id) - 1][1]
+        educational_level_of_the_system = form_soldiers.cleaned_data['educational_level_of_the_system']
+        Study_group = form_soldiers.cleaned_data['Study_group']
+        marital_status_id = form_soldiers.cleaned_data['marital_status']
+        marital_status = marital_status_list[int(marital_status_id) - 1][1]
+        Religion_id = form_soldiers.cleaned_data['Religion']
+        Religion = Religion_list[int(Religion_id) - 1][1]
+        Date_of_birth = form_soldiers.cleaned_data['Date_of_birth']
+        place_of_birth = form_soldiers.cleaned_data['place_of_birth']
+        phone_number = form_soldiers.cleaned_data['phone_number']
+        home_phone_number = form_soldiers.cleaned_data['home_phone_number']
+        Date_of_dispatch = form_soldiers.cleaned_data['Date_of_dispatch']
+        province_name_id = form_soldiers.cleaned_data['province_name']
+        province_name = province_name_list[int(province_name_id) - 1][1]
+        city_name = form_soldiers.cleaned_data['city_name']
+        Address = form_soldiers.cleaned_data['Address']
+        height = form_soldiers.cleaned_data['height']
+        Weight = form_soldiers.cleaned_data['Weight']
+        Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
+        Amriye_id = form_soldiers.cleaned_data['Amriye']
+        Amriye = Amriye_list[int(Amriye_id) - 1][1]
+        Amriye_organization_id = form_soldiers.cleaned_data['Amriye_organization']
+        Amriye_organization = Amriye_organization_lsit[int(Amriye_organization_id) - 1][1]
+        Sufficiency_of_mobilization_id = form_soldiers.cleaned_data['Sufficiency_of_mobilization']
+        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[int(Sufficiency_of_mobilization_id) - 1][1]
+        Place_of_Issue = form_soldiers.cleaned_data['Place_of_Issue']
+        Renewal_of_the_previous_period_code = form_soldiers.cleaned_data['Renewal_of_the_previous_period_code']
+        attraction_of_the_organization_id = form_soldiers.cleaned_data['attraction_of_the_organization']
+        attraction_of_the_organization = \
+            attraction_of_the_organization_list[int(attraction_of_the_organization_id) - 1][1]
+        Sutter_id = form_soldiers.cleaned_data['Sutter']
+        Sutter = Sutter_list[int(Sutter_id) - 1][1]
+        f_battalion_group = form_soldiers.cleaned_data['battalion_group']
+        s = soldire
+        s.name = name
+        s.family = family
+        s.fathers_name = fathers_name
+        s.National_Code = National_Code
+        s.physical_condition = physical_condition
+        s.Type_of_disease = Type_of_disease
+        s.health_insurance_card = health_insurance_card
+        s.Grade = s.Grade
+        s.Grade_precise = Grade_precise
+        s.educational_level_of_the_system = educational_level_of_the_system
+        s.Study_group = Study_group
+        s.marital_status = marital_status
+        s.Religion = Religion
+        s.Date_of_birth = Date_of_birth
+        s.place_of_birth = place_of_birth
+        s.phone_number = phone_number
+        s.home_phone_number = home_phone_number
+        s.Date_of_dispatch = Date_of_dispatch
+        s.province_name = province_name
+        s.city_name = city_name
+        s.Address = Address
+        s.Place_of_Issue = Place_of_Issue
+        s.height = height
+        s.Weight = Weight
+        s.Renewal_of_the_previous_period = Renewal_of_the_previous_period
+        s.Course_renewal_date = Course_renewal_date
+        s.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
+        if Amriye == 'بله':
+            s.Amriye = True
+        else:
+            s.Amriye = False
+        s.Amriye_organization = Amriye_organization
+        if Sufficiency_of_mobilization == 'خیر':
+            s.Sufficiency_of_mobilization = False
+        else:
+            s.Sufficiency_of_mobilization = True
+        b = battalion_group.objects.filter(id=f_battalion_group).first()
+        s.battalion_group = b
+        s.Gordan = b.gordan
+        s.attraction_of_the_organization = attraction_of_the_organization
+        s.Sutter = Sutter
+        s.Grade = Grade
+        s.willing_to_learn = True
 
-        cx = {'form': form_soldiers}
-        return render(request, self.template, cx)
+        c_s = sarbaz.objects.all()
+        find_max_code_list = [0]
+        for iteam in c_s:
+            if iteam.code_paziresh is not None:
+                find_max_code_list.append(int(iteam.code_paziresh))
+        code_paziresh_max = max(find_max_code_list)
+        s.code_paziresh = code_paziresh_max + 1
+        s.tarikh_paziresh = jdatetime.datetime.now()
+        code_gorhan_list = [0]
+        c_s = sarbaz.objects.filter(battalion_group=s.battalion_group, Gordan=s.Gordan).all()
+        for item in c_s:
+            if item.code_gorhan is not None:
+                code_gorhan_list.append(int(item.code_gorhan))
+        s.code_gorhan = max(code_gorhan_list) + 1
+        s.save()
+        b.zarfiat = int(b.zarfiat) - 1
+        b.save()
+        return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
 
 class moarefi_be_gordan_va_sater(LoginRequiredMixin, View):
