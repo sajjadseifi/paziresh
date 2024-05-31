@@ -1,11 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
+from soldiers.models import Soldier
 
 
 class panel_home(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'ensani/panel_home_page.html')
+        soldire = Soldier.objects.filter().all()
+        amar_kol = soldire.count()
+        amar_kole_hezer_bekhdmat = soldire.filter(willing_to_learn=True).all().count()
+
+        cx = {'amar_kol': amar_kol, 'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat}
+        return render(request, 'ensani/panel_home_page.html', cx)
 
 
 def support(request, *args, **kwargs):
