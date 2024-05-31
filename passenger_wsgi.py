@@ -1,0 +1,1 @@
+from ensaniapp.wsgi import application
