@@ -1,6 +1,8 @@
 from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from accounts.forms import LoginForm
 
@@ -17,7 +19,7 @@ def user_login_page(request, *args, **kwargs):
             return render(request, 'accounts/login_page.html', cx)
         if user.check_password(password) is True:
             login(request, user)
-            return render(request, 'ensani/panel_home_page.html')
+            return HttpResponseRedirect(reverse("home_page"))
         else:
             cx = {'login_form': login_form, }
             return render(request, 'accounts/login_page.html', cx)
