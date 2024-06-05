@@ -1,0 +1,162 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+{% block header %}
+
+    <link rel="stylesheet" href="{% static 'dist/css/persian-datepicker-0.4.5.min.css' %}"/>
+    <style>
+        .datepicker-plot-area {
+            z-index: 9999 !important; /* Ensure the datepicker is on top of other elements */
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+    <div class="box box-warning">
+        <div class="box-header with-border">
+            <h3 class="box-title">تنظیمات</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            {{ form.farmande_razme_moghadamati.label }}
+                            {{ form.farmande_razme_moghadamati }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.modire_niroye_ensani.label }}
+                            {{ form.modire_niroye_ensani }}
+
+                        </div>
+                        <div class="col-xs-4">
+                            {{ form.karshenas_manabe_ensani.label }}
+                            {{ form.karshenas_manabe_ensani }}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form.shoare_sall.label }}
+                            {{ form.shoare_sall }}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {{ form.shomare_dore.label }}
+                            {{ form.shomare_dore }}
+
+                        </div>
+                        <div class="col-xs-6">
+                            {{ form.esmedore.label }}
+                            {{ form.esmedore }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {{ form.tarikhpaziresh.label }}
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                {{ form.tarikhpaziresh }}
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            {{ form.tarikhetmampaziresh.label }}
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                {{ form.tarikhetmampaziresh }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {{ form.tarihkeshorodoreh.label }}
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                {{ form.tarihkeshorodoreh }}
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            {{ form.tarihkepayanedore.label }}
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                {{ form.tarihkepayanedore }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success pull-right">ثبت</button>
+            </form>
+
+        </div>
+        <!-- /.box-body -->
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    <script src="{% static 'dist/js/persian-date-0.1.8.min.js' %}"></script>
+    <script src="{% static 'dist/js/persian-datepicker-0.4.5.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $(".normal-date").each(function () {
+                $(this).pDatepicker({
+                    format: 'YYYY/MM/DD',
+                    autoClose: true,
+                    calendar: {
+                        persian: {
+                            locale: 'fa',
+                            showHint: true,
+                            leapYearMode: 'algorithmic'
+                        }
+                    },
+                    timePicker: {
+                        enabled: false
+                    },
+                    initialValue: false,
+                    position: 'auto', // Set position to auto
+                    onShow: function () {
+                        var datepicker = this;
+                        setTimeout(function () {
+                            var offset = datepicker.$container.offset();
+                            var height = datepicker.$container.outerHeight();
+                            var windowHeight = $(window).height();
+                            if (offset.top + height > windowHeight) {
+                                datepicker.$container.css('top', (offset.top - height - 10) + 'px');
+                            }
+                            // Ensure the datepicker is on top
+                            datepicker.$container.css('z-index', 9999);
+                        }, 10);
+                    },
+                    onSelect: function (unix) {
+                        var date = new persianDate(unix);
+                        this.model.setPersianDate(date.year(), date.month(), date.date());
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
