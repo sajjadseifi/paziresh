@@ -29,6 +29,7 @@ urlpatterns = [
     path('amar/', include('ensani_statistics.urls')),
     path('', panel_home.as_view(), name='home_page'),
     path('support', support, name='support'),
+    path('', include('ensaniapp_settings.urls')),
 
     re_path(r'^header_partial_view',
             header_partial_view,
