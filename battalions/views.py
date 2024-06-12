@@ -147,7 +147,7 @@ class BattalionGroupUpdate(View):
         bg_f.initial['salemm'] = bg.salemm
         bg_f.initial['moafazrazm'] = bg.moafazrazm
         bg_f.initial['moafazrazm_gorehbe'] = bg.moafazrazm_gorehbe
-        bg_f.initial['gorehbe'].gorehbe = bg.gorehbe
+        bg_f.initial['gorehbe'] = bg.gorehbe
         cx = {'form': bg_f}
         return render(request, self.template, cx)
 
