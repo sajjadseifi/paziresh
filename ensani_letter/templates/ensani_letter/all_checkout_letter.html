@@ -1,0 +1,65 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+
+
+
+{% block main %}
+    <section class="content">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title"> نامه نسویه حساب</h3>
+
+                <div class="box-body no-padding">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th>شماره نامه</th>
+                            <th>نام</th>
+                            <th>نام خانوادگی</th>
+                            <th>کد ملی</th>
+                            <th>تاریخ</th>
+                            <th>علت</th>
+                            <th></th>
+                        </tr>
+                        {% for c in all_checkout_letter %}
+                            <tr>
+                                <td>{{ c.number }}</td>
+                                <td>{{ c.soldire.name }}</td>
+                                <td>{{ c.soldire.family }}</td>
+                                <td>{{ c.soldire.National_Code }}</td>
+                                <td>{{ c.create_time.date }}</td>
+                                <td>{{ c.c_type }}</td>
+                                <td>
+                                    <a class="btn btn-app" href="">
+                                        <i class="fa fa-edit"></i> چاپ برگه
+                                    </a>
+                                    <a class="btn btn-app" href="">
+                                        <i class="fa fa-edit"></i> تایید
+                                    </a>
+                                    <a class="btn btn-app" href="">
+                                        <i class="fa fa-edit"></i> ویرایش
+                                    </a>
+                                    <a class="btn btn-app" href="">
+                                        <i class="fa fa-edit"></i> حذف
+                                    </a>
+                                    {% if c.c_type == "کمیسیون پزشکی" %}
+                                        <a class="btn btn-app" href="{% url 'CreateCommissionLetter' pk=c.number %}">
+                                            <i class="fa fa-edit"></i> ثبت کمیسیون
+                                        </a>
+                                    {% else %}
+                                        <a class="btn btn-app disabled" href="">
+                                            <i class="fa fa-edit"></i> ثبت کمیسیون
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+    </section>
+{% endblock %}

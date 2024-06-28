@@ -1,3 +1,187 @@
-from django.shortcuts import render
+import jdatetime
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.urls import reverse_lazy
+from django.views import View
+from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom
+from .models import CheckoutLetterModels, NormalLetterModels
+from soldiers.models import Soldier
+from ensaniapp_settings.models import EnsaniSettings
+import random
+
+
+def generate_unique_number(length=4):
+    return ''.join([str(random.randint(0, 9)) for _ in range(length)])
+
+
+soldire_list = []
+g = Soldier.objects.filter().all()
+for item in g:
+    soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+c_type_list = [(1, 'تجدید دوره'), (2, 'کمیسیون پزشکی')]
+
+sepah_ostan_list = [
+    (1, 'مازندران', 'سپاه کربلا'),
+    (2, 'خراسان رضوی', 'سپاه امام رضا(ع)'),
+    (3, 'خراسان شمالی', 'سپاه جوادالائمه(ع)'),
+    (4, 'خراسان جنوبی', 'سپاه انصار الرضا(ع)'),
+    (5, 'گلستان', 'سپاه نینوا'),
+    (6, 'گیلان', 'سپاه قدس'),
+    (7, 'تهران', 'سپاه حضرت محمد رسول الله (ص)'),
+    (8, 'سمنان', 'سپاه قائم آل محمد(عج)'),
+    (9, 'البرز', 'سپاه امام حسن مجتبی(ع)'),
+    (10, 'یزد', 'سپاه الغدیر'),
+    (11, 'هرمزگان', 'سپاه امام سجاد(ع)'),
+    (12, 'بوشهر', 'سپاه امام صادق(ع)'),
+    (13, 'ایلام', 'سپاه امیرالمومنین(ع)'),
+    (14, 'همدان', 'سپاه انصار الحسین(ع)'),
+    (15, 'زنجان', 'سپاه انصارالمهدی(عج)'),
+    (16, 'کردستان', 'سپاه بیت المقدس'),
+    (17, 'کرمان', 'سپاه ثارالله(ع)'),
+    (18, 'لرستان', 'سپاه حضرت ابوالفضل(ع)'),
+    (19, 'اردبیل', 'سپاه حضرت عباس(ع)'),
+    (20, 'مرکزی', 'سپاه روح الله'),
+    (21, 'سیستان و بلوچستان', 'سپاه سلمان'),
+    (22, 'تهران', 'سپاه سیدالشهداء (ع)'),
+    (23, 'آذربایجان غربی', 'سپاه شهداء'),
+    (24, 'قزوین', 'سپاه صاحب الامر(عج)'),
+    (25, 'اصفهان', 'سپاه صاحب الزمان(عج)'),
+    (26, 'آذربایجان شرقی', 'سپاه عاشورا'),
+    (27, 'قم', 'سپاه علی ابن ابیطالب(ع)'),
+    (29, 'کهگیلویه و بویر احمد', 'سپاه فتح'),
+    (30, 'فارس', 'سپاه فجر'),
+    (31, 'چهارمحال و بختیاری', 'سپاه قمر بنی هاشم(ع)'),
+    (32, 'کرمانشاه', 'سپاه نبی اکرم(ص)'),
+    (33, 'خوزستان', 'سپاه ولیعصر(عج)'),
+]
+sepah_ostan_list2 = []
+for item in sepah_ostan_list:
+    sepah_ostan_list2.append((item[0], F"{item[1]}-{item[2]}"))
+
+
+def find_sepah(p):
+    for item in sepah_ostan_list:
+        if item[1] == p:
+            return item[0]
+    return 0
+
+
+def AllCheckoutLetter(request, *args, **kwargs):
+    all_checkout_letter = CheckoutLetterModels.objects.filter().all()
+    return render(request, 'ensani_letter/all_checkout_letter.html',
+                  context={'all_checkout_letter': all_checkout_letter})
+
+
+class CreateCheckoutLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_checkout_letter.html'
+    success_url = reverse_lazy('AllCheckoutLetter')
+
+    def get(self, request):
+        b_form = CreateCheckoutLetterFrom()
+        b_form.fields['soldire'].choices = soldire_list
+        b_form.fields['c_type'].choices = c_type_list
+        cx = {'form': b_form}
+        return render(request, self.template, cx)
+
+    def post(self, request):
+        b_form = CreateCheckoutLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
+        b_form.fields['c_type'].choices = c_type_list
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = CheckoutLetterModels()
+        my_letter.description = b_form.cleaned_data['description']
+        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+        find_soldire.IsCheckout = True
+        find_soldire.save()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = F"{ens.shomare_dore}{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        c_type = ""
+        for iteam in c_type_list:
+            if iteam[0] == int(b_form.cleaned_data['c_type']):
+                c_type = iteam[1]
+        my_letter.c_type = c_type
+        my_letter.save()
+        return redirect(self.success_url)
+
+
+def AllNormalLetter(request, *args, **kwargs):
+    all_normal_letter = NormalLetterModels.objects.filter().all()
+    return render(request, 'ensani_letter/all_normal_letter.html',
+                  context={'all_normal_letter': all_normal_letter})
+
+
+class CreateCommissionLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_commission_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+
+    def get(self, request, pk):
+        b_form = CreateCommissionLetterFrom()
+        b_form.fields['destination'].choices = sepah_ostan_list2
+        b_form.initial['subject'] = "معرفی به کمیسیون"
+        cl = CheckoutLetterModels.objects.filter(number=pk).first()
+        b_form.initial['destination'] = find_sepah(cl.soldire.province_name)
+        cx = {'form': b_form, 'cl': cl}
+        return render(request, self.template, cx)
+
+    def post(self, request, pk):
+        b_form = CreateCommissionLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['destination'].choices = sepah_ostan_list2
+        b_form.initial['subject'] = "معرفی به کمیسیون"
+        cl = CheckoutLetterModels.objects.filter(number=pk).first()
+        b_form.initial['destination'] = find_sepah(cl.soldire.province_name)
+        if not b_form.is_valid():
+            cx = {'form': b_form, 'cl': cl}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        my_letter.description = b_form.cleaned_data['description']
+        my_letter.subject = b_form.cleaned_data['subject']
+        find_soldire = Soldier.objects.filter(id=cl.soldire.id).first()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = F"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        destination = ""
+        print(b_form.cleaned_data['destination'])
+        for iteam in sepah_ostan_list:
+            if iteam[0] == int(b_form.cleaned_data['destination']):
+                destination = iteam[2]
+        print(destination)
+        my_letter.destination = destination
+        my_letter.save()
+        return redirect(self.success_url)
+
+
+class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_training_inquiry_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+
+    def get(self, request):
+        b_form = CreateCheckoutLetterFrom()
+        b_form.fields['soldire'].choices = soldire_list
+        cx = {'form': b_form}
+        return render(request, self.template, cx)
+
+    def post(self, request):
+        b_form = CreateCheckoutLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        my_letter.description = "استعلام کفایت از آموزش"
+        my_letter.destination = "آموزش"
+        my_letter.subject = "استعلام کفایت از آموزش"
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.save()
+        return redirect(self.success_url)
+

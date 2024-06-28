@@ -5,6 +5,7 @@ from battalions.models import battalion, battalion_group
 from django_jalali.db import models as jmodels
 
 
+
 class Soldier(models.Model):
     name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام')
     family = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام خانوادگی')
@@ -64,5 +65,4 @@ class Soldier(models.Model):
     code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True)
     code_gorhan_nahai = models.CharField(max_length=100, verbose_name='کدگروهان علامی از گردان', null=True)
     tarikh_paziresh = jmodels.jDateTimeField(null=True, verbose_name='تاریخ و زمان پذیرش')
-
-
+    IsCheckout = models.BooleanField(default=False, verbose_name='تسویه حساب')

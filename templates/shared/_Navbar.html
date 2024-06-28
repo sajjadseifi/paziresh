@@ -82,9 +82,10 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="">نامه های عادی</a></li>
-                    <li><a href="">نامه های تسویه حساب</a></li>
-                    <li><a href="">استعلام کفایت از آموزش</a></li>
+                    <li><a href="{% url 'AllNormalLetter' %}">نامه های عادی</a></li>
+                    <li><a href="{% url 'AllCheckoutLetter' %}">نامه های تسویه حساب</a></li>
+                    <li><a href="{% url 'CreateCheckoutLetter' %}">ایجاد نامه تسویه حساب</a></li>
+                    <li><a href="{% url 'CreateTrainingInquiryLetter' %}">استعلام کفایت از آموزش</a></li>
                 </ul>
             </li>
 
