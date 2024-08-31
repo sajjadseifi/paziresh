@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برگه معرفی به کمیسیون{{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        @page {
+            size: A5 portrait; /* تنظیم اندازه کاغذ به A5 و جهت گیری عمودی */
+        }
+
+        html, body {
+            width: 148mm;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: B Nazanin;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 100%; /* عرض عکس */
+            height: auto; /* ارتفاع خودکار */
+        }
+
+        .shoare_sall {
+            position: absolute;
+            top: 141px;
+            right: 116px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_des {
+            position: absolute;
+            top: 291px;
+            right: 34px;
+            font-size: 15px;
+            color: black;
+            font-weight: bold;
+            width: 449px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+
+        .moaven_niro_ensani {
+            position: absolute;
+            top: 474px;
+            right: 189px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .code_paziresh {
+            position: absolute;
+            top: 626px;
+            right: 126px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_number {
+            position: absolute;
+            top: 44px;
+            right: 418px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+
+        }
+
+        .letter_date {
+            position: absolute;
+            top: 69px;
+            right: 418px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="{% static 'img/letters/TrainingInquiryLetter.jpg' %}" alt="TrainingInquiryLetter" class="image">
+    <div class="letter_number">{{ training_inquiry_letter.number }}</div>
+    <div class="letter_date">{{ training_inquiry_letter.create_time.date }}</div>
+    <div class="shoare_sall">«افزایش توان دفاع همه جانبه در سال جهش تولید ومشارکت مردم »</div>
+
+    <div class="letter_des"> با صلوات بر محمد و آل محمد و با ادای احترام ، بدینوسیله
+        سربازفراگیر {{ training_inquiry_letter.soldire.name }} {{ training_inquiry_letter.soldire.family }} فرزند
+        {{ training_inquiry_letter.soldire.fathers_name }} با شناسه
+        ملی {{ training_inquiry_letter.soldire.National_Code }} ؛ برای استعلام وضعیت آموزش قبلی و اعلام نظر حضورتان
+        معرفی میگردد.
+
+    </div>
+    <div class="moaven_niro_ensani">سرهنگ پاسدار علی متولی طاهر</div>
+    <div class="code_paziresh">{{ training_inquiry_letter.soldire.acceptance_code }}</div>
+
+</div>
+{#<script>#}
+{#    window.print()#}
+{#    window.onafterprint = function () {#}
+{#        window.close();#}
+{##}
+{#    }#}
+{#</script>#}
+</body>
+</html>

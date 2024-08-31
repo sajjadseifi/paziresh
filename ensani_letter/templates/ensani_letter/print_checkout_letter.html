@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برگه تسویه حساب {{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        html, body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: B Nazanin;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 100%; /* عرض عکس */
+            height: auto; /* ارتفاع خودکار */
+        }
+
+        .letter {
+            position: absolute;
+            top: 291px;
+            right: 85px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            width: 616px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+        .letter_number {
+            position: absolute;
+            top: 85px;
+            right: 577px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_create_time {
+            position: absolute;
+            top: 104px;
+            right: 577px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_type {
+            position: absolute;
+            top: 127px;
+            right: 577px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .code_paziresh {
+            position: absolute;
+            top: 149px;
+            right: 577px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .modire_manabe_ensani {
+            position: absolute;
+            top: 378px;
+            right: 328px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .checkout_des {
+            position: absolute;
+            top: 291px;
+            right: 85px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            width: 616px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+        .checkout_des {
+            position: absolute;
+            top: 777px;
+            right: 138px;
+            font-size: 10px;
+            color: black;
+            width: 616px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+            font-weight: normal;
+        }
+
+        .masole_manabe_ensani {
+            position: absolute;
+            top: 823px;
+            right: 328px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .soldire_address {
+            position: absolute;
+            top: 916px;
+            right: 191px;
+            font-size: 9px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="{% static 'img/letters/tasvie_hesab.jpg' %}" alt="tasvie_hesab" class="image">
+    <p class="letter">اللّهمّ صَلّ علی مُحمّد و آلِ مُحمّد، با تقدیم احترام، بدینوسیله
+        فراگیر {{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }}
+        فرزند {{ checkout_letter.soldire.fathers_name }}
+        با شناسه ملی{{ checkout_letter.soldire.National_Code }} و تاریخ
+        اعزام {{ checkout_letter.soldire.Date_of_dispatch }} ؛ اعزامی از
+        استان {{ checkout_letter.soldire.province_name }} که در
+        تاریخ {{ checkout_letter.soldire.tarikh_paziresh.date.year }}/{{ checkout_letter.soldire.tarikh_paziresh.date.month }}/{{ checkout_letter.soldire.tarikh_paziresh.date.day }}
+        برای سپری نمودن
+        آموزش رزم مقدماتی دوره 200 شهید محسن حسین نیا روشن در این آموزشگاه پذیرش و در گردان
+        {{ checkout_letter.soldire.Gordan.name }}، گروهان
+        {{ checkout_letter.soldire.battalion_group.name }} و با
+        کد {{ checkout_letter.soldire.code_gorhan_nahai }} سازماندهی گردیده بود ، برای تسویه حساب حضورتان معرفی می گردد.
+
+    </p>
+    <div class="letter_number">{{ checkout_letter.number }}</div>
+    <div class="letter_create_time">{{ checkout_letter.create_time.date }}</div>
+    <div class="letter_type">عادی</div>
+    <div class="code_paziresh">{{ checkout_letter.soldire.code_paziresh }}</div>
+    <div class="modire_manabe_ensani">سرهنگ دوم پاسدار رضا سروی</div>
+    <div class="checkout_des">نامبرده از
+        تاریخ {{ checkout_letter.soldire.tarikh_paziresh.date.year }}/{{ checkout_letter.soldire.tarikh_paziresh.date.month }}/{{ checkout_letter.soldire.tarikh_paziresh.date.day }}
+        در اين آموزشگاه مشغول
+        فراگيري آموزش رزم مقدماتی بوده و در
+        تاريخ {{ checkout_letter.create_time.date.year }}/{{ checkout_letter.create_time.date.month }}/{{ checkout_letter.create_time.date.day }}
+        به علت «{{ checkout_letter.c_type }} » تسويه حساب كامل نموده است .
+
+    </div>
+    <div class="masole_manabe_ensani">ستوان دوم پاسدار میثم گلبابازاده</div>
+    <div class="soldire_address">{{ checkout_letter.soldire.Address }}</div>
+
+</div>
+<script>
+    window.print()
+    window.onafterprint = function () {
+        window.close();
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرفی به گردان</title>
+    <style>
+
+
+        html, body {
+            width: 80mm;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 80mm; /* عرض عکس */
+            height: 100%; /* ارتفاع خودکار */
+        }
+
+        .namedoreh {
+            position: absolute;
+            top: 15px; /* موقعیت افقی */
+            right: 95px; /* موقعیت عمودی */
+
+            font-size: 21px; /* اندازه متن */
+            color: black;
+        }
+
+        .addpaziresh {
+            position: absolute;
+            top: 59px; /* موقعیت افقی */
+            right: 95px; /* موقعیت عمودی */
+
+            font-size: 21px; /* اندازه متن */
+            color: black;
+        }
+
+        .name {
+            position: absolute;
+            top: 255px; /* موقعیت افقی */
+            right: 119px; /* موقعیت عمودی */
+
+            font-size: 21px; /* اندازه متن */
+            color: black;
+        }
+
+        .family {
+            position: absolute;
+            top: 289px; /* موقعیت افقی */
+            right: 122px; /* موقعیت عمودی */
+
+            font-size: 21px; /* اندازه متن */
+            color: black;
+        }
+
+        .fathers_name {
+            position: absolute;
+            top: 329px; /* موقعیت افقی */
+            right: 121px; /* موقعیت عمودی */
+
+            font-size: 21px; /* اندازه متن */
+            color: black;
+        }
+
+        .place_of_birth {
+            position: absolute;
+            top: 144px; /* موقعیت افقی */
+            right: 391px; /* موقعیت عمودی */
+
+            font-size: 12px; /* اندازه متن */
+            color: black;
+        }
+
+        .Date_of_birth {
+            position: absolute;
+            top: 144px; /* موقعیت افقی */
+            right: 482px; /* موقعیت عمودی */
+
+            font-size: 10px; /* اندازه متن */
+            color: black;
+        }
+
+        .National_Code {
+            position: absolute;
+            top: 180px; /* موقعیت افقی */
+            right: 156px; /* موقعیت عمودی */
+
+            font-size: 21px; /* اندازه متن */
+            color: black;
+        }
+
+        .National_Code {
+            position: absolute;
+            top: 184px; /* موقعیت افقی */
+            right: 135px; /* موقعیت عمودی */
+
+            font-size: 16px; /* اندازه متن */
+            color: black;
+        }
+
+        .educational_level_of_the_system {
+            position: absolute;
+            top: 369px; /* موقعیت افقی */
+            right: 122px; /* موقعیت عمودی */
+
+            font-size: 14px; /* اندازه متن */
+            color: black;
+        }
+
+        .Date_of_dispatch {
+            position: absolute;
+            top: 186px; /* موقعیت افقی */
+            right: 395px; /* موقعیت عمودی */
+
+            font-size: 9px; /* اندازه متن */
+            color: black;
+        }
+
+        .mahleezam {
+            position: absolute;
+            top: 186px; /* موقعیت افقی */
+            right: 473px; /* موقعیت عمودی */
+
+            font-size: 9px; /* اندازه متن */
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="sss.jpg" alt="Example Image" class="image">
+    <div class="name">{{ sarbaz.name }}</div>
+    <div class="namedoreh">200- شهید انتقامی</div>
+    <div class="addpaziresh">عدد پذیرش - 200</div>
+    <div class="family">{{ sarbaz.family }}</div>
+    <div class="fathers_name">{{ sarbaz.fathers_name }}</div>
+    <div class="place_of_birth">{{ sarbaz.place_of_birth }}</div>
+    <div class="Date_of_birth">{{ sarbaz.Date_of_birth }}</div>
+    <div class="National_Code">{{ sarbaz.National_Code }}</div>
+    <div class="educational_level_of_the_system">{{ sarbaz.educational_level_of_the_system }}</div>
+    <div class="Date_of_dispatch">{{ sarbaz.Date_of_dispatch }}</div>
+    <div class="mahleezam">{{ sarbaz.province_name }}</div>
+</div>
+
+</body>
+</html>
