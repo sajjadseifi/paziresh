@@ -8,6 +8,7 @@ from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom
 from .models import CheckoutLetterModels, NormalLetterModels
 from soldiers.models import Soldier
+from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
 import random
 
@@ -185,3 +186,30 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
         my_letter.save()
         return redirect(self.success_url)
 
+
+def PrintCheckoutLetter(request, *args, **kwargs):
+    checkout_letter_pk = kwargs['pk']
+    if checkout_letter_pk is None:
+        return 0
+    checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_letter_pk).first()
+    cx = {'checkout_letter': checkout_letter}
+    return render(request, 'ensani_letter/print_checkout_letter.html', cx)
+
+
+def PrintCheckoutCommissionLetter(request, *args, **kwargs):
+    checkout_commission_letter_pk = kwargs['pk']
+    if checkout_commission_letter_pk is None:
+        return 0
+    checkout_commission_letter = NormalLetterModels.objects.filter(pk=checkout_commission_letter_pk).first()
+    sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
+    cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter}
+    return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
+
+
+def PrintTrainingInquiryLetter(request, *args, **kwargs):
+    training_inquiry_letter_pk = kwargs['pk']
+    if training_inquiry_letter_pk is None:
+        return 0
+    training_inquiry_letter = NormalLetterModels.objects.filter(pk=training_inquiry_letter_pk).first()
+    cx = {'training_inquiry_letter': training_inquiry_letter}
+    return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)

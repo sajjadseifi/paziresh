@@ -1,6 +1,10 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import Soldier
 
-admin.site.register(Soldier)
+
+class SoldierAdmin(admin.ModelAdmin):
+    # تعداد آیتم‌ها در هر صفحه
+    list_per_page = 2000  # تعداد دلخواه خود را اینجا وارد کنید
+
+
+admin.site.register(Soldier, SoldierAdmin)

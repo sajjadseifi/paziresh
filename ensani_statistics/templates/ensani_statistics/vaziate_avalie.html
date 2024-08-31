@@ -912,101 +912,106 @@
                                 </tr>
                                 <tr class="row2">
                                     <td class="column0 style13 s">گردان</td>
+
                                     <td class="column1 style14 f">1</td>
                                     <td class="column2 style15 f">2</td>
                                     <td class="column3 style15 f">3</td>
                                     <td class="column4 style16 f">4</td>
                                     <td class="column5 style17 s">نفرات</td>
-                                    <td class="column6 style18 f">وضعیت جسمانی</td>
-                                    <td class="column7 style19 f">سالم</td>
-                                    <td class="column8 style19 f">معاف از رزم</td>
-                                    <td class="column9 style20 f">گروه ب</td>
+                                    <td class="column6 style18 f">سالم</td>
+                                    <td class="column7 style19 f">معاف از رزم</td>
+                                    <td class="column8 style19 f">گروه ب</td>
+                                    <td class="column9 style20 f">معاف+گروه ب</td>
                                     <td class="column10 style21 s">امریه دار</td>
-                                    <td class="column11 style22 f">مذهب</td>
                                     <td class="column12 style20 f">شیعه</td>
+                                    <td class="column12 style20 f">اهل تسنن</td>
                                 </tr>
-                                <tr class="row4">
-                                    <td class="column0 style23 f">شهید انتقامی</td>
-                                    <td class="column1 style24 f">0</td>
-                                    <td class="column2 style25 f">60</td>
-                                    <td class="column3 style25 f">127</td>
-                                    <td class="column4 style26 f">70</td>
-                                    <td class="column5 style27 f">257</td>
-                                    <td class="column6 style28 f">0</td>
-                                    <td class="column7 style25 f">314</td>
-                                    <td class="column8 style25 f">0</td>
-                                    <td class="column9 style29 f">0</td>
-                                    <td class="column10 style30 f">0</td>
-                                    <td class="column11 style24 f">0</td>
-                                    <td class="column12 style29 f">314</td>
-                                </tr>
-                                <tr class="row5">
-                                    <td class="column0 style23 f">شهید خیریان</td>
-                                    <td class="column1 style24 f">0</td>
-                                    <td class="column2 style25 f">0</td>
-                                    <td class="column3 style25 f">0</td>
-                                    <td class="column4 style26 f">0</td>
-                                    <td class="column5 style27 f">0</td>
-                                    <td class="column6 style28 f">0</td>
-                                    <td class="column7 style25 f">0</td>
-                                    <td class="column8 style25 f">0</td>
-                                    <td class="column9 style29 f">0</td>
-                                    <td class="column10 style30 f">0</td>
-                                    <td class="column11 style24 f">0</td>
-                                    <td class="column12 style29 f">0</td>
-                                </tr>
-                                <tr class="row6">
-                                    <td class="column0 style23 f">شهید زارع</td>
-                                    <td class="column1 style24 f">0</td>
-                                    <td class="column2 style25 f">0</td>
-                                    <td class="column3 style25 f">0</td>
-                                    <td class="column4 style26 f">0</td>
-                                    <td class="column5 style27 f">0</td>
-                                    <td class="column6 style28 f">0</td>
-                                    <td class="column7 style25 f">0</td>
-                                    <td class="column8 style25 f">0</td>
-                                    <td class="column9 style29 f">0</td>
-                                    <td class="column10 style30 f">0</td>
-                                    <td class="column11 style24 f">0</td>
-                                    <td class="column12 style29 f">0</td>
-                                </tr>
-                                <tr class="row7">
-                                    <td class="column0 style31 s">کل پذیرش</td>
-                                    <td class="column1 style32 null style33" colspan="4"></td>
-                                    <td class="column5 style34 f">257</td>
-                                    <td class="column6 style35 f">0</td>
-                                    <td class="column7 style36 f">338</td>
-                                    <td class="column8 style36 f">17</td>
-                                    <td class="column9 style37 f">0</td>
-                                    <td class="column10 style38 f">0</td>
-                                    <td class="column11 style39 f">0</td>
-                                    <td class="column12 style37 f">353</td>
-                                </tr>
-                                <tr class="row8">
-                                    <td class="column0 style9 s style11" colspan="6">نام دوره</td>
-                                    <td class="column6 style40 null"></td>
-                                    <td class="column7 style40 null"></td>
-                                    <td class="column8 style40 null"></td>
-                                    <td class="column9 style40 null"></td>
-                                    <td class="column10 style40 null"></td>
-                                    <td class="column11 style40 null"></td>
-                                    <td class="column12 style40 null"></td>
-                                </tr>
-                                <tr class="row9">
-                                    <td class="column0">&nbsp;</td>
-                                    <td class="column1">&nbsp;</td>
-                                    <td class="column2">&nbsp;</td>
-                                    <td class="column3">&nbsp;</td>
-                                    <td class="column4">&nbsp;</td>
-                                    <td class="column5">&nbsp;</td>
-                                    <td class="column6 style40 null"></td>
-                                    <td class="column7 style40 null"></td>
-                                    <td class="column8 style40 null"></td>
-                                    <td class="column9 style40 null"></td>
-                                    <td class="column10 style40 null"></td>
-                                    <td class="column11 style40 null"></td>
-                                    <td class="column12 style40 null"></td>
-                                </tr>
+                                {% for stat in statistics %}
+
+                                    <tr class="row5">
+                                        <td class="column0 style23 f">{{ stat.group_name }}</td>
+                                        {% for l in stat.lst %}
+                                            <td class="column1 style28 f">{{ l }}</td>
+                                        {% endfor %}
+                                        <td class="column5 style27">{{ stat.total_soldiers }}</td>
+                                        <td class="column6 style28">{{ stat.salem }}</td>
+                                        <td class="column7 style25">{{ stat.moaf_az_razm }}</td>
+                                        <td class="column8 style25">{{ stat.goreh_b }}</td>
+                                        <td class="column9 style29">{{ stat.goreh_b_moaf_az_razm }}</td>
+                                        <td class="column10 style30">{{ stat.amire_dar }}</td>
+                                        <td class="column11 style24">{{ stat.shie }}</td>
+                                        <td class="column12 style29">{{ stat.ahle_tasanon }}</td>
+                                    </tr>
+                                {% endfor %}
+
+
+                                {#                                <tr class="row5">#}
+                                {#                                    <td class="column0 style23 f">شهید خیریان</td>#}
+                                {#                                    <td class="column1 style24 f">0</td>#}
+                                {#                                    <td class="column2 style25 f">0</td>#}
+                                {#                                    <td class="column3 style25 f">0</td>#}
+                                {#                                    <td class="column4 style26 f">0</td>#}
+                                {#                                    <td class="column5 style27 f">0</td>#}
+                                {#                                    <td class="column6 style28 f">0</td>#}
+                                {#                                    <td class="column7 style25 f">0</td>#}
+                                {#                                    <td class="column8 style25 f">0</td>#}
+                                {#                                    <td class="column9 style29 f">0</td>#}
+                                {#                                    <td class="column10 style30 f">0</td>#}
+                                {#                                    <td class="column11 style24 f">0</td>#}
+                                {#                                    <td class="column12 style29 f">0</td>#}
+                                {#                                </tr>#}
+                                {#                                <tr class="row6">#}
+                                {#                                    <td class="column0 style23 f">شهید زارع</td>#}
+                                {#                                    <td class="column1 style24 f">0</td>#}
+                                {#                                    <td class="column2 style25 f">0</td>#}
+                                {#                                    <td class="column3 style25 f">0</td>#}
+                                {#                                    <td class="column4 style26 f">0</td>#}
+                                {#                                    <td class="column5 style27 f">0</td>#}
+                                {#                                    <td class="column6 style28 f">0</td>#}
+                                {#                                    <td class="column7 style25 f">0</td>#}
+                                {#                                    <td class="column8 style25 f">0</td>#}
+                                {#                                    <td class="column9 style29 f">0</td>#}
+                                {#                                    <td class="column10 style30 f">0</td>#}
+                                {#                                    <td class="column11 style24 f">0</td>#}
+                                {#                                    <td class="column12 style29 f">0</td>#}
+                                {#                                </tr>#}
+                                {#                                <tr class="row7">#}
+                                {#                                    <td class="column0 style31 s">کل پذیرش</td>#}
+                                {#                                    <td class="column1 style32 null style33" colspan="4"></td>#}
+                                {#                                    <td class="column5 style34 f">257</td>#}
+                                {#                                    <td class="column6 style35 f">0</td>#}
+                                {#                                    <td class="column7 style36 f">338</td>#}
+                                {#                                    <td class="column8 style36 f">17</td>#}
+                                {#                                    <td class="column9 style37 f">0</td>#}
+                                {#                                    <td class="column10 style38 f">0</td>#}
+                                {#                                    <td class="column11 style39 f">0</td>#}
+                                {#                                    <td class="column12 style37 f">353</td>#}
+                                {#                                </tr>#}
+                                {#                                <tr class="row8">#}
+                                {#                                    <td class="column0 style9 s style11" colspan="6">نام دوره</td>#}
+                                {#                                    <td class="column6 style40 null"></td>#}
+                                {#                                    <td class="column7 style40 null"></td>#}
+                                {#                                    <td class="column8 style40 null"></td>#}
+                                {#                                    <td class="column9 style40 null"></td>#}
+                                {#                                    <td class="column10 style40 null"></td>#}
+                                {#                                    <td class="column11 style40 null"></td>#}
+                                {#                                    <td class="column12 style40 null"></td>#}
+                                {#                                </tr>#}
+                                {#                                <tr class="row9">#}
+                                {#                                    <td class="column0">&nbsp;</td>#}
+                                {#                                    <td class="column1">&nbsp;</td>#}
+                                {#                                    <td class="column2">&nbsp;</td>#}
+                                {#                                    <td class="column3">&nbsp;</td>#}
+                                {#                                    <td class="column4">&nbsp;</td>#}
+                                {#                                    <td class="column5">&nbsp;</td>#}
+                                {#                                    <td class="column6 style40 null"></td>#}
+                                {#                                    <td class="column7 style40 null"></td>#}
+                                {#                                    <td class="column8 style40 null"></td>#}
+                                {#                                    <td class="column9 style40 null"></td>#}
+                                {#                                    <td class="column10 style40 null"></td>#}
+                                {#                                    <td class="column11 style40 null"></td>#}
+                                {#                                    <td class="column12 style40 null"></td>#}
+                                {#                                </tr>#}
                                 </tbody>
 
                             </table>
@@ -1019,3 +1024,5 @@
         </div>
     </section>
 {% endblock %}
+
+

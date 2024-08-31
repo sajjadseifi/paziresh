@@ -9,6 +9,10 @@ class battalion(models.Model):
     is_active = models.BooleanField(default=False, verbose_name='فعال/غیرفعال')
     order = models.IntegerField(null=True, blank=True, verbose_name='اولویت مرتب سازی')
 
+    def __str__(self):
+        return self.name
+
+
 #
 class battalion_group(models.Model):
     name = models.CharField(max_length=150, verbose_name='نام گروهان')
@@ -28,3 +32,7 @@ class battalion_group(models.Model):
     moafazrazm = models.BooleanField(default=False, verbose_name='معاف ازرزم')
     gorehbe = models.BooleanField(default=False, verbose_name='گروه ب')
     moafazrazm_gorehbe = models.BooleanField(default=False, verbose_name='معاف از رزم + گروه ب')
+
+    def __str__(self):
+        return self.name + self.gordan.name
+

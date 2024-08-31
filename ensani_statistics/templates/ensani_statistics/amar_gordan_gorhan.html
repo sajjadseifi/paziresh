@@ -1,6 +1,5 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
-
 {% block header %}
     <style>
         html {
@@ -718,95 +717,75 @@
                         <br>
                         <br>
                         <br>
-                        <!-- /.box-header -->
                         <div class="box-body table-responsive no-padding">
-                            <table class="table table-hover">
+                            {% for battalion in stats %}
+                                <table class="table table-hover">
+                                    <colgroup>
+                                        <col class="col0">
+                                        <col class="col1">
+                                        <col class="col2">
+                                        <col class="col3">
+                                        <col class="col4">
+                                        <col class="col5">
+                                        <col class="col6">
+                                    </colgroup>
+                                    <tbody>
+                                    <tr class="row0">
+                                        <td class="column0 style1 s style3" colspan="7">{{ battalion.name }}</td>
+                                    </tr>
+                                    <tr class="row1">
+                                        <td class="column0 style4 s">گروهان</td>
+                                        <td class="column1 style5 s">زیردیپلم</td>
+                                        <td class="column2 style6 s">دیپلم</td>
+                                        <td class="column3 style5 s">فوق دیپلم</td>
+                                        <td class="column4 style6 s">لیسانس</td>
+                                        <td class="column5 style7 s">فوق لیسانس</td>
+                                        <td class="column6 style8 s">دکتری</td>
+                                    </tr>
+                                    {% for group in battalion.groups %}
+                                        <tr class="row2">
+                                            <td class="column0 style9 n">{{ group.name }}</td>
+                                            <td class="column1 style10 n">{{ group.degrees.zirediplom }}</td>
+                                            <td class="column2 style11 n">{{ group.degrees.diplom }}</td>
+                                            <td class="column3 style10 n">{{ group.degrees.ofghdiplom }}</td>
+                                            <td class="column4 style11 n">{{ group.degrees.lisans }}</td>
+                                            <td class="column5 style12 n">{{ group.degrees.ofghlisans }}</td>
+                                            <td class="column6 style13 n">{{ group.degrees.doctra }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="column0 style24 s">مجموع</td>
+                                        <td class="column1 style25 n">{{ battalion.zirediplom }}</td>
+                                        <td class="column2 style25 n">{{ battalion.diplom }}</td>
+                                        <td class="column3 style25 n">{{ battalion.ofghdiplom }}</td>
+                                        <td class="column4 style25 n">{{ battalion.lisans }}</td>
+                                        <td class="column5 style25 n">{{ battalion.ofghlisans }}</td>
+                                        <td class="column6 style27 n">{{ battalion.doctra }}</td>
 
-                                <col class="col0">
-                                <col class="col1">
-                                <col class="col2">
-                                <col class="col3">
-                                <col class="col4">
-                                <col class="col5">
-                                <col class="col6">
-                                <tbody>
-                                <tr class="row0">
-                                    <td class="column0 style1 s style3" colspan="7">نام گردان</td>
-                                </tr>
-                                <tr class="row1">
-                                    <td class="column0 style4 s">گروهان</td>
-                                    <td class="column1 style5 s">زیردیپلم</td>
-                                    <td class="column2 style6 s">دیپلم</td>
-                                    <td class="column3 style5 s">فوق دیپلم</td>
-                                    <td class="column4 style6 s">لیسانس</td>
-                                    <td class="column5 style7 s">فوق لیسانس</td>
-                                    <td class="column6 style8 s">دکتری</td>
-                                </tr>
-                                <tr class="row2">
-                                    <td class="column0 style9 n">1</td>
-                                    <td class="column1 style10 n">0</td>
-                                    <td class="column2 style11 n">0</td>
-                                    <td class="column3 style10 n">0</td>
-                                    <td class="column4 style11 n">0</td>
-                                    <td class="column5 style12 n">0</td>
-                                    <td class="column6 style13 n">0</td>
-                                </tr>
-                                <tr class="row3">
-                                    <td class="column0 style14 n">2</td>
-                                    <td class="column1 style15 n">0</td>
-                                    <td class="column2 style16 n">0</td>
-                                    <td class="column3 style15 n">0</td>
-                                    <td class="column4 style16 n">0</td>
-                                    <td class="column5 style17 n">0</td>
-                                    <td class="column6 style18 n">0</td>
-                                </tr>
-                                <tr class="row4">
-                                    <td class="column0 style14 n">3</td>
-                                    <td class="column1 style15 n">0</td>
-                                    <td class="column2 style16 n">0</td>
-                                    <td class="column3 style15 n">0</td>
-                                    <td class="column4 style16 n">0</td>
-                                    <td class="column5 style17 n">0</td>
-                                    <td class="column6 style18 n">0</td>
-                                </tr>
-                                <tr class="row5">
-                                    <td class="column0 style19 n">3</td>
-                                    <td class="column1 style20 n">0</td>
-                                    <td class="column2 style21 n">0</td>
-                                    <td class="column3 style20 n">0</td>
-                                    <td class="column4 style21 n">0</td>
-                                    <td class="column5 style22 n">0</td>
-                                    <td class="column6 style23 n">0</td>
-                                </tr>
-                                <tr class="row6">
-                                    <td class="column0 style24 s">مجموع</td>
-                                    <td class="column1 style25 n">0</td>
-                                    <td class="column2 style25 n">0</td>
-                                    <td class="column3 style25 n">0</td>
-                                    <td class="column4 style25 n">0</td>
-                                    <td class="column5 style26 n">0</td>
-                                    <td class="column6 style27 n">0</td>
-                                </tr>
-                                <tr class="row7">
-                                    <td class="column0 style1 f style3" colspan="7">مجموع کل 0 نفر</td>
-                                </tr>
-                                <tr class="row8">
-                                    <td class="column0">&nbsp;</td>
-                                    <td class="column1">&nbsp;</td>
-                                    <td class="column2">&nbsp;</td>
-                                    <td class="column3">&nbsp;</td>
-                                    <td class="column4">&nbsp;</td>
-                                    <td class="column5">&nbsp;</td>
-                                    <td class="column6">&nbsp;</td>
-                                </tr>
-                                </tbody>
-                            </table>
-
+                                    </tr>
+                                    <tr class="row7">
+                                        <td class="column0 style1 f style3" colspan="7">مجموع
+                                            کل {{ battalion.count }} نفر
+                                        </td>
+                                    </tr>
+                                    <tr class="row8">
+                                        <td class="column0">&nbsp;</td>
+                                        <td class="column1">&nbsp;</td>
+                                        <td class="column2">&nbsp;</td>
+                                        <td class="column3">&nbsp;</td>
+                                        <td class="column4">&nbsp;</td>
+                                        <td class="column5">&nbsp;</td>
+                                        <td class="column6">&nbsp;</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            {% endfor %}
                         </div>
-                        <!-- /.box-body -->
                     </div>
                 </div>
             </div>
         </div>
     </section>
 {% endblock %}
+
+

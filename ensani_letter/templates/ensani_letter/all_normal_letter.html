@@ -36,9 +36,16 @@
                                 <td>{{ c.destination }}</td>
                                 <td>{{ c.description }}</td>
                                 <td>
-                                    <a class="btn btn-app" href="">
-                                        <i class="fa fa-edit"></i> چاپ برگه
-                                    </a>
+                                    {% if c.subject == "معرفی به کمیسیون" %}
+                                        <a class="btn btn-app" href="{% url 'PrintCheckoutCommissionLetter' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                    {% endif %}
+                                    {% if c.subject == "استعلام کفایت از آموزش" %}
+                                        <a class="btn btn-app" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                    {% endif %}
                                     <a class="btn btn-app" href="">
                                         <i class="fa fa-edit"></i> ویرایش
                                     </a>

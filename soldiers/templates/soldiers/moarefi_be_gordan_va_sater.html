@@ -60,7 +60,8 @@
                     {{ sarbaz.name }} {{ sarbaz.family }} در گردان:{{ sarbaz.Gordan.name }} و
                     گروهان:{{ sarbaz.battalion_group.name }} باکد فردی :{{ sarbaz.code_gorhan }} مجاز به پذیرش می باشد
                 </p>
-                <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i>
+                <a href="{% url 'moarefibegordan' pk=sarbaz.pk %}" target="_blank" class="btn btn-default"><i
+                        class="fa fa-print"></i>
                     پرینت معرفی به گردان</a>
             </div>
             <!-- /.col -->

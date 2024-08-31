@@ -28,6 +28,7 @@
             color: rgb(0, 0, 0); /* رنگ متن */
         }
 
+
         .image {
             display: block;
             width: 100%; /* عرض عکس */
@@ -72,19 +73,9 @@
 
         .Date_of_birth {
             position: absolute;
-            top: 144px; /* موقعیت افقی */
-            right: 482px; /* موقعیت عمودی */
-
-            font-size: 10px; /* اندازه متن */
-            color: black;
-        }
-
-        .National_Code {
-            position: absolute;
-            top: 134px; /* موقعیت افقی */
-            right: 180px; /* موقعیت عمودی */
-
-            font-size: 10px; /* اندازه متن */
+            top: 144px;
+            right: 472px;
+            font-size: 10px;
             color: black;
         }
 
@@ -108,44 +99,69 @@
 
         .Date_of_dispatch {
             position: absolute;
-            top: 186px; /* موقعیت افقی */
-            right: 395px; /* موقعیت عمودی */
-
-            font-size: 9px; /* اندازه متن */
+            top: 186px;
+            right: 389px;
+            font-size: 9px;
             color: black;
         }
 
         .mahleezam {
             position: absolute;
-            top: 186px; /* موقعیت افقی */
-            right: 473px; /* موقعیت عمودی */
-
-            font-size: 9px; /* اندازه متن */
+            top: 184px;
+            right: 480px;
+            font-size: 9px;
             color: black;
         }
+
+        .acceptance_code {
+            position: absolute;
+            top: 747px;
+            right: 333px;
+            font-size: 11px;
+            color: black;
+        }
+
+        .battalion_group {
+            position: absolute;
+            top: 208px;
+            right: 431px;
+            font-size: 9px;
+            color: black;
+        }
+
+        .battalion_group_gordan {
+            position: absolute;
+            top: 208px;
+            right: 343px;
+            font-size: 9px;
+            color: black;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <img src="{% static 'img/sater/sater_amrie.jpg' %}" alt="sater_amrie" class="image">
-    <div class="name">سید محمد رضا</div>
-    <div class="family1"></div>
-    <div class="family">رحیمایی</div>
-    <div class="fathers_name">سید علی</div>
-    <div class="place_of_birth">بابل</div>
-    <div class="Date_of_birth">1377/09/19</div>
-    <div class="National_Code">2050880898</div>
-    <div class="educational_level_of_the_system">لیسانس غیرپزشکی ناپیوسته</div>
-    <div class="Date_of_dispatch">1402/11/1</div>
-    <div class="mahleezam">کهگیلویه و بویراحمد</div>
+    <div class="name">{{ sarbaz.name }}</div>
+    <div class="family">{{ sarbaz.family }}</div>
+    <div class="fathers_name">{{ sarbaz.fathers_name }}</div>
+    <div class="place_of_birth">{{ sarbaz.place_of_birth }}</div>
+    <div class="Date_of_birth">{{ sarbaz.Date_of_birth }}</div>
+    <div class="National_Code">{{ sarbaz.National_Code }}</div>
+    <div class="educational_level_of_the_system">{{ sarbaz.educational_level_of_the_system }}</div>
+    <div class="Date_of_dispatch">{{ sarbaz.Date_of_dispatch }}</div>
+    <div class="mahleezam">{{ sarbaz.province_name }}</div>
+    <div class="acceptance_code">عدد پذیرش:{{ sarbaz.acceptance_code }}</div>
+    <div class="battalion_group">{{ sarbaz.battalion_group.name }}</div>
+    <div class="battalion_group_gordan">{{ sarbaz.battalion_group.gordan.name }}</div>
 </div>
 
 </body>
-<script>
-    window.print()
-    window.onafterprint = function () {
-        window.close();
-    }
-</script>
+{#<script>#}
+{#    window.print()#}
+{#    window.onafterprint = function () {#}
+{#        window.close();#}
+{#    }#}
+{#</script>#}
 </html>

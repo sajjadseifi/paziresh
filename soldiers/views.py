@@ -12,6 +12,54 @@ from saterapps.models import Sater
 from django.db.models import Q
 
 # all static data
+battalion_group_list = [(99999999, '')]
+g = battalion_group.objects.filter().all()
+for item in g:
+    battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
+
+
+def categorize_educational_level(level_id):
+    if level_id in {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}:
+        return 1, 'زیر دیپلم'
+    elif level_id in {13, 25, 26}:
+        return 2, 'دیپلم'
+    elif level_id in {4, 5, 3}:
+        return 3, 'فوق دیپلم'
+    elif level_id in {9, 10, 11, 12}:
+        return 4, 'لیسانس'
+    elif level_id in {7, 8}:
+        return 5, 'فوق لیسانس'
+    elif level_id in {2, }:
+        return 6, ' '
+    elif level_id == 0:
+        return 7, 'نامشخص'
+    else:
+        return 7, 'نامشخص'
+
+
+def map_educational_level_to_grade(level):
+    grade_precise_mapping = {
+        'بی‌سواد': [],
+        'نهضت سواد آموزی': [],
+        'ابتدایی': [14, 15, 16, 17, 18, 19],
+        'راهنمایی': [20, 21, 22],
+        'سیکل': [],
+        'دبیرستان': [23, 24],
+        'زیر دیپلم': [],
+        'دیپلم': [13, 25, 26],
+        'فوق دیپلم': [4, 5, 6],
+        'لیسانس': [9, 10, 11, 12],
+        'فوق لیسانس': [7, 8],
+        'دکتری': [2, 3],
+        'نامشخص': [0, 1]
+    }
+
+    for grade_level, grade_name in Grade_precise_list:
+        if level in grade_precise_mapping[grade_name]:
+            return grade_level, grade_name
+
+    return None
+
 
 grade_precise_mapping = {
     'بی‌سواد': [],
@@ -21,7 +69,7 @@ grade_precise_mapping = {
     'سیکل': [],
     'دبیرستان': [23, 24, 25],
     'زیر دیپلم': [],
-    'دیپلم': [13],
+    'دیپلم': [13, 26],
     'فوق دیپلم': [4, 5, 6],
     'لیسانس': [9, 10, 11, 12],
     'فوق لیسانس': [7, 8],
@@ -69,7 +117,7 @@ educational_level_of_the_system_list = [
     (3, "دکتری تخصصی پزشکی ناپیوسته"),
     (4, "فوق دیپلم پزشکی"),
     (5, "فوق دیپلم غیر پزشکی"),
-    (6, "فوق دیپلم فنی و حرفه‌ای"),
+    (6, "فوق دیپلم فنی و حرفه ای"),
     (7, "فوق لیسانس پزشکی ناپیوسته"),
     (8, "فوق لیسانس غیرپزشکی ناپیوسته"),
     (9, "لیسانس"),
@@ -89,7 +137,9 @@ educational_level_of_the_system_list = [
     (23, "پایه دهم"),
     (24, "پایه یازدهم"),
     (25, "پایه دوازدهم"),
+    (26, "پیش دانشگاهی"),
 ]
+
 Renewal_of_the_previous_period_list = [(0, ""), (1, 'المهدی'), (2, 'شیراز')]
 Reason_for_renewing_the_course_list = [(0, ''), (1, 'کمیسیون پزشکی'), (2, 'فرار'), (3, 'تجدید دوره'),
                                        (4, 'انضباطی'),
@@ -149,10 +199,6 @@ Grade_precise_list = [
 
 Amriye_list = [(1, 'بله'), (2, 'خیر')]
 Amriye_organization_lsit = [(0, ''), (1, 'test1'), (2, 'test2')]
-battalion_group_list = []
-g = battalion_group.objects.filter().all()
-for item in g:
-    battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
 
 
 # end static data
@@ -208,7 +254,8 @@ class sabte_paziresh(LoginRequiredMixin, View):
         for iteam in Grade_list:
             if iteam[1] == soldire.Grade:
                 grade = iteam[0]
-        form_soldiers.initial['Grade'] = grade
+        t_grade = 0
+
         grade_p = 0
         for iteam in Grade_precise_list:
             if iteam[1] == soldire.Grade_precise:
@@ -217,8 +264,12 @@ class sabte_paziresh(LoginRequiredMixin, View):
 
         form_soldiers.initial['educational_level_of_the_system'] = ''
         for elots in educational_level_of_the_system_list:
-            if elots[1] == soldire.educational_level_of_the_system:
+            if elots[1].replace(" ", "").replace("\u200c", "").replace('ي',
+                                                                       'ی') == soldire.educational_level_of_the_system.replace(
+                " ", "").replace("\u200c", "").replace('ي', 'ی'):
+                form_soldiers.initial['Grade'] = (categorize_educational_level(elots[0]))[0]
                 form_soldiers.initial['educational_level_of_the_system'] = elots[0]
+                t_grade = (categorize_educational_level(elots[0]))[0]
 
         form_soldiers.initial['Study_group'] = soldire.Study_group
         if soldire.marital_status == 'مجرد':
@@ -269,7 +320,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
             form_soldiers.initial['Sutter'] = 3
         else:
             form_soldiers.initial['Sutter'] = 0
-        op = categorize_educational_level(grade)[0]
+        op = t_grade
         zirediplom = False
         diplom = False
         ofghdiplom = False
@@ -278,22 +329,33 @@ class sabte_paziresh(LoginRequiredMixin, View):
         doctra = False
         shie = False
         ahle_tasnon = False
+        q_of_edu = []
+        q_of_Religion = []
         if op == 1:
             zirediplom = True
-        elif op == 2:
+            q_of_edu.append(Q(zirediplom=zirediplom))
+        if op == 2:
             diplom = True
-        elif op == 3:
+            q_of_edu.append(Q(diplom=diplom))
+        if op == 3:
             ofghdiplom = True
-        elif op == 4:
+            q_of_edu.append(Q(ofghdiplom=ofghdiplom))
+        if op == 4:
             lisans = True
-        elif op == 5:
+            q_of_edu.append(Q(lisans=lisans))
+        if op == 5:
             ofghlisans = True
-        elif op == 6:
+            q_of_edu.append(Q(ofghlisans=ofghlisans))
+        if op == 6:
             doctra = True
+            q_of_edu.append(Q(doctra=doctra))
+
         if soldire.Religion == "شیعه":
             shie = True
-        elif soldire.Religion == "اهل تسنن":
+            q_of_Religion.append(Q(shie=shie))
+        if soldire.Religion == "اهل تسنن":
             ahle_tasnon = True
+            q_of_Religion.append(Q(ahle_tasnon=ahle_tasnon))
         pc = 0
         for iteam in physical_condition_list:
             if iteam[1] == soldire.physical_condition:
@@ -302,29 +364,32 @@ class sabte_paziresh(LoginRequiredMixin, View):
         moafazrazm = False
         gorehbe = False
         moafazrazm_gorehbe = False
+        q_of_pc = []
         if pc == 1:
             salemm = True
+            q_of_pc.append(Q(salemm=salemm))
         if pc == 2:
             moafazrazm = True
+            q_of_pc.append(Q(moafazrazm=moafazrazm))
         if pc == 3:
             gorehbe = True
+            q_of_pc.append(Q(gorehbe=gorehbe))
         if pc == 4:
             moafazrazm_gorehbe = True
-
+            q_of_pc.append(Q(moafazrazm_gorehbe=moafazrazm_gorehbe))
         bg = battalion_group.objects.filter(takmilzarmit=False).all()
-        bgl = bg.filter(
-            (Q(zirediplom=zirediplom) | Q(diplom=diplom) | Q(ofghdiplom=ofghdiplom) | Q(lisans=lisans) | Q(
-                ofghlisans=ofghlisans) | Q(
-                doctra=doctra)),
-            (Q(shie=shie) | Q(ahle_tasnon=ahle_tasnon)), (
-                    Q(salemm=salemm) | Q(moafazrazm=moafazrazm) | Q(gorehbe=gorehbe) | Q(
-                moafazrazm_gorehbe=moafazrazm_gorehbe))).order_by('order').first()
-        form_soldiers.initial['battalion_group'] = bgl.pk
+        bgl = bg.filter(q_of_edu[0],
+                        (q_of_Religion[0]), (q_of_pc[0])).order_by('gordan__order').first()
+        if bgl is None:
+            form_soldiers.initial['battalion_group'] = 0
+        else:
+            form_soldiers.initial['battalion_group'] = bgl.pk
 
         cx = {'form': form_soldiers}
         return render(request, self.template, cx)
 
     def post(self, request, pk):
+
         soldire = sarbaz.objects.filter(National_Code=pk).first()
         if soldire is None:
             cx = {}
@@ -359,7 +424,8 @@ class sabte_paziresh(LoginRequiredMixin, View):
         for iteam in Grade_list:
             if iteam[1] == soldire.Grade:
                 grade = iteam[0]
-        form_soldiers.initial['Grade'] = grade
+        t_grade = 0
+
         grade_p = 0
         for iteam in Grade_precise_list:
             if iteam[1] == soldire.Grade_precise:
@@ -368,8 +434,12 @@ class sabte_paziresh(LoginRequiredMixin, View):
 
         form_soldiers.initial['educational_level_of_the_system'] = ''
         for elots in educational_level_of_the_system_list:
-            if elots[1] == soldire.educational_level_of_the_system:
+            if elots[1].replace(" ", "").replace("\u200c", "").replace('ي',
+                                                                       'ی') == soldire.educational_level_of_the_system.replace(
+                " ", "").replace("\u200c", "").replace('ي', 'ی'):
+                form_soldiers.initial['Grade'] = (categorize_educational_level(elots[0]))[0]
                 form_soldiers.initial['educational_level_of_the_system'] = elots[0]
+                t_grade = (categorize_educational_level(elots[0]))[0]
 
         form_soldiers.initial['Study_group'] = soldire.Study_group
         if soldire.marital_status == 'مجرد':
@@ -420,7 +490,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
             form_soldiers.initial['Sutter'] = 3
         else:
             form_soldiers.initial['Sutter'] = 0
-        op = categorize_educational_level(grade)[0]
+        op = t_grade
         zirediplom = False
         diplom = False
         ofghdiplom = False
@@ -429,22 +499,33 @@ class sabte_paziresh(LoginRequiredMixin, View):
         doctra = False
         shie = False
         ahle_tasnon = False
+        q_of_edu = []
+        q_of_Religion = []
         if op == 1:
             zirediplom = True
-        elif op == 2:
+            q_of_edu.append(Q(zirediplom=zirediplom))
+        if op == 2:
             diplom = True
-        elif op == 3:
+            q_of_edu.append(Q(diplom=diplom))
+        if op == 3:
             ofghdiplom = True
-        elif op == 4:
+            q_of_edu.append(Q(ofghdiplom=ofghdiplom))
+        if op == 4:
             lisans = True
-        elif op == 5:
+            q_of_edu.append(Q(lisans=lisans))
+        if op == 5:
             ofghlisans = True
-        elif op == 6:
+            q_of_edu.append(Q(ofghlisans=ofghlisans))
+        if op == 6:
             doctra = True
+            q_of_edu.append(Q(doctra=doctra))
+
         if soldire.Religion == "شیعه":
             shie = True
-        elif soldire.Religion == "اهل تسنن":
+            q_of_Religion.append(Q(shie=shie))
+        if soldire.Religion == "اهل تسنن":
             ahle_tasnon = True
+            q_of_Religion.append(Q(ahle_tasnon=ahle_tasnon))
         pc = 0
         for iteam in physical_condition_list:
             if iteam[1] == soldire.physical_condition:
@@ -453,24 +534,26 @@ class sabte_paziresh(LoginRequiredMixin, View):
         moafazrazm = False
         gorehbe = False
         moafazrazm_gorehbe = False
+        q_of_pc = []
         if pc == 1:
             salemm = True
+            q_of_pc.append(Q(salemm=salemm))
         if pc == 2:
             moafazrazm = True
+            q_of_pc.append(Q(moafazrazm=moafazrazm))
         if pc == 3:
             gorehbe = True
+            q_of_pc.append(Q(gorehbe=gorehbe))
         if pc == 4:
             moafazrazm_gorehbe = True
-
+            q_of_pc.append(Q(moafazrazm_gorehbe=moafazrazm_gorehbe))
         bg = battalion_group.objects.filter(takmilzarmit=False).all()
-        bgl = bg.filter(
-            (Q(zirediplom=zirediplom) | Q(diplom=diplom) | Q(ofghdiplom=ofghdiplom) | Q(lisans=lisans) | Q(
-                ofghlisans=ofghlisans) | Q(
-                doctra=doctra)),
-            (Q(shie=shie) | Q(ahle_tasnon=ahle_tasnon)), (
-                    Q(salemm=salemm) | Q(moafazrazm=moafazrazm) | Q(gorehbe=gorehbe) | Q(
-                moafazrazm_gorehbe=moafazrazm_gorehbe))).order_by('order').first()
-        form_soldiers.initial['battalion_group'] = bgl.pk
+        bgl = bg.filter(q_of_edu[0],
+                        (q_of_Religion[0]), (q_of_pc[0])).order_by('gordan__order').first()
+        if bgl is None:
+            form_soldiers.initial['battalion_group'] = 0
+        else:
+            form_soldiers.initial['battalion_group'] = bgl.pk
 
         if not form_soldiers.is_valid():
             cx = {'form': form_soldiers}
@@ -524,6 +607,10 @@ class sabte_paziresh(LoginRequiredMixin, View):
         s = soldire
         s.name = name
         s.family = family
+        count_all_acceptance = sarbaz.objects.filter(willing_to_learn=True).count()
+        s.code_paziresh = int(count_all_acceptance) + 1
+        s.acceptance_code = int(count_all_acceptance) + 1
+        s.has_been_accepted = True
         s.fathers_name = fathers_name
         s.National_Code = National_Code
         s.physical_condition = physical_condition
@@ -558,15 +645,16 @@ class sabte_paziresh(LoginRequiredMixin, View):
             s.Sufficiency_of_mobilization = False
         else:
             s.Sufficiency_of_mobilization = True
-        b = battalion_group.objects.filter(id=f_battalion_group).first()
-        s.battalion_group = b
-        s.Gordan = b.gordan
+        if Sufficiency_of_mobilization == "خیر":
+            b = battalion_group.objects.filter(id=f_battalion_group).first()
+            s.battalion_group = b
+            s.Gordan = b.gordan
         s.attraction_of_the_organization = attraction_of_the_organization
         s.Sutter = Sutter
         s.Grade = Grade
         s.willing_to_learn = True
 
-        c_s = sarbaz.objects.all()
+        c_s = sarbaz.objects.filter(IsCheckout=False, has_been_accepted=False, willing_to_learn=False).all()
         find_max_code_list = [0]
         for iteam in c_s:
             if iteam.code_paziresh is not None:
@@ -579,10 +667,12 @@ class sabte_paziresh(LoginRequiredMixin, View):
         for item in c_s:
             if item.code_gorhan is not None:
                 code_gorhan_list.append(int(item.code_gorhan))
-        s.code_gorhan = max(code_gorhan_list) + 1
+        if Sufficiency_of_mobilization == "خیر":
+            s.code_gorhan = max(code_gorhan_list) + 1
+            b.zarfiat = int(b.zarfiat) - 1
+            b.save()
+
         s.save()
-        b.zarfiat = int(b.zarfiat) - 1
-        b.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
 
@@ -626,11 +716,23 @@ class sater(LoginRequiredMixin, View):
         return render(request, 'soldiers/sater_adi_page.html', cx)
 
 
+class moarefibegordan(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        my_sarbaz = sarbaz.objects.filter(pk=pk).first()
+        cx = {'sarbaz': my_sarbaz}
+        return render(request, 'soldiers/pirint_moarefi_gordan.html', cx)
+
+
 class CreatePaziresh(LoginRequiredMixin, View):
     template = 'soldiers/CreatePazireshForm.html'
     success_url = reverse_lazy('moarefi_be_gordan_va_sater')
 
     def get(self, request):
+        battalion_group_list = [(99999999, '')]
+        g = battalion_group.objects.filter().all()
+        for item in g:
+            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         form_soldiers = FormSoldiersCreate()
         form_soldiers.fields['Religion'].choices = Religion_list
         form_soldiers.fields['province_name'].choices = province_name_list
@@ -661,6 +763,10 @@ class CreatePaziresh(LoginRequiredMixin, View):
         return render(request, self.template, cx)
 
     def post(self, request):
+        battalion_group_list = [(99999999, '')]
+        g = battalion_group.objects.filter().all()
+        for item in g:
+            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         form_soldiers = FormSoldiersCreate(request.POST, request.FILES or None)
         form_soldiers.fields['Religion'].choices = Religion_list
         form_soldiers.fields['province_name'].choices = province_name_list
@@ -772,7 +878,10 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.Sutter = Sutter
         s.Grade = Grade
         s.willing_to_learn = True
-
+        s.has_been_accepted = True
+        count_accepet_soldire = sarbaz.objects.filter(willing_to_learn=True).all().count()
+        s.code_paziresh = int(count_accepet_soldire) + 1
+        s.acceptance_code = int(count_accepet_soldire) + 1
         c_s = sarbaz.objects.all()
         find_max_code_list = [0]
         for iteam in c_s:
@@ -812,6 +921,10 @@ class UpdatePazireshPage(LoginRequiredMixin, View):
 
 
 def get_battalion_group(n):
+    battalion_group_list = [(99999999, '')]
+    g = battalion_group.objects.filter().all()
+    for item in g:
+        battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
     for number, name in battalion_group_list:
         if name == n:
             return number
@@ -820,6 +933,10 @@ def get_battalion_group(n):
 
 class UpdatePaziresh(LoginRequiredMixin, View):
     def get(self, request, pk):
+        battalion_group_list = [(99999999, '')]
+        g = battalion_group.objects.filter().all()
+        for item in g:
+            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         sb = sarbaz.objects.filter(National_Code=pk).first()
         form_soldiers = FormSoldiersUpdate()
         form_soldiers.fields['Religion'].choices = Religion_list
@@ -878,6 +995,10 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         return render(request, 'soldiers/UpdatePazireshForm.html', cx)
 
     def post(self, request, pk):
+        battalion_group_list = [(99999999, '')]
+        g = battalion_group.objects.filter().all()
+        for item in g:
+            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         form = FormSoldiersUpdate(request.POST, request.FILES or None)
         sb = sarbaz.objects.filter(National_Code=pk).first()
         form.fields['Religion'].choices = Religion_list
@@ -1083,6 +1204,10 @@ class exel_add_to_db(View):
                     # مقدار دهی به لیست
                     if str(cell_value).find('ي'):
                         cell_value = str(cell_value).replace('ي', 'ی')
+                    if str(cell_value).find('ك'):
+                        cell_value = str(cell_value).replace('ك', 'ک')
+                    if str(cell_value).find('ك'):
+                        cell_value = str(cell_value).replace('ؤ', 'و')
                     one_soldire_list.append(cell_value)
                 if not str(one_soldire_list[1]) == "null":
                     soldire.National_Code = str(one_soldire_list[1])
@@ -1126,55 +1251,23 @@ class exel_add_to_db(View):
                     soldire.marital_status = str(one_soldire_list[20])
                 soldire.willing_to_learn = False
                 soldire.Sutter = "مجوز دارد"
+                if not str(one_soldire_list[0]) == "null":
+                    op = str(one_soldire_list[0])
+                    if op == "پیام آور بهداشت":
+                        soldire.Amriye = True
+                    if op == "امریه دار":
+                        soldire.Amriye = True
                 temp = 0
                 for i in educational_level_of_the_system_list:
-                    if i[1] == one_soldire_list[9]:
+                    if i[1].replace(" ", "").replace("\u200c", "") == one_soldire_list[9].replace(" ", "").replace(
+                            "\u200c", ""):
                         temp = i[0]
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
-
-                soldire.save()
+                check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list)).first()
+                if check_soldire is None:
+                    soldire.save()
         return render(request, 'soldiers/AddExelToDb.html', cx)
 
 
-def categorize_educational_level(level_id):
-    if level_id in {14, 15, 16, 17, 18, 19, 20, 21, 22, 24}:
-        return 1, 'زیر دیپلم'
-    elif level_id in {13, 25}:
-        return 2, 'دیپلم'
-    elif level_id in {4, 5, 6}:
-        return 3, 'فوق دیپلم'
-    elif level_id in {9, 10, 11, 12}:
-        return 4, 'لیسانس'
-    elif level_id in {7, 8}:
-        return 5, 'فوق لیسانس'
-    elif level_id in {2, 3}:
-        return 6, 'دکتری'
-    elif level_id == 0:
-        return 7, 'نامشخص'
-    else:
-        return 7, 'نامشخص'
-
-
-def map_educational_level_to_grade(level):
-    grade_precise_mapping = {
-        'بی‌سواد': [],
-        'نهضت سواد آموزی': [],
-        'ابتدایی': [14, 15, 16, 17, 18, 19],
-        'راهنمایی': [20, 21, 22],
-        'سیکل': [],
-        'دبیرستان': [23, 24],
-        'زیر دیپلم': [],
-        'دیپلم': [13, 25],
-        'فوق دیپلم': [4, 5, 6],
-        'لیسانس': [9, 10, 11, 12],
-        'فوق لیسانس': [7, 8],
-        'دکتری': [2, 3],
-        'نامشخص': [0, 1]
-    }
-
-    for grade_level, grade_name in Grade_precise_list:
-        if level in grade_precise_mapping[grade_name]:
-            return grade_level, grade_name
-
-    return None
+situation_list = [(1, 'عادی'), (2, 'پیام آور بهداشت'), (3, 'امریه دار'), (4, 'خاتم')]

@@ -31,7 +31,7 @@
                                 <td>{{ c.create_time.date }}</td>
                                 <td>{{ c.c_type }}</td>
                                 <td>
-                                    <a class="btn btn-app" href="">
+                                    <a class="btn btn-app" href="{% url 'PrintCheckoutLetter' pk=c.pk %}">
                                         <i class="fa fa-edit"></i> چاپ برگه
                                     </a>
                                     <a class="btn btn-app" href="">

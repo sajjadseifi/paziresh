@@ -28,6 +28,7 @@
                             <tbody>
                             <tr>
                                 <th>کد داخلی</th>
+                                <th>کد پذیرش</th>
                                 <th>نام</th>
                                 <th>نام خانوادگی</th>
                                 <th>کدملی</th>
@@ -39,6 +40,7 @@
                             {% for sodire in s %}
                                 <tr>
                                     <td>{{ sodire.pk }}</td>
+                                    <td>{{ sodire.acceptance_code }}</td>
                                     <td>{{ sodire.name }}</td>
                                     <td>{{ sodire.family }}</td>
                                     <td>{{ sodire.National_Code }}</td>
