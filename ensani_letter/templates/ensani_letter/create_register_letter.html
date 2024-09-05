@@ -1,0 +1,66 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+{% endblock %}
+
+{% block main %}
+
+    <div class="box box-warning">
+        <div class="box-header with-border">
+            <h3 class="box-title">ثبت گواهی عضویت</h3>
+        </div>
+
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.soldire.label }}
+                    {{ form.soldire }}
+                    <span style='color: red'>{{ form.soldire.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.subject.label }}
+                    {{ form.subject }}
+                    <span style='color: red'>{{ form.subject.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.destination.label }}
+                    {{ form.destination }}
+                    <span style='color: red'>{{ form.destination.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.destination_letter_number.label }}
+                    {{ form.destination_letter_number }}
+                    <span style='color: red'>{{ form.destination_letter_number.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.destination_letter_date.label }}
+                    {{ form.destination_letter_date }}
+                    <span style='color: red'>{{ form.destination_letter_date.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.description.label }}
+                    {{ form.description }}
+                    <span style='color: red'>{{ form.description.errors }}</span>
+                </div>
+                <button type="submit" class="btn btn-success pull-right">ثبت
+                </button>
+            </form>
+
+        </div>
+        <!-- /.box-body -->
+    </div>
+
+{% endblock %}
+
+
+{% block footer %}
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}
