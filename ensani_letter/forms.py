@@ -23,6 +23,36 @@ class CreateCheckoutLetterFrom(forms.Form):
     )
 
 
+class CreateRegisterLetterFrom(forms.Form):
+    soldire = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control select2"}
+        ),
+        label='سرباز',
+        required=False
+    )
+    description = forms.CharField(
+        label='توضیحات',
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
+    )
+    destination = forms.CharField(
+        label='مقصد نامه',
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
+    )
+    destination_letter_number = forms.CharField(
+        label='شماره نامه وارده',
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
+    )
+    destination_letter_date = forms.CharField(
+        label='تاریخ نامه وارده',
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
+    )
+
+
 class CreateCommissionLetterFrom(forms.Form):
     subject = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "subject"}),
@@ -39,6 +69,21 @@ class CreateCommissionLetterFrom(forms.Form):
             attrs={'class': "form-control select2"}
         ),
         label='مقصد نامه',
+        required=False
+    )
+
+
+class CreateBeforeCourseCommissionLetterFrom(forms.Form):
+    description = forms.CharField(
+        label='توضیحات',
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
+    )
+    soldire = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control select2"}
+        ),
+        label='سرباز',
         required=False
     )
 

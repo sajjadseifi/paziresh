@@ -19,18 +19,19 @@ for item in g:
 
 
 def categorize_educational_level(level_id):
-    if level_id in {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}:
+    if level_id in {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 23, 24, 25,
+                    37}:
         return 1, 'زیر دیپلم'
     elif level_id in {13, 25, 26}:
         return 2, 'دیپلم'
-    elif level_id in {4, 5, 3}:
+    elif level_id in {4, 5, 3, 6}:
         return 3, 'فوق دیپلم'
-    elif level_id in {9, 10, 11, 12}:
+    elif level_id in {9, 10, 11, 12, 1, 40,41}:
         return 4, 'لیسانس'
     elif level_id in {7, 8}:
         return 5, 'فوق لیسانس'
-    elif level_id in {2, }:
-        return 6, ' '
+    elif level_id in {2, 3}:
+        return 6, 'دکتری'
     elif level_id == 0:
         return 7, 'نامشخص'
     else:
@@ -41,17 +42,17 @@ def map_educational_level_to_grade(level):
     grade_precise_mapping = {
         'بی‌سواد': [],
         'نهضت سواد آموزی': [],
-        'ابتدایی': [14, 15, 16, 17, 18, 19],
-        'راهنمایی': [20, 21, 22],
+        'ابتدایی': [14, 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 32, 33],
+        'راهنمایی': [20, 21, 22, 34, 35, 36],
         'سیکل': [],
-        'دبیرستان': [23, 24],
+        'دبیرستان': [23, 24, 25, 37, 38, 39],
         'زیر دیپلم': [],
-        'دیپلم': [13, 25, 26],
+        'دیپلم': [13, 26],
         'فوق دیپلم': [4, 5, 6],
-        'لیسانس': [9, 10, 11, 12],
+        'لیسانس': [9, 10, 11, 12, 1, 40,41],
         'فوق لیسانس': [7, 8],
         'دکتری': [2, 3],
-        'نامشخص': [0, 1]
+        'نامشخص': [0]
     }
 
     for grade_level, grade_name in Grade_precise_list:
@@ -64,51 +65,52 @@ def map_educational_level_to_grade(level):
 grade_precise_mapping = {
     'بی‌سواد': [],
     'نهضت سواد آموزی': [],
-    'ابتدایی': [14, 15, 16, 17, 18, 19],
-    'راهنمایی': [20, 21, 22],
+    'ابتدایی': [14, 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 32, 33],
+    'راهنمایی': [20, 21, 22, 34, 35, 36],
     'سیکل': [],
-    'دبیرستان': [23, 24, 25],
+    'دبیرستان': [23, 24, 25, 37, 38, 39],
     'زیر دیپلم': [],
     'دیپلم': [13, 26],
     'فوق دیپلم': [4, 5, 6],
-    'لیسانس': [9, 10, 11, 12],
+    'لیسانس': [9, 10, 11, 12, 1, 40,41],
     'فوق لیسانس': [7, 8],
     'دکتری': [2, 3],
-    'نامشخص': [0, 1]
+    'نامشخص': [0, ]
 }
 
 province_name_list = [
+    (0, 'نامشخص'),
     (1, 'مازندران'),
     (3, 'خراسان رضوی'),
     (4, 'خراسان جنوبی'),
-    (5, 'گلستان'),
-    (6, 'گیلان'),
-    (7, 'تهران'),
-    (8, 'سمنان'),
-    (9, 'البرز'),
-    (10, 'یزد'),
-    (11, 'هرمزگان'),
-    (12, 'کردستان'),
-    (13, 'ایلام'),
-    (14, 'همدان'),
-    (15, 'زنجان'),
-    (16, 'کردستان'),
-    (17, 'کرمان'),
-    (18, 'لرستان'),
-    (19, 'اردبیل'),
-    (20, 'مرکزی'),
-    (21, 'سیستان و بلوچستان'),
-    (22, 'آذربایجان غربی'),
-    (23, 'قزوین'),
-    (24, 'اصفهان'),
-    (25, 'آذربایجان شرقی'),
-    (26, 'قم'),
-    (27, 'کهگیلویه و بویراحمد'),
-    (28, 'فارس'),
-    (29, 'چهارمحال و بختیاری'),
-    (30, 'کرمانشاه'),
-    (31, 'خوزستان'),
-    (32, 'نامشخص')
+    (5, 'خراسان شمالی'),
+    (6, 'گلستان'),
+    (7, 'گیلان'),
+    (8, 'تهران'),
+    (9, 'سمنان'),
+    (10, 'البرز'),
+    (11, 'یزد'),
+    (12, 'هرمزگان'),
+    (13, 'کردستان'),
+    (14, 'ایلام'),
+    (15, 'همدان'),
+    (16, 'زنجان'),
+    (17, 'کردستان'),
+    (18, 'کرمان'),
+    (19, 'لرستان'),
+    (20, 'اردبیل'),
+    (21, 'مرکزی'),
+    (22, 'سیستان و بلوچستان'),
+    (23, 'آذربایجان غربی'),
+    (24, 'قزوین'),
+    (25, 'اصفهان'),
+    (26, 'آذربایجان شرقی'),
+    (27, 'قم'),
+    (28, 'کهگیلویه و بویراحمد'),
+    (29, 'فارس'),
+    (30, 'چهارمحال و بختیاری'),
+    (31, 'کرمانشاه'),
+    (32, 'خوزستان'),
 ]
 educational_level_of_the_system_list = [
     (0, "نامشخص"),
@@ -138,6 +140,20 @@ educational_level_of_the_system_list = [
     (24, "پایه یازدهم"),
     (25, "پایه دوازدهم"),
     (26, "پیش دانشگاهی"),
+    (27, "اول ابتدایی"),
+    (29, "دوم ابتدایی"),
+    (30, "سوم ابتدایی"),
+    (31, "چهارم ابتدایی"),
+    (32, "پنجم ابتدایی"),
+    (33, "ششم ابتدایی"),
+    (34, "اول راهنمایی"),
+    (35, "دوم راهنمایی"),
+    (36, "سوم راهنمایی"),
+    (37, "اول دبیرستان"),
+    (38, "دوم دبیرستان"),
+    (39, "سوم دبیرستان"),
+    (40, "حوزوی سطح ىو اهل سنت"),
+    (41, 'لیسانس پزشکی ناپیوسته'),
 ]
 
 Renewal_of_the_previous_period_list = [(0, ""), (1, 'المهدی'), (2, 'شیراز')]
@@ -152,24 +168,25 @@ Religion_list = [(1, 'شیعه'), (2, 'اهل تسنن'), (3, 'نامشخص')]
 physical_condition_list = [(1, 'سالم'), (2, 'معاف از رزم'), (3, 'گروه ب'), (4, 'معاف+گروه ب'),
                            (0, 'نامشخص'), ]
 Type_of_disease_list = [
-    (0, 'سالم'),
-    (1, 'عمومی'),
-    (2, 'اعصاب و روان'),
-    (3, 'ارتوپدی'),
-    (4, 'خون و انکولوژی'),
-    (5, 'چشم و عوارض بینایی'),
-    (6, 'ریه و قفسه صدری'),
-    (7, 'پوست و بافت‌های زیر پوست'),
-    (8, 'دستگاه گوارش و جراحی عمومی'),
-    (9, 'جراحی مغز و اعصاب'),
-    (10, 'دستگاه ادراری و تناسلی'),
-    (11, 'داخلی مغز و اعصاب'),
-    (12, 'غدد مترشحه داخلی'),
-    (13, 'قلب و عروق'),
-    (14, 'کمیسیون'),
-    (15, 'عفونی'),
-    (16, 'بیماری‌های غدد مترشحه داخلی'),
-    (17, 'آموزشگاه')
+    (1, "نامشخص"),
+    (2, 'سالم'),
+    (3, 'عمومی'),
+    (4, 'اعصاب و روان'),
+    (5, 'ارتوپدی'),
+    (6, 'خون و انکولوژی'),
+    (7, 'چشم و عوارض بینایی'),
+    (8, 'ریه و قفسه صدری'),
+    (9, 'پوست و بافت‌های زیر پوست'),
+    (10, 'دستگاه گوارش و جراحی عمومی'),
+    (11, 'جراحی مغز و اعصاب'),
+    (12, 'دستگاه ادراری و تناسلی'),
+    (13, 'داخلی مغز و اعصاب'),
+    (14, 'غدد مترشحه داخلی'),
+    (15, 'قلب و عروق'),
+    (16, 'کمیسیون'),
+    (17, 'عفونی'),
+    (18, 'بیماری‌های غدد مترشحه داخلی'),
+    (19, 'آموزشگاه')
 ]
 
 Grade_list = [
@@ -195,10 +212,17 @@ Grade_precise_list = [
     (10, 'لیسانس'),
     (11, 'فوق لیسانس'),
     (12, 'دکتری'),
-    (13, 'نامشخص'), ]
+    (13, 'نامشخص'),
+]
 
 Amriye_list = [(1, 'بله'), (2, 'خیر')]
 Amriye_organization_lsit = [(0, ''), (1, 'test1'), (2, 'test2')]
+
+
+def get_id_of_list(ls, oj):
+    for iteam in ls:
+        if iteam[1] == str(oj):
+            return iteam[0]
 
 
 # end static data
@@ -211,9 +235,6 @@ def paziresh_code_meli(request, *args, **kwargs):
         return HttpResponseRedirect(reverse("get_sarbaz", args=[code_meli]))
 
     return render(request, 'soldiers/paziresh_idcode_view.html', context={'SarbazCodeMeli': sarbaz_code_meli})
-
-
-# work
 
 
 class sabte_paziresh(LoginRequiredMixin, View):
@@ -247,9 +268,12 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.initial['family'] = soldire.family
         form_soldiers.initial['fathers_name'] = soldire.fathers_name
         form_soldiers.initial['National_Code'] = soldire.National_Code
-        form_soldiers.initial['physical_condition'] = soldire.physical_condition
-        form_soldiers.initial['Type_of_disease'] = soldire.Type_of_disease
+        form_soldiers.initial['physical_condition'] = get_id_of_list(physical_condition_list,
+                                                                     soldire.physical_condition)
+        form_soldiers.initial['Type_of_disease'] = get_id_of_list(Type_of_disease_list, soldire.Type_of_disease)
         form_soldiers.initial['health_insurance_card'] = soldire.health_insurance_card
+        form_soldiers.initial['Relative_to_inclusive'] = soldire.Relative_to_inclusive
+        form_soldiers.initial['Relative_to_inclusive_number'] = soldire.Relative_to_inclusive_number
         grade = 7
         for iteam in Grade_list:
             if iteam[1] == soldire.Grade:
@@ -285,7 +309,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         else:
             form_soldiers.initial['Religion'] = 3
 
-        form_soldiers.initial['Religion'] = soldire.Religion
+        form_soldiers.initial['Religion'] = get_id_of_list(Religion_list, soldire.Religion)
         form_soldiers.initial['Date_of_birth'] = soldire.Date_of_birth
         form_soldiers.initial['place_of_birth'] = soldire.place_of_birth
         form_soldiers.initial['phone_number'] = soldire.phone_number
@@ -301,17 +325,22 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.initial['Place_of_Issue'] = soldire.Place_of_Issue
         form_soldiers.initial['height'] = soldire.height
         form_soldiers.initial['Weight'] = soldire.Weight
-        form_soldiers.initial['Renewal_of_the_previous_period'] = soldire.Renewal_of_the_previous_period
+        form_soldiers.initial['Renewal_of_the_previous_period'] = get_id_of_list(Renewal_of_the_previous_period_list,
+                                                                                 soldire.Renewal_of_the_previous_period)
         form_soldiers.initial['Course_renewal_date'] = soldire.Course_renewal_date
-        form_soldiers.initial['Reason_for_renewing_the_course'] = soldire.Reason_for_renewing_the_course
+        form_soldiers.initial['Reason_for_renewing_the_course'] = get_id_of_list(Reason_for_renewing_the_course_list,
+                                                                                 soldire.Reason_for_renewing_the_course)
         form_soldiers.initial['Renewal_of_the_previous_period_code'] = soldire.Renewal_of_the_previous_period_code
         if soldire.Amriye is False:
             form_soldiers.initial['Amriye'] = 2
         else:
             form_soldiers.initial['Amriye'] = 1
-        form_soldiers.initial['Amriye_organization'] = soldire.Amriye_organization
-        form_soldiers.initial['Sufficiency_of_mobilization'] = soldire.Sufficiency_of_mobilization
-        form_soldiers.initial['attraction_of_the_organization'] = soldire.attraction_of_the_organization
+        form_soldiers.initial['Amriye_organization'] = get_id_of_list(Amriye_organization_lsit,
+                                                                      soldire.Amriye_organization)
+        form_soldiers.initial['Sufficiency_of_mobilization'] = get_id_of_list(Sufficiency_of_mobilization_list,
+                                                                              soldire.Sufficiency_of_mobilization)
+        form_soldiers.initial['attraction_of_the_organization'] = get_id_of_list(attraction_of_the_organization_list,
+                                                                                 soldire.attraction_of_the_organization)
         if soldire.Sutter == 'مجوز دارد':
             form_soldiers.initial['Sutter'] = 1
         elif soldire.Sutter == 'نیاز به بررسی':
@@ -420,6 +449,8 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.initial['physical_condition'] = soldire.physical_condition
         form_soldiers.initial['Type_of_disease'] = soldire.Type_of_disease
         form_soldiers.initial['health_insurance_card'] = soldire.health_insurance_card
+        form_soldiers.initial['Relative_to_inclusive'] = soldire.Relative_to_inclusive
+        form_soldiers.initial['Relative_to_inclusive_number'] = soldire.Relative_to_inclusive_number
         grade = 7
         for iteam in Grade_list:
             if iteam[1] == soldire.Grade:
@@ -563,27 +594,48 @@ class sabte_paziresh(LoginRequiredMixin, View):
         fathers_name = form_soldiers.cleaned_data['fathers_name']
         National_Code = form_soldiers.cleaned_data['National_Code']
         physical_condition_id = form_soldiers.cleaned_data['physical_condition']
-        physical_condition = physical_condition_list[int(physical_condition_id) - 1][1]
+        physical_condition = ""
+        for iteam in physical_condition_list:
+            if iteam[0] == int(physical_condition_id):
+                physical_condition = iteam[1]
         Type_of_disease_id = form_soldiers.cleaned_data['Type_of_disease']
-        Type_of_disease = Type_of_disease_list[int(Type_of_disease_id) - 1][1]
+        Type_of_disease = ""
+        for iteam in Type_of_disease_list:
+            if iteam[0] == int(Type_of_disease_id):
+                Type_of_disease = iteam[1]
         health_insurance_card = form_soldiers.cleaned_data['health_insurance_card']
         Grade_id = form_soldiers.cleaned_data['Grade']
-        Grade = Grade_list[int(Grade_id) - 1][1]
+        Grade = ""
+        for iteam in Grade_list:
+            if iteam[0] == int(Grade_id):
+                Grade = iteam[1]
         Grade_precise_id = form_soldiers.cleaned_data['Grade_precise']
-        Grade_precise = Grade_precise_list[int(Grade_precise_id) - 1][1]
+        Grade_precise = ""
+        for iteam in Grade_precise_list:
+            if iteam[0] == int(Grade_precise_id):
+                Grade_precise = iteam[1]
         educational_level_of_the_system = form_soldiers.cleaned_data['educational_level_of_the_system']
         Study_group = form_soldiers.cleaned_data['Study_group']
         marital_status_id = form_soldiers.cleaned_data['marital_status']
-        marital_status = marital_status_list[int(marital_status_id) - 1][1]
+        marital_status = ""
+        for iteam in marital_status_list:
+            if iteam[0] == int(marital_status_id):
+                marital_status = iteam[1]
         Religion_id = form_soldiers.cleaned_data['Religion']
-        Religion = Religion_list[int(Religion_id) - 1][1]
+        Religion = ""
+        for iteam in Religion_list:
+            if iteam[0] == int(Religion_id):
+                Religion = iteam[1]
         Date_of_birth = form_soldiers.cleaned_data['Date_of_birth']
         place_of_birth = form_soldiers.cleaned_data['place_of_birth']
         phone_number = form_soldiers.cleaned_data['phone_number']
         home_phone_number = form_soldiers.cleaned_data['home_phone_number']
         Date_of_dispatch = form_soldiers.cleaned_data['Date_of_dispatch']
         province_name_id = form_soldiers.cleaned_data['province_name']
-        province_name = province_name_list[int(province_name_id) - 1][1]
+        province_name = ""
+        for iteam in province_name_list:
+            if iteam[0] == int(province_name_id):
+                province_name = iteam[1]
         city_name = form_soldiers.cleaned_data['city_name']
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
@@ -591,22 +643,42 @@ class sabte_paziresh(LoginRequiredMixin, View):
         Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
-        Amriye = Amriye_list[int(Amriye_id) - 1][1]
+        Amriye = ""
+        for iteam in Amriye_list:
+            if iteam[0] == int(Amriye_id):
+                Amriye = iteam[1]
         Amriye_organization_id = form_soldiers.cleaned_data['Amriye_organization']
-        Amriye_organization = Amriye_organization_lsit[int(Amriye_organization_id) - 1][1]
+        Amriye_organization = ""
+        for iteam in Amriye_organization_lsit:
+            if iteam[0] == int(Amriye_organization_id):
+                Amriye_organization = iteam[1]
         Sufficiency_of_mobilization_id = form_soldiers.cleaned_data['Sufficiency_of_mobilization']
-        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[int(Sufficiency_of_mobilization_id) - 1][1]
+        Sufficiency_of_mobilization = ""
+        for iteam in Sufficiency_of_mobilization_list:
+            if iteam[0] == int(Sufficiency_of_mobilization_id):
+                Sufficiency_of_mobilization = iteam[1]
         Place_of_Issue = form_soldiers.cleaned_data['Place_of_Issue']
         Renewal_of_the_previous_period_code = form_soldiers.cleaned_data['Renewal_of_the_previous_period_code']
+
+        Relative_to_inclusive = form_soldiers.cleaned_data['Relative_to_inclusive']
+        Relative_to_inclusive_number = form_soldiers.cleaned_data['Relative_to_inclusive']
+
         attraction_of_the_organization_id = form_soldiers.cleaned_data['attraction_of_the_organization']
-        attraction_of_the_organization = \
-            attraction_of_the_organization_list[int(attraction_of_the_organization_id) - 1][1]
+        attraction_of_the_organization = ""
+        for iteam in attraction_of_the_organization_list:
+            if iteam[0] == int(attraction_of_the_organization_id):
+                attraction_of_the_organization = iteam[1]
         Sutter_id = form_soldiers.cleaned_data['Sutter']
-        Sutter = Sutter_list[int(Sutter_id) - 1][1]
+        Sutter = ""
+        for iteam in Sutter_list:
+            if iteam[0] == int(Sutter_id):
+                Sutter = iteam[1]
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
         s = soldire
         s.name = name
         s.family = family
+        s.Relative_to_inclusive = Relative_to_inclusive
+        s.Relative_to_inclusive_number = Relative_to_inclusive_number
         count_all_acceptance = sarbaz.objects.filter(willing_to_learn=True).count()
         s.code_paziresh = int(count_all_acceptance) + 1
         s.acceptance_code = int(count_all_acceptance) + 1
@@ -618,7 +690,11 @@ class sabte_paziresh(LoginRequiredMixin, View):
         s.health_insurance_card = health_insurance_card
         s.Grade = s.Grade
         s.Grade_precise = Grade_precise
-        s.educational_level_of_the_system = educational_level_of_the_system
+        educational_level_of_the_system_name = ""
+        for iteam in educational_level_of_the_system_list:
+            if iteam[0] == int(educational_level_of_the_system):
+                educational_level_of_the_system_name = iteam[1]
+        s.educational_level_of_the_system = educational_level_of_the_system_name
         s.Study_group = Study_group
         s.marital_status = marital_status
         s.Religion = Religion
@@ -793,27 +869,45 @@ class CreatePaziresh(LoginRequiredMixin, View):
         fathers_name = form_soldiers.cleaned_data['fathers_name']
         National_Code = form_soldiers.cleaned_data['National_Code']
         physical_condition_id = form_soldiers.cleaned_data['physical_condition']
-        physical_condition = physical_condition_list[int(physical_condition_id) - 1][1]
+        physical_condition = ""
+        for iteam in physical_condition_list:
+            if iteam[0] == int(physical_condition_id):
+                physical_condition = iteam[1]
         Type_of_disease_id = form_soldiers.cleaned_data['Type_of_disease']
-        Type_of_disease = Type_of_disease_list[int(Type_of_disease_id) - 1][1]
+        Type_of_disease = ""
+        for iteam in Type_of_disease_list:
+            if iteam[0] == int(Type_of_disease_id):
+                Type_of_disease = iteam[1]
         health_insurance_card = form_soldiers.cleaned_data['health_insurance_card']
         Grade_id = form_soldiers.cleaned_data['Grade']
-        Grade = Grade_list[int(Grade_id) - 1][1]
+        Grade = ""
+        for iteam in Grade_list:
+            if iteam[0] == int(Grade_id):
+                Grade = iteam[1]
         Grade_precise_id = form_soldiers.cleaned_data['Grade_precise']
-        Grade_precise = Grade_precise_list[int(Grade_precise_id) - 1][1]
+        Grade_precise = ""
+        for iteam in Grade_precise_list:
+            if iteam[0] == int(Grade_precise_id):
+                Grade_precise = iteam[1]
         educational_level_of_the_system = form_soldiers.cleaned_data['educational_level_of_the_system']
         Study_group = form_soldiers.cleaned_data['Study_group']
         marital_status_id = form_soldiers.cleaned_data['marital_status']
-        marital_status = marital_status_list[int(marital_status_id) - 1][1]
+        marital_status = ""
+        for iteam in marital_status_list:
+            if iteam[0] == int(marital_status_id):
+                marital_status = iteam[1]
         Religion_id = form_soldiers.cleaned_data['Religion']
-        Religion = Religion_list[int(Religion_id) - 1][1]
+        Religion = ""
+        for iteam in Religion_list:
+            if iteam[0] == int(Religion_id):
+                Religion = iteam[1]
         Date_of_birth = form_soldiers.cleaned_data['Date_of_birth']
         place_of_birth = form_soldiers.cleaned_data['place_of_birth']
         phone_number = form_soldiers.cleaned_data['phone_number']
         home_phone_number = form_soldiers.cleaned_data['home_phone_number']
         Date_of_dispatch = form_soldiers.cleaned_data['Date_of_dispatch']
         province_name_id = form_soldiers.cleaned_data['province_name']
-        province_name = province_name_list[int(province_name_id) - 1][1]
+        province_name = province_name_list[int(province_name_id)][1]
         city_name = form_soldiers.cleaned_data['city_name']
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
@@ -821,18 +915,32 @@ class CreatePaziresh(LoginRequiredMixin, View):
         Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
-        Amriye = Amriye_list[int(Amriye_id) - 1][1]
+        Amriye = ""
+        for iteam in Amriye_list:
+            if iteam[0] == int(Amriye_id):
+                Amriye = iteam[1]
         Amriye_organization_id = form_soldiers.cleaned_data['Amriye_organization']
-        Amriye_organization = Amriye_organization_lsit[int(Amriye_organization_id) - 1][1]
+        Amriye_organization = ""
+        for iteam in Amriye_organization_lsit:
+            if iteam[0] == int(Amriye_organization_id):
+                Amriye_organization = iteam[1]
         Sufficiency_of_mobilization_id = form_soldiers.cleaned_data['Sufficiency_of_mobilization']
-        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[int(Sufficiency_of_mobilization_id) - 1][1]
+        Sufficiency_of_mobilization = ""
+        for iteam in Sufficiency_of_mobilization_list:
+            if iteam[0] == int(Sufficiency_of_mobilization_id):
+                Sufficiency_of_mobilization = iteam[1]
         Place_of_Issue = form_soldiers.cleaned_data['Place_of_Issue']
         Renewal_of_the_previous_period_code = form_soldiers.cleaned_data['Renewal_of_the_previous_period_code']
         attraction_of_the_organization_id = form_soldiers.cleaned_data['attraction_of_the_organization']
-        attraction_of_the_organization = \
-            attraction_of_the_organization_list[int(attraction_of_the_organization_id) - 1][1]
+        attraction_of_the_organization = ""
+        for iteam in attraction_of_the_organization_list:
+            if iteam[0] == int(attraction_of_the_organization_id):
+                attraction_of_the_organization = iteam[1]
         Sutter_id = form_soldiers.cleaned_data['Sutter']
-        Sutter = Sutter_list[int(Sutter_id) - 1][1]
+        Sutter = ""
+        for iteam in Sutter_list:
+            if iteam[0] == int(Sutter_id):
+                Sutter = iteam[1]
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
         s = sarbaz()
         s.name = name
@@ -961,21 +1069,36 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form_soldiers.initial['family'] = sb.family
         form_soldiers.initial['fathers_name'] = sb.fathers_name
         form_soldiers.initial['National_Code'] = sb.National_Code
-        form_soldiers.initial['physical_condition'] = sb.physical_condition
-        form_soldiers.initial['Type_of_disease'] = sb.Type_of_disease
+        form_soldiers.initial['physical_condition'] = get_id_of_list(physical_condition_list, sb.physical_condition)
+        form_soldiers.initial['Type_of_disease'] = get_id_of_list(Type_of_disease_list, sb.Type_of_disease)
         form_soldiers.initial['health_insurance_card'] = sb.health_insurance_card
-        form_soldiers.initial['Grade'] = sb.Grade
-        form_soldiers.initial['Grade_precise'] = sb.Grade_precise
-        form_soldiers.initial['educational_level_of_the_system'] = sb.educational_level_of_the_system
+        form_soldiers.initial['Grade'] = 7
+        for iteam in Grade_list:
+            if iteam[1] == sb.Grade:
+                form_soldiers.initial['Grade'] = iteam[0]
+        form_soldiers.initial['Grade_precise'] = 13
+        for iteam in Grade_precise_list:
+            if iteam[1] == sb.Grade_precise:
+                form_soldiers.initial['Grade_precise'] = iteam[0]
+
+        educational_level_of_the_system = ""
+        for iteam in educational_level_of_the_system_list:
+            if iteam[1] == sb.educational_level_of_the_system:
+                educational_level_of_the_system = iteam[0]
+
+        form_soldiers.initial['educational_level_of_the_system'] = educational_level_of_the_system
         form_soldiers.initial['Study_group'] = sb.Study_group
-        form_soldiers.initial['marital_status'] = sb.marital_status
-        form_soldiers.initial['Religion'] = sb.Religion
+        form_soldiers.initial['marital_status'] = get_id_of_list(marital_status_list, sb.marital_status)
+        form_soldiers.initial['Religion'] = get_id_of_list(Religion_list, sb.Religion)
         form_soldiers.initial['Date_of_birth'] = sb.Date_of_birth
         form_soldiers.initial['place_of_birth'] = sb.place_of_birth
         form_soldiers.initial['phone_number'] = sb.phone_number
         form_soldiers.initial['home_phone_number'] = sb.home_phone_number
         form_soldiers.initial['Date_of_dispatch'] = sb.Date_of_dispatch
-        form_soldiers.initial['province_name'] = sb.province_name
+        form_soldiers.initial['province_name'] = 0
+        for iteam in province_name_list:
+            if sb.province_name == iteam[1]:
+                form_soldiers.initial['province_name'] = iteam[0]
         form_soldiers.initial['city_name'] = sb.city_name
         form_soldiers.initial['Address'] = sb.Address
         form_soldiers.initial['Place_of_Issue'] = sb.Place_of_Issue
@@ -985,12 +1108,24 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form_soldiers.initial['Course_renewal_date'] = sb.Course_renewal_date
         form_soldiers.initial['Reason_for_renewing_the_course'] = sb.Reason_for_renewing_the_course
         form_soldiers.initial['Renewal_of_the_previous_period_code'] = sb.Renewal_of_the_previous_period_code
-        form_soldiers.initial['Amriye'] = sb.Amriye
-        form_soldiers.initial['Amriye_organization'] = sb.Amriye_organization
-        form_soldiers.initial['Sufficiency_of_mobilization'] = sb.Sufficiency_of_mobilization
-        form_soldiers.initial['attraction_of_the_organization'] = sb.attraction_of_the_organization
-        form_soldiers.initial['Sutter'] = sb.Sutter
-        form_soldiers.initial['battalion_group'] = sb.battalion_group.pk
+        if sb.Amriye is True:
+            form_soldiers.initial['Amriye'] = 1
+        else:
+            form_soldiers.initial['Amriye'] = 2
+        form_soldiers.initial['Amriye_organization'] = get_id_of_list(Amriye_organization_lsit, sb.Amriye_organization)
+        form_soldiers.initial['Sufficiency_of_mobilization'] = get_id_of_list(Sufficiency_of_mobilization_list,
+                                                                              sb.Sufficiency_of_mobilization)
+        form_soldiers.initial['attraction_of_the_organization'] = get_id_of_list(attraction_of_the_organization_list,
+                                                                                 sb.attraction_of_the_organization)
+        for iteam in Sutter_list:
+            if iteam[1] == sb.Sutter:
+                form_soldiers.initial['Sutter'] = iteam[0]
+        form_soldiers.initial['Relative_to_inclusive'] = sb.Relative_to_inclusive
+        form_soldiers.initial['Relative_to_inclusive_number'] = sb.Relative_to_inclusive_number
+        if sb.battalion_group is not None:
+            form_soldiers.initial['battalion_group'] = sb.battalion_group.pk
+        else:
+            form_soldiers.initial['battalion_group'] = 0
         cx = {'form': form_soldiers}
         return render(request, 'soldiers/UpdatePazireshForm.html', cx)
 
@@ -1035,7 +1170,12 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form.initial['phone_number'] = sb.phone_number
         form.initial['home_phone_number'] = sb.home_phone_number
         form.initial['Date_of_dispatch'] = sb.Date_of_dispatch
-        form.initial['province_name'] = sb.province_name
+        form.initial['Relative_to_inclusive'] = sb.Relative_to_inclusive
+        form.initial['Relative_to_inclusive_number'] = sb.Relative_to_inclusive_number
+        form.initial['province_name'] = 0
+        for iteam in province_name_list:
+            if sb.province_name == iteam[1]:
+                form.initial['province_name'] = iteam[0]
         form.initial['city_name'] = sb.city_name
         form.initial['Address'] = sb.Address
         form.initial['Place_of_Issue'] = sb.Place_of_Issue
@@ -1045,7 +1185,10 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form.initial['Course_renewal_date'] = sb.Course_renewal_date
         form.initial['Reason_for_renewing_the_course'] = sb.Reason_for_renewing_the_course
         form.initial['Renewal_of_the_previous_period_code'] = sb.Renewal_of_the_previous_period_code
-        form.initial['Amriye'] = sb.Amriye
+        if sb.Amriye is True:
+            form.initial['Amriye'] = 1
+        else:
+            form.initial['Amriye'] = 2
         form.initial['Amriye_organization'] = sb.Amriye_organization
         form.initial['Sufficiency_of_mobilization'] = sb.Sufficiency_of_mobilization
         form.initial['attraction_of_the_organization'] = sb.attraction_of_the_organization
@@ -1059,27 +1202,48 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         fathers_name = form.cleaned_data['fathers_name']
         National_Code = form.cleaned_data['National_Code']
         physical_condition_id = form.cleaned_data['physical_condition']
-        physical_condition = physical_condition_list[int(physical_condition_id) - 1][1]
+        physical_condition = ""
+        for iteam in physical_condition_list:
+            if iteam[0] == int(physical_condition_id):
+                physical_condition = iteam[1]
         Type_of_disease_id = form.cleaned_data['Type_of_disease']
-        Type_of_disease = Type_of_disease_list[int(Type_of_disease_id) - 1][1]
+        Type_of_disease = ""
+        for iteam in Type_of_disease_list:
+            if iteam[0] == int(Type_of_disease_id):
+                Type_of_disease = iteam[1]
         health_insurance_card = form.cleaned_data['health_insurance_card']
         Grade_id = form.cleaned_data['Grade']
-        Grade = Grade_list[int(Grade_id) - 1][1]
+        Grade = ""
+        for iteam in Grade_list:
+            if iteam[0] == int(Grade_id):
+                Grade = iteam[1]
         Grade_precise_id = form.cleaned_data['Grade_precise']
-        Grade_precise = Grade_precise_list[int(Grade_precise_id) - 1][1]
+        Grade_precise = ""
+        for iteam in Grade_precise_list:
+            if iteam[0] == int(Grade_precise_id):
+                Grade_precise = iteam[1]
         educational_level_of_the_system = form.cleaned_data['educational_level_of_the_system']
         Study_group = form.cleaned_data['Study_group']
         marital_status_id = form.cleaned_data['marital_status']
-        marital_status = marital_status_list[int(marital_status_id) - 1][1]
+        marital_status = ""
+        for iteam in marital_status_list:
+            if iteam[0] == int(marital_status_id):
+                marital_status = iteam[1]
         Religion_id = form.cleaned_data['Religion']
-        Religion = Religion_list[int(Religion_id) - 1][1]
+        Religion = ""
+        for iteam in Religion_list:
+            if iteam[0] == int(Religion_id):
+                Religion = iteam[1]
         Date_of_birth = form.cleaned_data['Date_of_birth']
         place_of_birth = form.cleaned_data['place_of_birth']
         phone_number = form.cleaned_data['phone_number']
         home_phone_number = form.cleaned_data['home_phone_number']
         Date_of_dispatch = form.cleaned_data['Date_of_dispatch']
         province_name_id = form.cleaned_data['province_name']
-        province_name = province_name_list[int(province_name_id) - 1][1]
+        province_name = ""
+        for iteam in province_name_list:
+            if iteam[0] == int(province_name_id):
+                province_name = iteam[1]
         city_name = form.cleaned_data['city_name']
         Address = form.cleaned_data['Address']
         height = form.cleaned_data['height']
@@ -1087,29 +1251,54 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         Renewal_of_the_previous_period = form.cleaned_data['Renewal_of_the_previous_period']
         Course_renewal_date = form.cleaned_data['Course_renewal_date']
         Amriye_id = form.cleaned_data['Amriye']
-        Amriye = Amriye_list[int(Amriye_id) - 1][1]
+        Amriye = ""
+        for iteam in Amriye_list:
+            if iteam[0] == Amriye_id:
+                Amriye = iteam[1]
         Amriye_organization_id = form.cleaned_data['Amriye_organization']
-        Amriye_organization = Amriye_organization_lsit[int(Amriye_organization_id) - 1][1]
+        Amriye_organization = ""
+        for iteam in Amriye_organization_lsit:
+            if iteam[0] == int(Amriye_organization_id):
+                Amriye_organization = iteam[1]
         Sufficiency_of_mobilization_id = form.cleaned_data['Sufficiency_of_mobilization']
-        Sufficiency_of_mobilization = Sufficiency_of_mobilization_list[int(Sufficiency_of_mobilization_id) - 1][1]
+        Sufficiency_of_mobilization = ""
+        for iteam in Sufficiency_of_mobilization_list:
+            if iteam[0] == int(Sufficiency_of_mobilization_id):
+                Sufficiency_of_mobilization = iteam[1]
         Place_of_Issue = form.cleaned_data['Place_of_Issue']
         Renewal_of_the_previous_period_code = form.cleaned_data['Renewal_of_the_previous_period_code']
         attraction_of_the_organization_id = form.cleaned_data['attraction_of_the_organization']
-        attraction_of_the_organization = \
-            attraction_of_the_organization_list[int(attraction_of_the_organization_id) - 1][1]
+        attraction_of_the_organization = ""
+        for iteam in attraction_of_the_organization_list:
+            if iteam[0] == int(attraction_of_the_organization_id):
+                attraction_of_the_organization = iteam[1]
         Sutter_id = form.cleaned_data['Sutter']
-        Sutter = Sutter_list[int(Sutter_id) - 1][1]
+        Relative_to_inclusive = form.cleaned_data['Relative_to_inclusive']
+        Relative_to_inclusive_number = form.cleaned_data['Relative_to_inclusive_number']
+        Sutter = ""
+        for iteam in Sutter_list:
+            if iteam[0] == int(Sutter_id):
+                Sutter = iteam[1]
         f_battalion_group = form.cleaned_data['battalion_group']
         sb.name = name
         sb.family = family
         sb.fathers_name = fathers_name
         sb.National_Code = National_Code
+        sb.Relative_to_inclusive = Relative_to_inclusive
+        sb.Relative_to_inclusive_number = Relative_to_inclusive_number
         sb.physical_condition = physical_condition
         sb.Type_of_disease = Type_of_disease
         sb.health_insurance_card = health_insurance_card
         sb.Grade = Grade
         sb.Grade_precise = Grade_precise
         sb.educational_level_of_the_system = educational_level_of_the_system
+        print(educational_level_of_the_system)
+        t_ed = 0
+        for iteam in educational_level_of_the_system_list:
+            if iteam[0] == int(educational_level_of_the_system):
+                t_ed = iteam[1]
+
+        sb.educational_level_of_the_system = t_ed
         sb.Study_group = Study_group
         sb.marital_status = marital_status
         sb.Religion = Religion
@@ -1262,12 +1451,58 @@ class exel_add_to_db(View):
                     if i[1].replace(" ", "").replace("\u200c", "") == one_soldire_list[9].replace(" ", "").replace(
                             "\u200c", ""):
                         temp = i[0]
+                print(temp)
+                print(categorize_educational_level(temp)[1])
+                print(map_educational_level_to_grade(temp)[1])
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
                 check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list)).first()
                 if check_soldire is None:
                     soldire.save()
         return render(request, 'soldiers/AddExelToDb.html', cx)
+
+
+class exel_update_number(View):
+    def get(self, request):
+        form = FormAddExelToDb()
+        cx = {'form': form}
+        return render(request, 'soldiers/update_number.html', cx)
+
+    def post(self, request):
+        form = FormAddExelToDb(request.POST, request.FILES or None)
+        cx = {'form': form}
+
+        if form.is_valid():
+            exel = request.FILES['file']
+
+            # Workbook را باز کنید
+            workbook = xlrd.open_workbook(file_contents=exel.read())
+
+            # شیت مورد نظر خود را انتخاب کنید (مثلاً شیت اول)
+            sheet = workbook.sheet_by_index(0)
+
+            # تعداد ردیف‌ها و ستون‌های شیت را بدست آورید
+            num_rows = sheet.nrows
+            num_cols = sheet.ncols
+            # برای هر سطر
+            for row_idx in range(1, num_rows):
+                my_list = []
+                for col_idx in range(num_cols):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell_value(row_idx, col_idx)
+                    # مقدار دهی به لیست
+                    my_list.append(cell_value)
+                code_meli = str(my_list[0])
+                nesbat = str(my_list[1])
+                shomre = str(my_list[2])
+                find_soldire = sarbaz.objects.filter(National_Code__icontains=code_meli).first()
+                my_list = []
+                if find_soldire is not None:
+                    find_soldire.Relative_to_inclusive = nesbat
+                    find_soldire.Relative_to_inclusive_number = shomre
+                    find_soldire.save()
+
+        return render(request, 'soldiers/update_number.html', cx)
 
 
 situation_list = [(1, 'عادی'), (2, 'پیام آور بهداشت'), (3, 'امریه دار'), (4, 'خاتم')]

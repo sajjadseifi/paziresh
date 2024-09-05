@@ -1,13 +1,14 @@
 import jdatetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-
+from soldiers.models import Soldier
 # Create your views here.
 from django.urls import reverse_lazy
 from django.views import View
-from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom
+from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
+    CreateBeforeCourseCommissionLetterFrom
 from .models import CheckoutLetterModels, NormalLetterModels
-from soldiers.models import Soldier
+
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
 import random
@@ -17,10 +18,6 @@ def generate_unique_number(length=4):
     return ''.join([str(random.randint(0, 9)) for _ in range(length)])
 
 
-soldire_list = []
-g = Soldier.objects.filter().all()
-for item in g:
-    soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 c_type_list = [(1, 'تجدید دوره'), (2, 'کمیسیون پزشکی')]
 
 sepah_ostan_list = [
@@ -69,6 +66,12 @@ def find_sepah(p):
     return 0
 
 
+def find_sepah_name(p):
+    for iteam in sepah_ostan_list:
+        if iteam[1] == str(p):
+            return iteam[2]
+
+
 def AllCheckoutLetter(request, *args, **kwargs):
     all_checkout_letter = CheckoutLetterModels.objects.filter().all()
     return render(request, 'ensani_letter/all_checkout_letter.html',
@@ -80,6 +83,10 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
     success_url = reverse_lazy('AllCheckoutLetter')
 
     def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
         b_form.fields['c_type'].choices = c_type_list
@@ -87,6 +94,10 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
         return render(request, self.template, cx)
 
     def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
         b_form.fields['c_type'].choices = c_type_list
@@ -148,28 +159,122 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = F"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
         destination = ""
-        print(b_form.cleaned_data['destination'])
         for iteam in sepah_ostan_list:
             if iteam[0] == int(b_form.cleaned_data['destination']):
                 destination = iteam[2]
-        print(destination)
         my_letter.destination = destination
         my_letter.save()
+        return redirect(self.success_url)
+
+
+class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_before_course_commission_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+
+    def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(willing_to_learn=True, has_been_accepted=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateBeforeCourseCommissionLetterFrom()
+        b_form.fields['soldire'].choices = soldire_list
+        cx = {'form': b_form}
+        return render(request, self.template, cx)
+
+    def post(self, request, pk):
+        b_form = CreateBeforeCourseCommissionLetterFrom(request.POST, request.FILES or None)
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        my_letter.description = b_form.cleaned_data['description']
+        my_letter.subject = "معرفی به کمیسیون شروع دوره آموزشی"
+        soldire_code_meli = b_form.cleaned_data['soldire']
+        find_soldire = Soldier.objects.filter(id=soldire_code_meli).first()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = F"{ens.shomare_dore}33{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        destination = find_sepah_name(find_soldire.province_name)
+        my_letter.destination = destination
+        my_letter.save()
+        find_soldire.willing_to_learn = False
+        find_soldire.the_medical_commission = True
+        find_soldire.save()
         return redirect(self.success_url)
 
 
 class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_training_inquiry_letter.html'
     success_url = reverse_lazy('AllNormalLetter')
+    soldire_list = []
+    g = Soldier.objects.filter().all()
+    for item in g:
+        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 
     def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
         cx = {'form': b_form}
         return render(request, self.template, cx)
 
     def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        all_find_solidre = Soldier.objects.filter(has_been_accepted=True).all().count()
+        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+        find_soldire.has_been_accepted = True
+        find_soldire.acceptance_code = all_find_solidre + 1
+        find_soldire.willing_to_learn = False
+        find_soldire.code_paziresh = all_find_solidre + 1
+        find_soldire.save()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        my_letter.description = "استعلام کفایت از آموزش"
+        my_letter.destination = "آموزش"
+        my_letter.subject = "استعلام کفایت از آموزش"
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.save()
+        return redirect(self.success_url)
+
+
+class CreateRegisterLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_register_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+    soldire_list = []
+    g = Soldier.objects.filter().all()
+    for item in g:
+        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+
+    def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateRegisterLetterFrom()
+        b_form.fields['soldire'].choices = soldire_list
+        cx = {'form': b_form}
+        return render(request, self.template, cx)
+
+    def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateRegisterLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
         if not b_form.is_valid():
             cx = {'form': b_form}
@@ -178,9 +283,9 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
         find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
         my_letter.soldire = find_soldire
         my_letter.create_time = jdatetime.datetime.now()
-        my_letter.description = "استعلام کفایت از آموزش"
-        my_letter.destination = "آموزش"
-        my_letter.subject = "استعلام کفایت از آموزش"
+        my_letter.description = "گواهی عضویت"
+        my_letter.destination = b_form.cleaned_data['destination']
+        my_letter.subject = "گواهی عضویت"
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
         my_letter.save()

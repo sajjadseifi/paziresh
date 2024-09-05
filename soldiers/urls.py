@@ -12,5 +12,6 @@ urlpatterns = [
     path('sarbaz/update/', UpdatePazireshPage.as_view(), name='updatePazireshpage'),
     path('sarbaz/all/', MainViewSoldires.as_view(), name='MainViewSoldires'),
     path('sarbaz/add_to_list_exel/', exel_add_to_db.as_view(), name='exel'),
+    path('sarbaz/update_numbers/', exel_update_number.as_view(), name='exel_update_number'),
 
 ]

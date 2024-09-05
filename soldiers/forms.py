@@ -84,7 +84,7 @@ class FormSoldiers(forms.Form):
         label='مذهب',
         required=False
     )
-    Date_of_birth = place_of_birth = forms.CharField(
+    Date_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_birth"}),
         label='تاریخ تولد',
         required=False
@@ -205,6 +205,16 @@ class FormSoldiers(forms.Form):
             attrs={'class': "form-control"}
         ),
         label='نام گروهان',
+    )
+    Relative_to_inclusive = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive"}),
+        label='نسبت با فراگیر',
+        required=False
+    )
+    Relative_to_inclusive_number = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive_number"}),
+        label='شماره تماس نسبت فراگیر',
+        required=False
     )
 
 
@@ -288,7 +298,7 @@ class FormSoldiersCreate(forms.Form):
         label='مذهب',
         required=False
     )
-    Date_of_birth = place_of_birth = forms.CharField(
+    Date_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_birth"}),
         label='تاریخ تولد',
         required=False
@@ -409,6 +419,16 @@ class FormSoldiersCreate(forms.Form):
             attrs={'class': "form-control"}
         ),
         label='نام گروهان',
+    )
+    Relative_to_inclusive = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive"}),
+        label='نسبت با فراگیر',
+        required=False
+    )
+    Relative_to_inclusive_number = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive_number"}),
+        label='شماره تماس نسبت فراگیر',
+        required=False
     )
 
     def clean_National_Code(self):
@@ -501,7 +521,7 @@ class FormSoldiersUpdate(forms.Form):
         label='مذهب',
         required=False
     )
-    Date_of_birth = place_of_birth = forms.CharField(
+    Date_of_birth = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Date_of_birth"}),
         label='تاریخ تولد',
         required=False
@@ -622,6 +642,16 @@ class FormSoldiersUpdate(forms.Form):
             attrs={'class': "form-control"}
         ),
         label='نام گروهان',
+    )
+    Relative_to_inclusive = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive"}),
+        label='نسبت با فراگیر',
+        required=False
+    )
+    Relative_to_inclusive_number = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive_number"}),
+        label='شماره تماس نسبت فراگیر',
+        required=False
     )
 
 
