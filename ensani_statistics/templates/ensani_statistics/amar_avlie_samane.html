@@ -399,7 +399,7 @@
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">آمار گردان و گروهان</h3>
+                        <h3 class="box-title">آمار اولیه سامانه</h3>
                         <br>
                         <br>
                         <br>
@@ -471,11 +471,21 @@
                                 {% endfor %}
                                 <tr class="row36">
                                     <td class="column0 style3 null"></td>
-                                    <td class="column1 style3 null"></td>
-                                    <td class="column2 style1 n style1" colspan="4">0</td>
-                                    <td class="column6 style1 n style1" colspan="2">0</td>
-                                    <td class="column8 style3 n">0</td>
-                                    <td class="column9 style1 n style1" colspan="7">0</td>
+                                    <td class="column1 style3 null">{{ total }}</td>
+                                    <td class="column2 style1 n style1">{{ soldire_total_salem }}</td>
+                                    <td class="column2 style1 n style1">{{ soldire_total_moafazrazm }}</td>
+                                    <td class="column2 style1 n style1">0</td>
+                                    <td class="column2 style1 n style1">0</td>
+                                    <td class="column6 style1 n style1">{{ soldire_total_shie }}</td>
+                                    <td class="column6 style1 n style1">{{ soldire_total_tasanon }}</td>
+                                    <td class="column8 style3 n">{{ soldire_total_amire }}</td>
+                                    <td class="column9 style1 n style1">{{ zire_diplom }}</td>
+                                    <td class="column9 style1 n style1">{{ diplom }}</td>
+                                    <td class="column9 style1 n style1">{{ fogh_diplom }}</td>
+                                    <td class="column9 style1 n style1">{{ lisans }}</td>
+                                    <td class="column9 style1 n style1">{{ fogh_lisans }}</td>
+                                    <td class="column9 style1 n style1">{{ doctora }}</td>
+                                    <td class="column9 style1 n style1">{{ namoshakhas }}</td>
                                 </tr>
                                 </tbody>
                             </table>

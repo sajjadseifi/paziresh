@@ -1,7 +1,7 @@
 import jdatetime
 import xlrd
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -10,6 +10,7 @@ from soldiers.models import Soldier as sarbaz
 from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate
 from saterapps.models import Sater
 from django.db.models import Q
+from ensaniapp_settings.models import EnsaniSettings
 
 # all static data
 battalion_group_list = [(99999999, '')]
@@ -18,19 +19,19 @@ for item in g:
     battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
 
 
+
 def categorize_educational_level(level_id):
-    if level_id in {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 23, 24, 25,
-                    37}:
+    if level_id in {14, 15, 16, 17, 18, 27, 29, 30, 31, 32, 33, 19, 20, 34, 21, 22, 35, 36, 23, 24, 37, 38}:
         return 1, 'زیر دیپلم'
-    elif level_id in {13, 25, 26}:
+    elif level_id in {25,26,39,13,44}:
         return 2, 'دیپلم'
-    elif level_id in {4, 5, 3, 6}:
+    elif level_id in {4, 5, 6, 42}:
         return 3, 'فوق دیپلم'
-    elif level_id in {9, 10, 11, 12, 1, 40,41}:
+    elif level_id in {9, 10, 11, 12, 1, 40, 41}:
         return 4, 'لیسانس'
-    elif level_id in {7, 8}:
+    elif level_id in {7, 8, 45}:
         return 5, 'فوق لیسانس'
-    elif level_id in {2, 3}:
+    elif level_id in {2, 3, 43,3}:
         return 6, 'دکتری'
     elif level_id == 0:
         return 7, 'نامشخص'
@@ -42,16 +43,16 @@ def map_educational_level_to_grade(level):
     grade_precise_mapping = {
         'بی‌سواد': [],
         'نهضت سواد آموزی': [],
-        'ابتدایی': [14, 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 32, 33],
-        'راهنمایی': [20, 21, 22, 34, 35, 36],
-        'سیکل': [],
-        'دبیرستان': [23, 24, 25, 37, 38, 39],
+        'ابتدایی': [14, 15, 16, 17, 18, 27, 29, 30, 31, 32, 33],
+        'راهنمایی': [19, 20, 34],
+        'سیکل': [21, 22, 35, 36],
+        'دبیرستان': [23, 24, 37, 38],
         'زیر دیپلم': [],
-        'دیپلم': [13, 26],
-        'فوق دیپلم': [4, 5, 6],
-        'لیسانس': [9, 10, 11, 12, 1, 40,41],
-        'فوق لیسانس': [7, 8],
-        'دکتری': [2, 3],
+        'دیپلم': [25, 26, 39, 13, 44],
+        'فوق دیپلم': [4, 5, 6, 42],
+        'لیسانس': [9, 10, 11, 12, 1, 40, 41],
+        'فوق لیسانس': [7, 8, 45],
+        'دکتری': [2, 3, 43],
         'نامشخص': [0]
     }
 
@@ -65,17 +66,17 @@ def map_educational_level_to_grade(level):
 grade_precise_mapping = {
     'بی‌سواد': [],
     'نهضت سواد آموزی': [],
-    'ابتدایی': [14, 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 32, 33],
-    'راهنمایی': [20, 21, 22, 34, 35, 36],
-    'سیکل': [],
-    'دبیرستان': [23, 24, 25, 37, 38, 39],
+    'ابتدایی': [14, 15, 16, 17, 18, 27, 29, 30, 31, 32, 33],
+    'راهنمایی': [19, 20, 34],
+    'سیکل': [21, 22, 35, 36],
+    'دبیرستان': [23, 24, 37, 38],
     'زیر دیپلم': [],
-    'دیپلم': [13, 26],
-    'فوق دیپلم': [4, 5, 6],
-    'لیسانس': [9, 10, 11, 12, 1, 40,41],
-    'فوق لیسانس': [7, 8],
-    'دکتری': [2, 3],
-    'نامشخص': [0, ]
+    'دیپلم': [25, 26, 39, 13, 44],
+    'فوق دیپلم': [4, 5, 6, 42],
+    'لیسانس': [9, 10, 11, 12, 1, 40, 41],
+    'فوق لیسانس': [7, 8, 45],
+    'دکتری': [2, 3, 43],
+    'نامشخص': [0]
 }
 
 province_name_list = [
@@ -154,6 +155,10 @@ educational_level_of_the_system_list = [
     (39, "سوم دبیرستان"),
     (40, "حوزوی سطح ىو اهل سنت"),
     (41, 'لیسانس پزشکی ناپیوسته'),
+    (42, 'حوزوی سطح یک اهل سنت'),
+    (43, 'دکتری تخصصی غیر پزشکی ناپیوسته'),
+    (44, 'حوزوی مقدمات اهل سنت'),
+    (45, 'فوق لیسانس غیر پزشکی پیوسته'),
 ]
 
 Renewal_of_the_previous_period_list = [(0, ""), (1, 'المهدی'), (2, 'شیراز')]
@@ -223,6 +228,12 @@ def get_id_of_list(ls, oj):
     for iteam in ls:
         if iteam[1] == str(oj):
             return iteam[0]
+
+
+def get_name_of_list(ls, oj):
+    for iteam in ls:
+        if iteam[0] == int(oj):
+            return iteam[1]
 
 
 # end static data
@@ -408,7 +419,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
             q_of_pc.append(Q(moafazrazm_gorehbe=moafazrazm_gorehbe))
         bg = battalion_group.objects.filter(takmilzarmit=False).all()
         bgl = bg.filter(q_of_edu[0],
-                        (q_of_Religion[0]), (q_of_pc[0])).order_by('gordan__order').first()
+                        (q_of_Religion[0]), (q_of_pc[0])).order_by('order').first()
         if bgl is None:
             form_soldiers.initial['battalion_group'] = 0
         else:
@@ -792,11 +803,12 @@ class sater(LoginRequiredMixin, View):
         return render(request, 'soldiers/sater_adi_page.html', cx)
 
 
-class moarefibegordan(LoginRequiredMixin, View):
+class moarefibegordan(View):
 
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(pk=pk).first()
-        cx = {'sarbaz': my_sarbaz}
+        en = EnsaniSettings.objects.filter().first()
+        cx = {'sarbaz': my_sarbaz, 'en': en}
         return render(request, 'soldiers/pirint_moarefi_gordan.html', cx)
 
 
@@ -826,7 +838,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
         form_soldiers.fields['battalion_group'].choices = battalion_group_list
-        form_soldiers.initial['province_name'] = 32
+        form_soldiers.initial['province_name'] = 0
         form_soldiers.initial['Religion'] = 0
         form_soldiers.initial['marital_status'] = 3
         form_soldiers.initial['physical_condition'] = 0
@@ -889,7 +901,12 @@ class CreatePaziresh(LoginRequiredMixin, View):
         for iteam in Grade_precise_list:
             if iteam[0] == int(Grade_precise_id):
                 Grade_precise = iteam[1]
-        educational_level_of_the_system = form_soldiers.cleaned_data['educational_level_of_the_system']
+        educational_level_of_the_system_id = form_soldiers.cleaned_data['educational_level_of_the_system']
+        educational_level_of_the_system = ""
+        for iteam in educational_level_of_the_system_list:
+            if iteam[0] == int(educational_level_of_the_system_id):
+                educational_level_of_the_system = iteam[1]
+
         Study_group = form_soldiers.cleaned_data['Study_group']
         marital_status_id = form_soldiers.cleaned_data['marital_status']
         marital_status = ""
@@ -907,12 +924,16 @@ class CreatePaziresh(LoginRequiredMixin, View):
         home_phone_number = form_soldiers.cleaned_data['home_phone_number']
         Date_of_dispatch = form_soldiers.cleaned_data['Date_of_dispatch']
         province_name_id = form_soldiers.cleaned_data['province_name']
-        province_name = province_name_list[int(province_name_id)][1]
+        province_name = get_name_of_list(province_name_list, province_name_id)
         city_name = form_soldiers.cleaned_data['city_name']
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
         Weight = form_soldiers.cleaned_data['Weight']
-        Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period_id = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period = ""
+        for iteam in Renewal_of_the_previous_period_list:
+            if iteam[0] == int(Renewal_of_the_previous_period_id):
+                Renewal_of_the_previous_period_id = iteam[1]
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
         Amriye = ""
@@ -941,6 +962,9 @@ class CreatePaziresh(LoginRequiredMixin, View):
         for iteam in Sutter_list:
             if iteam[0] == int(Sutter_id):
                 Sutter = iteam[1]
+        Relative_to_inclusive = form_soldiers.cleaned_data['Relative_to_inclusive']
+        Relative_to_inclusive_number = form_soldiers.cleaned_data['Relative_to_inclusive_number']
+
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
         s = sarbaz()
         s.name = name
@@ -954,6 +978,8 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.Grade_precise = Grade_precise
         s.educational_level_of_the_system = educational_level_of_the_system
         s.Study_group = Study_group
+        s.Relative_to_inclusive = Relative_to_inclusive
+        s.Relative_to_inclusive_number = Relative_to_inclusive_number
         s.marital_status = marital_status
         s.Religion = Religion
         s.Date_of_birth = Date_of_birth
@@ -977,15 +1003,17 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.Amriye_organization = Amriye_organization
         if Sufficiency_of_mobilization == 'خیر':
             s.Sufficiency_of_mobilization = False
+            s.willing_to_learn = True
         else:
             s.Sufficiency_of_mobilization = True
+            s.willing_to_learn = False
         b = battalion_group.objects.filter(id=f_battalion_group).first()
-        s.battalion_group = b
-        s.Gordan = b.gordan
+        if b is not None:
+            s.battalion_group = b
+            s.Gordan = b.gordan
         s.attraction_of_the_organization = attraction_of_the_organization
         s.Sutter = Sutter
         s.Grade = Grade
-        s.willing_to_learn = True
         s.has_been_accepted = True
         count_accepet_soldire = sarbaz.objects.filter(willing_to_learn=True).all().count()
         s.code_paziresh = int(count_accepet_soldire) + 1
@@ -1003,10 +1031,10 @@ class CreatePaziresh(LoginRequiredMixin, View):
         for item in c_s:
             if item.code_gorhan is not None:
                 code_gorhan_list.append(int(item.code_gorhan))
-        s.code_gorhan = max(code_gorhan_list) + 1
+                s.code_gorhan = max(code_gorhan_list) + 1
+                b.zarfiat = int(b.zarfiat) - 1
+                b.save()
         s.save()
-        b.zarfiat = int(b.zarfiat) - 1
-        b.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
 
@@ -1113,8 +1141,10 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         else:
             form_soldiers.initial['Amriye'] = 2
         form_soldiers.initial['Amriye_organization'] = get_id_of_list(Amriye_organization_lsit, sb.Amriye_organization)
-        form_soldiers.initial['Sufficiency_of_mobilization'] = get_id_of_list(Sufficiency_of_mobilization_list,
-                                                                              sb.Sufficiency_of_mobilization)
+        if sb.Sufficiency_of_mobilization == True:
+            form_soldiers.initial['Sufficiency_of_mobilization'] = 2
+        else:
+            form_soldiers.initial['Sufficiency_of_mobilization'] = 1
         form_soldiers.initial['attraction_of_the_organization'] = get_id_of_list(attraction_of_the_organization_list,
                                                                                  sb.attraction_of_the_organization)
         for iteam in Sutter_list:
@@ -1193,7 +1223,8 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form.initial['Sufficiency_of_mobilization'] = sb.Sufficiency_of_mobilization
         form.initial['attraction_of_the_organization'] = sb.attraction_of_the_organization
         form.initial['Sutter'] = sb.Sutter
-        form.initial['battalion_group'] = sb.battalion_group.pk
+        if sb.battalion_group is not None:
+            form.initial['battalion_group'] = sb.battalion_group.pk
         if not form.is_valid():
             cx = {'form': form}
             return render(request, 'soldiers/UpdatePazireshForm.html', cx)
@@ -1253,7 +1284,7 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         Amriye_id = form.cleaned_data['Amriye']
         Amriye = ""
         for iteam in Amriye_list:
-            if iteam[0] == Amriye_id:
+            if iteam[0] == int(Amriye_id):
                 Amriye = iteam[1]
         Amriye_organization_id = form.cleaned_data['Amriye_organization']
         Amriye_organization = ""
@@ -1292,7 +1323,6 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         sb.Grade = Grade
         sb.Grade_precise = Grade_precise
         sb.educational_level_of_the_system = educational_level_of_the_system
-        print(educational_level_of_the_system)
         t_ed = 0
         for iteam in educational_level_of_the_system_list:
             if iteam[0] == int(educational_level_of_the_system):
@@ -1328,15 +1358,16 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         sb.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
         sb.attraction_of_the_organization = attraction_of_the_organization
         sb.Sutter = Sutter
-        if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
-            b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
-            b_change.zarfiat = int(b_change.zarfiat) + 1
-            a_change = battalion_group.objects.filter(id=f_battalion_group).first()
-            a_change.zarfiat = int(a_change.zarfiat) - 1
-            sb.battalion_group = a_change
-            sb.Gordan = a_change.gordan
-            b_change.save()
-            a_change.save()
+        if sb.battalion_group is not None:
+            if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
+                b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
+                b_change.zarfiat = int(b_change.zarfiat) + 1
+                a_change = battalion_group.objects.filter(id=f_battalion_group).first()
+                a_change.zarfiat = int(a_change.zarfiat) - 1
+                sb.battalion_group = a_change
+                sb.Gordan = a_change.gordan
+                b_change.save()
+                a_change.save()
         sb.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': sb.id}))
 
@@ -1457,6 +1488,7 @@ class exel_add_to_db(View):
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
                 check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list)).first()
+                soldire.date_improt_type = "سامانه"
                 if check_soldire is None:
                     soldire.save()
         return render(request, 'soldiers/AddExelToDb.html', cx)
@@ -1506,3 +1538,41 @@ class exel_update_number(View):
 
 
 situation_list = [(1, 'عادی'), (2, 'پیام آور بهداشت'), (3, 'امریه دار'), (4, 'خاتم')]
+import pandas as pd
+from openpyxl.utils import get_column_letter
+
+
+def export_to_excel_list_elame_hozor(request):
+    queryset = sarbaz.objects.filter(has_been_accepted=True).values('acceptance_code', 'name', 'family',
+                                                                    'National_Code',
+                                                                    'Relative_to_inclusive_number').order_by(
+        'acceptance_code')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'acceptance_code': 'کد پذیرش',
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'National_Code': 'کدملی',
+        'Relative_to_inclusive_number': 'شماره نسبت',
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=list_elame_hozor.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response

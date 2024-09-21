@@ -35,22 +35,22 @@ class EnsaniSettingsForm(forms.Form):
     )
     tarikhpaziresh = forms.CharField(
         label="تاریخ شروع پذیرش",
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'class': "form-control normal-date"}),
     )
     tarikhetmampaziresh = forms.CharField(
         label="تاریخ پایان پذیرش",
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'class': "form-control normal-date"}),
     )
     tarihkeshorodoreh = forms.CharField(
         label="تاریخ شروع دوره",
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'class': "form-control normal-date"}),
     )
     tarihkepayanedore = forms.CharField(
         label="تاریخ پایان دوره",
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'class': "form-control normal-date"}),
     )
     saghf_paziresh = forms.CharField(
@@ -60,6 +60,6 @@ class EnsaniSettingsForm(forms.Form):
     )
     tarikhezam = forms.CharField(
         label="تاریخ اعزام",
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={'class': "form-control normal-date"}),
     )

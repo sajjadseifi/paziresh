@@ -263,8 +263,8 @@
     <img src="{% static 'img/letters/CheckoutCommissionLetter.jpg' %}" alt="CheckoutCommissionLetter" class="image">
     <div class="letter_number">{{ checkout_commission_letter.number }}</div>
     <div class="letter_date">{{ checkout_commission_letter.create_time.date }}</div>
-    <div class="shoare_sall">«افزایش توان دفاع همه جانبه در سال جهش تولید ومشارکت مردم »</div>
-    <div class="letter_to">به : {{ checkout_commission_letter.destination }} استان تهران – معاونت نیروی انسانی- مدیریت
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="letter_to">به : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت
         منابع انسانی
         سرباز
     </div>
@@ -296,8 +296,8 @@
 
     <div class="letter_number2">{{ checkout_commission_letter.number }}</div>
     <div class="letter_date2">{{ checkout_commission_letter.create_time.date }}</div>
-    <div class="shoare_sall2">«افزایش توان دفاع همه جانبه در سال جهش تولید ومشارکت مردم »</div>
-    <div class="letter_to2">به : {{ checkout_commission_letter.destination }} استان تهران – معاونت نیروی انسانی- مدیریت
+    <div class="shoare_sall2">{{ en.shoare_sall }}</div>
+    <div class="letter_to2">به : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت
         منابع انسانی
         سرباز
     </div>

@@ -108,6 +108,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
         my_letter.description = b_form.cleaned_data['description']
         find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
         find_soldire.IsCheckout = True
+        find_soldire.willing_to_learn = False
         find_soldire.save()
         my_letter.soldire = find_soldire
         my_letter.create_time = jdatetime.datetime.now()
@@ -155,6 +156,7 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
         my_letter.subject = b_form.cleaned_data['subject']
         find_soldire = Soldier.objects.filter(id=cl.soldire.id).first()
         my_letter.soldire = find_soldire
+        find_soldire.the_medical_commission = True
         my_letter.create_time = jdatetime.datetime.now()
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = F"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
@@ -181,8 +183,13 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
         cx = {'form': b_form}
         return render(request, self.template, cx)
 
-    def post(self, request, pk):
+    def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(willing_to_learn=True, has_been_accepted=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateBeforeCourseCommissionLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
         if not b_form.is_valid():
             cx = {'form': b_form}
             return render(request, self.template, cx)
@@ -190,7 +197,7 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
         my_letter.description = b_form.cleaned_data['description']
         my_letter.subject = "معرفی به کمیسیون شروع دوره آموزشی"
         soldire_code_meli = b_form.cleaned_data['soldire']
-        find_soldire = Soldier.objects.filter(id=soldire_code_meli).first()
+        find_soldire = Soldier.objects.filter(National_Code=soldire_code_meli).first()
         my_letter.soldire = find_soldire
         my_letter.create_time = jdatetime.datetime.now()
         ens = EnsaniSettings.objects.filter().first()
@@ -305,9 +312,10 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     checkout_commission_letter_pk = kwargs['pk']
     if checkout_commission_letter_pk is None:
         return 0
+    en = EnsaniSettings.objects.filter().first()
     checkout_commission_letter = NormalLetterModels.objects.filter(pk=checkout_commission_letter_pk).first()
     sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
-    cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter}
+    cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 
 
@@ -318,3 +326,12 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     training_inquiry_letter = NormalLetterModels.objects.filter(pk=training_inquiry_letter_pk).first()
     cx = {'training_inquiry_letter': training_inquiry_letter}
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
+
+
+def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
+    before_course_commission_letter_pk = kwargs['pk']
+    if before_course_commission_letter_pk is None:
+        return 0
+    before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
+    cx = {'before_course_commission_letter': before_course_commission}
+    return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)

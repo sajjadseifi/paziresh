@@ -9,7 +9,9 @@ class panel_home(LoginRequiredMixin, View):
         soldire = Soldier.objects.filter().all()
         amar_kol = soldire.count()
         amar_kole_hezer_bekhdmat = soldire.filter(willing_to_learn=True).all().count()
-        cx = {'amar_kol': amar_kol, 'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat}
+        amar_kole_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
+        cx = {'amar_kol': amar_kol, 'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,
+              'amar_kole_paziresh_shode': amar_kole_paziresh_shode}
         return render(request, 'ensani/panel_home_page.html', cx)
 
 
