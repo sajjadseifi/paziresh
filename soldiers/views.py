@@ -19,11 +19,10 @@ for item in g:
     battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
 
 
-
 def categorize_educational_level(level_id):
     if level_id in {14, 15, 16, 17, 18, 27, 29, 30, 31, 32, 33, 19, 20, 34, 21, 22, 35, 36, 23, 24, 37, 38}:
         return 1, 'زیر دیپلم'
-    elif level_id in {25,26,39,13,44}:
+    elif level_id in {25, 26, 39, 13, 44}:
         return 2, 'دیپلم'
     elif level_id in {4, 5, 6, 42}:
         return 3, 'فوق دیپلم'
@@ -31,7 +30,7 @@ def categorize_educational_level(level_id):
         return 4, 'لیسانس'
     elif level_id in {7, 8, 45}:
         return 5, 'فوق لیسانس'
-    elif level_id in {2, 3, 43,3}:
+    elif level_id in {2, 3, 43, 3}:
         return 6, 'دکتری'
     elif level_id == 0:
         return 7, 'نامشخص'
@@ -929,11 +928,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
         Weight = form_soldiers.cleaned_data['Weight']
-        Renewal_of_the_previous_period_id = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
-        Renewal_of_the_previous_period = ""
-        for iteam in Renewal_of_the_previous_period_list:
-            if iteam[0] == int(Renewal_of_the_previous_period_id):
-                Renewal_of_the_previous_period_id = iteam[1]
+        Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
         Amriye = ""
@@ -1576,3 +1571,46 @@ def export_to_excel_list_elame_hozor(request):
     # تنظیم sheet به حالت راست به چپ
     worksheet.sheet_view.rightToLeft = True
     return response
+
+
+import openpyxl
+
+
+def test_import(request):
+    # بارگذاری فایل اکسل
+    exel = 'D:/unittest/ensaniapp/soldiers/s.xlsx'
+    workbook = openpyxl.load_workbook(exel)
+
+    # انتخاب شیت اول
+    sheet = workbook.active
+
+    # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+    num_rows = sheet.max_row
+    num_cols = sheet.max_column
+
+    # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+    for row_idx in range(2, num_rows + 1):
+        one_soldire_list = []
+        for col_idx in range(1, num_cols + 1):
+            # مقدار سلول را بخوانید
+            cell_value = sheet.cell(row=row_idx, column=col_idx).value
+            if cell_value is not None:
+                # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
+                cell_value = str(cell_value)
+                cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و')
+            one_soldire_list.append(cell_value)
+        if one_soldire_list[0] is not None:
+            find_soldire = sarbaz.objects.filter(National_Code=one_soldire_list[0]).first()
+            if find_soldire is not None:
+                find_soldire.acceptance_code = one_soldire_list[1]
+                find_soldire.code_paziresh = one_soldire_list[1]
+                find_soldire.willing_to_learn = True
+                find_soldire.has_been_accepted = True
+                grodan_name = one_soldire_list[3]
+                grodan = battalion.objects.filter(name__icontains=grodan_name).filter().first()
+                find_soldire.Gordan = grodan
+                gorohan_name = one_soldire_list[4]
+                find_soldire.battalion_group = battalion_group.objects.filter(gordan=grodan,
+                                                                              name__icontains=gorohan_name).first()
+                find_soldire.save()
+    return HttpResponse("S")
