@@ -729,8 +729,11 @@ class sabte_paziresh(LoginRequiredMixin, View):
         s.Amriye_organization = Amriye_organization
         if Sufficiency_of_mobilization == 'خیر':
             s.Sufficiency_of_mobilization = False
+            s.willing_to_learn = True
+            s.in_coures = True
         else:
             s.Sufficiency_of_mobilization = True
+            s.willing_to_learn = False
         if Sufficiency_of_mobilization == "خیر":
             b = battalion_group.objects.filter(id=f_battalion_group).first()
             s.battalion_group = b
@@ -738,8 +741,6 @@ class sabte_paziresh(LoginRequiredMixin, View):
         s.attraction_of_the_organization = attraction_of_the_organization
         s.Sutter = Sutter
         s.Grade = Grade
-        s.willing_to_learn = True
-
         c_s = sarbaz.objects.filter(IsCheckout=False, has_been_accepted=False, willing_to_learn=False).all()
         find_max_code_list = [0]
         for iteam in c_s:
@@ -757,7 +758,6 @@ class sabte_paziresh(LoginRequiredMixin, View):
             s.code_gorhan = max(code_gorhan_list) + 1
             b.zarfiat = int(b.zarfiat) - 1
             b.save()
-
         s.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
@@ -999,6 +999,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         if Sufficiency_of_mobilization == 'خیر':
             s.Sufficiency_of_mobilization = False
             s.willing_to_learn = True
+            s.in_coures = True
         else:
             s.Sufficiency_of_mobilization = True
             s.willing_to_learn = False
@@ -1349,6 +1350,7 @@ class UpdatePaziresh(LoginRequiredMixin, View):
             sb.Sufficiency_of_mobilization = False
         else:
             sb.Sufficiency_of_mobilization = True
+            sb.willing_to_learn = False
         sb.Place_of_Issue = Place_of_Issue
         sb.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
         sb.attraction_of_the_organization = attraction_of_the_organization
@@ -1538,9 +1540,12 @@ from openpyxl.utils import get_column_letter
 
 
 def export_to_excel_list_elame_hozor(request):
-    queryset = sarbaz.objects.filter(has_been_accepted=True).values('acceptance_code', 'name', 'family',
-                                                                    'National_Code',
-                                                                    'Relative_to_inclusive_number').order_by(
+    queryset = sarbaz.objects.filter(has_been_accepted=True, willing_to_learn=True, physical_condition='سالم',
+                                     Amriye=False, Sufficiency_of_mobilization=False,
+                                     Previous_service_record=False).values(
+        'acceptance_code', 'name', 'family',
+        'National_Code',
+        'Relative_to_inclusive_number').order_by(
         'acceptance_code')
 
     df = pd.DataFrame(list(queryset))
@@ -1606,6 +1611,7 @@ def test_import(request):
                 find_soldire.code_paziresh = one_soldire_list[1]
                 find_soldire.willing_to_learn = True
                 find_soldire.has_been_accepted = True
+                find_soldire.in_coures = True
                 grodan_name = one_soldire_list[3]
                 grodan = battalion.objects.filter(name__icontains=grodan_name).filter().first()
                 find_soldire.Gordan = grodan

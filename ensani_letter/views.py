@@ -175,7 +175,7 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter(willing_to_learn=True, has_been_accepted=True).all()
+        g = Soldier.objects.filter().all()
         for item in g:
             soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateBeforeCourseCommissionLetterFrom()
@@ -185,7 +185,7 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter(willing_to_learn=True, has_been_accepted=True).all()
+        g = Soldier.objects.filter().all()
         for item in g:
             soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateBeforeCourseCommissionLetterFrom(request.POST, request.FILES or None)
@@ -204,9 +204,15 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
         my_letter.number = F"{ens.shomare_dore}33{generate_unique_number()}{find_soldire.National_Code[::3]}"
         destination = find_sepah_name(find_soldire.province_name)
         my_letter.destination = destination
+        my_letter.status = "تایید"
         my_letter.save()
-        find_soldire.willing_to_learn = False
+        all_find_solidre = Soldier.objects.filter(has_been_accepted=True).all().count()
+        if find_soldire.willing_to_learn is True:
+            find_soldire.willing_to_learn = False
         find_soldire.the_medical_commission = True
+        if find_soldire.acceptance_code is not None:
+            find_soldire.acceptance_code = all_find_solidre + 1
+
         find_soldire.save()
         return redirect(self.success_url)
 
@@ -246,8 +252,10 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
         find_soldire.acceptance_code = all_find_solidre + 1
         find_soldire.willing_to_learn = False
         find_soldire.code_paziresh = all_find_solidre + 1
+        find_soldire.Previous_service_record = True
         find_soldire.save()
         my_letter.soldire = find_soldire
+        my_letter.status = "درحال بررسی"
         my_letter.create_time = jdatetime.datetime.now()
         my_letter.description = "استعلام کفایت از آموزش"
         my_letter.destination = "آموزش"

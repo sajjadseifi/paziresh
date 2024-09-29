@@ -73,7 +73,8 @@
                                                 <a href="{% url 'get_sarbaz' pk=sodire.National_Code %}"
                                                    class="btn btn-default">ثبت پذیرش</a>
                                             {% endif %}
-
+                                            <a href="{% url 'sater' pk=sodire.pk %}" class="btn btn-default">ساتر</a>
+                                            <a href="{% url 'moarefibegordan' pk=sodire.pk %}" class="btn btn-default">معرفی گردان</a>
 
                                             {#                                            <a href="{% url 'SoldireProfile' %}"#}
                                             {#                                               class="btn btn-default">پذیرش</a>#}

@@ -10,6 +10,7 @@ class NormalLetterModels(models.Model):
     destination = models.CharField(max_length=150, verbose_name='مقصد نامه', null=True, blank=True)
     description = models.CharField(max_length=150, verbose_name='توضیحات', null=True, blank=True)
     number = models.CharField(max_length=200, verbose_name='شماره نامه', null=True, blank=True)
+    status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)
 
 
 class CheckoutLetterModels(models.Model):

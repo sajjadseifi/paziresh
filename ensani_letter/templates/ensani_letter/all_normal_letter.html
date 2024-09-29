@@ -23,6 +23,7 @@
                             <th>تاریخ</th>
                             <th>مقصد نامه</th>
                             <th>توضیحات</th>
+                            <th>وضعیت</th>
                             <th></th>
                         </tr>
                         {% for c in all_normal_letter %}
@@ -35,6 +36,7 @@
                                 <td>{{ c.create_time.date }}</td>
                                 <td>{{ c.destination }}</td>
                                 <td>{{ c.description }}</td>
+                                <td>{{ c.status }}</td>
                                 <td>
                                     {% if c.subject == "معرفی به کمیسیون" %}
                                         <a class="btn btn-app" href="{% url 'PrintCheckoutCommissionLetter' pk=c.pk %}">

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from soldiers.models import Soldier
 from django.db.models import Count, Case, When
 from battalions.models import battalion, battalion_group
+from ensani_letter.models import NormalLetterModels
 
 
 # Create your views here.
@@ -116,7 +117,64 @@ def amar_be_tafkik_madrk_tahsili(request):
 
 
 def amar_shoro_doreh(request):
-    return render(request, 'ensani_statistics/amar_shoro_doreh.html')
+    amare_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
+    salem = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                   physical_condition='سالم',
+                                   Sufficiency_of_mobilization=False, Amriye=False,
+                                   Previous_service_record=False).all().count()
+    moaf_az_razm = Soldier.objects.filter(has_been_accepted=True, in_coures=True, physical_condition='معاف از رزم',
+                                          Sufficiency_of_mobilization=False, Amriye=False,
+                                          Previous_service_record=False).all().count()
+    Sufficiency_of_mobilization = Soldier.objects.filter(has_been_accepted=True,
+                                                         Sufficiency_of_mobilization=True, Amriye=False).all().count()
+    Previous_service_record = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True,
+                                                     Sufficiency_of_mobilization=False, Amriye=False).all().count()
+    comision_shoro_dore = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",
+                                                            soldire__the_medical_commission=True,
+                                                            soldire__Amriye=False).all().count()
+    total_1 = int(salem) + int(moaf_az_razm) + int(Sufficiency_of_mobilization) + int(comision_shoro_dore) + int(
+        Previous_service_record)
+    total_2 = int(Sufficiency_of_mobilization) + int(comision_shoro_dore) + int(Previous_service_record)
+
+    a_salem = Soldier.objects.filter(has_been_accepted=True, in_coures=True, physical_condition='سالم',
+                                     Sufficiency_of_mobilization=False, Amriye=True,
+                                     Previous_service_record=False).all().count()
+    a_moaf_az_razm = Soldier.objects.filter(has_been_accepted=True, in_coures=True, physical_condition='معاف از رزم',
+                                            Sufficiency_of_mobilization=False, Amriye=True,
+                                            Previous_service_record=False).all().count()
+    a_Sufficiency_of_mobilization = Soldier.objects.filter(has_been_accepted=True,
+                                                           Sufficiency_of_mobilization=True, Amriye=True).all().count()
+    a_Previous_service_record = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True,
+                                                       Sufficiency_of_mobilization=False, Amriye=True).all().count()
+    a_comision_shoro_dore = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",
+                                                              soldire__the_medical_commission=True,
+                                                              soldire__Amriye=True).all().count()
+    a_total_1 = int(a_salem) + int(a_moaf_az_razm) + int(a_Sufficiency_of_mobilization) + int(
+        a_comision_shoro_dore) + int(
+        a_Previous_service_record)
+    a_total_2 = int(a_Sufficiency_of_mobilization) + int(a_comision_shoro_dore) + int(a_Previous_service_record)
+    total_kaheshi = a_total_2 + total_2
+    shor_dore = (a_total_1 + total_1) - (total_2 + a_total_2)
+    cx = {
+        'salem': salem,
+        'moaf_az_razm': moaf_az_razm,
+        'amare_paziresh_shode': amare_paziresh_shode,
+        'Sufficiency_of_mobilization': Sufficiency_of_mobilization,
+        'Previous_service_record': Previous_service_record,
+        'comision_shoro_dore': comision_shoro_dore,
+        'total_1': total_1,
+        'total_2': total_2,
+        'asalem': a_salem,
+        'amoaf_az_razm': a_moaf_az_razm,
+        'aSufficiency_of_mobilization': a_Sufficiency_of_mobilization,
+        'aPrevious_service_record': a_Previous_service_record,
+        'acomision_shoro_dore': a_comision_shoro_dore,
+        'atotal_1': a_total_1,
+        'atotal_2': a_total_2,
+        'total_kaheshi': total_kaheshi,
+        'shor_dore': shor_dore
+    }
+    return render(request, 'ensani_statistics/amar_shoro_doreh.html', cx)
 
 
 def amar_payan_dore(request):
