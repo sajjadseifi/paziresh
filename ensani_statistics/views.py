@@ -116,6 +116,10 @@ def amar_be_tafkik_madrk_tahsili(request):
     return render(request, 'ensani_statistics/amar_be_tafkik_madrak_tahsili.html')
 
 
+def gozaresh_shoro_dore(request):
+    return render(request, 'ensani_statistics/gozaresh_shoro_dore.html')
+
+
 def amar_shoro_doreh(request):
     amare_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
     salem = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
