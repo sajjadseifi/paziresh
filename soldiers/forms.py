@@ -672,3 +672,36 @@ class SarbazCodeMeli(forms.Form):
 
 class FormAddExelToDb(forms.Form):
     file = forms.FileField()
+
+
+class FormSaterGroup(forms.Form):
+    start = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "start"}),
+        label='از',
+        required=False
+    )
+    end = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "end"}),
+        label='تا',
+        required=False
+    )
+    type = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control"}
+        ),
+        label='نوع ساتر',
+        required=False
+    )
+
+
+class FormMoarefiGroup(forms.Form):
+    start = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "start"}),
+        label='از',
+        required=False
+    )
+    end = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "end"}),
+        label='تا',
+        required=False
+    )

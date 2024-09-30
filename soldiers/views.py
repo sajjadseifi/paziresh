@@ -7,7 +7,8 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
-from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate
+from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate, \
+    FormSaterGroup, FormMoarefiGroup
 from saterapps.models import Sater
 from django.db.models import Q
 from ensaniapp_settings.models import EnsaniSettings
@@ -1620,3 +1621,85 @@ def test_import(request):
                                                                               name__icontains=gorohan_name).first()
                 find_soldire.save()
     return HttpResponse("S")
+
+
+def sater_group_print(request):
+    if request.method == "GET":
+        form = FormSaterGroup()
+        form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
+        context = {
+            'form': form,
+        }
+        return render(request, 'soldiers/sater_group_selector.html', context)
+    if request.method == "POST":
+        form = FormSaterGroup(request.POST, request.FILES or None)
+        form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
+        if not form.is_valid():
+            context = {
+                'form': form,
+            }
+            return render(request, 'soldiers/sater_group_selector.html', context)
+        start = int(form.cleaned_data['start']) + 1
+        end = int(form.cleaned_data['end']) + 1
+        type = int(form.cleaned_data['type'])
+        if type == 1:
+            sarbazha = sarbaz.objects.filter(Amriye=False, Sufficiency_of_mobilization=False, in_coures=True,
+                                             has_been_accepted=True, Sutter='مجوز دارد').order_by(
+                'acceptance_code').all()[start:end:]
+            context = {
+                'sarbazha': sarbazha,
+            }
+            return render(request, 'soldiers/sater_group_adi_print.html', context)
+        if type == 2:
+            sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=True,
+                                             has_been_accepted=True).order_by(
+                'acceptance_code').all()[start:end:]
+            context = {
+                'sarbazha': sarbazha,
+            }
+            return render(request, 'soldiers/sater_group_kefayatbasij.html', context)
+        if type == 3:
+            sarbazha = sarbaz.objects.filter(Amriye=True, Sufficiency_of_mobilization=False, in_coures=True,
+                                             has_been_accepted=True, Sutter='مجوز دارد').order_by(
+                'acceptance_code').all()[start:end:]
+            context = {
+                'sarbazha': sarbazha,
+            }
+            return render(request, 'soldiers/sater_group_amirye.html', context)
+
+        if type == 4:
+            sarbazha = sarbaz.objects.filter(Previous_service_record=True, in_coures=True, has_been_accepted=True,
+                                             Sutter='مجوز دارد').order_by('acceptance_code').all()[start:end:]
+            context = {
+                'sarbazha': sarbazha,
+            }
+            return render(request, 'soldiers/sater_group_khedmat_ghabli.html', context)
+
+
+def moarefi_group_print(request):
+    if request.method == "GET":
+        form = FormMoarefiGroup()
+
+        context = {
+            'form': form,
+        }
+        return render(request, 'soldiers/moarefi_group_selector.html', context)
+    if request.method == "POST":
+        form = FormMoarefiGroup(request.POST, request.FILES or None)
+        if not form.is_valid():
+            context = {
+                'form': form,
+            }
+            return render(request, 'soldiers/moarefi_group_selector.html', context)
+        start = int(form.cleaned_data['start']) + 1
+        end = int(form.cleaned_data['end']) + 1
+
+        sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=False, in_coures=True,
+                                         has_been_accepted=True, willing_to_learn=True).order_by(
+            'acceptance_code').all()[start:end:]
+        en = EnsaniSettings.objects.filter().first()
+        context = {
+            'sarbazha': sarbazha,
+            'en': en
+        }
+        return render(request, 'soldiers/moarefi_be_gordan_group.html', context)

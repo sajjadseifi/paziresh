@@ -15,5 +15,7 @@ urlpatterns = [
     path('sarbaz/update_numbers/', exel_update_number.as_view(), name='exel_update_number'),
     path('export-excel/list_elame_hozor', export_to_excel_list_elame_hozor, name='export_to_excel_list_elame_hozor'),
     path('testr', test_import, name='testr'),
+    path('sarbaz/sater/group/', sater_group_print, name='sater_group_print'),
+    path('sarbaz/moarefi/group/', moarefi_group_print, name='moarefi_begordan_group_print'),
 
 ]
