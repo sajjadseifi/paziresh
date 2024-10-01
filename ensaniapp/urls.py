@@ -31,6 +31,7 @@ urlpatterns = [
     path('support', support, name='support'),
     path('', include('ensani_letter.urls')),
     path('', include('ensaniapp_settings.urls')),
+    path('', include('ensani_soldires_management.urls')),
 
     re_path(r'^header_partial_view',
             header_partial_view,

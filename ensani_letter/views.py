@@ -111,6 +111,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
         find_soldire.willing_to_learn = False
         find_soldire.save()
         my_letter.soldire = find_soldire
+        my_letter.status = "ثبت اولیه"
         my_letter.create_time = jdatetime.datetime.now()
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = F"{ens.shomare_dore}{generate_unique_number()}{find_soldire.National_Code[::3]}"
@@ -157,6 +158,7 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
         find_soldire = Soldier.objects.filter(id=cl.soldire.id).first()
         my_letter.soldire = find_soldire
         find_soldire.the_medical_commission = True
+        cl.status = "درحال معرفی به کمیسیون"
         my_letter.create_time = jdatetime.datetime.now()
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = F"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
@@ -212,7 +214,8 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
         find_soldire.the_medical_commission = True
         if find_soldire.acceptance_code is not None:
             find_soldire.acceptance_code = all_find_solidre + 1
-
+        find_soldire.in_coures = False
+        find_soldire.has_been_accepted = True
         find_soldire.save()
         return redirect(self.success_url)
 
@@ -312,6 +315,8 @@ def PrintCheckoutLetter(request, *args, **kwargs):
     if checkout_letter_pk is None:
         return 0
     checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_letter_pk).first()
+    checkout_letter.status = "چاپ برگه-درحال بررسی"
+    checkout_letter.save()
     cx = {'checkout_letter': checkout_letter}
     return render(request, 'ensani_letter/print_checkout_letter.html', cx)
 
@@ -323,6 +328,7 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     en = EnsaniSettings.objects.filter().first()
     checkout_commission_letter = NormalLetterModels.objects.filter(pk=checkout_commission_letter_pk).first()
     sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
+    checkout_commission_letter.status = "تجدید دوره کمیسیون"
     cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 

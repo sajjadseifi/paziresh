@@ -19,3 +19,4 @@ class CheckoutLetterModels(models.Model):
     description = models.CharField(max_length=150, verbose_name='توضیحات', null=True, blank=True)
     number = models.CharField(max_length=250, verbose_name='شماره نامه')
     c_type = models.CharField(max_length=250, verbose_name='علت تسویه حساب')
+    status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)

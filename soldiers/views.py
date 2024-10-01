@@ -1541,9 +1541,7 @@ from openpyxl.utils import get_column_letter
 
 
 def export_to_excel_list_elame_hozor(request):
-    queryset = sarbaz.objects.filter(has_been_accepted=True, willing_to_learn=True, physical_condition='سالم',
-                                     Amriye=False, Sufficiency_of_mobilization=False,
-                                     Previous_service_record=False).values(
+    queryset = sarbaz.objects.filter(has_been_accepted=True).values(
         'acceptance_code', 'name', 'family',
         'National_Code',
         'Relative_to_inclusive_number').order_by(

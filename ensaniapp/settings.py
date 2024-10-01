@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'saterapps',
     'ensani_letter',
     'ensaniapp_settings',
+    'ensani_soldires_management',
 ]
 
 MIDDLEWARE = [

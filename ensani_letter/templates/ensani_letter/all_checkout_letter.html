@@ -8,7 +8,7 @@
     <section class="content">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title"> نامه نسویه حساب</h3>
+                <h3 class="box-title"> نامه تسویه حساب</h3>
 
                 <div class="box-body no-padding">
                     <table class="table">
@@ -20,6 +20,7 @@
                             <th>کد ملی</th>
                             <th>تاریخ</th>
                             <th>علت</th>
+                            <th>وضعیت</th>
                             <th></th>
                         </tr>
                         {% for c in all_checkout_letter %}
@@ -30,6 +31,7 @@
                                 <td>{{ c.soldire.National_Code }}</td>
                                 <td>{{ c.create_time.date }}</td>
                                 <td>{{ c.c_type }}</td>
+                                <td>{{ c.status }}</td>
                                 <td>
                                     <a class="btn btn-app" href="{% url 'PrintCheckoutLetter' pk=c.pk %}">
                                         <i class="fa fa-edit"></i> چاپ برگه
