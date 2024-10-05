@@ -1,61 +1,112 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from soldiers.models import Soldier
 from django.db.models import Count, Case, When
 from battalions.models import battalion, battalion_group
 from ensani_letter.models import NormalLetterModels
+from ensaniapp_settings.models import EnsaniSettings
 
 
 # Create your views here.
 
 
 def amar_avalie(request):
+    settings = EnsaniSettings.objects.filter().first()
+    if settings is None:
+        return HttpResponse("تنظیمات دوره انجام نشده!")
     statistics = []
 
     # ابتدا تمام گردان‌ها را بازیابی می‌کنیم
     battalions = battalion.objects.all()
+    if settings.tatbigh == False:
+        for bat in battalions:
+            # دریافت همه گروهان‌های مربوط به این گردان
+            groups = battalion_group.objects.filter(gordan=bat)
+            total_soldiers = Soldier.objects.filter(Gordan=bat).all().count()
+            battalion_name = bat.name
+            lst = []
+            salem = Soldier.objects.filter(Gordan=bat, physical_condition='سالم').all().count()
+            moaf_az_razm = Soldier.objects.filter(Gordan=bat, physical_condition='معاف از رزم').all().count()
+            goreh_b = Soldier.objects.filter(Gordan=bat, physical_condition='گروه ب').all().count()
+            goreh_b_moaf_az_razm = Soldier.objects.filter(Gordan=bat, physical_condition='معاف+گروه ب').all().count()
+            amire_dar = Soldier.objects.filter(Gordan=bat, Amriye=True).all().count()
+            shie = Soldier.objects.filter(Gordan=bat, Religion='شیعه').all().count()
+            ahle_tasanon = Soldier.objects.filter(Gordan=bat, Religion='اهل تسنن').all().count()
+            for group in groups:
+                # محاسبه تعداد سربازان برای هر گروهان
+                soldiers = Soldier.objects.filter(battalion_group=group)
+                lst.append((int(group.name), soldiers.count()))
+            sorted_lst = sorted(lst, key=lambda x: x[0])
 
-    for bat in battalions:
-        # دریافت همه گروهان‌های مربوط به این گردان
-        groups = battalion_group.objects.filter(gordan=bat)
-        total_soldiers = Soldier.objects.filter(Gordan=bat).all().count()
-        battalion_name = bat.name
-        lst = []
-        salem = Soldier.objects.filter(Gordan=bat, physical_condition='سالم').all().count()
-        moaf_az_razm = Soldier.objects.filter(Gordan=bat, physical_condition='معاف از رزم').all().count()
-        goreh_b = Soldier.objects.filter(Gordan=bat, physical_condition='گروه ب').all().count()
-        goreh_b_moaf_az_razm = Soldier.objects.filter(Gordan=bat, physical_condition='معاف+گروه ب').all().count()
-        amire_dar = Soldier.objects.filter(Gordan=bat, Amriye=True).all().count()
-        shie = Soldier.objects.filter(Gordan=bat, Religion='شیعه').all().count()
-        ahle_tasanon = Soldier.objects.filter(Gordan=bat, Religion='اهل تسنن').all().count()
-        for group in groups:
-            # محاسبه تعداد سربازان برای هر گروهان
-            soldiers = Soldier.objects.filter(battalion_group=group)
-            lst.append((int(group.name), soldiers.count()))
-        sorted_lst = sorted(lst, key=lambda x: x[0])
+            remove_id_sorted_lst = []
+            for iteam in sorted_lst:
+                remove_id_sorted_lst.append(int(iteam[1]))
+            sorted_lst = remove_id_sorted_lst
+            statistics.append({
+                'group_name': battalion_name,
+                'total_soldiers': total_soldiers,
+                'lst': sorted_lst,
+                'salem': salem,
+                'moaf_az_razm': moaf_az_razm,
+                'goreh_b': goreh_b,
+                'goreh_b_moaf_az_razm': goreh_b_moaf_az_razm,
+                'amire_dar': amire_dar,
+                'shie': shie,
+                'ahle_tasanon': ahle_tasanon,
 
-        remove_id_sorted_lst = []
-        for iteam in sorted_lst:
-            remove_id_sorted_lst.append(int(iteam[1]))
-        sorted_lst = remove_id_sorted_lst
-        statistics.append({
-            'group_name': battalion_name,
-            'total_soldiers': total_soldiers,
-            'lst': sorted_lst,
-            'salem': salem,
-            'moaf_az_razm': moaf_az_razm,
-            'goreh_b': goreh_b,
-            'goreh_b_moaf_az_razm': goreh_b_moaf_az_razm,
-            'amire_dar': amire_dar,
-            'shie': shie,
-            'ahle_tasanon': ahle_tasanon,
+            })
+            lst = []
+        context = {
+            'statistics': statistics
+        }
 
-        })
-        lst = []
-    context = {
-        'statistics': statistics
-    }
+        return render(request, 'ensani_statistics/vaziate_avalie.html', context)
+    else:
+        # ابتدا تمام گردان‌ها را بازیابی می‌کنیم
+        battalions = battalion.objects.all()
+        for bat in battalions:
+            # دریافت همه گروهان‌های مربوط به این گردان
+            groups = battalion_group.objects.filter(gordan=bat)
+            total_soldiers = Soldier.objects.filter(t_Gordan=bat).all().count()
+            battalion_name = bat.name
+            lst = []
+            salem = Soldier.objects.filter(t_Gordan=bat, physical_condition='سالم').all().count()
+            moaf_az_razm = Soldier.objects.filter(t_Gordan=bat, physical_condition='معاف از رزم').all().count()
+            goreh_b = Soldier.objects.filter(t_Gordan=bat, physical_condition='گروه ب').all().count()
+            goreh_b_moaf_az_razm = Soldier.objects.filter(t_Gordan=bat,
+                                                          physical_condition='معاف+گروه ب').all().count()
+            amire_dar = Soldier.objects.filter(t_Gordan=bat, Amriye=True).all().count()
+            shie = Soldier.objects.filter(t_Gordan=bat, Religion='شیعه').all().count()
+            ahle_tasanon = Soldier.objects.filter(t_Gordan=bat, Religion='اهل تسنن').all().count()
+            for group in groups:
+                # محاسبه تعداد سربازان برای هر گروهان
+                soldiers = Soldier.objects.filter(t_battalion_group=group)
+                lst.append((int(group.name), soldiers.count()))
+            sorted_lst = sorted(lst, key=lambda x: x[0])
 
-    return render(request, 'ensani_statistics/vaziate_avalie.html', context)
+            remove_id_sorted_lst = []
+            for iteam in sorted_lst:
+                remove_id_sorted_lst.append(int(iteam[1]))
+            sorted_lst = remove_id_sorted_lst
+            statistics.append({
+                'group_name': battalion_name,
+                'total_soldiers': total_soldiers,
+                'lst': sorted_lst,
+                'salem': salem,
+                'moaf_az_razm': moaf_az_razm,
+                'goreh_b': goreh_b,
+                'goreh_b_moaf_az_razm': goreh_b_moaf_az_razm,
+                'amire_dar': amire_dar,
+                'shie': shie,
+                'ahle_tasanon': ahle_tasanon,
+
+            })
+            lst = []
+        context = {
+            'statistics': statistics,
+            'en':settings
+        }
+
+        return render(request, 'ensani_statistics/vaziate_avalie.html', context)
 
 
 def amar_gordan_gorhan(request):
@@ -72,7 +123,7 @@ def amar_gordan_gorhan(request):
         doctra = 0
         ofghdiplom = 0
         for group in groups:
-            soldiers = Soldier.objects.filter(battalion_group=group)
+            soldiers = Soldier.objects.filter(t_battalion_group=group)
             zirediplom += soldiers.filter(Grade="زیر دیپلم").all().count()
             diplom += soldiers.filter(Grade="دیپلم").all().count()
             ofghdiplom += soldiers.filter(Grade="فوق دیپلم").all().count()
@@ -85,7 +136,7 @@ def amar_gordan_gorhan(request):
                 ofghdiplom=Count(Case(When(Grade='فوق دیپلم', then=1))),
                 lisans=Count(Case(When(Grade='لیسانس', then=1))),
                 ofghlisans=Count(Case(When(Grade='فوق لیسانس', then=1))),
-                doctra=Count(Case(When(Grade='دکترا', then=1))),
+                doctra=Count(Case(When(Grade='دکتری', then=1))),
             )
             group_stats = {
                 'name': group.name,

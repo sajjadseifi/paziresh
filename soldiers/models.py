@@ -51,17 +51,22 @@ class Soldier(models.Model):
 
     Previous_service_record = models.BooleanField(default=False, verbose_name='سابقه خدمت قبلی', blank=True, null=True)
 
-    attraction_of_the_organization = models.CharField(max_length=200, verbose_name='جذبی', null=True, blank=True)
+    attraction_of_the_organization = models.CharField(max_length=200, default='هیچکدام',
+                                                      verbose_name='جذبی', null=True, blank=True)
     Successful_recruitment = models.BooleanField(default=False, verbose_name='جذب موفق', blank=True, null=True)
     Relative_to_inclusive = models.CharField(null=True, blank=True, max_length=120, verbose_name='نسبت با فراگیر')
     Relative_to_inclusive_number = models.CharField(null=True, blank=True, max_length=100,
                                                     verbose_name='شماره تماس نسبت فراگیر')
     Sutter = models.CharField(null=True, blank=True, max_length=150, verbose_name='ساتر')
-    Gordan = models.ForeignKey('battalions.battalion', on_delete=models.CASCADE, verbose_name='گردان', null=True, blank=True)
-    battalion_group = models.ForeignKey('battalions.battalion_group', models.CASCADE, verbose_name='گروهان', null=True, blank=True)
-    t_Gordan = models.ForeignKey('battalions.battalion', on_delete=models.CASCADE, verbose_name='گردان', null=True, blank=True,
+    Gordan = models.ForeignKey('battalions.battalion', on_delete=models.CASCADE, verbose_name='گردان', null=True,
+                               blank=True)
+    battalion_group = models.ForeignKey('battalions.battalion_group', models.CASCADE, verbose_name='گروهان', null=True,
+                                        blank=True)
+    t_Gordan = models.ForeignKey('battalions.battalion', on_delete=models.CASCADE, verbose_name='گردان', null=True,
+                                 blank=True,
                                  related_name='gordan_after_tatbigh')
-    t_battalion_group = models.ForeignKey('battalions.battalion_group', models.CASCADE, verbose_name='گروهان', null=True, blank=True,
+    t_battalion_group = models.ForeignKey('battalions.battalion_group', models.CASCADE, verbose_name='گروهان',
+                                          null=True, blank=True,
                                           related_name='gorohan_after_tatbigh')
     code_paziresh = models.CharField(max_length=100, verbose_name='کدپذیرش', null=True, blank=True)
     code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True, blank=True)
@@ -72,6 +77,7 @@ class Soldier(models.Model):
     unit_type = models.CharField(max_length=200, blank=True, null=True, verbose_name='نوع یگان')
     date_improt_type = models.CharField(max_length=200, verbose_name='اطلاعات', null=True, blank=True)
     in_coures = models.BooleanField(default=False, verbose_name='شرکت در دوره')
+    tatbigh = models.BooleanField(default=False, verbose_name='تطبیق شده/نشده')
 
     def __str__(self):
         return self.name + " " + self.family

@@ -21,3 +21,4 @@ class EnsaniSettings(models.Model):
     tarihkepayanedore = jmodels.jDateField(null=True, verbose_name='تاریخ پایان دوره')
     saghf_paziresh = models.CharField(null=True, blank=True, max_length=100, verbose_name='سقف پذیرش')
     tarikhezam = jmodels.jDateField(null=True, blank=True, verbose_name='تاریخ اعزام')
+    tatbigh = models.BooleanField(default=False, verbose_name='آمار پس از تطبیق')

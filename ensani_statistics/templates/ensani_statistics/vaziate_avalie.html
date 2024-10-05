@@ -891,7 +891,13 @@
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">افراد حاضر به خدمت</h3>
+
+                        {% if en.tatbigh %}
+                            <h3 class="box-title">افراد حاضر به خدمت(آمار پس از تطبیق)</h3>
+                        {% else %}
+                            <h3 class="box-title">افراد حاضر به خدمت(پذیرش)</h3>
+                        {% endif %}
+
                         <br>
                         <br>
                         <br>
