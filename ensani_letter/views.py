@@ -84,7 +84,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.filter(IsCheckout=False).all()
         for item in g:
             soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom()
@@ -349,3 +349,4 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
     cx = {'before_course_commission_letter': before_course_commission}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
+

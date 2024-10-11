@@ -12,6 +12,9 @@ class NormalLetterModels(models.Model):
     number = models.CharField(max_length=200, verbose_name='شماره نامه', null=True, blank=True)
     status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)
 
+    def __str__(self):
+        return self.soldire.name + " " + self.soldire.family
+
 
 class CheckoutLetterModels(models.Model):
     create_time = jmodels.jDateTimeField(null=True, blank=True, verbose_name='تاریخ')
@@ -20,3 +23,6 @@ class CheckoutLetterModels(models.Model):
     number = models.CharField(max_length=250, verbose_name='شماره نامه')
     c_type = models.CharField(max_length=250, verbose_name='علت تسویه حساب')
     status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)
+
+    def __str__(self):
+        return self.soldire.name + " " + self.soldire.family

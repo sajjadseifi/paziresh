@@ -95,7 +95,7 @@ def export_to_excel_list_hazer_be_khdmat(request):
 def export_to_excel_list_sarbaz_tatbigh_nashode(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, in_coures=True, the_medical_commission=False,
                                       Previous_service_record=False, Sufficiency_of_mobilization=False,
-                                      tatbigh=False).values(
+                                      tatbigh=False, IsCheckout=False).values(
         'acceptance_code', 'name', 'family',
         'National_Code', 'Gordan__name', 'battalion_group__name', 't_Gordan__name', 't_battalion_group__name',
         'code_gorhan_nahai').order_by(
@@ -256,6 +256,45 @@ def export_to_excel_list_sarbvaz_test_salamat_ravan(request):
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=list_test_salamt_ravan.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response
+
+
+def export_to_excel_list_sarbaz_be_sorat_gorohi(request):
+    queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
+        'acceptance_code', 'name', 'family',
+        'National_Code', 't_Gordan__name', 't_battalion_group__name',
+        'code_gorhan_nahai').order_by(
+        't_Gordan__name', 't_battalion_group__name', 'code_gorhan_nahai')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'acceptance_code': 'عدد پذیرش',
+        'National_Code': 'کدملی',
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        't_Gordan__name': 'نام گردان جدید',
+        't_battalion_group__name': 'نام گروهان جدید',
+        'code_gorhan_nahai': 'کد گروهان جدید'
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=list_goran_gorohani_codenahai.xlsx'
 
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='MyModelData')

@@ -15,9 +15,9 @@ def amar_avalie(request):
         return HttpResponse("تنظیمات دوره انجام نشده!")
     statistics = []
 
-    # ابتدا تمام گردان‌ها را بازیابی می‌کنیم
-    battalions = battalion.objects.all()
     if settings.tatbigh == False:
+        # ابتدا تمام گردان‌ها را بازیابی می‌کنیم
+        battalions = battalion.objects.all()
         for bat in battalions:
             # دریافت همه گروهان‌های مربوط به این گردان
             groups = battalion_group.objects.filter(gordan=bat)
@@ -66,20 +66,35 @@ def amar_avalie(request):
         for bat in battalions:
             # دریافت همه گروهان‌های مربوط به این گردان
             groups = battalion_group.objects.filter(gordan=bat)
-            total_soldiers = Soldier.objects.filter(t_Gordan=bat).all().count()
+            total_soldiers = Soldier.objects.filter(t_Gordan=bat, willing_to_learn=True, IsCheckout=False,
+                                                    the_medical_commission=False).all().count()
             battalion_name = bat.name
             lst = []
-            salem = Soldier.objects.filter(t_Gordan=bat, physical_condition='سالم').all().count()
-            moaf_az_razm = Soldier.objects.filter(t_Gordan=bat, physical_condition='معاف از رزم').all().count()
-            goreh_b = Soldier.objects.filter(t_Gordan=bat, physical_condition='گروه ب').all().count()
+            salem = Soldier.objects.filter(t_Gordan=bat, physical_condition='سالم',
+                                           willing_to_learn=True, IsCheckout=False,
+                                           the_medical_commission=False, tatbigh=True).all().count()
+            moaf_az_razm = Soldier.objects.filter(t_Gordan=bat, physical_condition='معاف از رزم',
+                                                  willing_to_learn=True, IsCheckout=False,
+                                                  the_medical_commission=False, tatbigh=True).all().count()
+            goreh_b = Soldier.objects.filter(t_Gordan=bat, physical_condition='گروه ب',
+                                             willing_to_learn=True, IsCheckout=False,
+                                             the_medical_commission=False, tatbigh=True).all().count()
             goreh_b_moaf_az_razm = Soldier.objects.filter(t_Gordan=bat,
-                                                          physical_condition='معاف+گروه ب').all().count()
-            amire_dar = Soldier.objects.filter(t_Gordan=bat, Amriye=True).all().count()
-            shie = Soldier.objects.filter(t_Gordan=bat, Religion='شیعه').all().count()
-            ahle_tasanon = Soldier.objects.filter(t_Gordan=bat, Religion='اهل تسنن').all().count()
+                                                          physical_condition='معاف+گروه ب',
+                                                          willing_to_learn=True, IsCheckout=False,
+                                                          the_medical_commission=False, tatbigh=True).all().count()
+            amire_dar = Soldier.objects.filter(t_Gordan=bat, Amriye=True, willing_to_learn=True, IsCheckout=False,
+                                               the_medical_commission=False, tatbigh=True).all().count()
+            shie = Soldier.objects.filter(t_Gordan=bat, Religion='شیعه', willing_to_learn=True, IsCheckout=False,
+                                          the_medical_commission=False, tatbigh=True).all().count()
+            ahle_tasanon = Soldier.objects.filter(t_Gordan=bat, Religion='اهل تسنن',
+                                                  willing_to_learn=True, IsCheckout=False,
+                                                  the_medical_commission=False, tatbigh=True).all().count()
             for group in groups:
                 # محاسبه تعداد سربازان برای هر گروهان
-                soldiers = Soldier.objects.filter(t_battalion_group=group)
+                soldiers = Soldier.objects.filter(t_battalion_group=group, willing_to_learn=True,
+                                                  the_medical_commission=False, IsCheckout=False)
+
                 lst.append((int(group.name), soldiers.count()))
             sorted_lst = sorted(lst, key=lambda x: x[0])
 
@@ -103,7 +118,7 @@ def amar_avalie(request):
             lst = []
         context = {
             'statistics': statistics,
-            'en':settings
+            'en': settings
         }
 
         return render(request, 'ensani_statistics/vaziate_avalie.html', context)

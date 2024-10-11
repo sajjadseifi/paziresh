@@ -768,8 +768,11 @@ class moarefi_be_gordan_va_sater(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(pk=pk).first()
-        time = my_sarbaz.tarikh_paziresh.time()
-        date = my_sarbaz.tarikh_paziresh.date()
+        time = ""
+        date = ""
+        if my_sarbaz.tarikh_paziresh is not None:
+            time = my_sarbaz.tarikh_paziresh.time()
+            date = my_sarbaz.tarikh_paziresh.date()
         cx = {'sarbaz': my_sarbaz, 'time': time, 'date': date}
         return render(request, self.template, cx)
 
@@ -1356,7 +1359,7 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         sb.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
         sb.attraction_of_the_organization = attraction_of_the_organization
         sb.Sutter = Sutter
-        if sb.battalion_group is not None:
+        if sb.battalion_group == "99999999":
             if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
                 b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
                 b_change.zarfiat = int(b_change.zarfiat) + 1
@@ -1608,15 +1611,14 @@ def test_import(request):
             if find_soldire is not None:
                 find_soldire.acceptance_code = one_soldire_list[1]
                 find_soldire.code_paziresh = one_soldire_list[1]
-                find_soldire.willing_to_learn = True
-                find_soldire.has_been_accepted = True
-                find_soldire.in_coures = True
                 grodan_name = one_soldire_list[3]
                 grodan = battalion.objects.filter(name__icontains=grodan_name).filter().first()
-                find_soldire.Gordan = grodan
+                find_soldire.t_Gordan = grodan
                 gorohan_name = one_soldire_list[4]
-                find_soldire.battalion_group = battalion_group.objects.filter(gordan=grodan,
+                find_soldire.t_battalion_group = battalion_group.objects.filter(gordan=grodan,
                                                                               name__icontains=gorohan_name).first()
+                code_nahi = int(one_soldire_list[5])
+                find_soldire.code_gorhan_nahai = code_nahi
                 find_soldire.save()
     return HttpResponse("S")
 
