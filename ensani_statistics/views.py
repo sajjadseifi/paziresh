@@ -125,57 +125,117 @@ def amar_avalie(request):
 
 
 def amar_gordan_gorhan(request):
-    battalions = battalion.objects.all()
-    stats = []
+    settings = EnsaniSettings.objects.filter().first()
+    if settings is None:
+        return HttpResponse("تنظیمات دوره انجام نشده!")
 
-    for batt in battalions:
-        groups = battalion_group.objects.filter(gordan=batt)
-        group_stats_list = []
-        zirediplom = 0
-        diplom = 0
-        lisans = 0
-        ofghlisans = 0
-        doctra = 0
-        ofghdiplom = 0
-        for group in groups:
-            soldiers = Soldier.objects.filter(t_battalion_group=group)
-            zirediplom += soldiers.filter(Grade="زیر دیپلم").all().count()
-            diplom += soldiers.filter(Grade="دیپلم").all().count()
-            ofghdiplom += soldiers.filter(Grade="فوق دیپلم").all().count()
-            lisans += soldiers.filter(Grade="لیسانس").all().count()
-            ofghlisans += soldiers.filter(Grade="فوق لیسانس").all().count()
-            doctra += soldiers.filter(Grade="دکترا").all().count()
-            degrees = soldiers.aggregate(
-                zirediplom=Count(Case(When(Grade='زیر دیپلم', then=1))),
-                diplom=Count(Case(When(Grade='دیپلم', then=1))),
-                ofghdiplom=Count(Case(When(Grade='فوق دیپلم', then=1))),
-                lisans=Count(Case(When(Grade='لیسانس', then=1))),
-                ofghlisans=Count(Case(When(Grade='فوق لیسانس', then=1))),
-                doctra=Count(Case(When(Grade='دکتری', then=1))),
-            )
-            group_stats = {
-                'name': group.name,
-                'degrees': degrees
+    if settings.tatbigh == False:
+        battalions = battalion.objects.all()
+        stats = []
+
+        for batt in battalions:
+            groups = battalion_group.objects.filter(gordan=batt)
+            group_stats_list = []
+            zirediplom = 0
+            diplom = 0
+            lisans = 0
+            ofghlisans = 0
+            doctra = 0
+            ofghdiplom = 0
+            for group in groups:
+                soldiers = Soldier.objects.filter(battalion_group=group)
+                zirediplom += soldiers.filter(Grade="زیر دیپلم").all().count()
+                diplom += soldiers.filter(Grade="دیپلم").all().count()
+                ofghdiplom += soldiers.filter(Grade="فوق دیپلم").all().count()
+                lisans += soldiers.filter(Grade="لیسانس").all().count()
+                ofghlisans += soldiers.filter(Grade="فوق لیسانس").all().count()
+                doctra += soldiers.filter(Grade="دکتری").all().count()
+                degrees = soldiers.aggregate(
+                    zirediplom=Count(Case(When(Grade='زیر دیپلم', then=1))),
+                    diplom=Count(Case(When(Grade='دیپلم', then=1))),
+                    ofghdiplom=Count(Case(When(Grade='فوق دیپلم', then=1))),
+                    lisans=Count(Case(When(Grade='لیسانس', then=1))),
+                    ofghlisans=Count(Case(When(Grade='فوق لیسانس', then=1))),
+                    doctra=Count(Case(When(Grade='دکتری', then=1))),
+                )
+                group_stats = {
+                    'name': group.name,
+                    'degrees': degrees
+                }
+                group_stats_list.append(group_stats)
+
+            battalion_stats = {
+                'name': batt.name,
+                'groups': group_stats_list,
+                "zirediplom": zirediplom,
+                "diplom": diplom,
+                "lisans": lisans,
+                "ofghlisans": ofghlisans,
+                "doctra": doctra,
+                "ofghdiplom": ofghdiplom,
+                'count': (zirediplom + diplom + lisans + ofghlisans + doctra + ofghdiplom)
             }
-            group_stats_list.append(group_stats)
+            stats.append(battalion_stats)
 
-        battalion_stats = {
-            'name': batt.name,
-            'groups': group_stats_list,
-            "zirediplom": zirediplom,
-            "diplom": diplom,
-            "lisans": lisans,
-            "ofghlisans": ofghlisans,
-            "doctra": doctra,
-            "ofghdiplom": ofghdiplom,
-            'count': (zirediplom + diplom + lisans + ofghlisans + doctra + ofghdiplom)
+        context = {
+            'stats': stats,
+            "en": settings
         }
-        stats.append(battalion_stats)
+        return render(request, 'ensani_statistics/amar_gordan_gorhan.html', context)
+    else:
+        battalions = battalion.objects.all()
+        stats = []
 
-    context = {
-        'stats': stats
-    }
-    return render(request, 'ensani_statistics/amar_gordan_gorhan.html', context)
+        for batt in battalions:
+            groups = battalion_group.objects.filter(gordan=batt)
+            group_stats_list = []
+            zirediplom = 0
+            diplom = 0
+            lisans = 0
+            ofghlisans = 0
+            doctra = 0
+            ofghdiplom = 0
+            for group in groups:
+                soldiers = Soldier.objects.filter(t_battalion_group=group, IsCheckout=False,
+                                                  the_medical_commission=False, willing_to_learn=True)
+                zirediplom += soldiers.filter(Grade="زیر دیپلم").all().count()
+                diplom += soldiers.filter(Grade="دیپلم").all().count()
+                ofghdiplom += soldiers.filter(Grade="فوق دیپلم").all().count()
+                lisans += soldiers.filter(Grade="لیسانس").all().count()
+                ofghlisans += soldiers.filter(Grade="فوق لیسانس").all().count()
+                doctra += soldiers.filter(Grade="دکتری").all().count()
+                degrees = soldiers.aggregate(
+                    zirediplom=Count(Case(When(Grade='زیر دیپلم', then=1))),
+                    diplom=Count(Case(When(Grade='دیپلم', then=1))),
+                    ofghdiplom=Count(Case(When(Grade='فوق دیپلم', then=1))),
+                    lisans=Count(Case(When(Grade='لیسانس', then=1))),
+                    ofghlisans=Count(Case(When(Grade='فوق لیسانس', then=1))),
+                    doctra=Count(Case(When(Grade='دکتری', then=1))),
+                )
+                group_stats = {
+                    'name': group.name,
+                    'degrees': degrees
+                }
+                group_stats_list.append(group_stats)
+
+            battalion_stats = {
+                'name': batt.name,
+                'groups': group_stats_list,
+                "zirediplom": zirediplom,
+                "diplom": diplom,
+                "lisans": lisans,
+                "ofghlisans": ofghlisans,
+                "doctra": doctra,
+                "ofghdiplom": ofghdiplom,
+                'count': (zirediplom + diplom + lisans + ofghlisans + doctra + ofghdiplom)
+            }
+            stats.append(battalion_stats)
+
+        context = {
+            'stats': stats,
+            "en": settings
+        }
+        return render(request, 'ensani_statistics/amar_gordan_gorhan.html', context)
 
 
 def amar_be_tafkik_madrk_tahsili(request):
@@ -418,3 +478,7 @@ def amar_avalie_samane(request):
 
     }
     return render(request, 'ensani_statistics/amar_avlie_samane.html', cx)
+
+
+def yegan_be_kar_girande(request):
+    return render(request, 'ensani_statistics/gozaresh_yeghan_be_kar_girande.html')
