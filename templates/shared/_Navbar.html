@@ -123,6 +123,17 @@
             </li>
             <li><a href="{% url 'CreateOrUpdateSettings' %}"><i class="fa fa-gears"></i> <span>تنظیمات</span></a>
             </li>
+            <li class="treeview">
+                <a href="#"><i class="fa fa-area-chart"></i> <span>پشتیبان گیری</span>
+                    <span class="pull-left-container">
+                <i class="fa fa-angle-right pull-left"></i>
+              </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{% url 'backup_database' %}">دریافت پشتیبان</a></li>
+                    <li><a href="{% url 'restore_database' %}">بازگزاری پشتیبان</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- /.sidebar-menu -->
     </section>

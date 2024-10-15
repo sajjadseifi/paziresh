@@ -32,6 +32,7 @@ urlpatterns = [
     path('', include('ensani_letter.urls')),
     path('', include('ensaniapp_settings.urls')),
     path('', include('ensani_soldires_management.urls')),
+    path('backup/', include('ensani_backup.urls')),
 
     re_path(r'^header_partial_view',
             header_partial_view,

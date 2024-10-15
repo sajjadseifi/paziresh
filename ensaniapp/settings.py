@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'ensani_letter',
     'ensaniapp_settings',
     'ensani_soldires_management',
+    'ensani_backup',
 ]
 
 MIDDLEWARE = [
