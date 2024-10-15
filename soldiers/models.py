@@ -78,6 +78,7 @@ class Soldier(models.Model):
     date_improt_type = models.CharField(max_length=200, verbose_name='اطلاعات', null=True, blank=True)
     in_coures = models.BooleanField(default=False, verbose_name='شرکت در دوره')
     tatbigh = models.BooleanField(default=False, verbose_name='تطبیق شده/نشده')
+    IsUnit = models.BooleanField(default=False, verbose_name='وضعیت یگان')
 
     def __str__(self):
         return self.name + " " + self.family

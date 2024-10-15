@@ -311,6 +311,41 @@ def export_to_excel_list_sarbaz_be_sorat_gorohi(request):
     return response
 
 
+def import_exel_yegan_be_kar_girande(request):
+    # بارگذاری فایل اکسل
+    exel = 'D:/unittest/ensaniapp/soldiers/s.xlsx'
+    workbook = openpyxl.load_workbook(exel)
+
+    # انتخاب شیت اول
+    sheet = workbook.active
+
+    # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+    num_rows = sheet.max_row
+    num_cols = sheet.max_column
+
+    # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+    for row_idx in range(2, num_rows + 1):
+        one_soldire_list = []
+        for col_idx in range(1, num_cols + 1):
+            # مقدار سلول را بخوانید
+            cell_value = sheet.cell(row=row_idx, column=col_idx).value
+            if cell_value is not None:
+                # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
+                cell_value = str(cell_value)
+                cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و')
+            one_soldire_list.append(cell_value)
+        if one_soldire_list[0] is not None:
+            find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
+            if find_soldire is not None:
+                unit_name = str(one_soldire_list[1])
+                unit_type = str(one_soldire_list[2])
+                find_soldire.unit_type = unit_type
+                find_soldire.unit_name = unit_name
+                find_soldire.IsUnit = True
+                find_soldire.save()
+    return HttpResponse("S")
+
+
 def PrintPosheNokhodi(request):
     in_course_soldire = Soldier.objects.filter(in_coures=True, willing_to_learn=True).order_by('t_Gordan__name',
                                                                                                't_battalion_group__name',
