@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 
-from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi
+from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYegankhedmati
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels
 import pandas as pd
@@ -529,15 +529,18 @@ def PrintPosheNokhodi(request):
 
 class exel_yegaan_khedmat(View):
     def get(self, request):
-        form = FormUpdateGordan()
+        form = FormYegankhedmati()
+        form.fields['type'].choices = [(1, 'عادی'), (2, "امریه")]
         cx = {'form': form}
-        return render(request, 'ensani_soldires_management/update_gordan.html', cx)
+        return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)
 
     def post(self, request):
-        form = FormUpdateGordan(request.POST, request.FILES or None)
-        cx = {'form': form}
-
-        if form.is_valid():
+        form = FormYegankhedmati(request.POST, request.FILES or None)
+        form.fields['type'].choices = [(1, 'عادی'), (2, "امریه")]
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)
+        else:
             exel = request.FILES['file']
 
             workbook = openpyxl.load_workbook(exel)
@@ -562,10 +565,87 @@ class exel_yegaan_khedmat(View):
                                                                                                               " ")
                     one_soldire_list.append(cell_value)
                 if one_soldire_list[0] is not None:
+                    print(form.cleaned_data['type'])
                     find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
-                    if find_soldire is not None:
-                        continue
+                    if form.cleaned_data['type'] == "1":
+                        if find_soldire is not None:
+                            for iteam in list_yegan_bekargirande:
+                                if iteam[1] == one_soldire_list[1]:
+                                    find_soldire.unit_name = iteam[1]
+                                    find_soldire.unit_type = iteam[2]
+                                find_soldire.save()
+                    if form.cleaned_data['type'] == "2":
+                        if find_soldire is not None:
+                            find_soldire.Amriye = True
+                            find_soldire.Amriye_organization = one_soldire_list[1]
+                            find_soldire.save()
+        cx = {'form': form}
+        return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)
 
-        return render(request, 'ensani_soldires_management/update_gordan.html', cx)
 
+def export_soldire_incoures_all_data(request):
+    queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
+        'name', 'family', 'fathers_name', 'National_Code', 'acceptance_code', 't_Gordan__name',
+        't_battalion_group__name', 'code_gorhan_nahai', 'Amriye', 'Amriye_organization', 'physical_condition',
+        'Type_of_disease', 'Grade', 'Grade_precise', 'educational_level_of_the_system', 'Study_group',
+        'marital_status', 'Religion', 'Date_of_birth', 'place_of_birth', 'phone_number', 'home_phone_number',
+        'Date_of_dispatch', 'province_name', 'city_name', 'Address', 'Place_of_Issue', 'height', 'Weight',
+        'Renewal_of_the_previous_period', 'attraction_of_the_organization', 'unit_name', 'unit_type').order_by(
+        't_Gordan__name', 't_battalion_group__name', 'code_gorhan_nahai')
 
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'National_Code': 'کدملی',
+        'acceptance_code': 'عدد پذیرش',
+        't_Gordan__name': 'نام گردان جدید',
+        't_battalion_group__name': 'نام گروهان جدید',
+        'code_gorhan_nahai': 'کد گروهان جدید',
+        'Amriye': 'امریه دار',
+        'Amriye_organization': 'سازمان امریه',
+        'physical_condition': 'وضعیت جسمانی',
+        'Type_of_disease': 'نوع بیماری',
+        'Grade': 'مقطع تحصیلی',
+        'Grade_precise': 'مقطع تحصیلی دقیق',
+        'educational_level_of_the_system': 'مقطع تحصیلی سامانه',
+        'Study_group': 'گروه تحصیلی',
+        'marital_status': 'وضعیت تاهل',
+        'Religion': 'مذهب',
+        'Date_of_birth': 'تاریخ تولد',
+        'place_of_birth': 'محل تولد',
+        'phone_number': 'شماره موبایل',
+        'home_phone_number': 'شماره منزل',
+        'Date_of_dispatch': 'تاریخ اعزام',
+        'province_name': 'نام استان',
+        'city_name': 'نام شهر',
+        'Address': 'آدرس',
+        'Place_of_Issue': 'محل صدور',
+        'height': 'قد',
+        'Weight': 'وزن',
+        'Renewal_of_the_previous_period': 'جدید دوره قبل',
+        'attraction_of_the_organization': 'جذبی',
+        'unit_name': 'نام یگان بکارگیرنده',
+        'unit_type': 'نوع یگان بکارگیرنده',
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=list_all_soldire_in_course.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response

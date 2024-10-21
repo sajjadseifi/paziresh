@@ -482,3 +482,7 @@ def amar_avalie_samane(request):
 
 def yegan_be_kar_girande(request):
     return render(request, 'ensani_statistics/gozaresh_yeghan_be_kar_girande.html')
+
+
+def yegan_be_kar_girande_tabel(request):
+    return render(request, 'ensani_statistics/amar_yegan_be_kar_girande_tabel.html')

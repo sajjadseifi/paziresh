@@ -11,4 +11,5 @@ urlpatterns = [
     path('amar_samane', amar_avalie_samane, name='amar_avalie_samane'),
     path('gozaresh_shoro_dore', gozaresh_shoro_dore, name='gozaresh_shoro_dore'),
     path('gozaresh_yegan_khedmati', yegan_be_kar_girande, name='gozaresh_yegan_khedmati'),
+    path('amare_yegan_bekar_girande_tabel', yegan_be_kar_girande_tabel, name='amare_yegan_bekar_girande_tabel'),
 ]
