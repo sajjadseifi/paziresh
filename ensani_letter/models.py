@@ -26,3 +26,9 @@ class CheckoutLetterModels(models.Model):
 
     def __str__(self):
         return self.soldire.name + " " + self.soldire.family
+
+
+class RegisterNormalLetter(models.Model):
+    in_come_letter_numbers = models.CharField(max_length=100, verbose_name='شماره نامه وارده', null=True, blank=True)
+    in_come_letter_data = models.CharField(max_length=100, verbose_name='تاریخ نامه وارده', null=True, blank=True)
+    normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')

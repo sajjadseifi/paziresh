@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
     CreateBeforeCourseCommissionLetterFrom
-from .models import CheckoutLetterModels, NormalLetterModels
+from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter
 
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
@@ -307,6 +307,15 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
         my_letter.save()
+        rn = RegisterNormalLetter()
+        rn.normal_letter = my_letter
+        in_come_letter_numbers = b_form.cleaned_data['destination_letter_number']
+        in_come_letter_date = b_form.cleaned_data['destination_letter_date']
+        if in_come_letter_date is not None:
+            rn.in_come_letter_data = in_come_letter_date
+        if in_come_letter_numbers is not None:
+            rn.in_come_letter_numbers = in_come_letter_numbers
+        rn.save()
         return redirect(self.success_url)
 
 
@@ -342,6 +351,15 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
 
 
+def PrintRegisterLetter(request, *args, **kwargs):
+    Normal_letter = kwargs['pk']
+    if Normal_letter is None:
+        return 0
+    Normal_letter_Register = NormalLetterModels.objects.filter(pk=Normal_letter).first()
+    cx = {'Normal_letter_Register': Normal_letter_Register}
+    return render(request, 'ensani_letter/print_register_normal_letter.html', cx)
+
+
 def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission_letter_pk = kwargs['pk']
     if before_course_commission_letter_pk is None:
@@ -349,4 +367,3 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
     cx = {'before_course_commission_letter': before_course_commission}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
-
