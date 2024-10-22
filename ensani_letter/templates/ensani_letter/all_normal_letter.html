@@ -43,13 +43,19 @@
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
                                     {% endif %}
-                                     {% if c.subject == "معرفی به کمیسیون شروع دوره آموزشی" %}
-                                        <a class="btn btn-app" href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
+                                    {% if c.subject == "معرفی به کمیسیون شروع دوره آموزشی" %}
+                                        <a class="btn btn-app"
+                                           href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
                                     {% endif %}
                                     {% if c.subject == "استعلام کفایت از آموزش" %}
                                         <a class="btn btn-app" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                    {% endif %}
+                                    {% if c.subject == "گواهی عضویت" %}
+                                        <a class="btn btn-app" href="{% url 'PrintRegisterLetter' pk=c.pk %}">
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
                                     {% endif %}

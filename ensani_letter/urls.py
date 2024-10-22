@@ -11,6 +11,7 @@ urlpatterns = [
     path('letter/all/checkout', AllCheckoutLetter, name='AllCheckoutLetter'),
     path('letter/all/normal', AllNormalLetter, name='AllNormalLetter'),
     path('letter/p/checkout/<int:pk>', PrintCheckoutLetter, name='PrintCheckoutLetter'),
+    path('letter/p/normall/register/<int:pk>', PrintRegisterLetter, name='PrintRegisterLetter'),
     path('letter/p/checkout/commission/<int:pk>', PrintCheckoutCommissionLetter, name='PrintCheckoutCommissionLetter'),
     path('letter/p/checkout/before/course/commission/<int:pk>', PrintBeforeCourseCommissionLetter,
          name='PrintBeforeCourseCommissionLetter'),

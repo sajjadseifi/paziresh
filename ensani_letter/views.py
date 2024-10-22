@@ -273,7 +273,7 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_register_letter.html'
     success_url = reverse_lazy('AllNormalLetter')
     soldire_list = []
-    g = Soldier.objects.filter().all()
+    g = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
     for item in g:
         soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 
@@ -289,7 +289,7 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
         for item in g:
             soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateRegisterLetterFrom(request.POST, request.FILES or None)
@@ -306,6 +306,7 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
         my_letter.subject = "گواهی عضویت"
         ens = EnsaniSettings.objects.filter().first()
         my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.status = "تایید"
         my_letter.save()
         rn = RegisterNormalLetter()
         rn.normal_letter = my_letter
