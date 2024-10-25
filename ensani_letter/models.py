@@ -31,4 +31,5 @@ class CheckoutLetterModels(models.Model):
 class RegisterNormalLetter(models.Model):
     in_come_letter_numbers = models.CharField(max_length=100, verbose_name='شماره نامه وارده', null=True, blank=True)
     in_come_letter_data = models.CharField(max_length=100, verbose_name='تاریخ نامه وارده', null=True, blank=True)
+    in_come_submit_locations = models.CharField(max_length=100, verbose_name='مبدا صادر کننده', null=True, blank=True)
     normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')

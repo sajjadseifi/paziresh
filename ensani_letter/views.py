@@ -312,6 +312,9 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
         rn.normal_letter = my_letter
         in_come_letter_numbers = b_form.cleaned_data['destination_letter_number']
         in_come_letter_date = b_form.cleaned_data['destination_letter_date']
+        in_come_submit_locations = b_form.cleaned_data['in_come_submit_locations']
+        if in_come_submit_locations is not None:
+            rn.in_come_submit_locations = in_come_submit_locations
         if in_come_letter_date is not None:
             rn.in_come_letter_data = in_come_letter_date
         if in_come_letter_numbers is not None:
@@ -357,7 +360,9 @@ def PrintRegisterLetter(request, *args, **kwargs):
     if Normal_letter is None:
         return 0
     Normal_letter_Register = NormalLetterModels.objects.filter(pk=Normal_letter).first()
-    cx = {'Normal_letter_Register': Normal_letter_Register}
+    Rg = RegisterNormalLetter.objects.filter(normal_letter=Normal_letter_Register).first()
+    en = EnsaniSettings.objects.filter().last()
+    cx = {'Normal_letter_Register': Normal_letter_Register, 'en': en, 'rg': Rg}
     return render(request, 'ensani_letter/print_register_normal_letter.html', cx)
 
 

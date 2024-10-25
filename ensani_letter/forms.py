@@ -52,6 +52,12 @@ class CreateRegisterLetterFrom(forms.Form):
         required=False
     )
 
+    in_come_submit_locations = forms.CharField(
+        label='مبداء صادر کننده',
+        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        required=False
+    )
+
 
 class CreateCommissionLetterFrom(forms.Form):
     subject = forms.CharField(
