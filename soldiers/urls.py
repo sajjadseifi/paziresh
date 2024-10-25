@@ -17,5 +17,9 @@ urlpatterns = [
     path('testr', test_import, name='testr'),
     path('sarbaz/sater/group/', sater_group_print, name='sater_group_print'),
     path('sarbaz/moarefi/group/', moarefi_group_print, name='moarefi_begordan_group_print'),
-
+    path('sarbaz/export_soldire_has_been_accepted_in_coures_all_data/',
+         export_soldire_has_been_accepted_in_coures_all_data,
+         name='export_soldire_has_been_accepted_in_coures_all_data'),
+    path('sarbaz/export_soldire_has_been_accepted_all_data/data', export_soldire_has_been_accepted_all_data,
+         name='export_soldire_has_been_accepted_all_data_'),
 ]

@@ -1616,7 +1616,7 @@ def test_import(request):
                 find_soldire.t_Gordan = grodan
                 gorohan_name = one_soldire_list[4]
                 find_soldire.t_battalion_group = battalion_group.objects.filter(gordan=grodan,
-                                                                              name__icontains=gorohan_name).first()
+                                                                                name__icontains=gorohan_name).first()
                 code_nahi = int(one_soldire_list[5])
                 find_soldire.code_gorhan_nahai = code_nahi
                 find_soldire.save()
@@ -1703,3 +1703,127 @@ def moarefi_group_print(request):
             'en': en
         }
         return render(request, 'soldiers/moarefi_be_gordan_group.html', context)
+
+
+def export_soldire_has_been_accepted_in_coures_all_data(request):
+    queryset = sarbaz.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
+        'National_Code', 'name', 'family', 'fathers_name', 'acceptance_code', 'Gordan__name',
+        'battalion_group__name', 'Amriye', 'Amriye_organization', 'physical_condition',
+        'Type_of_disease', 'Grade', 'Grade_precise', 'educational_level_of_the_system', 'Study_group',
+        'marital_status', 'Religion', 'Date_of_birth', 'place_of_birth', 'phone_number', 'home_phone_number',
+        'Date_of_dispatch', 'province_name', 'city_name', 'Address', 'Place_of_Issue', 'height', 'Weight', ).order_by(
+        'acceptance_code')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'National_Code': 'کدملی',
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'acceptance_code': 'عدد پذیرش',
+        'Gordan__name': 'نام گردان',
+        'battalion_group__name': 'نام گروهان',
+        'Amriye': 'امریه دار',
+        'Amriye_organization': 'سازمان امریه',
+        'physical_condition': 'وضعیت جسمانی',
+        'Type_of_disease': 'نوع بیماری',
+        'Grade': 'مقطع تحصیلی',
+        'Grade_precise': 'مقطع تحصیلی دقیق',
+        'educational_level_of_the_system': 'مقطع تحصیلی سامانه',
+        'Study_group': 'گروه تحصیلی',
+        'marital_status': 'وضعیت تاهل',
+        'Religion': 'مذهب',
+        'Date_of_birth': 'تاریخ تولد',
+        'place_of_birth': 'محل تولد',
+        'phone_number': 'شماره موبایل',
+        'home_phone_number': 'شماره منزل',
+        'Date_of_dispatch': 'تاریخ اعزام',
+        'province_name': 'نام استان',
+        'city_name': 'نام شهر',
+        'Address': 'آدرس',
+        'Place_of_Issue': 'محل صدور',
+        'height': 'قد',
+        'Weight': 'وزن',
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=list_has_been_accepted_in_coures.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response
+
+
+def export_soldire_has_been_accepted_all_data(request):
+    queryset = sarbaz.objects.filter(has_been_accepted=True).values(
+        'National_Code', 'name', 'family', 'fathers_name', 'acceptance_code', 'Gordan__name',
+        'battalion_group__name', 'Amriye', 'Amriye_organization', 'physical_condition',
+        'Type_of_disease', 'Grade', 'Grade_precise', 'educational_level_of_the_system', 'Study_group',
+        'marital_status', 'Religion', 'Date_of_birth', 'place_of_birth', 'phone_number', 'home_phone_number',
+        'Date_of_dispatch', 'province_name', 'city_name', 'Address', 'Place_of_Issue', 'height', 'Weight', ).order_by(
+        'acceptance_code')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'National_Code': 'کدملی',
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'acceptance_code': 'عدد پذیرش',
+        'Gordan__name': 'نام گردان',
+        'battalion_group__name': 'نام گروهان',
+        'Amriye': 'امریه دار',
+        'Amriye_organization': 'سازمان امریه',
+        'physical_condition': 'وضعیت جسمانی',
+        'Type_of_disease': 'نوع بیماری',
+        'Grade': 'مقطع تحصیلی',
+        'Grade_precise': 'مقطع تحصیلی دقیق',
+        'educational_level_of_the_system': 'مقطع تحصیلی سامانه',
+        'Study_group': 'گروه تحصیلی',
+        'marital_status': 'وضعیت تاهل',
+        'Religion': 'مذهب',
+        'Date_of_birth': 'تاریخ تولد',
+        'place_of_birth': 'محل تولد',
+        'phone_number': 'شماره موبایل',
+        'home_phone_number': 'شماره منزل',
+        'Date_of_dispatch': 'تاریخ اعزام',
+        'province_name': 'نام استان',
+        'city_name': 'نام شهر',
+        'Address': 'آدرس',
+        'Place_of_Issue': 'محل صدور',
+        'height': 'قد',
+        'Weight': 'وزن',
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=list_has_been_accepted.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response
