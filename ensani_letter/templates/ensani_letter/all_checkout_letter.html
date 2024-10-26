@@ -36,13 +36,10 @@
                                     <a class="btn btn-app" href="{% url 'PrintCheckoutLetter' pk=c.pk %}">
                                         <i class="fa fa-edit"></i> چاپ برگه
                                     </a>
-                                    <a class="btn btn-app" href="">
+                                    <a class="btn btn-app" href="{% url 'status_ok_checkout' pk=c.pk %}">
                                         <i class="fa fa-edit"></i> تایید
                                     </a>
-                                    <a class="btn btn-app" href="">
-                                        <i class="fa fa-edit"></i> ویرایش
-                                    </a>
-                                    <a class="btn btn-app" href="">
+                                    <a class="btn btn-app" href="{% url 'delete_checkout' pk=c.pk %}">
                                         <i class="fa fa-edit"></i> حذف
                                     </a>
                                     {% if c.c_type == "کمیسیون پزشکی" %}

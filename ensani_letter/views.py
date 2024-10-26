@@ -373,3 +373,30 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
     cx = {'before_course_commission_letter': before_course_commission}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
+
+
+def check_status_checkout(request, *args, **kwargs):
+    checkout_id = kwargs['pk']
+    if checkout_id is None:
+        return redirect(reverse_lazy('AllCheckoutLetter'))
+    checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_id).first()
+    checkout_letter.status = "تایید"
+    checkout_letter.save()
+    return redirect(reverse_lazy('AllCheckoutLetter'))
+
+
+def remove_checkout(request, *args, **kwargs):
+    checkout_id = kwargs['pk']
+    if checkout_id is None:
+        return redirect(reverse_lazy('AllCheckoutLetter'))
+    checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_id).first()
+    checkout_letter.soldire.IsCheckout = False
+    checkout_letter.soldire.in_coures = True
+    checkout_letter.soldire.willing_to_learn = True
+    if checkout_letter.soldire.the_medical_commission == True:
+        n = NormalLetterModels.objects.filter(subject='معرفی به کمیسیون', soldire=checkout_letter.soldire).all()
+        if n is not None:
+            n.delete()
+            checkout_letter.soldire.the_medical_commission = False
+    checkout_letter.delete()
+

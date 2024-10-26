@@ -15,5 +15,7 @@ urlpatterns = [
     path('letter/p/checkout/commission/<int:pk>', PrintCheckoutCommissionLetter, name='PrintCheckoutCommissionLetter'),
     path('letter/p/checkout/before/course/commission/<int:pk>', PrintBeforeCourseCommissionLetter,
          name='PrintBeforeCourseCommissionLetter'),
+    path('letter/checkout/update_status/<int:pk>', check_status_checkout, name='status_ok_checkout'),
+    path('letter/checkout/delete/<int:pk>', check_status_checkout, name='delete_checkout'),
     path('letter/p/normall/training/inquiry/<int:pk>', PrintTrainingInquiryLetter, name='PrintTrainingInquiryLetter'),
 ]
