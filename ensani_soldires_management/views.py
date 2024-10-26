@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 
 from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYegankhedmati, \
-    FormUpdateAllSoldiresHasbenAceptedInCourse
+    FormUpdateAllSoldiresHasbenAceptedInCourse, FormUpdateAllSoldires
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels
 import pandas as pd
@@ -862,3 +862,77 @@ class update_db_from_exel_all_soldire_in_course(View):
                     find_soldire.save()
         cx = {'form': form}
         return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)
+
+
+class update_db_from_exel_all_soldire_Previous_service_record(View):
+    def get(self, request):
+        form = FormUpdateAllSoldiresHasbenAceptedInCourse()
+        cx = {'form': form}
+        return render(request,
+                      'ensani_soldires_management/update_db_from_exel_all_soldire_Previous_service_record.html', cx)
+
+    def post(self, request):
+        form = FormUpdateAllSoldiresHasbenAceptedInCourse(request.POST, request.FILES or None)
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request,
+                          'ensani_soldires_management/update_db_from_exel_all_soldire_Previous_service_record.html', cx)
+        else:
+            exel = request.FILES['file']
+
+            workbook = openpyxl.load_workbook(exel)
+
+            # انتخاب شیت اول
+            sheet = workbook.active
+
+            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+            num_rows = sheet.max_row
+            num_cols = sheet.max_column
+
+            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+            for row_idx in range(2, num_rows + 1):
+                one_soldire_list = []
+                for col_idx in range(1, num_cols + 1):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
+                    if cell_value is not None:
+                        # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
+                        cell_value = str(cell_value)
+                        cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace("\u200c",
+                                                                                                              " ")
+                    one_soldire_list.append(cell_value)
+                if one_soldire_list[3] is not None:
+                    find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[3]).first()
+                    find_soldire.name = one_soldire_list[0]
+                    find_soldire.family = one_soldire_list[1]
+                    find_soldire.fathers_name = one_soldire_list[2]
+                    find_soldire.acceptance_code = one_soldire_list[4]
+                    find_soldire.Amriye = one_soldire_list[5]
+                    find_soldire.Amriye_organization = one_soldire_list[6]
+                    find_soldire.physical_condition = one_soldire_list[7]
+                    find_soldire.Type_of_disease = one_soldire_list[8]
+                    find_soldire.Grade = one_soldire_list[9]
+                    find_soldire.educational_level_of_the_system = one_soldire_list[10]
+                    find_soldire.Grade = one_soldire_list[11]
+                    find_soldire.Study_group = one_soldire_list[12]
+                    find_soldire.marital_status = one_soldire_list[13]
+                    find_soldire.Religion = one_soldire_list[14]
+                    find_soldire.Date_of_birth = one_soldire_list[15]
+                    find_soldire.place_of_birth = one_soldire_list[16]
+                    find_soldire.phone_number = one_soldire_list[17]
+                    find_soldire.home_phone_number = one_soldire_list[18]
+                    find_soldire.Date_of_dispatch = one_soldire_list[19]
+                    find_soldire.province_name = one_soldire_list[20]
+                    find_soldire.city_name = one_soldire_list[21]
+                    find_soldire.Address = one_soldire_list[22]
+                    find_soldire.Date_of_dispatch = one_soldire_list[23]
+                    find_soldire.height = one_soldire_list[24]
+                    find_soldire.Weight = one_soldire_list[25]
+                    find_soldire.Renewal_of_the_previous_period = one_soldire_list[26]
+                    find_soldire.attraction_of_the_organization = one_soldire_list[27]
+                    find_soldire.unit_name = one_soldire_list[28]
+                    find_soldire.unit_type = one_soldire_list[29]
+                    print(find_soldire.National_Code)
+        cx = {'form': form}
+        return render(request,
+                      'ensani_soldires_management/update_db_from_exel_all_soldire_Previous_service_record.html', cx)
