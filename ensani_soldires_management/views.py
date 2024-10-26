@@ -932,7 +932,7 @@ class update_db_from_exel_all_soldire_Previous_service_record(View):
                     find_soldire.attraction_of_the_organization = one_soldire_list[27]
                     find_soldire.unit_name = one_soldire_list[28]
                     find_soldire.unit_type = one_soldire_list[29]
-                    print(find_soldire.National_Code)
+                    find_soldire.save()
         cx = {'form': form}
         return render(request,
                       'ensani_soldires_management/update_db_from_exel_all_soldire_Previous_service_record.html', cx)
@@ -1008,7 +1008,7 @@ class update_db_from_exel_all_soldire_Sufficiency_of_mobilization(View):
                     find_soldire.attraction_of_the_organization = one_soldire_list[27]
                     find_soldire.unit_name = one_soldire_list[28]
                     find_soldire.unit_type = one_soldire_list[29]
-                    print(find_soldire.National_Code)
+                    find_soldire.save()
         cx = {'form': form}
         return render(request,
                       'ensani_soldires_management/update_db_from_exel_all_soldire_Sufficiency_of_mobilization.html', cx)
