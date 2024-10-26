@@ -61,7 +61,7 @@
         .moaven_niro_ensani {
             position: absolute;
             top: 474px;
-            right: 189px;
+            right: 198px;
             font-size: 12px;
             color: black;
             font-weight: bold;
@@ -78,12 +78,11 @@
 
         .letter_number {
             position: absolute;
-            top: 44px;
-            right: 418px;
-            font-size: 11px;
+            top: 45px;
+            right: 407px;
+            font-size: 8px;
             color: black;
             font-weight: bold;
-
         }
 
         .letter_date {
@@ -102,9 +101,9 @@
 
 <div class="container">
     <img src="{% static 'img/letters/TrainingInquiryLetter.jpg' %}" alt="TrainingInquiryLetter" class="image">
-    <div class="letter_number">{{ training_inquiry_letter.number }}</div>
+    <div class="letter_number">ز/<bdi>512/106/6/<span>{{ training_inquiry_letter.number }}</span></bdi></div>
     <div class="letter_date">{{ training_inquiry_letter.create_time.date }}</div>
-    <div class="shoare_sall">«افزایش توان دفاع همه جانبه در سال جهش تولید ومشارکت مردم »</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
 
     <div class="letter_des"> با صلوات بر محمد و آل محمد و با ادای احترام ، بدینوسیله
         سربازفراگیر {{ training_inquiry_letter.soldire.name }} {{ training_inquiry_letter.soldire.family }} فرزند
@@ -113,7 +112,7 @@
         معرفی میگردد.
 
     </div>
-    <div class="moaven_niro_ensani">سرهنگ پاسدار علی متولی طاهر</div>
+    <div class="moaven_niro_ensani">{{ en.modire_niroye_ensani }}</div>
     <div class="code_paziresh">{{ training_inquiry_letter.soldire.acceptance_code }}</div>
 
 </div>

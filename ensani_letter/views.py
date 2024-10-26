@@ -352,7 +352,8 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     if training_inquiry_letter_pk is None:
         return 0
     training_inquiry_letter = NormalLetterModels.objects.filter(pk=training_inquiry_letter_pk).first()
-    cx = {'training_inquiry_letter': training_inquiry_letter}
+    en = EnsaniSettings.objects.filter().first()
+    cx = {'training_inquiry_letter': training_inquiry_letter, 'en': en}
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
 
 
