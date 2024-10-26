@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>برگه معرفی به کمیسیون{{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
+    <title>-برگه معرفی به کمیسیون{{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
     <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
     <style>
         @page {
@@ -111,12 +111,11 @@
 
         .letter_number {
             position: absolute;
-            top: 44px;
-            right: 425px;
-            font-size: 11px;
+            top: 46px;
+            right: 420px;
+            font-size: 8px;
             color: black;
             font-weight: bold;
-
         }
 
         .letter_date {
@@ -261,10 +260,15 @@
 <div class="container">
     <img src="{% static 'img/letters/CheckoutCommissionLetter.jpg' %}" alt="CheckoutCommissionLetter" class="image">
     <img src="{% static 'img/letters/CheckoutCommissionLetter.jpg' %}" alt="CheckoutCommissionLetter" class="image">
-    <div class="letter_number">{{ checkout_commission_letter.number }}</div>
+
+    <div class="letter_number">ز/
+        <bdi>512/106/6/<span>{{ checkout_commission_letter.number }}</span></bdi>
+    </div>
     <div class="letter_date">{{ checkout_commission_letter.create_time.date }}</div>
     <div class="shoare_sall">{{ en.shoare_sall }}</div>
-    <div class="letter_to">به : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت
+    <div class="letter_to">به
+        : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت
+        نیروی انسانی- مدیریت
         منابع انسانی
         سرباز
     </div>
@@ -297,7 +301,9 @@
     <div class="letter_number2">{{ checkout_commission_letter.number }}</div>
     <div class="letter_date2">{{ checkout_commission_letter.create_time.date }}</div>
     <div class="shoare_sall2">{{ en.shoare_sall }}</div>
-    <div class="letter_to2">به : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت
+    <div class="letter_to2">به
+        : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت
+        نیروی انسانی- مدیریت
         منابع انسانی
         سرباز
     </div>
