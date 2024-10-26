@@ -330,7 +330,8 @@ def PrintCheckoutLetter(request, *args, **kwargs):
     checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_letter_pk).first()
     checkout_letter.status = "چاپ برگه-درحال بررسی"
     checkout_letter.save()
-    cx = {'checkout_letter': checkout_letter}
+    en = EnsaniSettings.objects.filter().first()
+    cx = {'checkout_letter': checkout_letter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_letter.html', cx)
 
 
@@ -399,4 +400,3 @@ def remove_checkout(request, *args, **kwargs):
             n.delete()
             checkout_letter.soldire.the_medical_commission = False
     checkout_letter.delete()
-
