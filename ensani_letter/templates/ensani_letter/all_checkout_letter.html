@@ -34,18 +34,26 @@
                                 <td>{{ c.status }}</td>
                                 <td>
                                     <a class="btn btn-app" href="{% url 'PrintCheckoutLetter' pk=c.pk %}">
-                                        <i class="fa fa-edit"></i> چاپ برگه
+                                        <i class="fa fa-print"></i> تسویه حساب
                                     </a>
                                     <a class="btn btn-app" href="{% url 'status_ok_checkout' pk=c.pk %}">
                                         <i class="fa fa-edit"></i> تایید
                                     </a>
                                     <a class="btn btn-app" href="{% url 'delete_checkout' pk=c.pk %}">
-                                        <i class="fa fa-edit"></i> حذف
+                                        <i class="fa fa-remove"></i> حذف
                                     </a>
                                     {% if c.c_type == "کمیسیون پزشکی" %}
-                                        <a class="btn btn-app" href="{% url 'CreateCommissionLetter' pk=c.number %}">
-                                            <i class="fa fa-edit"></i> ثبت کمیسیون
-                                        </a>
+                                        {% if c.find_com is not None %}
+                                            <a class="btn btn-app"
+                                               href="{% url 'PrintCheckoutCommissionLetter' pk=c.find_com.first.pk %}">
+                                                <i class="fa fa-print"></i>کمیسیون
+                                            </a>
+                                        {% else %}
+                                            <a class="btn btn-app"
+                                               href="{% url 'CreateCommissionLetter' pk=c.pk %}">
+                                                <i class="fa fa-edit"></i> ثبت کمیسیون
+                                            </a>
+                                        {% endif %}
                                     {% else %}
                                         <a class="btn btn-app disabled" href="">
                                             <i class="fa fa-edit"></i> ثبت کمیسیون
