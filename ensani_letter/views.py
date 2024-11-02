@@ -323,6 +323,60 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
         return redirect(self.success_url)
 
 
+class CreaterunawayLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_runaway_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+    soldire_list = []
+    g = Soldier.objects.filter(IsCheckout=True).all()
+    for item in g:
+        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+
+    def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter().all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateRegisterLetterFrom()
+        b_form.fields['soldire'].choices = soldire_list
+        cx = {'form': b_form}
+        return render(request, self.template, cx)
+
+    def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(IsCheckout=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateRegisterLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        my_letter.description = "فرار"
+        my_letter.destination = b_form.cleaned_data['destination']
+        my_letter.subject = "فرار"
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.status = "تایید"
+        my_letter.save()
+        rn = RegisterNormalLetter()
+        rn.normal_letter = my_letter
+        in_come_letter_numbers = b_form.cleaned_data['destination_letter_number']
+        in_come_letter_date = b_form.cleaned_data['destination_letter_date']
+        in_come_submit_locations = b_form.cleaned_data['in_come_submit_locations']
+        if in_come_submit_locations is not None:
+            rn.in_come_submit_locations = in_come_submit_locations
+        if in_come_letter_date is not None:
+            rn.in_come_letter_data = in_come_letter_date
+        if in_come_letter_numbers is not None:
+            rn.in_come_letter_numbers = in_come_letter_numbers
+        rn.save()
+        return redirect(self.success_url)
+
+
 def PrintCheckoutLetter(request, *args, **kwargs):
     checkout_letter_pk = kwargs['pk']
     if checkout_letter_pk is None:

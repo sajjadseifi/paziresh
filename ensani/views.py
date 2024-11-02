@@ -31,7 +31,11 @@ def header_references_partial_view(request, *args, **kwargs):
     return render(request, 'shared/_HeaderReferences.html')
 
 
+
+
+
 def navbar_partial_view(request, *args, **kwargs):
+    user = request.user.is_staff == True
     return render(request, 'shared/_Navbar.html')
 
 

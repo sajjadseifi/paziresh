@@ -102,3 +102,25 @@ class CreateTrainingInquiryLetterFrom(forms.Form):
         label='سرباز',
         required=False
     )
+
+
+class CreateRunAwayLetterFrom(forms.Form):
+    soldire = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control select2"}
+        ),
+        label='سرباز',
+        required=False
+    )
+    type = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control select2"}
+        ),
+        label='دلیل فرار',
+        required=False
+    )
+    date = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "date"}),
+        label='تاریخ فرار',
+        required=False
+    )

@@ -37,3 +37,9 @@ class RegisterNormalLetter(models.Model):
     in_come_letter_data = models.CharField(max_length=100, verbose_name='تاریخ نامه وارده', null=True, blank=True)
     in_come_submit_locations = models.CharField(max_length=100, verbose_name='مبدا صادر کننده', null=True, blank=True)
     normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')
+
+
+class RunawayNormallLetter(models.Model):
+    type = models.CharField(max_length=120, verbose_name='دلیل فرار', null=True, blank=True)
+    run_away_dated = models.CharField(max_length=120, verbose_name='تاریخ فرار', null=True, blank=True)
+    normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')

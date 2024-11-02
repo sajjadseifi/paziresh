@@ -35,29 +35,32 @@
             <!-- Optionally, you can add icons to the links -->
             <li class="active"><a href="{% url 'home_page' %}"><i class="fa fa-home"></i> <span>صفحه اصلی</span></a>
             </li>
-            <li class="treeview">
-                <a href="#"><i class="fa fa-user-plus"></i> <span>پذیرش سرباز</span>
-                    <span class="pull-left-container">
+            {% if request.user.is_staff == True %}
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-user-plus"></i> <span>پذیرش سرباز</span>
+                        <span class="pull-left-container">
                 <i class="fa fa-angle-right pull-left"></i>
               </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="{% url 'sarbaz_codemeli' %}">پذیرش سرباز با کد ملی</a></li>
-                    <li><a href="{% url 'CreatePaziresh' %}">پذیرش دستی</a></li>
-                    <li><a href="{% url 'updatePazireshpage' %}">ویرایش پذیرشی</a></li>
-                    <li><a href="{% url 'MainViewSoldires' %}">لیست تمامی سربازها</a></li>
-                    <li><a href="{% url 'exel' %}">بارگذاری اکسل سامانه</a></li>
-                    <li><a href="{% url 'exel_update_number' %}">بارگذاری اکسل شماره تماس</a></li>
-                    <li><a href="{% url 'export_to_excel_list_elame_hozor' %}">لیست اعلام حضور برای سامانه</a></li>
-                    <li><a href="{% url 'sater_group_print' %}">چاپ ساتر گروهی</a></li>
-                    <li><a href="{% url 'moarefi_begordan_group_print' %}">چاپ معرفی به گردان گروهی</a></li>
-                    <li><a href="{% url 'export_soldire_has_been_accepted_in_coures_all_data' %}">اکسل پذیرش شده
-                        حاضر</a>
-                    </li>
-                    <li><a href="{% url 'export_soldire_has_been_accepted_all_data_' %}">اکسل پذیرش شده ها</a>
-                    </li>
-                </ul>
-            </li>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'sarbaz_codemeli' %}">پذیرش سرباز با کد ملی</a></li>
+                        <li><a href="{% url 'CreatePaziresh' %}">پذیرش دستی</a></li>
+                        <li><a href="{% url 'updatePazireshpage' %}">ویرایش پذیرشی</a></li>
+                        <li><a href="{% url 'MainViewSoldires' %}">لیست تمامی سربازها</a></li>
+                        <li><a href="{% url 'exel' %}">بارگذاری اکسل سامانه</a></li>
+                        <li><a href="{% url 'exel_update_number' %}">بارگذاری اکسل شماره تماس</a></li>
+                        <li><a href="{% url 'export_to_excel_list_elame_hozor' %}">لیست اعلام حضور برای سامانه</a></li>
+                        <li><a href="{% url 'sater_group_print' %}">چاپ ساتر گروهی</a></li>
+                        <li><a href="{% url 'moarefi_begordan_group_print' %}">چاپ معرفی به گردان گروهی</a></li>
+                        <li><a href="{% url 'export_soldire_has_been_accepted_in_coures_all_data' %}">اکسل پذیرش شده
+                            حاضر</a>
+                        </li>
+                        <li><a href="{% url 'export_soldire_has_been_accepted_all_data_' %}">اکسل پذیرش شده ها</a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
             <li class="treeview">
                 <a href="#"><i class="fa fa-user-plus"></i> <span>مدیریت سرباز</span>
                     <span class="pull-left-container">
@@ -66,69 +69,81 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="">تمامی سربازان</a></li>
+
                     <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته</a></li>
-                    <li><a href="{% url 'poshe_nokhodi' %}">چاپ لیبل پوشه نخودی</a></li>
-                    <li><a href="{% url 'export_to_excel_list_hazer_be_khdmat' %}">لیست حاضر به خدمت</a></li>
-                    <li><a href="{% url 'exel_update_jazbi' %}">مدیریت جذبی ها</a></li>
-                    <li><a href="{% url 'exel_update_gordan' %}">تطبیق گردان گروهی</a></li>
-                    <li><a href="{% url 'export_to_excel_list_sarbaz_tatbigh_nashode' %}">لیست سربازهای تطبیق نشده</a>
-                    </li>
-                    <li><a href="{% url 'export_to_excel_list_sarbvaz_test_salamat_ravan' %}">لیست تست سلامت روان</a>
-                    </li>
-                    <li><a href="{% url 'export_to_excel_list_sarbaz_be_sorat_gorohi' %}">لیست سربازان حاضر
-                        گردانی</a></li>
-                    <li><a href="{% url 'exel_update_yegan_khedmati' %}">بارگزاری گروهی یگان خدمتی</a></li>
-                    <li><a href="{% url 'exel_export_all_soldire_in_course' %}">لیست اطلاعات کلی سربازان حاضر</a></li>
-                    <li><a href="{% url 'update_db_from_exel_all_soldire_in_course' %}" style="font-size: 11px">بروزرسانی
-                        گروهی اطلاعات سربازان
-                        حاضر</a></li>
-                    <li><a href="{% url 'export_soldire_Sufficiency_of_mobilization_all_data' %}"
-                           style="font-size: 12px">لیست اطلاعات کلی
-                        سربازان کفایت بسیج</a></li>
-                    <li><a href="{% url 'update_db_from_exel_all_soldire_Sufficiency_of_mobilization' %}"
-                           style="font-size: 10px">بروزرسانی
-                        گروهی اطلاعات سربازان
-                        کفایت بسیح</a></li>
-                    <li><a href="{% url 'export_soldire_Previous_service_record_all_data' %}" style="font-size: 10px">لیست
-                        اطلاعات کلی
-                        سربازان خدمت قبلی</a></li>
-                    <li><a href="{% url 'update_db_from_exel_all_soldire_Previous_service_record' %}"
-                           style="font-size: 10px">بروزرسانی
-                        گروهی اطلاعات سربازان
-                        خدمت قبلی </a></li>
+                    {% if request.user.is_staff == True %}
+                        <li><a href="{% url 'poshe_nokhodi' %}">چاپ لیبل پوشه نخودی</a></li>
+                        <li><a href="{% url 'export_to_excel_list_hazer_be_khdmat' %}">لیست حاضر به خدمت</a></li>
+                        <li><a href="{% url 'exel_update_jazbi' %}">مدیریت جذبی ها</a></li>
+                        <li><a href="{% url 'exel_update_gordan' %}">تطبیق گردان گروهی</a></li>
+                        <li><a href="{% url 'export_to_excel_list_sarbaz_tatbigh_nashode' %}">لیست سربازهای تطبیق
+                            نشده</a>
+                        </li>
+                        <li><a href="{% url 'export_to_excel_list_sarbvaz_test_salamat_ravan' %}">لیست تست سلامت
+                            روان</a>
+                        </li>
+                        <li><a href="{% url 'export_to_excel_list_sarbaz_be_sorat_gorohi' %}">لیست سربازان حاضر
+                            گردانی</a></li>
+                        <li><a href="{% url 'exel_update_yegan_khedmati' %}">بارگزاری گروهی یگان خدمتی</a></li>
+                        <li><a href="{% url 'exel_export_all_soldire_in_course' %}">لیست اطلاعات کلی سربازان حاضر</a>
+                        </li>
+                        <li><a href="{% url 'update_db_from_exel_all_soldire_in_course' %}" style="font-size: 11px">بروزرسانی
+                            گروهی اطلاعات سربازان
+                            حاضر</a></li>
+                        <li><a href="{% url 'export_soldire_Sufficiency_of_mobilization_all_data' %}"
+                               style="font-size: 12px">لیست اطلاعات کلی
+                            سربازان کفایت بسیج</a></li>
+                        <li><a href="{% url 'update_db_from_exel_all_soldire_Sufficiency_of_mobilization' %}"
+                               style="font-size: 10px">بروزرسانی
+                            گروهی اطلاعات سربازان
+                            کفایت بسیح</a></li>
+                        <li><a href="{% url 'export_soldire_Previous_service_record_all_data' %}"
+                               style="font-size: 10px">لیست
+                            اطلاعات کلی
+                            سربازان خدمت قبلی</a></li>
+                        <li><a href="{% url 'update_db_from_exel_all_soldire_Previous_service_record' %}"
+                               style="font-size: 10px">بروزرسانی
+                            گروهی اطلاعات سربازان
+                            خدمت قبلی </a></li>
+                    {% endif %}
                 </ul>
             </li>
-            <li class="treeview">
-                <a href="#"><i class="fa fa-group"></i> <span>مدیریت گردان ها</span>
-                    <span class="pull-left-container">
+            {% if request.user.is_staff == True %}
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-group"></i> <span>مدیریت گردان ها</span>
+                        <span class="pull-left-container">
                 <i class="fa fa-angle-right pull-left"></i>
               </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="{% url 'all-Battalion' %}">لیست گردان</a></li>
-                    <li><a href="{% url 'BattalionCreate' %}">ایجاد گردان</a></li>
-                    <li><a href="{% url 'MainViewBattalionGroup' %}">لیست گروهان</a></li>
-                    <li><a href="{% url 'CreateBattalionGroup' %}">ایجاد گروهان</a></li>
-                </ul>
-            </li>
-
-
-            <li class="treeview">
-                <a href="#"><i class="fa fa-envelope"></i> <span>نامه ها</span>
-                    <span class="pull-left-container">
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'all-Battalion' %}">لیست گردان</a></li>
+                        <li><a href="{% url 'BattalionCreate' %}">ایجاد گردان</a></li>
+                        <li><a href="{% url 'MainViewBattalionGroup' %}">لیست گروهان</a></li>
+                        <li><a href="{% url 'CreateBattalionGroup' %}">ایجاد گروهان</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if request.user.is_staff == True %}
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-envelope"></i> <span>نامه ها</span>
+                        <span class="pull-left-container">
                 <i class="fa fa-angle-right pull-left"></i>
               </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="{% url 'AllNormalLetter' %}">نامه های عادی</a></li>
-                    <li><a href="{% url 'AllCheckoutLetter' %}">نامه های تسویه حساب</a></li>
-                    <li><a href="{% url 'CreateCheckoutLetter' %}">ایجاد نامه تسویه حساب</a></li>
-                    <li><a href="{% url 'CreateTrainingInquiryLetter' %}">ایجاد نامه استعلام کفایت از آموزش</a></li>
-                    <li><a href="{% url 'CreateBeforeCourseCommissionLetter' %}">ایجاد نامه کمیسیون قبل شروع دوره</a>
-                    <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه گواهی عضویت</a>
-                    </li>
-                </ul>
-            </li>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'AllNormalLetter' %}">نامه های عادی</a></li>
+                        <li><a href="{% url 'AllCheckoutLetter' %}">نامه های تسویه حساب</a></li>
+                        <li><a href="{% url 'CreateCheckoutLetter' %}">ایجاد نامه تسویه حساب</a></li>
+                        <li><a href="{% url 'CreateTrainingInquiryLetter' %}">ایجاد نامه استعلام کفایت از آموزش</a></li>
+                        <li><a href="{% url 'CreateBeforeCourseCommissionLetter' %}">ایجاد نامه کمیسیون قبل شروع
+                            دوره</a>
+                        <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه گواهی عضویت</a>
+                        <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه تسویه حساب به فرجا</a>
+                        <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه فرار</a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
 
             <li class="treeview">
                 <a href="#"><i class="fa fa-area-chart"></i> <span>آمار</span>
@@ -143,23 +158,27 @@
                     <li><a href="{% url 'amar_payan_dore' %}">آمار پایان دوره</a></li>
                     <li><a href="{% url 'amar_avalie_samane' %}">آمار اولیه سامانه</a></li>
                     <li><a href="{% url 'amare_yegan_bekar_girande_tabel' %}">آمار یگان بکارگیرنده</a></li>
-                    <li><a href="{% url 'gozaresh_shoro_dore' %}">گزارش شروع دوره</a></li>
-                    <li><a href="{% url 'gozaresh_yegan_khedmati' %}">گزارش یگان بکارگیرنده</a></li>
+                    {% if request.user.is_staff == True %}
+                        <li><a href="{% url 'gozaresh_shoro_dore' %}">گزارش شروع دوره</a></li>
+                        <li><a href="{% url 'gozaresh_yegan_khedmati' %}">گزارش یگان بکارگیرنده</a></li>
+                    {% endif %}
                 </ul>
             </li>
-            <li><a href="{% url 'CreateOrUpdateSettings' %}"><i class="fa fa-gears"></i> <span>تنظیمات</span></a>
-            </li>
-            <li class="treeview">
-                <a href="#"><i class="fa fa-area-chart"></i> <span>پشتیبان گیری</span>
-                    <span class="pull-left-container">
+            {% if request.user.is_staff == True %}
+                <li><a href="{% url 'CreateOrUpdateSettings' %}"><i class="fa fa-gears"></i> <span>تنظیمات</span></a>
+                </li>
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-area-chart"></i> <span>پشتیبان گیری</span>
+                        <span class="pull-left-container">
                 <i class="fa fa-angle-right pull-left"></i>
               </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="{% url 'backup_database' %}">دریافت پشتیبان</a></li>
-                    <li><a href="{% url 'restore_database' %}">بازگزاری پشتیبان</a></li>
-                </ul>
-            </li>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'backup_database' %}">دریافت پشتیبان</a></li>
+                        <li><a href="{% url 'restore_database' %}">بازگزاری پشتیبان</a></li>
+                    </ul>
+                </li>
+            {% endif %}
         </ul>
         <!-- /.sidebar-menu -->
     </section>
