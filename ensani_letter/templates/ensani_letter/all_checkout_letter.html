@@ -43,17 +43,11 @@
                                         <i class="fa fa-remove"></i> حذف
                                     </a>
                                     {% if c.c_type == "کمیسیون پزشکی" %}
-                                        {% if c.find_com is not None %}
-                                            <a class="btn btn-app"
-                                               href="{% url 'PrintCheckoutCommissionLetter' pk=c.find_com.first.pk %}">
-                                                <i class="fa fa-print"></i>کمیسیون
-                                            </a>
-                                        {% else %}
-                                            <a class="btn btn-app"
-                                               href="{% url 'CreateCommissionLetter' pk=c.pk %}">
-                                                <i class="fa fa-edit"></i> ثبت کمیسیون
-                                            </a>
-                                        {% endif %}
+                                        <a class="btn btn-app"
+                                           href="{% url 'CreateCommissionLetter' pk=c.number %}">
+                                            <i class="fa fa-edit"></i> ثبت کمیسیون
+                                        </a>
+
                                     {% else %}
                                         <a class="btn btn-app disabled" href="">
                                             <i class="fa fa-edit"></i> ثبت کمیسیون

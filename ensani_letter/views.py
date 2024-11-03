@@ -168,6 +168,7 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
                 destination = iteam[2]
         my_letter.destination = destination
         my_letter.save()
+        find_soldire.save()
         return redirect(self.success_url)
 
 

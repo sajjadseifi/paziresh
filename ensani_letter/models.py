@@ -27,9 +27,6 @@ class CheckoutLetterModels(models.Model):
     def __str__(self):
         return self.soldire.name + " " + self.soldire.family
 
-    def find_com(self):
-        n = NormalLetterModels.objects.filter(subject='معرفی به کمیسیون', soldire=self.soldire).all()
-        return n
 
 
 class RegisterNormalLetter(models.Model):
