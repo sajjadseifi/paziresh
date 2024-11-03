@@ -32,7 +32,7 @@ class battalion_group(models.Model):
     moafazrazm = models.BooleanField(default=False, verbose_name='معاف ازرزم')
     gorehbe = models.BooleanField(default=False, verbose_name='گروه ب')
     moafazrazm_gorehbe = models.BooleanField(default=False, verbose_name='معاف از رزم + گروه ب')
+    zarfiat_total = models.CharField(max_length=250, verbose_name='ظرفیت گروهان کل', null=True, blank=True)
 
     def __str__(self):
         return self.name + self.gordan.name
-

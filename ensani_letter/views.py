@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
     CreateBeforeCourseCommissionLetterFrom
-from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter
+from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter
 
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
@@ -430,6 +430,16 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
     cx = {'before_course_commission_letter': before_course_commission}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
+
+
+def PrintRunawayLetterLetter(request, *args, **kwargs):
+    Runaway_letter_pk = kwargs['pk']
+    if Runaway_letter_pk is None:
+        return 0
+    Runaway = NormalLetterModels.objects.filter(pk=Runaway_letter_pk).first()
+    en = EnsaniSettings.objects.filter().last()
+    cx = {' Runaway': Runaway, 'en': en}
+    return render(request, 'ensani_letter/print_runaway_letter_letter.html', cx)
 
 
 def check_status_checkout(request, *args, **kwargs):
