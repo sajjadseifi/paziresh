@@ -22,4 +22,10 @@ urlpatterns = [
          name='export_soldire_has_been_accepted_in_coures_all_data'),
     path('sarbaz/export_soldire_has_been_accepted_all_data/data', export_soldire_has_been_accepted_all_data,
          name='export_soldire_has_been_accepted_all_data_'),
+    path('sarbaz/update/update_db_from_exel_paziresh_hazer_bekhdmat',
+         update_db_from_exel_paziresh_hazer_bekhdmat.as_view(),
+         name='update_db_from_exel_paziresh_hazer_bekhdmat'),
+    path('sarbaz/update/update_db_from_exel_paziresh_shode',
+         update_db_from_exel_paziresh_shode.as_view(),
+         name='update_db_from_exel_paziresh_shode'),
 ]

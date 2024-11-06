@@ -705,3 +705,11 @@ class FormMoarefiGroup(forms.Form):
         label='تا',
         required=False
     )
+
+
+class FormUpdatePazireshHazer(forms.Form):
+    file = forms.FileField()
+
+
+class FormUpdatePazireshshode(forms.Form):
+    file = forms.FileField()

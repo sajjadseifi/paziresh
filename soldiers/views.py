@@ -8,7 +8,7 @@ from django.views import View
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
 from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate, \
-    FormSaterGroup, FormMoarefiGroup
+    FormSaterGroup, FormMoarefiGroup, FormUpdatePazireshHazer, FormUpdatePazireshshode
 from saterapps.models import Sater
 from django.db.models import Q
 from ensaniapp_settings.models import EnsaniSettings
@@ -653,7 +653,11 @@ class sabte_paziresh(LoginRequiredMixin, View):
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
         Weight = form_soldiers.cleaned_data['Weight']
-        Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period_id = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period = ""
+        for iteam in Renewal_of_the_previous_period_list:
+            if iteam[0] == int(Renewal_of_the_previous_period_id):
+                Renewal_of_the_previous_period = iteam[1]
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
         Amriye = ""
@@ -934,7 +938,11 @@ class CreatePaziresh(LoginRequiredMixin, View):
         Address = form_soldiers.cleaned_data['Address']
         height = form_soldiers.cleaned_data['height']
         Weight = form_soldiers.cleaned_data['Weight']
-        Renewal_of_the_previous_period = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period_id = form_soldiers.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period = ""
+        for iteam in Renewal_of_the_previous_period_list:
+            if iteam[0] == int(Renewal_of_the_previous_period_id):
+                Renewal_of_the_previous_period = iteam[1]
         Course_renewal_date = form_soldiers.cleaned_data['Course_renewal_date']
         Amriye_id = form_soldiers.cleaned_data['Amriye']
         Amriye = ""
@@ -1134,7 +1142,8 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form_soldiers.initial['Place_of_Issue'] = sb.Place_of_Issue
         form_soldiers.initial['height'] = sb.height
         form_soldiers.initial['Weight'] = sb.Weight
-        form_soldiers.initial['Renewal_of_the_previous_period'] = sb.Renewal_of_the_previous_period
+        form_soldiers.initial['Renewal_of_the_previous_period'] = get_id_of_list(Renewal_of_the_previous_period_list,
+                                                                                 sb.Renewal_of_the_previous_period)
         form_soldiers.initial['Course_renewal_date'] = sb.Course_renewal_date
         form_soldiers.initial['Reason_for_renewing_the_course'] = sb.Reason_for_renewing_the_course
         form_soldiers.initial['Renewal_of_the_previous_period_code'] = sb.Renewal_of_the_previous_period_code
@@ -1281,7 +1290,11 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         Address = form.cleaned_data['Address']
         height = form.cleaned_data['height']
         Weight = form.cleaned_data['Weight']
-        Renewal_of_the_previous_period = form.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period_id = form.cleaned_data['Renewal_of_the_previous_period']
+        Renewal_of_the_previous_period = ""
+        for iteam in Renewal_of_the_previous_period_list:
+            if iteam[0] == int(Renewal_of_the_previous_period_id):
+                Renewal_of_the_previous_period = iteam[1]
         Course_renewal_date = form.cleaned_data['Course_renewal_date']
         Amriye_id = form.cleaned_data['Amriye']
         Amriye = ""
@@ -1485,9 +1498,6 @@ class exel_add_to_db(View):
                     if i[1].replace(" ", "").replace("\u200c", "") == one_soldire_list[9].replace(" ", "").replace(
                             "\u200c", ""):
                         temp = i[0]
-                print(temp)
-                print(categorize_educational_level(temp)[1])
-                print(map_educational_level_to_grade(temp)[1])
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
                 check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list)).first()
@@ -1829,3 +1839,152 @@ def export_soldire_has_been_accepted_all_data(request):
     # تنظیم sheet به حالت راست به چپ
     worksheet.sheet_view.rightToLeft = True
     return response
+
+
+class update_db_from_exel_paziresh_hazer_bekhdmat(View):
+    def get(self, request):
+        form = FormUpdatePazireshHazer()
+        cx = {'form': form}
+        return render(request,
+                      'soldiers/update_db_from_exel_paziresh_hazer_bekhdmat.html', cx)
+
+    def post(self, request):
+        form = FormUpdatePazireshHazer(request.POST, request.FILES or None)
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request,
+                          'soldiers/update_db_from_exel_paziresh_hazer_bekhdmat.html',
+                          cx)
+
+        else:
+            exel = request.FILES['file']
+
+            workbook = openpyxl.load_workbook(exel)
+
+            # انتخاب شیت اول
+            sheet = workbook.active
+
+            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+            num_rows = sheet.max_row
+            num_cols = sheet.max_column
+
+            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+            for row_idx in range(2, num_rows + 1):
+                one_soldire_list = []
+                for col_idx in range(1, num_cols + 1):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
+                    if cell_value is not None:
+                        # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
+                        cell_value = str(cell_value)
+                        cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace("\u200c",
+                                                                                                              " ")
+                    one_soldire_list.append(cell_value)
+                if one_soldire_list[0] is not None:
+                    find_soldire = sarbaz.objects.filter(National_Code=one_soldire_list[0]).first()
+                    find_soldire.name = one_soldire_list[1]
+                    find_soldire.family = one_soldire_list[2]
+                    find_soldire.fathers_name = one_soldire_list[3]
+                    find_soldire.acceptance_code = one_soldire_list[4]
+                    gordan = battalion.objects.filter(name__icontains=str(one_soldire_list[5])).first()
+                    find_soldire.Gordan = gordan
+                    gordan = battalion_group.objects.filter(name__icontains=str(one_soldire_list[6]),
+                                                            gordan=gordan).first()
+                    find_soldire.Gordan = gordan
+                    find_soldire.Amriye = one_soldire_list[7]
+                    find_soldire.Amriye_organization = one_soldire_list[8]
+                    find_soldire.physical_condition = one_soldire_list[9]
+                    find_soldire.Type_of_disease = one_soldire_list[10]
+                    find_soldire.Grade = one_soldire_list[11]
+                    find_soldire.educational_level_of_the_system = one_soldire_list[12]
+                    find_soldire.Grade = one_soldire_list[13]
+                    find_soldire.Study_group = one_soldire_list[14]
+                    find_soldire.marital_status = one_soldire_list[15]
+                    find_soldire.Religion = one_soldire_list[16]
+                    find_soldire.Date_of_birth = one_soldire_list[17]
+                    find_soldire.place_of_birth = one_soldire_list[18]
+                    find_soldire.phone_number = one_soldire_list[19]
+                    find_soldire.home_phone_number = one_soldire_list[20]
+                    find_soldire.Date_of_dispatch = one_soldire_list[21]
+                    find_soldire.province_name = one_soldire_list[22]
+                    find_soldire.city_name = one_soldire_list[23]
+                    find_soldire.Address = one_soldire_list[24]
+                    find_soldire.Date_of_dispatch = one_soldire_list[25]
+                    find_soldire.height = one_soldire_list[26]
+                    find_soldire.Weight = one_soldire_list[27]
+                    find_soldire.save()
+        cx = {'form': form}
+        return render(request,
+                      'soldiers/update_db_from_exel_paziresh_hazer_bekhdmat.html', cx)
+
+
+class update_db_from_exel_paziresh_shode(View):
+    def get(self, request):
+        form = FormUpdatePazireshshode()
+        cx = {'form': form}
+        return render(request,
+                      'soldiers/update_db_from_exel_paziresh_shode.html', cx)
+
+    def post(self, request):
+        form = FormUpdatePazireshshode(request.POST, request.FILES or None)
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request,
+                          'soldiers/update_db_from_exel_paziresh_shode.html',
+                          cx)
+
+        else:
+            exel = request.FILES['file']
+
+            workbook = openpyxl.load_workbook(exel)
+
+            # انتخاب شیت اول
+            sheet = workbook.active
+
+            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+            num_rows = sheet.max_row
+            num_cols = sheet.max_column
+
+            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+            for row_idx in range(2, num_rows + 1):
+                one_soldire_list = []
+                for col_idx in range(1, num_cols + 1):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
+                    if cell_value is not None:
+                        # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
+                        cell_value = str(cell_value)
+                        cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace("\u200c",
+                                                                                                              " ")
+                    one_soldire_list.append(cell_value)
+                if one_soldire_list[0] is not None:
+                    find_soldire = sarbaz.objects.filter(National_Code=one_soldire_list[0]).first()
+                    find_soldire.name = one_soldire_list[1]
+                    find_soldire.family = one_soldire_list[2]
+                    find_soldire.fathers_name = one_soldire_list[3]
+                    find_soldire.acceptance_code = one_soldire_list[4]
+                    find_soldire.Amriye = one_soldire_list[7]
+                    find_soldire.Amriye_organization = one_soldire_list[8]
+                    find_soldire.physical_condition = one_soldire_list[9]
+                    find_soldire.Type_of_disease = one_soldire_list[10]
+                    find_soldire.Grade = one_soldire_list[11]
+                    find_soldire.educational_level_of_the_system = one_soldire_list[12]
+                    find_soldire.Grade = one_soldire_list[13]
+                    find_soldire.Study_group = one_soldire_list[14]
+                    find_soldire.marital_status = one_soldire_list[15]
+                    find_soldire.Religion = one_soldire_list[16]
+                    find_soldire.Date_of_birth = one_soldire_list[17]
+                    find_soldire.place_of_birth = one_soldire_list[18]
+                    find_soldire.phone_number = one_soldire_list[19]
+                    find_soldire.home_phone_number = one_soldire_list[20]
+                    find_soldire.Date_of_dispatch = one_soldire_list[21]
+                    find_soldire.province_name = one_soldire_list[22]
+                    find_soldire.city_name = one_soldire_list[23]
+                    find_soldire.Address = one_soldire_list[24]
+                    find_soldire.Date_of_dispatch = one_soldire_list[25]
+                    find_soldire.height = one_soldire_list[26]
+                    find_soldire.Weight = one_soldire_list[27]
+                    find_soldire.save()
+        cx = {'form': form}
+        return render(request,
+                      'soldiers/update_db_from_exel_paziresh_shode.html', cx)

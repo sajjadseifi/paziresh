@@ -1012,3 +1012,35 @@ class update_db_from_exel_all_soldire_Sufficiency_of_mobilization(View):
         cx = {'form': form}
         return render(request,
                       'ensani_soldires_management/update_db_from_exel_all_soldire_Sufficiency_of_mobilization.html', cx)
+
+
+def import_and_export_excel_maharat(request):
+    # خواندن فایل اکسل ورودی که حاوی کد ملی‌ها است
+    input_file_path = "D:/unittest/ensaniapp/soldiers/xxx.xlsx"  # مسیر فایل اکسل ورودی
+    national_codes_df = pd.read_excel(input_file_path)
+
+    # اطمینان از اینکه ستون کد ملی به درستی خوانده شده است
+    national_codes = national_codes_df['National_Code'].tolist()
+
+    # واکشی اطلاعات سربازان براساس کد ملی‌ها
+    soldiers_data = []
+    for code in national_codes:
+        soldier = Soldier.objects.filter(
+            National_Code__icontains=code  # جستجوی تقریبی بر اساس کد ملی
+        ).values('National_Code', 'Date_of_birth', 'Address', 'home_phone_number', 'phone_number', 'Grade').first()
+
+        # افزودن به لیست نتایج در صورت یافتن
+        if soldier:
+            soldiers_data.append(soldier)
+    # تبدیل داده‌ها به DataFrame با استفاده از pandas
+    df = pd.DataFrame(soldiers_data)
+
+    # ایجاد پاسخ HTTP برای دانلود فایل اکسل
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=soldiers_filtered_data.xlsx'
+
+    # ذخیره داده‌ها در قالب اکسل
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Filtered Soldiers Data')
+
+    return response
