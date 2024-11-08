@@ -223,7 +223,8 @@ Grade_precise_list = [
 ]
 
 Amriye_list = [(1, 'بله'), (2, 'خیر')]
-Amriye_organization_lsit = [(0, ''), (1, 'test1'), (2, 'test2')]
+Amriye_organization_lsit = [(0, ''), (1, 'بنياد شهيد وامور ايثارگران انقلاب اسلامي'),
+                            (2, 'وزارت بهداشت درمان - پيام آوران')]
 
 
 def get_id_of_list(ls, oj):

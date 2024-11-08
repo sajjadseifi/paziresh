@@ -22,3 +22,10 @@ class EnsaniSettings(models.Model):
     saghf_paziresh = models.CharField(null=True, blank=True, max_length=100, verbose_name='سقف پذیرش')
     tarikhezam = jmodels.jDateField(null=True, blank=True, verbose_name='تاریخ اعزام')
     tatbigh = models.BooleanField(default=False, verbose_name='آمار پس از تطبیق')
+    shomare_name_shoro_doreh = models.CharField(max_length=100, verbose_name='شماره نامه ابلاغ دوره', null=True,
+                                                blank=True)
+    tarihke_name_shoro_doreh = models.CharField(max_length=100, verbose_name='تاریخ نامه ابلاغ دوره', null=True,
+                                                blank=True)
+    mahezam = models.CharField(max_length=100, verbose_name='ماه اعزارم', null=True, blank=True)
+    sall = models.CharField(max_length=100, verbose_name='سال', null=True, blank=True)
+    saghfi_eblaghi = models.CharField(max_length=100, verbose_name='سقف نامه', null=True, blank=True)
