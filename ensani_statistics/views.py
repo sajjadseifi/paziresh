@@ -310,30 +310,24 @@ def gozaresh_shoro_dore(request):
     a_dabirestan = Soldier.objects.filter(has_been_accepted=True, Grade_precise='دبیرستان').count()
     a_ebtedai = Soldier.objects.filter(has_been_accepted=True, Grade_precise='ابتدایی').count()
     a_total = int(a_bisavad) + int(a_nehzad) + int(a_rahinami) + int(a_sikel) + int(a_dabirestan)
-    in_course_zire_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+    in_course_zire_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
                                                    Grade_precise='زیر دیپلم').count()
-    in_course_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
-                                              Grade_precise='دیپلم').count()
-    in_course_fogh_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+    in_course_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True, Grade_precise='دیپلم').count()
+    in_course_fogh_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
                                                    Grade_precise='فوق دیپلم').count()
-    in_course_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
-                                              Grade_precise='لیسانس').count()
-    in_course_fogh_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+    in_course_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True, Grade_precise='لیسانس').count()
+    in_course_fogh_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
                                                    Grade_precise='فوق لیسانس').count()
-    in_course_doctora = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
-                                               Grade_precise='دکتری').count()
-    in_course_bisavad = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
-                                               Grade_precise='بی‌سواد').count()
-    in_course_nehzad = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+    in_course_doctora = Soldier.objects.filter(has_been_accepted=True, in_coures=True, Grade_precise='دکتری').count()
+    in_course_bisavad = Soldier.objects.filter(has_been_accepted=True, in_coures=True, Grade_precise='بی‌سواد').count()
+    in_course_nehzad = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
                                               Grade_precise='نهضت سواد آموزی').count()
-    in_course_rahinami = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+    in_course_rahinami = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
                                                 Grade_precise='راهنمایی').count()
-    in_course_sikel = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
-                                             Grade_precise='سیکل').count()
-    in_course_dabirestan = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+    in_course_sikel = Soldier.objects.filter(has_been_accepted=True, in_coures=True, Grade_precise='سیکل').count()
+    in_course_dabirestan = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
                                                   Grade_precise='دبیرستان').count()
-    in_course_ebtedai = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
-                                               Grade_precise='ابتدایی').count()
+    in_course_ebtedai = Soldier.objects.filter(has_been_accepted=True, in_coures=True, Grade_precise='ابتدایی').count()
 
     in_courese_total = int(in_course_zire_diplom) + int(in_course_diplom) + int(in_course_fogh_diplom) + int(
         in_course_lisans) + int(in_course_fogh_lisans) + int(in_course_doctora) + int(
