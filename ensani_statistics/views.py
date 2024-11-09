@@ -618,6 +618,76 @@ def yegan_be_kar_girande(request):
 
 
 def yegan_be_kar_girande_tabel(request):
+    salem_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                                              in_coures=True, physical_condition='سالم',
+                                                              unit_type='سپاه و رده های اقماری').all().count()
+    moaf_az_razm_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                                                     in_coures=True, physical_condition='معاف از رزم',
+                                                                     unit_type='سپاه و رده های اقماری').all().count()
+    groh_be_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                                                in_coures=True, physical_condition='گروه ب',
+                                                                unit_type='سپاه و رده های اقماری').all().count()
+    moaf_az_razm_gorh_be_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                             willing_to_learn=True,
+                                                                             in_coures=True,
+                                                                             physical_condition='معاف+گروه ب',
+                                                                             unit_type='سپاه و رده های اقماری').all().count()
+    total1_in_course_pa_radeh_aghmari = int(moaf_az_razm_in_course_pa_radeh_aghmari) + int(
+        groh_be_in_course_pa_radeh_aghmari) + int(moaf_az_razm_gorh_be_in_course_pa_radeh_aghmari)
+    total2_in_course_pa_radeh_aghmari = int(salem_in_course_pa_radeh_aghmari) + int(
+        moaf_az_razm_in_course_pa_radeh_aghmari) + int(
+        groh_be_in_course_pa_radeh_aghmari) + int(moaf_az_razm_gorh_be_in_course_pa_radeh_aghmari)
+
+    salem_Previous_service_record_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                            physical_condition='سالم',
+                                                                            unit_type='سپاه و رده های اقماری',
+                                                                            Previous_service_record=True).all().count()
+    moaf_az_razm_Previous_service_record_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                                   physical_condition='معاف از رزم',
+                                                                                   unit_type='سپاه و رده های اقماری',
+                                                                                   Previous_service_record=True).all().count()
+    groh_be_Previous_service_record_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                              physical_condition='گروه ب',
+                                                                              unit_type='سپاه و رده های اقماری',
+                                                                              Previous_service_record=True).all().count()
+    moaf_az_razm_gorh_be_Previous_service_record_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                                           physical_condition='معاف+گروه ب',
+                                                                                           unit_type='سپاه و رده های اقماری',
+                                                                                           Previous_service_record=True).all().count()
+    total1_Previous_service_record_pa_radeh_aghmari = int(moaf_az_razm_Previous_service_record_pa_radeh_aghmari) + int(
+        groh_be_Previous_service_record_pa_radeh_aghmari) + int(
+        moaf_az_razm_gorh_be_Previous_service_record_pa_radeh_aghmari)
+    total2_Previous_service_record_pa_radeh_aghmari = int(salem_Previous_service_record_pa_radeh_aghmari) + int(
+        moaf_az_razm_Previous_service_record_pa_radeh_aghmari) + int(
+        groh_be_Previous_service_record_pa_radeh_aghmari) + int(
+        moaf_az_razm_gorh_be_Previous_service_record_pa_radeh_aghmari)
+
+    salem_Sufficiency_of_mobilization_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                                physical_condition='سالم',
+                                                                                unit_type='سپاه و رده های اقماری',
+                                                                                Sufficiency_of_mobilization=True).all().count()
+    moaf_az_razm_Sufficiency_of_mobilization_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                                       physical_condition='معاف از رزم',
+                                                                                       unit_type='سپاه و رده های اقماری',
+                                                                                       Sufficiency_of_mobilization=True).all().count()
+    groh_be_Sufficiency_of_mobilization_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                                  physical_condition='گروه ب',
+                                                                                  unit_type='سپاه و رده های اقماری',
+                                                                                  Sufficiency_of_mobilization=True).all().count()
+    moaf_az_razm_gorh_be_Sufficiency_of_mobilization_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                                                               physical_condition='معاف+گروه ب',
+                                                                                               unit_type='سپاه و رده های اقماری',
+                                                                                               Sufficiency_of_mobilization=True).all().count()
+    total1_Sufficiency_of_mobilization_pa_radeh_aghmari = int(
+        moaf_az_razm_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        groh_be_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        moaf_az_razm_gorh_be_Sufficiency_of_mobilization_pa_radeh_aghmari)
+    total2_Sufficiency_of_mobilization_pa_radeh_aghmari = int(salem_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        moaf_az_razm_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        groh_be_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        moaf_az_razm_gorh_be_Sufficiency_of_mobilization_pa_radeh_aghmari)
+    total_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
+                                                    unit_type='سپاه و رده های اقماری').all().count()
     return render(request, 'ensani_statistics/amar_yegan_be_kar_girande_tabel.html')
 
 
@@ -697,7 +767,8 @@ def gozaresh_payan_dore(request):
                                               Grade_precise='دیپلم').count()
     in_course_fogh_diplom = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
                                                    Grade_precise='فوق دیپلم').count()
-    in_course_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True,willing_to_learn=True, Grade_precise='لیسانس').count()
+    in_course_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
+                                              Grade_precise='لیسانس').count()
     in_course_fogh_lisans = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
                                                    Grade_precise='فوق لیسانس').count()
     in_course_doctora = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True,
