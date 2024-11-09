@@ -48,28 +48,42 @@
                                            href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
+                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> حذف
+                                        </a>
                                     {% endif %}
                                     {% if c.subject == "استعلام کفایت از آموزش" %}
                                         <a class="btn btn-app" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
                                             <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> حذف
                                         </a>
                                     {% endif %}
                                     {% if c.subject == "گواهی عضویت" %}
                                         <a class="btn btn-app" href="{% url 'PrintRegisterLetter' pk=c.pk %}">
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
+                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> حذف
+                                        </a>
                                     {% endif %}
                                     {% if c.subject == "فرار" %}
                                         <a class="btn btn-app" href="{% url 'PrintRunawayLetterLetter' pk=c.pk %}">
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
+                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> حذف
+                                        </a>
                                     {% endif %}
-                                    <a class="btn btn-app" href="">
-                                        <i class="fa fa-edit"></i> ویرایش
-                                    </a>
-                                    <a class="btn btn-app" href="">
-                                        <i class="fa fa-edit"></i> حذف
-                                    </a>
+                                    {% if c.subject == "سازمان وظیفه عمومی فراجا" %}
+                                        <a class="btn btn-app" href="{% url 'PrintFarajaLetter' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> حذف
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

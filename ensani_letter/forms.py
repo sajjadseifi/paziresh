@@ -124,3 +124,28 @@ class CreateRunAwayLetterFrom(forms.Form):
         label='تاریخ فرار',
         required=False
     )
+
+
+class CreateFarajaLetterFrom(forms.Form):
+    soldire = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': "form-control select2"}
+        ),
+        label='سرباز',
+        required=False
+    )
+    elat = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "elat"}),
+        label='علت معرفی',
+        required=False
+    )
+    faraja_leter_number = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "elat"}),
+        label='شماره نامه فراجا',
+        required=False
+    )
+    faraja_leter_date = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "elat"}),
+        label='تاریخ نامه فراجا',
+        required=False
+    )

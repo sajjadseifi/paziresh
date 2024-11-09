@@ -184,6 +184,13 @@ list_yegan_bekargirande = [
 
 
 # Create your views here.
+def all_soldire(request):
+    soldires = Soldier.objects.filter(has_been_accepted=True, in_coures=True)
+    context = {
+        'results': soldires
+    }
+
+    return render(request, 'ensani_soldires_management/all_soldires.html', context)
 
 
 def soldier_search(request):

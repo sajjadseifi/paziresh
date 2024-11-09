@@ -9,6 +9,7 @@ urlpatterns = [
     path('letter/create/traininginquiry', CreateTrainingInquiryLetter.as_view(), name='CreateTrainingInquiryLetter'),
     path('letter/create/register', CreateRegisterLetter.as_view(), name='CreateRegisterLetter'),
     path('letter/create/runaway', CreaterunawayLetter.as_view(), name='CreaterunawayLetter'),
+    path('letter/create/faraja', CreateFarajaLetter.as_view(), name='CreateFarajaLetter'),
     path('letter/all/checkout', AllCheckoutLetter, name='AllCheckoutLetter'),
     path('letter/all/normal', AllNormalLetter, name='AllNormalLetter'),
     path('letter/p/checkout/<int:pk>', PrintCheckoutLetter, name='PrintCheckoutLetter'),
@@ -18,6 +19,8 @@ urlpatterns = [
          name='PrintBeforeCourseCommissionLetter'),
     path('letter/checkout/update_status/<int:pk>', check_status_checkout, name='status_ok_checkout'),
     path('letter/checkout/delete/<int:pk>', check_status_checkout, name='delete_checkout'),
+    path('letter/normall/delete/<int:pk>', remove_normall, name='delete_normall'),
     path('letter/p/normall/training/inquiry/<int:pk>', PrintTrainingInquiryLetter, name='PrintTrainingInquiryLetter'),
     path('letter/p/normall/runaway/<int:pk>', PrintRunawayLetterLetter, name='PrintRunawayLetterLetter'),
+    path('letter/p/normall/faraja/<int:pk>', PrintFarajaLetter, name='PrintFarajaLetter'),
 ]

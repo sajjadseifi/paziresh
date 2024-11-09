@@ -6,8 +6,9 @@ from soldiers.models import Soldier
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
-    CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom
-from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter
+    CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom, CreateFarajaLetterFrom
+from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
+    FarajaNormallLetter
 
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
@@ -377,6 +378,58 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
         return redirect(self.success_url)
 
 
+class CreateFarajaLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_faraja_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+    soldire_list = []
+    g = Soldier.objects.filter(IsCheckout=True).all()
+    for item in g:
+        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+
+    def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(IsCheckout=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateFarajaLetterFrom()
+        b_form.fields['soldire'].choices = soldire_list
+        cx = {'form': b_form}
+        return render(request, self.template, cx)
+
+    def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(IsCheckout=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateFarajaLetterFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        my_letter.description = "سازمان وظیفه عمومی فراجا"
+        my_letter.destination = "سازمان وظیفه عمومی فراجا"
+        my_letter.subject = "سازمان وظیفه عمومی فراجا"
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = my_letter.number = F"{ens.shomare_dore}30{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.status = "تایید"
+        my_letter.save()
+        rn = FarajaNormallLetter()
+        rn.normal_letter = my_letter
+        faraja_leter_number = b_form.cleaned_data['faraja_leter_number']
+        faraja_leter_date = b_form.cleaned_data['faraja_leter_date']
+        elat = b_form.cleaned_data['elat']
+        rn.faraja_leter_number = faraja_leter_number
+        rn.faraja_leter_date = faraja_leter_date
+        rn.elat = elat
+        rn.normal_letter = my_letter
+        rn.save()
+        return redirect(self.success_url)
+
+
 def PrintCheckoutLetter(request, *args, **kwargs):
     checkout_letter_pk = kwargs['pk']
     if checkout_letter_pk is None:
@@ -443,6 +496,19 @@ def PrintRunawayLetterLetter(request, *args, **kwargs):
     return render(request, 'ensani_letter/print_runaway_letter_letter.html', cx)
 
 
+def PrintFarajaLetter(request, *args, **kwargs):
+    Faraja_letter_pk = kwargs['pk']
+    if Faraja_letter_pk is None:
+        return 0
+    my = NormalLetterModels.objects.filter(pk=Faraja_letter_pk).first()
+    fata_detail = FarajaNormallLetter.objects.filter(normal_letter=my).first()
+    suter = Sater.objects.filter(sarbaz=my.soldire).first()
+    en = EnsaniSettings.objects.filter().last()
+    checkout = CheckoutLetterModels.objects.filter(soldire=my.soldire).first()
+    cx = {'leter': my, 'en': en, 'fara_detail': fata_detail, 'suter': suter, 'checkout': checkout}
+    return render(request, 'ensani_letter/print_faraja_letter.html', cx)
+
+
 def check_status_checkout(request, *args, **kwargs):
     checkout_id = kwargs['pk']
     if checkout_id is None:
@@ -467,3 +533,33 @@ def remove_checkout(request, *args, **kwargs):
             n.delete()
             checkout_letter.soldire.the_medical_commission = False
     checkout_letter.delete()
+
+
+def remove_normall(request, *args, **kwargs):
+    id = kwargs['pk']
+    if id is None:
+        return redirect(reverse_lazy('AllNormalLetter'))
+    normall = NormalLetterModels.objects.filter(pk=id).first()
+    if normall.subject == "سازمان وظیفه عمومی فراجا":
+        normall.delete()
+        return redirect(reverse_lazy('AllNormalLetter'))
+    if normall.subject == "فرار":
+        normall.delete()
+        return redirect(reverse_lazy('AllNormalLetter'))
+    if normall.subject == "گواهی عضویت":
+        normall.delete()
+        return redirect(reverse_lazy('AllNormalLetter'))
+    if normall.subject == "استعلام کفایت از آموزش":
+        normall.soldire.find_soldire.Previous_service_record = False
+        normall.soldire.has_been_accepted = False
+        normall.soldire.willing_to_learn = False
+        normall.save()
+        normall.delete()
+        return redirect(reverse_lazy('AllNormalLetter'))
+    if normall.subject == "معرفی به کمیسیون شروع دوره آموزشی":
+        normall.soldire.has_been_accepted = False
+        normall.soldire.willing_to_learn = False
+        normall.soldire.the_medical_commission = False
+        normall.save()
+        normall.delete()
+        return redirect(reverse_lazy('AllNormalLetter'))

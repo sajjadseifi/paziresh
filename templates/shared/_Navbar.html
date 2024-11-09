@@ -74,7 +74,7 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="">تمامی سربازان</a></li>
+                    <li><a href="{% url 'all_soldire' %}">تمامی سربازان</a></li>
 
                     <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته</a></li>
                     {% if request.user.is_staff == True %}
@@ -144,7 +144,7 @@
                         <li><a href="{% url 'CreateBeforeCourseCommissionLetter' %}">ایجاد نامه کمیسیون قبل شروع
                             دوره</a>
                         <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه گواهی عضویت</a>
-                        <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه تسویه حساب به فرجا</a>
+                        <li><a href="{% url 'CreateFarajaLetter' %}">ایجاد نامه تسویه حساب به فرجا</a>
                         <li><a href="{% url 'CreaterunawayLetter' %}">ایجاد نامه فرار</a>
                         </li>
                     </ul>

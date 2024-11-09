@@ -28,7 +28,6 @@ class CheckoutLetterModels(models.Model):
         return self.soldire.name + " " + self.soldire.family
 
 
-
 class RegisterNormalLetter(models.Model):
     in_come_letter_numbers = models.CharField(max_length=100, verbose_name='شماره نامه وارده', null=True, blank=True)
     in_come_letter_data = models.CharField(max_length=100, verbose_name='تاریخ نامه وارده', null=True, blank=True)
@@ -40,3 +39,11 @@ class RunawayNormallLetter(models.Model):
     type = models.CharField(max_length=120, verbose_name='دلیل فرار', null=True, blank=True)
     run_away_dated = models.CharField(max_length=120, verbose_name='تاریخ فرار', null=True, blank=True)
     normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')
+
+
+class FarajaNormallLetter(models.Model):
+    faraja_leter_number = models.CharField(max_length=120, verbose_name='شماره نامه فراجا', null=True, blank=True)
+    faraja_leter_date = models.CharField(max_length=120, verbose_name='دلیل فرار', null=True, blank=True)
+    elat = models.CharField(max_length=120, verbose_name='تاریخ نامه فراجا', null=True, blank=True)
+    normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی', null=True,
+                                      blank=True)
