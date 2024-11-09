@@ -1051,3 +1051,60 @@ def import_and_export_excel_maharat(request):
         df.to_excel(writer, index=False, sheet_name='Filtered Soldiers Data')
 
     return response
+
+
+import io
+import zipfile
+from django.http import HttpResponse
+
+
+def import_and_export_multiple_excel_sakhtar_sazi(request):
+    # ایجاد فایل فشرده در حافظه
+    zip_buffer = io.BytesIO()
+
+    # باز کردن فایل فشرده برای نوشتن فایل‌ها
+    with zipfile.ZipFile(zip_buffer, "w") as zf:
+        # مجموعه‌های مختلف داده‌ها برای ایجاد فایل‌های مختلف اکسل
+        data_sets = {}
+
+        bn = battalion.objects.all()
+        for b in bn:
+            for bg in battalion_group.objects.filter(gordan=b):
+                # تعریف مجموعه داده برای هر گروهان
+                soldiers_filtered_data = Soldier.objects.filter(
+                    t_battalion_group=bg,
+                    t_Gordan=b,
+                    willing_to_learn=True,
+                    in_coures=True
+                ).order_by('code_gorhan_nahai').values(
+                    'National_Code', 'code_gorhan_nahai'
+                )
+
+                # اضافه کردن مجموعه داده به دیکشنری
+                data_sets[f"{b.name}_{bg.name}"] = soldiers_filtered_data
+
+        # ایجاد هر فایل اکسل و اضافه کردن به فایل ZIP
+        for file_name, queryset in data_sets.items():
+            # تبدیل queryset به DataFrame
+            df = pd.DataFrame(list(queryset))
+
+            if not df.empty:  # بررسی خالی نبودن مجموعه داده
+                # تغییر نام ستون‌ها
+                df.rename(columns={
+                    'National_Code': 'کد ملی',
+                    'code_gorhan_nahai': 'کد سازمانی'
+                }, inplace=True)
+
+                excel_buffer = io.BytesIO()
+                # نوشتن DataFrame در فایل اکسل
+                with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+                    df.to_excel(writer, index=False)
+
+                # افزودن فایل اکسل به فایل فشرده
+                zf.writestr(f'{file_name}.xlsx', excel_buffer.getvalue())
+
+    # آماده‌سازی فایل ZIP برای دانلود
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="sakhtar_sazi.zip"'
+    return response
