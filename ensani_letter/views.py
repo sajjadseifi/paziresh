@@ -6,7 +6,7 @@ from soldiers.models import Soldier
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
-    CreateBeforeCourseCommissionLetterFrom
+    CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom
 from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter
 
 from saterapps.models import Sater
@@ -334,11 +334,13 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.filter(IsCheckout=True).all()
         for item in g:
             soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
-        b_form = CreateRegisterLetterFrom()
+        b_form = CreateRunAwayLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
+        b_form.fields['type'].choices = [('عدم حضور در محل آموزشگاه', 'عدم حضور در محل آموزشگاه'), (
+            'تجدید دوره و عدم تحویل برگه ی تسویه حساب', 'تجدید دوره و عدم تحویل برگه ی تسویه حساب')]
         cx = {'form': b_form}
         return render(request, self.template, cx)
 
@@ -347,8 +349,10 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
         g = Soldier.objects.filter(IsCheckout=True).all()
         for item in g:
             soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
-        b_form = CreateRegisterLetterFrom(request.POST, request.FILES or None)
+        b_form = CreateRunAwayLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
+        b_form.fields['type'].choices = [('عدم حضور در محل آموزشگاه', 'عدم حضور در محل آموزشگاه'), (
+            'تجدید دوره و عدم تحویل برگه ی تسویه حساب', 'تجدید دوره و عدم تحویل برگه ی تسویه حساب')]
         if not b_form.is_valid():
             cx = {'form': b_form}
             return render(request, self.template, cx)
@@ -357,23 +361,18 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
         my_letter.soldire = find_soldire
         my_letter.create_time = jdatetime.datetime.now()
         my_letter.description = "فرار"
-        my_letter.destination = b_form.cleaned_data['destination']
+        my_letter.destination = "آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه- قسمت نیروی انسانی- قضایی و انضباطی"
         my_letter.subject = "فرار"
         ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.number = my_letter.number = F"{ens.shomare_dore}85{generate_unique_number()}{find_soldire.National_Code[::3]}"
         my_letter.status = "تایید"
         my_letter.save()
-        rn = RegisterNormalLetter()
+        rn = RunawayNormallLetter()
         rn.normal_letter = my_letter
-        in_come_letter_numbers = b_form.cleaned_data['destination_letter_number']
-        in_come_letter_date = b_form.cleaned_data['destination_letter_date']
-        in_come_submit_locations = b_form.cleaned_data['in_come_submit_locations']
-        if in_come_submit_locations is not None:
-            rn.in_come_submit_locations = in_come_submit_locations
-        if in_come_letter_date is not None:
-            rn.in_come_letter_data = in_come_letter_date
-        if in_come_letter_numbers is not None:
-            rn.in_come_letter_numbers = in_come_letter_numbers
+        type = b_form.cleaned_data['type']
+        run_away_dated = b_form.cleaned_data['date']
+        rn.type = type
+        rn.run_away_dated = run_away_dated
         rn.save()
         return redirect(self.success_url)
 
@@ -436,9 +435,11 @@ def PrintRunawayLetterLetter(request, *args, **kwargs):
     Runaway_letter_pk = kwargs['pk']
     if Runaway_letter_pk is None:
         return 0
-    Runaway = NormalLetterModels.objects.filter(pk=Runaway_letter_pk).first()
+    my = NormalLetterModels.objects.filter(pk=Runaway_letter_pk).first()
+    run_detail = RunawayNormallLetter.objects.filter(normal_letter=my).first()
+    suter = Sater.objects.filter(sarbaz=my.soldire).first()
     en = EnsaniSettings.objects.filter().last()
-    cx = {' Runaway': Runaway, 'en': en}
+    cx = {'leter': my, 'en': en, 'run_detail': run_detail, 'suter': suter}
     return render(request, 'ensani_letter/print_runaway_letter_letter.html', cx)
 
 

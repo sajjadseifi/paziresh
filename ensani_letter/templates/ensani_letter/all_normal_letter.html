@@ -59,6 +59,11 @@
                                             <i class="fa fa-edit"></i> چاپ برگه
                                         </a>
                                     {% endif %}
+                                    {% if c.subject == "فرار" %}
+                                        <a class="btn btn-app" href="{% url 'PrintRunawayLetterLetter' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                    {% endif %}
                                     <a class="btn btn-app" href="">
                                         <i class="fa fa-edit"></i> ویرایش
                                     </a>
