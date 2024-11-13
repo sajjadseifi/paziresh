@@ -1456,4 +1456,4 @@ def gozaresh_payan_dore(request):
         'en': en,
 
     }
-    return render(request, 'ensani_statistics/gozaresh_shoro_dore.html', cx)
+    return render(request, 'ensani_statistics/gozaresh_payan_dore.html', cx)

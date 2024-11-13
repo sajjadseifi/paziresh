@@ -13,8 +13,11 @@ class panel_home(LoginRequiredMixin, View):
         tatbikh_nashode = Soldier.objects.filter(has_been_accepted=True, in_coures=True, the_medical_commission=False,
                                                  Previous_service_record=False, Sufficiency_of_mobilization=False,
                                                  tatbigh=False, IsCheckout=False).all().count()
+        total_tegan_khdmati_in_course = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                                               in_coures=True, IsCheckout=False).all().count()
         cx = {'amar_kol': amar_kol, 'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,
-              'amar_kole_paziresh_shode': amar_kole_paziresh_shode, 'tatbikh_nashode': tatbikh_nashode}
+              'amar_kole_paziresh_shode': amar_kole_paziresh_shode, 'tatbikh_nashode': tatbikh_nashode,
+              'total_tegan_khdmati_in_course': total_tegan_khdmati_in_course}
         return render(request, 'ensani/panel_home_page.html', cx)
 
 
@@ -29,9 +32,6 @@ def header_partial_view(request, *args, **kwargs):
 
 def header_references_partial_view(request, *args, **kwargs):
     return render(request, 'shared/_HeaderReferences.html')
-
-
-
 
 
 def navbar_partial_view(request, *args, **kwargs):

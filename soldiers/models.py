@@ -75,6 +75,8 @@ class Soldier(models.Model):
     IsCheckout = models.BooleanField(default=False, verbose_name='تسویه حساب', blank=True, null=True)
     unit_name = models.CharField(max_length=200, blank=True, null=True, verbose_name='نام یگان')
     unit_type = models.CharField(max_length=200, blank=True, null=True, verbose_name='نوع یگان')
+    unit_address = models.CharField(max_length=200, blank=True, null=True, verbose_name='ادرس یگان')
+    unit_province = models.CharField(max_length=200, blank=True, null=True, verbose_name='استان یگیان')
     date_improt_type = models.CharField(max_length=200, verbose_name='اطلاعات', null=True, blank=True)
     in_coures = models.BooleanField(default=False, verbose_name='شرکت در دوره')
     tatbigh = models.BooleanField(default=False, verbose_name='تطبیق شده/نشده')

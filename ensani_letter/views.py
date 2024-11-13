@@ -533,7 +533,8 @@ def remove_checkout(request, *args, **kwargs):
             n.delete()
             checkout_letter.soldire.the_medical_commission = False
     checkout_letter.delete()
-
+    print(checkout_letter)
+    return redirect(reverse_lazy('AllCheckoutLetter'))
 
 def remove_normall(request, *args, **kwargs):
     id = kwargs['pk']
