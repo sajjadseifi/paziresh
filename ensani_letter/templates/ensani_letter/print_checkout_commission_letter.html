@@ -274,7 +274,7 @@
     <div class="letter_create_location">از : آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع
         انسانی سرباز
     </div>
-    <div class="letter_des">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استناد ابلاغیه شماره 40/4/10505س مورخ 90/10/28
+     <div class="letter_des">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استناد ابلاغیه شماره 40/4/10505س مورخ 90/10/28
         ستاد کل سپاه ،
         فراگیر {{ checkout_commission_letter.soldire.name }} {{ checkout_commission_letter.soldire.family }} فرزند
         {{ checkout_commission_letter.soldire.fathers_name }} با شناسه
@@ -288,6 +288,7 @@
 
 
     </div>
+
     <div class="letter_details">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
         عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
     </div>
@@ -339,12 +340,12 @@
     {% endif %}
 
 </div>
-{#<script>#}
-{#    window.print()#}
-{#    window.onafterprint = function () {#}
-{#        window.close();#}
-{##}
-{#    }#}
-{#</script>#}
+<script>
+    window.print()
+    window.onafterprint = function () {
+        window.close();
+
+    }
+</script>
 </body>
 </html>

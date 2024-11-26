@@ -697,7 +697,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         s.family = family
         s.Relative_to_inclusive = Relative_to_inclusive
         s.Relative_to_inclusive_number = Relative_to_inclusive_number
-        count_all_acceptance = sarbaz.objects.filter(willing_to_learn=True).count()
+        count_all_acceptance = sarbaz.objects.filter(has_been_accepted=True).count()
         s.code_paziresh = int(count_all_acceptance) + 1
         s.acceptance_code = int(count_all_acceptance) + 1
         s.has_been_accepted = True
@@ -749,7 +749,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         s.attraction_of_the_organization = attraction_of_the_organization
         s.Sutter = Sutter
         s.Grade = Grade
-        c_s = sarbaz.objects.filter(IsCheckout=False, has_been_accepted=False, willing_to_learn=False).all()
+        c_s = sarbaz.objects.filter(has_been_accepted=True).all()
         find_max_code_list = [0]
         for iteam in c_s:
             if iteam.code_paziresh is not None:
@@ -793,23 +793,29 @@ class sater(LoginRequiredMixin, View):
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(pk=pk).first()
         my_sater = Sater.objects.filter(sarbaz=my_sarbaz).first()
+        en = EnsaniSettings.objects.filter().first()
         if my_sater is None:
             my_sater = Sater()
         my_sater.sarbaz = my_sarbaz
         my_sater.date = jdatetime.datetime.now()
         my_sater.sub_user = request.user
-        cx = {'sarbaz': my_sarbaz}
+        cx = {'sarbaz': my_sarbaz, 'en': en}
         if my_sarbaz.Sufficiency_of_mobilization == True:
             my_sater.sater_type = 'کفایت بسیج'
             my_sater.save()
             return render(request, 'soldiers/sater_kefaytbasij.html', cx)
+
+        elif my_sarbaz.Amriye == True:
+            my_sater.sater_type = 'امریه'
+            my_sater.save()
+            return render(request, 'soldiers/sater_amriye.html', cx)
+        if my_sarbaz.Previous_service_record == True:
+            my_sater.sater_type = 'خدمت قبلی'
+            my_sater.save()
+            return render(request, 'soldiers/khedmat_ghabli.html', cx)
         else:
-            if my_sarbaz.Amriye == True:
-                my_sater.sater_type = 'امریه'
-                my_sater.save()
-                return render(request, 'soldiers/sater_amriye.html', cx)
-        my_sater.sater_type = 'عادلی'
-        my_sater.save()
+            my_sater.sater_type = 'عادلی'
+            my_sater.save()
         return render(request, 'soldiers/sater_adi_page.html', cx)
 
 
@@ -1026,7 +1032,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         s.Sutter = Sutter
         s.Grade = Grade
         s.has_been_accepted = True
-        count_accepet_soldire = sarbaz.objects.filter(willing_to_learn=True).all().count()
+        count_accepet_soldire = sarbaz.objects.filter(has_been_accepted=True).all().count()
         s.code_paziresh = int(count_accepet_soldire) + 1
         s.acceptance_code = int(count_accepet_soldire) + 1
         c_s = sarbaz.objects.all()
@@ -1375,16 +1381,19 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         sb.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
         sb.attraction_of_the_organization = attraction_of_the_organization
         sb.Sutter = Sutter
-        if sb.battalion_group == "99999999":
-            if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
-                b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
-                b_change.zarfiat = int(b_change.zarfiat) + 1
-                a_change = battalion_group.objects.filter(id=f_battalion_group).first()
-                a_change.zarfiat = int(a_change.zarfiat) - 1
-                sb.battalion_group = a_change
-                sb.Gordan = a_change.gordan
-                b_change.save()
-                a_change.save()
+        # if sb.battalion_group != "99999999":
+        #     if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
+        #         b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
+        #         b_change.zarfiat = int(b_change.zarfiat) + 1
+        #         a_change = battalion_group.objects.filter(id=f_battalion_group).first()
+        #         a_change.zarfiat = int(a_change.zarfiat) - 1
+        #         sb.battalion_group = a_change
+        #         sb.Gordan = a_change.gordan
+        #         b_change.save()
+        #         a_change.save()
+        bt = battalion_group.objects.filter(id=f_battalion_group).filter().first()
+        sb.Gordan = bt.gordan
+        sb.battalion_group = bt
         sb.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': sb.id}))
 
@@ -1636,57 +1645,127 @@ def test_import(request):
     return HttpResponse("S")
 
 
+# def sater_group_print(request):
+#     if request.method == "GET":
+#         form = FormSaterGroup()
+#         form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
+#         context = {
+#             'form': form,
+#         }
+#         return render(request, 'soldiers/sater_group_selector.html', context)
+#     if request.method == "POST":
+#         form = FormSaterGroup(request.POST, request.FILES or None)
+#         form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
+#         if not form.is_valid():
+#             context = {
+#                 'form': form,
+#             }
+#             return render(request, 'soldiers/sater_group_selector.html', context)
+#         start = int(form.cleaned_data['start'])
+#         end = int(form.cleaned_data['end'])
+#         type = int(form.cleaned_data['type'])
+#         en = EnsaniSettings.objects.filter().first()
+#         if type == 1:
+#             sarbazha = sarbaz.objects.filter(Amriye=False, Sufficiency_of_mobilization=False, in_coures=True,
+#                                              has_been_accepted=True, Sutter='مجوز دارد').order_by(
+#                 'acceptance_code').all()[start:end:]
+#             context = {
+#                 'sarbazha': sarbazha, 'en': en
+#             }
+#             return render(request, 'soldiers/sater_group_adi_print.html', context)
+#         if type == 2:
+#             sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=True,
+#                                              has_been_accepted=True).order_by(
+#                 'acceptance_code').all()[start:end:]
+#             context = {
+#                 'sarbazha': sarbazha, 'en': en
+#             }
+#             return render(request, 'soldiers/sater_group_kefayatbasij.html', context)
+#         if type == 3:
+#             sarbazha = sarbaz.objects.filter(Amriye=True, Sufficiency_of_mobilization=False, in_coures=True,
+#                                              has_been_accepted=True, Sutter='مجوز دارد').order_by(
+#                 'acceptance_code').all()[start:end:]
+#             context = {
+#                 'sarbazha': sarbazha, 'en': en
+#             }
+#             return render(request, 'soldiers/sater_group_amirye.html', context)
+#
+#         if type == 4:
+#             sarbazha = sarbaz.objects.filter(Previous_service_record=True).order_by('acceptance_code').all()[start:end:]
+#             context = {
+#                 'sarbazha': sarbazha, 'en': en
+#             }
+#             return render(request, 'soldiers/sater_group_khedmat_ghabli.html', context)
+
+
 def sater_group_print(request):
     if request.method == "GET":
         form = FormSaterGroup()
-        form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
-        context = {
-            'form': form,
-        }
-        return render(request, 'soldiers/sater_group_selector.html', context)
+        form.fields['type'].choices = [
+            (1, "عادی"),
+            (2, "کفایت بسیج"),
+            (3, "امریه داره"),
+            (4, "خدمت قبلی")
+        ]
+        return render(request, 'soldiers/sater_group_selector.html', {'form': form})
+
     if request.method == "POST":
         form = FormSaterGroup(request.POST, request.FILES or None)
-        form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
+        form.fields['type'].choices = [
+            (1, "عادی"),
+            (2, "کفایت بسیج"),
+            (3, "امریه داره"),
+            (4, "خدمت قبلی")
+        ]
         if not form.is_valid():
-            context = {
-                'form': form,
-            }
-            return render(request, 'soldiers/sater_group_selector.html', context)
-        start = int(form.cleaned_data['start']) + 1
-        end = int(form.cleaned_data['end']) + 1
-        type = int(form.cleaned_data['type'])
-        if type == 1:
-            sarbazha = sarbaz.objects.filter(Amriye=False, Sufficiency_of_mobilization=False, in_coures=True,
-                                             has_been_accepted=True, Sutter='مجوز دارد').order_by(
-                'acceptance_code').all()[start:end:]
-            context = {
-                'sarbazha': sarbazha,
-            }
-            return render(request, 'soldiers/sater_group_adi_print.html', context)
-        if type == 2:
-            sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=True,
-                                             has_been_accepted=True).order_by(
-                'acceptance_code').all()[start:end:]
-            context = {
-                'sarbazha': sarbazha,
-            }
-            return render(request, 'soldiers/sater_group_kefayatbasij.html', context)
-        if type == 3:
-            sarbazha = sarbaz.objects.filter(Amriye=True, Sufficiency_of_mobilization=False, in_coures=True,
-                                             has_been_accepted=True, Sutter='مجوز دارد').order_by(
-                'acceptance_code').all()[start:end:]
-            context = {
-                'sarbazha': sarbazha,
-            }
-            return render(request, 'soldiers/sater_group_amirye.html', context)
+            return render(request, 'soldiers/sater_group_selector.html', {'form': form})
 
-        if type == 4:
-            sarbazha = sarbaz.objects.filter(Previous_service_record=True, in_coures=True, has_been_accepted=True,
-                                             Sutter='مجوز دارد').order_by('acceptance_code').all()[start:end:]
-            context = {
-                'sarbazha': sarbazha,
-            }
-            return render(request, 'soldiers/sater_group_khedmat_ghabli.html', context)
+        start = int(form.cleaned_data['start'])
+        end = int(form.cleaned_data['end'])
+        type = int(form.cleaned_data['type'])
+        en = EnsaniSettings.objects.first()
+
+        # دیکشنری فیلترها و قالب‌ها برای هر نوع
+        query_filters = {
+            1: {"Amriye": False, "Sufficiency_of_mobilization": False, "in_coures": True, "has_been_accepted": True,
+                "Sutter": 'مجوز دارد'},
+            2: {"Sufficiency_of_mobilization": True, "has_been_accepted": True},
+            3: {"Amriye": True, "Sufficiency_of_mobilization": False, "in_coures": True, "has_been_accepted": True,
+                "Sutter": 'مجوز دارد'},
+            4: {"Previous_service_record": True}
+        }
+        templates = {
+            1: 'soldiers/sater_group_adi_print.html',
+            2: 'soldiers/sater_group_kefayatbasij.html',
+            3: 'soldiers/sater_group_amirye.html',
+            4: 'soldiers/sater_group_khedmat_ghabli.html'
+        }
+
+        # دریافت سربازان بر اساس نوع و فیلترها
+        if type in query_filters:
+            # فیلتر کردن بر اساس acceptance_code در بازه start و end
+            sarbazha = sarbaz.objects.filter(
+                **query_filters[type],
+                acceptance_code__gte=start,  # بزرگتر یا مساوی start
+                acceptance_code__lt=end  # کوچکتر از end
+            ).order_by('acceptance_code')
+
+            for item in sarbazha:
+                sr = []
+                if Sater.objects.filter(sarbaz=item).first():
+                    sr = Sater.objects.filter(sarbaz=item).first()
+                else:
+                    sr = Sater()
+                sr.sarbaz = item
+                sr.sater_type = type
+                sr.is_get = True
+                sr.sub_user = request.user
+                sr.date = jdatetime.datetime.now()
+                sr.save()
+            return render(request, templates[type], {'sarbazha': sarbazha, 'en': en})
+
+        # در صورت انتخاب نوع نامعتبر (بازگشت به فرم انتخاب)
+        return render(request, 'soldiers/sater_group_selector.html', {'form': form})
 
 
 def moarefi_group_print(request):
@@ -1708,8 +1787,9 @@ def moarefi_group_print(request):
         end = int(form.cleaned_data['end']) + 1
 
         sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=False, in_coures=True,
-                                         has_been_accepted=True, willing_to_learn=True).order_by(
-            'acceptance_code').all()[start:end:]
+                                         has_been_accepted=True, willing_to_learn=True, acceptance_code__gte=start,
+                                         acceptance_code__lt=end).order_by(
+            'acceptance_code').all()
         en = EnsaniSettings.objects.filter().first()
         context = {
             'sarbazha': sarbazha,
@@ -1889,9 +1969,9 @@ class update_db_from_exel_paziresh_hazer_bekhdmat(View):
                     find_soldire.acceptance_code = one_soldire_list[4]
                     gordan = battalion.objects.filter(name__icontains=str(one_soldire_list[5])).first()
                     find_soldire.Gordan = gordan
-                    gordan = battalion_group.objects.filter(name__icontains=str(one_soldire_list[6]),
+                    grohan = battalion_group.objects.filter(name__icontains=str(one_soldire_list[6]),
                                                             gordan=gordan).first()
-                    find_soldire.Gordan = gordan
+                    find_soldire.battalion_group = grohan
                     find_soldire.Amriye = one_soldire_list[7]
                     find_soldire.Amriye_organization = one_soldire_list[8]
                     find_soldire.physical_condition = one_soldire_list[9]

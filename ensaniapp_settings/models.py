@@ -29,3 +29,4 @@ class EnsaniSettings(models.Model):
     mahezam = models.CharField(max_length=100, verbose_name='ماه اعزارم', null=True, blank=True)
     sall = models.CharField(max_length=100, verbose_name='سال', null=True, blank=True)
     saghfi_eblaghi = models.CharField(max_length=100, verbose_name='سقف نامه', null=True, blank=True)
+    emza_masole_niro_ensani = models.ImageField(upload_to='images/', null=True, blank=True)

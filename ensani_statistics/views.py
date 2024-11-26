@@ -21,16 +21,41 @@ def amar_avalie(request):
         for bat in battalions:
             # دریافت همه گروهان‌های مربوط به این گردان
             groups = battalion_group.objects.filter(gordan=bat)
-            total_soldiers = Soldier.objects.filter(Gordan=bat).all().count()
+            total_soldiers = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                                    the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                                    Previous_service_record=False,Gordan=bat).all().count()
             battalion_name = bat.name
             lst = []
-            salem = Soldier.objects.filter(Gordan=bat, physical_condition='سالم').all().count()
-            moaf_az_razm = Soldier.objects.filter(Gordan=bat, physical_condition='معاف از رزم').all().count()
-            goreh_b = Soldier.objects.filter(Gordan=bat, physical_condition='گروه ب').all().count()
-            goreh_b_moaf_az_razm = Soldier.objects.filter(Gordan=bat, physical_condition='معاف+گروه ب').all().count()
-            amire_dar = Soldier.objects.filter(Gordan=bat, Amriye=True).all().count()
-            shie = Soldier.objects.filter(Gordan=bat, Religion='شیعه').all().count()
-            ahle_tasanon = Soldier.objects.filter(Gordan=bat, Religion='اهل تسنن').all().count()
+            salem = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                           the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                           Previous_service_record=False,
+                                           Gordan=bat, physical_condition='سالم').all().count()
+            moaf_az_razm = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                                  the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                                  Previous_service_record=False,
+                                                  Gordan=bat, physical_condition='معاف از رزم').all().count()
+            goreh_b = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                             the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                             Previous_service_record=False,
+                                             Gordan=bat, physical_condition='گروه ب').all().count()
+            goreh_b_moaf_az_razm = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                                          the_medical_commission=False,
+                                                          Sufficiency_of_mobilization=False,
+                                                          Previous_service_record=False,
+                                                          in_coures=True, Gordan=bat,
+                                                          physical_condition='معاف+گروه ب').all().count()
+            amire_dar = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                               the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                               Previous_service_record=False,
+                                               in_coures=True, Gordan=bat, Amriye=True).all().count()
+            shie = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True, Gordan=bat,
+                                          the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                          Previous_service_record=False,
+                                          Religion='شیعه').all().count()
+            ahle_tasanon = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
+                                                  the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                                  Previous_service_record=False,
+                                                  in_coures=True, Gordan=bat, Religion='اهل تسنن').all().count()
             for group in groups:
                 # محاسبه تعداد سربازان برای هر گروهان
                 soldiers = Soldier.objects.filter(battalion_group=group)
@@ -1264,8 +1289,52 @@ def yegan_be_kar_girande_tabel(request):
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_amire)
     total_amire = Soldier.objects.filter(has_been_accepted=True,
                                          Amriye=True).all().count()
-
+    barge_sazb = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all().count()
+    kefaiti = Soldier.objects.filter(has_been_accepted=True, Sufficiency_of_mobilization=True).all().count()
+    khedmat_ghabli = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True).all().count()
+    kefaiti_khedmat_ghabli = int(kefaiti) + int(khedmat_ghabli)
+    pazireh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
+    total1 = int(salem_in_course_pa_radeh_aghmari) + int(salem_in_course_nezsa) + int(salem_in_course_neghsa) + int(
+        salem_in_course_sazman_basij) + int(salem_in_course_hoze_namayandegi) + int(
+        salem_in_course_setad_koll_nirooye_mosalah)
+    total2 = int(total1_in_course_pa_radeh_aghmari) + int(total1_in_course_nezsa) + int(total1_in_course_neghsa) + int(
+        total1_in_course_sazman_basij) + int(total1_in_course_hoze_namayandegi) + int(
+        total1_in_course_setad_koll_nirooye_mosalah)
+    sum1 = int(total1) + int(total2)
+    total3 = int(salem_Previous_service_record_pa_radeh_aghmari) + int(salem_Previous_service_record_nezsa) + int(
+        salem_Previous_service_record_neghsa) + int(
+        salem_Previous_service_record_sazman_basij) + int(salem_Previous_service_record_hoze_namayandegi) + int(
+        salem_Previous_service_record_setad_koll_nirooye_mosalah)
+    total4 = int(total1_Previous_service_record_pa_radeh_aghmari) + int(total1_Previous_service_record_nezsa) + int(
+        total1_Previous_service_record_neghsa) + int(
+        total1_Previous_service_record_sazman_basij) + int(total2_Previous_service_record_hoze_namayandegi) + int(
+        total1_Previous_service_record_setad_koll_nirooye_mosalah)
+    sum2 = int(total3) + int(total4)
+    total5 = int(salem_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        salem_Sufficiency_of_mobilization_nezsa) + int(salem_Sufficiency_of_mobilization_neghsa) + int(
+        salem_Sufficiency_of_mobilization_sazman_basij) + int(salem_Sufficiency_of_mobilization_hoze_namayandegi) + int(
+        salem_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah)
+    total6 = int(total1_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
+        total1_Sufficiency_of_mobilization_nezsa) + int(total1_Sufficiency_of_mobilization_neghsa) + int(
+        total1_Sufficiency_of_mobilization_sazman_basij) + int(
+        total1_Sufficiency_of_mobilization_hoze_namayandegi) + int(
+        total1_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah)
+    sum3 = int(total5) + int(total6)
+    t_sum = int(sum1) + int(sum2) + int(sum3)
     context = {
+        'total1': total1,
+        'total2': total2,
+        'total3': total3,
+        'total4': total4,
+        'total5': total5,
+        'total6': total6,
+        'sum1': sum1,
+        'sum2': sum2,
+        'sum3': sum3,
+        't_sum': t_sum,
+        'pazireh_shode': pazireh_shode,
+        'barge_sazb': barge_sazb,
+        "kefaiti_khedmat_ghabli": kefaiti_khedmat_ghabli,
         'salem_in_course_amire': salem_in_course_amire,
         'moaf_az_razm_in_course_amire': moaf_az_razm_in_course_amire,
         'groh_be_in_course_amire': groh_be_in_course_amire,
@@ -1304,6 +1373,139 @@ def yegan_be_kar_girande_tabel(request):
         'total1_Sufficiency_of_mobilization_pa_radeh_aghmari': total1_Sufficiency_of_mobilization_pa_radeh_aghmari,
         'total2_Sufficiency_of_mobilization_pa_radeh_aghmari': total2_Sufficiency_of_mobilization_pa_radeh_aghmari,
         'total_pa_radeh_aghmari': total_pa_radeh_aghmari,
+        'salem_in_course_nezsa': salem_in_course_nezsa,
+        'moaf_az_razm_in_course_nezsa': moaf_az_razm_in_course_nezsa,
+        'groh_be_in_course_nezsa': groh_be_in_course_nezsa,
+        'moaf_az_razm_gorh_be_in_course_nezsa': moaf_az_razm_gorh_be_in_course_nezsa,
+        'total1_in_course_nezsa': total1_in_course_nezsa,
+        'total2_in_course_nezsa': total2_in_course_nezsa,
+        'salem_Previous_service_record_nezsa': salem_Previous_service_record_nezsa,
+        'moaf_az_razm_Previous_service_record_nezsa': moaf_az_razm_Previous_service_record_nezsa,
+        'groh_be_Previous_service_record_nezsa': groh_be_Previous_service_record_nezsa,
+        'moaf_az_razm_gorh_be_Previous_service_record_nezsa': moaf_az_razm_gorh_be_Previous_service_record_nezsa,
+        'total1_Previous_service_record_nezsa': total1_Previous_service_record_nezsa,
+        'total2_Previous_service_record_nezsa': total2_Previous_service_record_nezsa,
+        'salem_Sufficiency_of_mobilization_nezsa': salem_Sufficiency_of_mobilization_nezsa,
+        'moaf_az_razm_Sufficiency_of_mobilization_nezsa': moaf_az_razm_Sufficiency_of_mobilization_nezsa,
+        'groh_be_Sufficiency_of_mobilization_nezsa': groh_be_Sufficiency_of_mobilization_nezsa,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_nezsa': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_nezsa,
+        'total1_Sufficiency_of_mobilization_nezsa': total1_Sufficiency_of_mobilization_nezsa,
+        'total2_Sufficiency_of_mobilization_nezsa': total2_Sufficiency_of_mobilization_nezsa,
+        'total_nezsa': total_nezsa,
+        'salem_in_course_neghsa': salem_in_course_neghsa,
+        'moaf_az_razm_in_course_neghsa': moaf_az_razm_in_course_neghsa,
+        'groh_be_in_course_neghsa': groh_be_in_course_neghsa,
+        'moaf_az_razm_gorh_be_in_course_neghsa': moaf_az_razm_gorh_be_in_course_neghsa,
+        'total1_in_course_neghsa': total1_in_course_neghsa,
+        'total2_in_course_neghsa': total2_in_course_neghsa,
+        'salem_Previous_service_record_neghsa': salem_Previous_service_record_neghsa,
+        'moaf_az_razm_Previous_service_record_neghsa': moaf_az_razm_Previous_service_record_neghsa,
+        'groh_be_Previous_service_record_neghsa': groh_be_Previous_service_record_neghsa,
+        'moaf_az_razm_gorh_be_Previous_service_record_neghsa': moaf_az_razm_gorh_be_Previous_service_record_neghsa,
+        'total1_Previous_service_record_neghsa': total1_Previous_service_record_neghsa,
+        'total2_Previous_service_record_neghsa': total2_Previous_service_record_neghsa,
+        'salem_Sufficiency_of_mobilization_neghsa': salem_Sufficiency_of_mobilization_neghsa,
+        'moaf_az_razm_Sufficiency_of_mobilization_neghsa': moaf_az_razm_Sufficiency_of_mobilization_neghsa,
+        'groh_be_Sufficiency_of_mobilization_neghsa': groh_be_Sufficiency_of_mobilization_neghsa,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_neghsa': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_neghsa,
+        'total1_Sufficiency_of_mobilization_neghsa': total1_Sufficiency_of_mobilization_neghsa,
+        'total2_Sufficiency_of_mobilization_neghsa': total2_Sufficiency_of_mobilization_neghsa,
+        'total_neghsa': total_neghsa,
+        'salem_in_course_ndsa': salem_in_course_ndsa,
+        'moaf_az_razm_in_course_ndsa': moaf_az_razm_in_course_ndsa,
+        'groh_be_in_course_ndsa': groh_be_in_course_ndsa,
+        'moaf_az_razm_gorh_be_in_course_ndsa': moaf_az_razm_gorh_be_in_course_ndsa,
+        'total1_in_course_ndsa': total1_in_course_ndsa,
+        'total2_in_course_ndsa': total2_in_course_ndsa,
+        'salem_Previous_service_record_ndsa': salem_Previous_service_record_ndsa,
+        'moaf_az_razm_Previous_service_record_ndsa': moaf_az_razm_Previous_service_record_ndsa,
+        'groh_be_Previous_service_record_ndsa': groh_be_Previous_service_record_ndsa,
+        'moaf_az_razm_gorh_be_Previous_service_record_ndsa': moaf_az_razm_gorh_be_Previous_service_record_ndsa,
+        'total1_Previous_service_record_ndsa': total1_Previous_service_record_ndsa,
+        'total2_Previous_service_record_ndsa': total2_Previous_service_record_ndsa,
+        'salem_Sufficiency_of_mobilization_ndsa': salem_Sufficiency_of_mobilization_ndsa,
+        'moaf_az_razm_Sufficiency_of_mobilization_ndsa': moaf_az_razm_Sufficiency_of_mobilization_ndsa,
+        'groh_be_Sufficiency_of_mobilization_ndsa': groh_be_Sufficiency_of_mobilization_ndsa,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_ndsa': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_ndsa,
+        'total1_Sufficiency_of_mobilization_ndsa': total1_Sufficiency_of_mobilization_ndsa,
+        'total2_Sufficiency_of_mobilization_ndsa': total2_Sufficiency_of_mobilization_ndsa,
+        'total_ndsa': total_ndsa,
+        'salem_in_course_havafaza': salem_in_course_havafaza,
+        'moaf_az_razm_in_course_havafaza': moaf_az_razm_in_course_havafaza,
+        'groh_be_in_course_havafaza': groh_be_in_course_havafaza,
+        'moaf_az_razm_gorh_be_in_course_havafaza': moaf_az_razm_gorh_be_in_course_havafaza,
+        'total1_in_course_havafaza': total1_in_course_havafaza,
+        'total2_in_course_havafaza': total2_in_course_havafaza,
+        'salem_Previous_service_record_havafaza': salem_Previous_service_record_havafaza,
+        'moaf_az_razm_Previous_service_record_havafaza': moaf_az_razm_Previous_service_record_havafaza,
+        'groh_be_Previous_service_record_havafaza': groh_be_Previous_service_record_havafaza,
+        'moaf_az_razm_gorh_be_Previous_service_record_havafaza': moaf_az_razm_gorh_be_Previous_service_record_havafaza,
+        'total1_Previous_service_record_havafaza': total1_Previous_service_record_havafaza,
+        'total2_Previous_service_record_havafaza': total2_Previous_service_record_havafaza,
+        'salem_Sufficiency_of_mobilization_havafaza': salem_Sufficiency_of_mobilization_havafaza,
+        'moaf_az_razm_Sufficiency_of_mobilization_havafaza': moaf_az_razm_Sufficiency_of_mobilization_havafaza,
+        'groh_be_Sufficiency_of_mobilization_havafaza': groh_be_Sufficiency_of_mobilization_havafaza,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_havafaza': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_havafaza,
+        'total1_Sufficiency_of_mobilization_havafaza': total1_Sufficiency_of_mobilization_havafaza,
+        'total2_Sufficiency_of_mobilization_havafaza': total2_Sufficiency_of_mobilization_havafaza,
+        'total_havafaza': total_havafaza,
+        'salem_in_course_sazman_basij': salem_in_course_sazman_basij,
+        'moaf_az_razm_in_course_sazman_basij': moaf_az_razm_in_course_sazman_basij,
+        'groh_be_in_course_sazman_basij': groh_be_in_course_sazman_basij,
+        'moaf_az_razm_gorh_be_in_course_sazman_basij': moaf_az_razm_gorh_be_in_course_sazman_basij,
+        'total1_in_course_sazman_basij': total1_in_course_sazman_basij,
+        'total2_in_course_sazman_basij': total2_in_course_sazman_basij,
+        'salem_Previous_service_record_sazman_basij': salem_Previous_service_record_sazman_basij,
+        'moaf_az_razm_Previous_service_record_sazman_basij': moaf_az_razm_Previous_service_record_sazman_basij,
+        'groh_be_Previous_service_record_sazman_basij': groh_be_Previous_service_record_sazman_basij,
+        'moaf_az_razm_gorh_be_Previous_service_record_sazman_basij': moaf_az_razm_gorh_be_Previous_service_record_sazman_basij,
+        'total1_Previous_service_record_sazman_basij': total1_Previous_service_record_sazman_basij,
+        'total2_Previous_service_record_sazman_basij': total2_Previous_service_record_sazman_basij,
+        'salem_Sufficiency_of_mobilization_sazman_basij': salem_Sufficiency_of_mobilization_sazman_basij,
+        'moaf_az_razm_Sufficiency_of_mobilization_sazman_basij': moaf_az_razm_Sufficiency_of_mobilization_sazman_basij,
+        'groh_be_Sufficiency_of_mobilization_sazman_basij': groh_be_Sufficiency_of_mobilization_sazman_basij,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_sazman_basij': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_sazman_basij,
+        'total1_Sufficiency_of_mobilization_sazman_basij': total1_Sufficiency_of_mobilization_sazman_basij,
+        'total2_Sufficiency_of_mobilization_sazman_basij': total2_Sufficiency_of_mobilization_sazman_basij,
+        'total_sazman_basij': total_sazman_basij,
+        'salem_in_course_hoze_namayandegi': salem_in_course_hoze_namayandegi,
+        'moaf_az_razm_in_course_hoze_namayandegi': moaf_az_razm_in_course_hoze_namayandegi,
+        'groh_be_in_course_hoze_namayandegi': groh_be_in_course_hoze_namayandegi,
+        'moaf_az_razm_gorh_be_in_course_hoze_namayandegi': moaf_az_razm_gorh_be_in_course_hoze_namayandegi,
+        'total1_in_course_hoze_namayandegi': total1_in_course_hoze_namayandegi,
+        'total2_in_course_hoze_namayandegi': total2_in_course_hoze_namayandegi,
+        'salem_Previous_service_record_hoze_namayandegi': salem_Previous_service_record_hoze_namayandegi,
+        'moaf_az_razm_Previous_service_record_hoze_namayandegi': moaf_az_razm_Previous_service_record_hoze_namayandegi,
+        'groh_be_Previous_service_record_hoze_namayandegi': groh_be_Previous_service_record_hoze_namayandegi,
+        'moaf_az_razm_gorh_be_Previous_service_record_hoze_namayandegi': moaf_az_razm_gorh_be_Previous_service_record_hoze_namayandegi,
+        'total1_Previous_service_record_hoze_namayandegi': total1_Previous_service_record_hoze_namayandegi,
+        'total2_Previous_service_record_hoze_namayandegi': total2_Previous_service_record_hoze_namayandegi,
+        'salem_Sufficiency_of_mobilization_hoze_namayandegi': salem_Sufficiency_of_mobilization_hoze_namayandegi,
+        'moaf_az_razm_Sufficiency_of_mobilization_hoze_namayandegi': moaf_az_razm_Sufficiency_of_mobilization_hoze_namayandegi,
+        'groh_be_Sufficiency_of_mobilization_hoze_namayandegi': groh_be_Sufficiency_of_mobilization_hoze_namayandegi,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_hoze_namayandegi': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_hoze_namayandegi,
+        'total1_Sufficiency_of_mobilization_hoze_namayandegi': total1_Sufficiency_of_mobilization_hoze_namayandegi,
+        'total2_Sufficiency_of_mobilization_hoze_namayandegi': total2_Sufficiency_of_mobilization_hoze_namayandegi,
+        'total_hoze_namayandegi': total_hoze_namayandegi,
+        'salem_in_course_setad_koll_nirooye_mosalah': salem_in_course_setad_koll_nirooye_mosalah,
+        'moaf_az_razm_in_course_setad_koll_nirooye_mosalah': moaf_az_razm_in_course_setad_koll_nirooye_mosalah,
+        'groh_be_in_course_setad_koll_nirooye_mosalah': groh_be_in_course_setad_koll_nirooye_mosalah,
+        'moaf_az_razm_gorh_be_in_course_setad_koll_nirooye_mosalah': moaf_az_razm_gorh_be_in_course_setad_koll_nirooye_mosalah,
+        'total1_in_course_setad_koll_nirooye_mosalah': total1_in_course_setad_koll_nirooye_mosalah,
+        'total2_in_course_setad_koll_nirooye_mosalah': total2_in_course_setad_koll_nirooye_mosalah,
+        'salem_Previous_service_record_setad_koll_nirooye_mosalah': salem_Previous_service_record_setad_koll_nirooye_mosalah,
+        'moaf_az_razm_Previous_service_record_setad_koll_nirooye_mosalah': moaf_az_razm_Previous_service_record_setad_koll_nirooye_mosalah,
+        'groh_be_Previous_service_record_setad_koll_nirooye_mosalah': groh_be_Previous_service_record_setad_koll_nirooye_mosalah,
+        'moaf_az_razm_gorh_be_Previous_service_record_setad_koll_nirooye_mosalah': moaf_az_razm_gorh_be_Previous_service_record_setad_koll_nirooye_mosalah,
+        'total1_Previous_service_record_setad_koll_nirooye_mosalah': total1_Previous_service_record_setad_koll_nirooye_mosalah,
+        'total2_Previous_service_record_setad_koll_nirooye_mosalah': total2_Previous_service_record_setad_koll_nirooye_mosalah,
+        'salem_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah': salem_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah,
+        'moaf_az_razm_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah': moaf_az_razm_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah,
+        'groh_be_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah': groh_be_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah,
+        'moaf_az_razm_gorh_be_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah': moaf_az_razm_gorh_be_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah,
+        'total1_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah': total1_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah,
+        'total2_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah': total2_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah,
+        'total_setad_koll_nirooye_mosalah': total_setad_koll_nirooye_mosalah,
     }
     return render(request, 'ensani_statistics/amar_yegan_be_kar_girande_tabel.html', context)
 

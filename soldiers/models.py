@@ -32,7 +32,7 @@ class Soldier(models.Model):
     height = models.CharField(null=True, blank=True, max_length=10, verbose_name='قد')
     Weight = models.CharField(null=True, blank=True, max_length=10, verbose_name='وزن')
 
-    Renewal_of_the_previous_period = models.CharField(null=True, blank=True, max_length=10,
+    Renewal_of_the_previous_period = models.CharField(null=True, blank=True, max_length=100,
                                                       verbose_name='تجدید دوره')
     Renewal_of_the_previous_period_code = models.CharField(null=True, blank=True, max_length=150,
                                                            verbose_name='کد تجدید دوره')

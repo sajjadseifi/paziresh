@@ -6,9 +6,10 @@ from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYe
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels
 import pandas as pd
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import openpyxl
 from battalions.models import battalion, battalion_group
+from ensaniapp_settings.models import EnsaniSettings
 
 list_yegan_bekargirande = [
     (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
@@ -181,22 +182,23 @@ list_yegan_bekargirande = [
     (114, 'پایگاه شهید کاظمی(ارومیه)-نزسا', 'نزسا', '******', '******'),
     (115, 'سپاه عاشورا - آذربایجان شرقی', 'سپاه و رده های اقماری', '******', '******'),
     (116, 'بیمارستان  شهید صدوقی نزسا', 'نزسا', '******', '******'),
-    (117, 'ستاد سپاه قائم آل محمد (عج) - سمنان', '******', '******', '******'),
+    (117, 'ستاد سپاه قائم آل محمد (عج) - سمنان', 'سپاه و رده های اقماری', '******', '******'),
     (118, 'مرکز جنگال فلق نزسا', 'نزسا', '******', '******'),
     (119, 'مرکز 23 نبوت نزسا', 'نزسا', '******', '******'),
-    (120, 'مرکز پشتيباني عمومي و تخصصي (جنوب شرق)', '', '******', '******'),
+    (120, 'مرکز پشتيباني عمومي و تخصصي (جنوب شرق)', 'نزسا', '******', '******'),
     (121, 'دانشگاه علوم پزشکي بقيه‌ا... ‌الاعظم (عج)', 'سپاه و رده های اقماری', 'تهران',
      'تهران- میدان ونک ابتدای خیابان ملاصدرا'),
     (122, 'پايگاه پهپاد نبي اکرم (ص) نزسا', 'نزسا', '******', '******'),
-    (123, 'فرماندهي قرارگاه پشتيباني ستاد کل سپاه', '', '******', '******'),
+    (123, 'فرماندهي قرارگاه پشتيباني ستاد کل سپاه', 'سپاه و رده های اقماری', '******', '******'),
     (124, 'فرماندهي هوانيروز - پايگاه بالگردي رزمي جنوب‌شرق نزسا', 'نزسا', '******', '******'),
-    (125, 'قرارگاه فرهنگي اجتماعي شهيد برونسي', '', '******', '******'),
-    (126, 'فرماندهي سايبرالکترونيک سپاه', '', '******', '******'),
-    (126, 'فرماندهي سايبرالکترونيک سپاه', '', '******', '******'),
+    (125, 'قرارگاه فرهنگي اجتماعي شهيد برونسي', 'سپاه و رده های اقماری', '******', '******'),
+    (126, 'فرماندهي سايبرالکترونيک سپاه', 'سپاه و رده های اقماری', '******', '******'),
     (127, ' قرارگاه فرهنگي بقيه ا... الاعظم عج', 'سپاه و رده های اقماری', '******', '******'),
     (128, 'گروه 43 مهندسي امام علي(ع) نزسا', 'نزسا', '******', '******'),
-    (129, 'فرماندهي حفاظت، امنيت سپاه', '', '******', '******'),
+    (129, 'فرماندهي حفاظت، امنيت سپاه', 'سپاه و رده های اقماری', '******', '******'),
     (130, 'دانشگاه حضرت اميرالمومنين(ع) نزسا', 'نزسا', '******', '******'),
+    (131, 'سپاه روح اله - مرکزي', 'سپاه و رده های اقماری', '******', '******'),
+    (132, 'سپاه انصارالحسين (ع) - همدان', 'سپاه و رده های اقماری', '******', '******'),
 
 ]
 
@@ -219,9 +221,14 @@ def soldier_search(request):
     marital_status = request.GET.get('marital_status')
     religion = request.GET.get('religion')
     acceptance_code = request.GET.get('acceptance_code')
-
+    Grade = request.GET.get('Grade')
+    Grade_precise = request.GET.get('Grade_precise')
+    Gordan = request.GET.get('Gordan')
+    battaliongroup = request.GET.get('battalion_group')
     soldiers = Soldier.objects.all()
-
+    gordan = battalion.objects.filter().all()
+    grohan = battalion_group.objects.filter().all()
+    count_f = soldiers
     if query:
         soldiers = soldiers.filter(name__icontains=query)
     if family:
@@ -236,12 +243,33 @@ def soldier_search(request):
         soldiers = soldiers.filter(Religion__icontains=religion)
     if acceptance_code:
         soldiers = soldiers.filter(acceptance_code=acceptance_code)
+    if Grade:
+        soldiers = soldiers.filter(Grade=Grade)
+    if Grade_precise:
+        soldiers = soldiers.filter(Grade_precise=Grade_precise)
+
+    if Gordan:
+        soldiers = soldiers.filter(Gordan__name__icontains=Gordan)
+
+    if battaliongroup:
+        soldiers = soldiers.filter(battalion_group__name__icontains=battaliongroup)
+
+    op_result = False
+    count_e = soldiers
+    if count_f != count_e:
+        op_result = True
 
     context = {
-        'results': soldiers
+        'results': soldiers, 'op_result': op_result, 'gordan': gordan, 'grohan': grohan,
     }
 
     return render(request, 'ensani_soldires_management/soldier_search.html', context)
+
+
+def get_grohan_by_gordan_for_search(request):
+    gordan_name = request.GET.get('gordan_name')
+    grohan_list = battalion_group.objects.filter(gordan__name__icontains=gordan_name).values('id', 'name')
+    return JsonResponse(list(grohan_list), safe=False)
 
 
 def soldire_details(request, code):
@@ -607,6 +635,15 @@ class exel_yegaan_khedmat(View):
                                     break
                     if form.cleaned_data['type'] == "2":
                         if find_soldire is not None:
+                            for iteam in list_yegan_bekargirande:
+                                if iteam[1].replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace(
+                                        "\u200c",
+                                        " ") == one_soldire_list[1]:
+                                    find_soldire.unit_name = iteam[1]
+                                    find_soldire.unit_type = iteam[2]
+                                    find_soldire.unit_province = iteam[3]
+                                    find_soldire.unit_address = iteam[4]
+                                    find_soldire.IsUnit = True
                             find_soldire.Amriye = True
                             find_soldire.Amriye_organization = one_soldire_list[1]
                             find_soldire.save()
@@ -854,41 +891,41 @@ class update_db_from_exel_all_soldire_in_course(View):
                     find_soldire.name = one_soldire_list[0]
                     find_soldire.family = one_soldire_list[1]
                     find_soldire.fathers_name = one_soldire_list[2]
-                    find_soldire.acceptance_code = one_soldire_list[3]
-                    if one_soldire_list[4] is not None:
-                        gordan = battalion.objects.filter(name__icontains=one_soldire_list[4]).first()
+                    find_soldire.acceptance_code = one_soldire_list[4]
+                    if one_soldire_list[5] is not None:
+                        gordan = battalion.objects.filter(name__icontains=one_soldire_list[5]).first()
                         find_soldire.t_Gordan = gordan
-                        if one_soldire_list[5] is not None:
-                            gorhan = battalion_group.objects.filter(name__icontains=one_soldire_list[5],
+                        if one_soldire_list[6] is not None:
+                            gorhan = battalion_group.objects.filter(name__icontains=one_soldire_list[6],
                                                                     gordan=gordan).first()
                             find_soldire.t_battalion_group = gorhan
-                        if one_soldire_list[6] is not None:
-                            find_soldire.code_gorhan_nahai = int(one_soldire_list[6])
-                    find_soldire.Amriye = one_soldire_list[7]
-                    find_soldire.Amriye_organization = one_soldire_list[8]
-                    find_soldire.physical_condition = one_soldire_list[9]
-                    find_soldire.Type_of_disease = one_soldire_list[10]
-                    find_soldire.Grade = one_soldire_list[11]
-                    find_soldire.Grade_precise = one_soldire_list[12]
-                    find_soldire.educational_level_of_the_system = one_soldire_list[13]
-                    find_soldire.Study_group = one_soldire_list[14]
-                    find_soldire.marital_status = one_soldire_list[15]
-                    find_soldire.Religion = one_soldire_list[16]
-                    find_soldire.Date_of_birth = one_soldire_list[17]
-                    find_soldire.Date_of_dispatch = one_soldire_list[18]
-                    find_soldire.phone_number = one_soldire_list[19]
-                    find_soldire.home_phone_number = one_soldire_list[20]
-                    find_soldire.Date_of_dispatch = one_soldire_list[21]
-                    find_soldire.province_name = one_soldire_list[22]
-                    find_soldire.city_name = one_soldire_list[23]
-                    find_soldire.Address = one_soldire_list[24]
-                    find_soldire.Place_of_Issue = one_soldire_list[25]
-                    find_soldire.height = one_soldire_list[26]
-                    find_soldire.Weight = one_soldire_list[27]
-                    find_soldire.Renewal_of_the_previous_period = one_soldire_list[28]
-                    find_soldire.attraction_of_the_organization = one_soldire_list[29]
-                    find_soldire.unit_name = one_soldire_list[30]
-                    find_soldire.unit_type = one_soldire_list[31]
+                        if one_soldire_list[7] is not None:
+                            find_soldire.code_gorhan_nahai = int(one_soldire_list[7])
+                    find_soldire.Amriye = one_soldire_list[8]
+                    find_soldire.Amriye_organization = one_soldire_list[9]
+                    find_soldire.physical_condition = one_soldire_list[10]
+                    find_soldire.Type_of_disease = one_soldire_list[11]
+                    find_soldire.Grade = one_soldire_list[12]
+                    find_soldire.Grade_precise = one_soldire_list[13]
+                    find_soldire.educational_level_of_the_system = one_soldire_list[14]
+                    find_soldire.Study_group = one_soldire_list[15]
+                    find_soldire.marital_status = one_soldire_list[16]
+                    find_soldire.Religion = one_soldire_list[17]
+                    find_soldire.Date_of_birth = one_soldire_list[18]
+                    find_soldire.Date_of_dispatch = one_soldire_list[19]
+                    find_soldire.phone_number = one_soldire_list[20]
+                    find_soldire.home_phone_number = one_soldire_list[21]
+                    find_soldire.Date_of_dispatch = one_soldire_list[22]
+                    find_soldire.province_name = one_soldire_list[23]
+                    find_soldire.city_name = one_soldire_list[24]
+                    find_soldire.Address = one_soldire_list[25]
+                    find_soldire.Place_of_Issue = one_soldire_list[26]
+                    find_soldire.height = one_soldire_list[27]
+                    find_soldire.Weight = one_soldire_list[28]
+                    find_soldire.Renewal_of_the_previous_period = one_soldire_list[29]
+                    find_soldire.attraction_of_the_organization = one_soldire_list[30]
+                    find_soldire.unit_name = one_soldire_list[31]
+                    find_soldire.unit_type = one_soldire_list[32]
                     find_soldire.save()
         cx = {'form': form}
         return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)

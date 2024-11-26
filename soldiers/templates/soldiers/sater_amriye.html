@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ساتر امریه</title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+
     <style>
         @page {
             size: A4;
@@ -16,10 +18,11 @@
             height: 297mm;
             margin: 0;
             padding: 0;
+            background-color: #ff2ea6;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: B Nazanin;
         }
 
         .container {
@@ -27,7 +30,6 @@
             text-align: center;
             color: rgb(0, 0, 0); /* رنگ متن */
         }
-
 
         .image {
             display: block;
@@ -37,112 +39,163 @@
 
         .name {
             position: absolute;
-            top: 144px; /* موقعیت افقی */
-            right: 66px; /* موقعیت عمودی */
-
-            font-size: 12px; /* اندازه متن */
+            top: 144px;
+            right: 50px;
+            font-size: 10px;
             color: black;
+            font-weight: bold;
         }
 
         .family {
             position: absolute;
             top: 144px; /* موقعیت افقی */
-            right: 180px; /* موقعیت عمودی */
-
-            font-size: 12px; /* اندازه متن */
+            right: 164px; /* موقعیت عمودی */
+            font-size: 10px; /* اندازه متن */
             color: black;
+            font-weight: bold;
         }
 
         .fathers_name {
             position: absolute;
-            top: 144px; /* موقعیت افقی */
-            right: 297px; /* موقعیت عمودی */
-
-            font-size: 12px; /* اندازه متن */
+            top: 144px;
+            right: 283px;
+            font-size: 10px;
             color: black;
+            font-weight: bold;
         }
 
         .place_of_birth {
             position: absolute;
-            top: 144px; /* موقعیت افقی */
-            right: 391px; /* موقعیت عمودی */
-
-            font-size: 12px; /* اندازه متن */
+            top: 145px;
+            right: 377px;
+            font-size: 10px;
             color: black;
+            font-weight: bold;
         }
 
         .Date_of_birth {
             position: absolute;
-            top: 144px;
-            right: 472px;
+            top: 146px;
+            right: 474px;
             font-size: 10px;
             color: black;
         }
+
 
         .National_Code {
             position: absolute;
             top: 184px; /* موقعیت افقی */
             right: 135px; /* موقعیت عمودی */
-
-            font-size: 12px; /* اندازه متن */
+            font-size: 12px;
             color: black;
+            font-weight: normal;
         }
 
         .educational_level_of_the_system {
             position: absolute;
-            top: 186px; /* موقعیت افقی */
-            right: 261px; /* موقعیت عمودی */
-
-            font-size: 9px; /* اندازه متن */
+            top: 186px;
+            right: 240px;
+            font-size: 9px;
             color: black;
+            font-weight: bold;
         }
 
         .Date_of_dispatch {
             position: absolute;
             top: 186px;
-            right: 389px;
+            right: 377px;
             font-size: 9px;
             color: black;
         }
 
         .mahleezam {
             position: absolute;
-            top: 184px;
-            right: 480px;
+            top: 186px;
+            right: 469px;
             font-size: 9px;
             color: black;
+            font-weight: bold;
         }
 
         .acceptance_code {
             position: absolute;
-            top: 747px;
-            right: 333px;
+            top: 759px;
+            right: 331px;
+            font-size: 10px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .name_dore {
+            position: absolute;
+            top: 206px;
+            right: 168px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .emza {
+            position: absolute;
+            top: 681px;
+            right: 16px;
+            color: black;
+            font-weight: bold;
+            z-index: 1;
+            width: 210px;
+        }
+
+        .modire_niro_ensani {
+            position: absolute;
+            top: 722px;
+            right: 76px;
+            color: black;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .tahvil_girande {
+            position: absolute;
+            top: 725px;
+            right: 326px;
             font-size: 11px;
             color: black;
+            font-weight: bold;
         }
 
-        .battalion_group {
+        .tahiviliii {
             position: absolute;
-            top: 208px;
-            right: 431px;
-            font-size: 9px;
+            top: 836px;
+            right: 66px;
+            font-size: 12px;
             color: black;
+            font-weight: bold;
+            text-align: right;
         }
 
-        .battalion_group_gordan {
+        .esme_dore_1 {
             position: absolute;
-            top: 208px;
-            right: 343px;
-            font-size: 9px;
+            top: 865px;
+            right: 436px;
+            font-size: 11px;
             color: black;
+            font-weight: bold;
         }
 
+        .tarikh_dore {
+            position: absolute;
+            top: 864px;
+            right: 623px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="{% static 'img/sater/sater_amrie.jpg' %}" alt="sater_amrie" class="image">
+    <img src="{% static 'img/sater/sater_amrie.jpg' %}" alt="sater_adi" class="image">
     <div class="name">{{ sarbaz.name }}</div>
     <div class="family">{{ sarbaz.family }}</div>
     <div class="fathers_name">{{ sarbaz.fathers_name }}</div>
@@ -152,16 +205,26 @@
     <div class="educational_level_of_the_system">{{ sarbaz.educational_level_of_the_system }}</div>
     <div class="Date_of_dispatch">{{ sarbaz.Date_of_dispatch }}</div>
     <div class="mahleezam">{{ sarbaz.province_name }}</div>
-    <div class="acceptance_code">عدد پذیرش:{{ sarbaz.acceptance_code }}</div>
-    <div class="battalion_group">{{ sarbaz.battalion_group.name }}</div>
-    <div class="battalion_group_gordan">{{ sarbaz.battalion_group.gordan.name }}</div>
+    <div class="acceptance_code">عددپذیرش:{{ sarbaz.acceptance_code }}</div>
+    <div class="name_dore">{{ en.shomare_dore }} - {{ en.esmedore }}</div>
+    <img src="{{ en.emza_masole_niro_ensani.url }}" alt="emza" class="emza">
+    <div class="modire_niro_ensani">{{ en.modire_niroye_ensani }}</div>
+    <div class="tahvil_girande">{{ sarbaz.name }} {{ sarbaz.family }}</div>
+    <div class="tahiviliii"><pre
+            class="ssss">اینجانب {{ sarbaz.name }} {{ sarbaz.family }} اعزامی از استان {{ sarbaz.province_name }}
+        در تاریخ         سهمیه استحقاق خود را ، برابر
+        نُرم مندرج در کاردکس جیره ، بصورت کامل دریافت نمودم
+        </pre>
+    </div>
+    <div class="esme_dore_1">{{ en.shomare_dore }} - {{ en.esmedore }}</div>
+    <div class="tarikh_dore">{{ en.tarikhezam }}</div>
 </div>
+<script>
+    window.print()
+    window.onafterprint = function () {
+        window.close();
 
+    }
+</script>
 </body>
-{#<script>#}
-{#    window.print()#}
-{#    window.onafterprint = function () {#}
-{#        window.close();#}
-{#    }#}
-{#</script>#}
 </html>

@@ -214,7 +214,7 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
         if find_soldire.willing_to_learn is True:
             find_soldire.willing_to_learn = False
         find_soldire.the_medical_commission = True
-        if find_soldire.acceptance_code is not None:
+        if find_soldire.acceptance_code is None:
             find_soldire.acceptance_code = all_find_solidre + 1
         find_soldire.in_coures = False
         find_soldire.has_been_accepted = True
@@ -253,11 +253,12 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
         my_letter = NormalLetterModels()
         all_find_solidre = Soldier.objects.filter(has_been_accepted=True).all().count()
         find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        find_soldire.has_been_accepted = True
-        find_soldire.acceptance_code = all_find_solidre + 1
-        find_soldire.willing_to_learn = False
-        find_soldire.code_paziresh = all_find_solidre + 1
-        find_soldire.Previous_service_record = True
+        if find_soldire.has_been_accepted == False:
+            find_soldire.has_been_accepted = True
+            find_soldire.acceptance_code = all_find_solidre + 1
+            find_soldire.willing_to_learn = False
+            find_soldire.code_paziresh = all_find_solidre + 1
+            find_soldire.Previous_service_record = True
         find_soldire.save()
         my_letter.soldire = find_soldire
         my_letter.status = "درحال بررسی"
@@ -480,7 +481,8 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     if before_course_commission_letter_pk is None:
         return 0
     before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
-    cx = {'before_course_commission_letter': before_course_commission}
+    sutter = Sater.objects.filter(sarbaz=before_course_commission.soldire).last()
+    cx = {'before_course_commission_letter': before_course_commission, "sutter": sutter}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
 
 
@@ -524,17 +526,19 @@ def remove_checkout(request, *args, **kwargs):
     if checkout_id is None:
         return redirect(reverse_lazy('AllCheckoutLetter'))
     checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_id).first()
-    checkout_letter.soldire.IsCheckout = False
-    checkout_letter.soldire.in_coures = True
-    checkout_letter.soldire.willing_to_learn = True
+    sold = Soldier.objects.filter(id=checkout_letter.soldire.id).first()
+    sold.IsCheckout = False
+    sold.in_coures = True
+    sold.willing_to_learn = True
     if checkout_letter.soldire.the_medical_commission == True:
         n = NormalLetterModels.objects.filter(subject='معرفی به کمیسیون', soldire=checkout_letter.soldire).all()
         if n is not None:
             n.delete()
-            checkout_letter.soldire.the_medical_commission = False
+            sold.the_medical_commission = False
+    sold.save()
     checkout_letter.delete()
-    print(checkout_letter)
     return redirect(reverse_lazy('AllCheckoutLetter'))
+
 
 def remove_normall(request, *args, **kwargs):
     id = kwargs['pk']
@@ -551,16 +555,19 @@ def remove_normall(request, *args, **kwargs):
         normall.delete()
         return redirect(reverse_lazy('AllNormalLetter'))
     if normall.subject == "استعلام کفایت از آموزش":
-        normall.soldire.find_soldire.Previous_service_record = False
-        normall.soldire.has_been_accepted = False
-        normall.soldire.willing_to_learn = False
+        normall.soldire.Previous_service_record = False
+        normall.soldire.has_been_accepted = True
+        normall.soldire.willing_to_learn = True
+        normall.soldire.in_coures = True
+        normall.soldire.save()
         normall.save()
         normall.delete()
         return redirect(reverse_lazy('AllNormalLetter'))
     if normall.subject == "معرفی به کمیسیون شروع دوره آموزشی":
-        normall.soldire.has_been_accepted = False
+        normall.soldire.has_been_accepted = True
         normall.soldire.willing_to_learn = False
         normall.soldire.the_medical_commission = False
+        normall.soldire.save()
         normall.save()
         normall.delete()
         return redirect(reverse_lazy('AllNormalLetter'))
