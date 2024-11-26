@@ -1,6 +1,26 @@
 {% extends 'shared/_PanelMain.html' %}
 {% block main %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
 
+        .card {
+            margin: 10px auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #343a40;
+        }
+
+        .charrt {
+            height: 300px;
+            width: 400px;
+        }
+    </style>
     <!-- Small boxes (Stat box) -->
     <div class="row">
         <div class="col-lg-3 col-xs-6">
@@ -82,5 +102,68 @@
     </div>
 
 
+    <h2>جدول و نمودار</h2>
+    <div class="row">
+        <!-- ستون جدول -->
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-striped table-hover text-center">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>نام گردان</th>
+                            <th>نام گروهان</th>
+                            <th>تعداد</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for foo in list_btn %}
+                            <tr>
+                                <td>{{ foo.gordan }}</td>
+                                <td>{{ foo.gorohan }}</td>
+                                <td>{{ foo.count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ستون نمودار -->
+        <div class="col-lg-6 col-md-12">
+            <div class="card ">
+                <div class="card-body charrt">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // داده‌های نمودار
+        const labels = {{ name_list|safe }};
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'تعداد کل',
+                data: {{total_list|safe }}, // داده‌های مثال
+                backgroundColor: ['#4CAF50', '#8352ab','#b02f17','#a91e92','#FF5733','#FF5232'],
+            }]
+        };
+
+        // نمودار دایره‌ای
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {position: 'bottom'},
+                    title: {display: true, text: 'توزیع درصدی تعداد'}
+                }
+            }
+        });
+    </script>
 
 {% endblock %}

@@ -224,6 +224,7 @@ def soldier_search(request):
     Grade = request.GET.get('Grade')
     Grade_precise = request.GET.get('Grade_precise')
     Gordan = request.GET.get('Gordan')
+    amire = request.GET.get('amire')
     battaliongroup = request.GET.get('battalion_group')
     soldiers = Soldier.objects.all()
     gordan = battalion.objects.filter().all()
@@ -254,6 +255,9 @@ def soldier_search(request):
     if battaliongroup:
         soldiers = soldiers.filter(battalion_group__name__icontains=battaliongroup)
 
+    if amire:
+        soldiers = soldiers.filter(Amriye=amire)
+
     op_result = False
     count_e = soldiers
     if count_f != count_e:
@@ -264,7 +268,6 @@ def soldier_search(request):
     }
 
     return render(request, 'ensani_soldires_management/soldier_search.html', context)
-
 
 def get_grohan_by_gordan_for_search(request):
     gordan_name = request.GET.get('gordan_name')
