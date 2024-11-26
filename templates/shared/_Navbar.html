@@ -63,6 +63,8 @@
                         </li>
                         <li><a href="{% url 'update_db_from_exel_paziresh_shode' %}">بروزرسانی پذیرش شده ها</a>
                         </li>
+                        <li><a href="{% url 'export_to_excel_list_not_accepted' %}">لیست سربازهای علام حضور
+                            نشده</a></li>
                     </ul>
                 </li>
             {% endif %}
@@ -112,6 +114,7 @@
                             گروهی اطلاعات سربازان
                             خدمت قبلی </a></li>
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی</a></li>
+
                     {% endif %}
                 </ul>
             </li>

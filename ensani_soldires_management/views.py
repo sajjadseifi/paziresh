@@ -269,6 +269,7 @@ def soldier_search(request):
 
     return render(request, 'ensani_soldires_management/soldier_search.html', context)
 
+
 def get_grohan_by_gordan_for_search(request):
     gordan_name = request.GET.get('gordan_name')
     grohan_list = battalion_group.objects.filter(gordan__name__icontains=gordan_name).values('id', 'name')
@@ -1170,4 +1171,41 @@ def import_and_export_multiple_excel_sakhtar_sazi(request):
     zip_buffer.seek(0)
     response = HttpResponse(zip_buffer, content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="sakhtar_sazi.zip"'
+    return response
+
+
+def export_to_excel_list_not_accepted(request):
+    queryset = Soldier.objects.filter(has_been_accepted=False, date_improt_type='سامانه').values(
+        'name', 'family', 'fathers_name',
+        'National_Code', 'phone_number', 'home_phone_number')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'National_Code': 'کدملی',
+        'phone_number': 'موبایل',
+        'home_phone_number': 'منزل',
+
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=export_to_excel_list_not_accepted.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
     return response
