@@ -398,15 +398,16 @@ class exel_update_gordan(View):
                         cell_value = str(cell_value)
                         cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و')
                     one_soldire_list.append(cell_value)
+                    print(one_soldire_list)
                 if one_soldire_list[0] is not None:
                     find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
                     if find_soldire is not None:
-                        t_gordan = battalion.objects.filter(name__icontains=one_soldire_list[7]).first()
+                        t_gordan = battalion.objects.filter(name__icontains=one_soldire_list[5]).first()
                         t_gorohan = battalion_group.objects.filter(gordan=t_gordan,
-                                                                   name__icontains=one_soldire_list[8]).first()
+                                                                   name__icontains=one_soldire_list[6]).first()
                         find_soldire.t_Gordan = t_gordan
                         find_soldire.t_battalion_group = t_gorohan
-                        code_nahai_gorohan = one_soldire_list[9]
+                        code_nahai_gorohan = one_soldire_list[7]
                         find_soldire.code_gorhan_nahai = int(code_nahai_gorohan)
                         find_soldire.tatbigh = True
                         find_soldire.save()

@@ -81,6 +81,7 @@ class Soldier(models.Model):
     in_coures = models.BooleanField(default=False, verbose_name='شرکت در دوره')
     tatbigh = models.BooleanField(default=False, verbose_name='تطبیق شده/نشده')
     IsUnit = models.BooleanField(default=False, verbose_name='وضعیت یگان')
+    bank_number = models.CharField(max_length=250, verbose_name='شماره حساب', null=True, blank=True)
 
     def __str__(self):
         return self.name + " " + self.family
