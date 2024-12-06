@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <title>کارت سرباز</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: B Nazanin;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            direction: rtl; /* تنظیم جهت از راست به چپ */
+            font-size: 16px;
+            font-weight: bold;
+
+        }
+
+        .card {
+            width: 32%; /* برای داشتن سه کارت در هر سطر */
+            border: 1px solid #000;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            text-align: right; /* متن‌ها از راست به چپ */
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+
+        .card p {
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        /* برای چاپ بهتر */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                page-break-inside: avoid;
+            }
+
+            .card {
+                page-break-inside: avoid;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+{% for soldire in soldires %}
+    <div class="card">
+        <h2><strong>عدد پذیرش:</strong> {{ soldire.acceptance_code }}</h2>
+        <p><strong>کد ملی:</strong>{{ soldire.National_Code }}</p>
+        <p style="min-font-size: 1.1rem;max-font-size: 0.80rem">
+            <strong></strong> {{ soldire.name }} {{ soldire.family }}</p>
+        <p><strong>نام گردان:</strong>{{ soldire.t_Gordan.name }}</p>
+        <p><strong>نام گروهان:</strong>{{ soldire.t_battalion_group.name }}</p>
+        <p><strong>کد سازمانی :</strong>{{ soldire.code_gorhan_nahai }}</p>
+    </div>
+{% endfor %}
+
+
+<!-- کارت‌های بیشتر -->
+</body>
+</html>

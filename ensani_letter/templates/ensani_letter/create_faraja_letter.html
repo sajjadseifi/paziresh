@@ -1,0 +1,55 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+{% endblock %}
+
+{% block main %}
+
+    <div class="box box-warning">
+        <div class="box-header with-border">
+            <h3 class="box-title">نامه تسویه حساب به فراجا</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.soldire.label }}
+                    {{ form.soldire }}
+                    <span style='color: red'>{{ form.soldire.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.elat.label }}
+                    {{ form.elat }}
+                    <span style='color: red'>{{ form.elat.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.faraja_leter_number.label }}
+                    {{ form.faraja_leter_number }}
+                    <span style='color: red'>{{ form.faraja_leter_number.errors }}</span>
+                </div>
+                      <div class="form-group">
+                    {{ form.faraja_leter_date.label }}
+                    {{ form.faraja_leter_date }}
+                    <span style='color: red'>{{ form.faraja_leter_date.errors }}</span>
+                </div>
+                <button type="submit" class="btn btn-success pull-right">ثبت نامه
+                </button>
+            </form>
+
+        </div>
+        <!-- /.box-body -->
+    </div>
+
+{% endblock %}
+
+
+{% block footer %}
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}

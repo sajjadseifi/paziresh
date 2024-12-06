@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گواهی عضویت {{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        @page {
+            size: A5 portrait; /* تنظیم اندازه کاغذ به A5 و جهت گیری عمودی */
+        }
+
+        html, body {
+            width: 148mm;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: B Nazanin;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 100%; /* عرض عکس */
+            height: auto; /* ارتفاع خودکار */
+        }
+
+        .shoare_sall {
+            position: absolute;
+            top: 141px;
+            right: 116px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_des {
+            position: absolute;
+            top: 320px;
+            right: 34px;
+            font-size: 15px;
+            color: black;
+            font-weight: bold;
+            width: 449px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+
+        .destination {
+            position: absolute;
+            top: 167px;
+            right: 32px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .az {
+            position: absolute;
+            top: 189px;
+            right: 32px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_number {
+            position: absolute;
+            top: 44px;
+            right: 324px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_date {
+            position: absolute;
+            top: 69px;
+            right: 322px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .karshna_niro_ensani {
+            position: absolute;
+            top: 499px;
+            right: 196px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .phonenumber {
+            position: absolute;
+            top: 579px;
+            right: 113px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .home_number {
+            position: absolute;
+            top: 604px;
+            right: 113px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .addres {
+            position: absolute;
+            top: 634px;
+            right: 97px;
+            font-size: 10px;
+            color: black;
+            font-weight: bold;
+            width: 335px;
+            text-align: right;
+        }
+
+        .paziresh {
+            position: absolute;
+            top: 681px;
+            right: 112px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            width: 335px;
+            text-align: right;
+        }
+
+        .sater {
+            position: absolute;
+            top: 681px;
+            right: 301px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            width: 335px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="{% static 'img/letters/faaraa_page-0001.jpg' %}" alt="farar" class="image">
+    <div class="letter_number">شماره نامه : 512/106/6/{{ leter.number }}ز</div>
+    <div class="letter_date">تاریخ نامه
+        : {{ leter.create_time.date.day }}-{{ leter.create_time.date.month }}-{{ leter.create_time.date.year }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="letter_des">
+        فراگیر {{ letersoldire.name }} {{ leter.soldire.family }} فرزند {{ leter.soldire.fathers_name }} با شماره
+        ملی
+        {{ leter.soldire.National_Code }} و تاریخ اعزام {{ leter.soldire.Date_of_dispatch }} ؛ از
+        تاریخ {{ run_detail.run_away_dated }}
+        به
+        دلیل « {{ run_detail.type }} » فراری حین آموزش محسوب گشته و مراتب به منظور اقدامات بعدی حضورتان ارسال می
+        گردد .
+    </div>
+    <div class="karshna_niro_ensani">{{ en.karshenas_manabe_ensani }}</div>
+    <div class="phonenumber">{{ leter.soldire.phone_number }}</div>
+    <div class="home_number">{{ leter.soldire.home_phone_number }}</div>
+    <div class="addres">{{ leter.soldire.Address }}</div>
+    <div class="paziresh">{{ leter.soldire.acceptance_code }}</div>
+</div>
+<div class="container">
+    <img src="{% static 'img/letters/faaraa_page-0001.jpg' %}" alt="farar" class="image">
+    <div class="letter_number">شماره نامه : 512/106/6/{{ leter.number }}ز</div>
+    <div class="letter_date">تاریخ نامه
+        : {{ leter.create_time.date.day }}-{{ leter.create_time.date.month }}-{{ leter.create_time.date.year }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="letter_des">
+        فراگیر {{ letersoldire.name }} {{ leter.soldire.family }} فرزند {{ leter.soldire.fathers_name }} با شماره
+        ملی
+        {{ leter.soldire.National_Code }} و تاریخ اعزام {{ leter.soldire.Date_of_dispatch }} ؛ از
+        تاریخ {{ run_detail.run_away_dated }}
+        به
+        دلیل « {{ run_detail.type }} » فراری حین آموزش محسوب گشته و مراتب به منظور اقدامات بعدی حضورتان ارسال می
+        گردد .
+    </div>
+    <div class="karshna_niro_ensani">{{ en.karshenas_manabe_ensani }}</div>
+    <div class="phonenumber">{{ leter.soldire.phone_number }}</div>
+    <div class="home_number">{{ leter.soldire.home_phone_number }}</div>
+    <div class="addres">{{ leter.soldire.Address }}</div>
+    <div class="paziresh">{{ leter.soldire.acceptance_code }}</div>
+    {% if suter is not None %}
+        <div class="sater">نامبرده ساتر تحویل گرفته است</div>
+    {% else %}
+        <div class="sater">نامبرده ساتر تحویل نگرفته است</div>
+    {% endif %}
+</div>
+{#<script>#}
+{#    window.print()#}
+{#    window.onafterprint = function () {#}
+{#        window.close();#}
+{##}
+{#    }#}
+{#</script>#}
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restore Database</title>
+</head>
+<body>
+    <h1>Restore Database</h1>
+    <p>Upload a backup file to restore the database.</p>
+    <form action="{% url 'restore_database' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Restore</button>
+    </form>
+</body>
+</html>

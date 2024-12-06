@@ -1,0 +1,1057 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گزارش شروع دوره</title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        html, body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: B Nazanin;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 100%; /* عرض عکس */
+            height: auto; /* ارتفاع خودکار */
+        }
+
+        .mozoe {
+            position: absolute;
+            top: 214px;
+            right: 73px;
+            font-size: 19px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+        .shoare_sall {
+            position: absolute;
+            top: 140px;
+            right: 196px;
+            font-size: 15px;
+            /* color: black; */
+            font-weight: bold;
+        }
+
+        .mantename {
+            position: absolute;
+            top: 257px;
+            right: 70px;
+            font-size: 15px;
+            /* color: black; */
+            font-weight: bold;
+            width: 595px;
+            text-align: right;
+        }
+
+        .tarihke_name_shoro_doreh {
+            position: absolute;
+            top: 402px;
+            right: 179px;
+            font-size: 15px;
+            /* color: black; */
+            font-weight: bold;
+            width: 595px;
+            text-align: right;
+        }
+
+        .shomare_name_shoro_doreh {
+            position: absolute;
+            top: 379px;
+            right: 173px;
+            font-size: 15px;
+            /* color: black; */
+            font-weight: bold;
+            width: 595px;
+            text-align: right;
+        }
+
+        .shomre_dore1 {
+            position: absolute;
+            top: 392px;
+            right: 280px;
+            font-size: 16px;
+            /* color: black; */
+            font-weight: bold;
+            width: 595px;
+            text-align: right;
+        }
+
+        .loc {
+            position: absolute;
+            top: 388px;
+            right: 327px;
+            font-size: 10px;
+            /* color: black; */
+            font-weight: bold;
+            width: 595px;
+            text-align: right;
+            width: 83px;
+        }
+
+        .tarikhpaziresh {
+            position: absolute;
+            top: 405px;
+            right: 415px;
+            font-size: 12px;
+            /* color: black; */
+            font-weight: bold;
+            text-align: right;
+            width: 83px;
+        }
+
+        .tarikhetmampaziresh {
+            position: absolute;
+            top: 405px;
+            right: 476px;
+            font-size: 12px;
+            /* color: black; */
+            font-weight: bold;
+
+            text-align: right;
+            width: 83px;
+        }
+
+        .tarihkeshorodoreh {
+            position: absolute;
+            top: 405px;
+            right: 540px;
+            font-size: 12px;
+            /* color: black; */
+            font-weight: bold;
+            text-align: right;
+            width: 83px;
+        }
+
+        .tarihkepayanedore {
+            position: absolute;
+            top: 405px;
+            right: 603px;
+            font-size: 12px;
+            /* color: black; */
+            font-weight: bold;
+            text-align: right;
+            width: 83px;
+        }
+
+        .tarikh_name {
+            position: absolute;
+            top: 64px;
+            right: 548px;
+            font-size: 14px;
+            /* color: black; */
+            font-weight: bold;
+            text-align: right;
+            width: 83px;
+        }
+
+        .shomare_name {
+            position: absolute;
+            top: 38px;
+            right: 563px;
+            font-size: 14px;
+            /* color: black; */
+            font-weight: bold;
+            text-align: right;
+            width: 83px;
+        }
+
+        .saghfi_eblaghi {
+            position: absolute;
+            top: 568px;
+            right: 65px;
+            font-weight: bold;
+            color: black;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px);
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .salem {
+            position: absolute;
+            top: 568px;
+            right: 83px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+
+        .moaf_az_razm {
+            position: absolute;
+            top: 568px;
+            right: 104px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .groh_be {
+            position: absolute;
+            top: 568px;
+            right: 125px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .tajdiddoreh {
+            position: absolute;
+            top: 568px;
+            right: 146px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .total_kaheshi {
+            position: absolute;
+            top: 572px;
+            right: 612px;
+            font-weight: bold;
+            color: black;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px);
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .Previous_service_record {
+            position: absolute;
+            top: 568px;
+            right: 167px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .Previous_service_record {
+            position: absolute;
+            top: 568px;
+            right: 167px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .Sufficiency_of_mobilization {
+            position: absolute;
+            top: 568px;
+            right: 188px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .comision_shoro_dore {
+            position: absolute;
+            top: 568px;
+            right: 209px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .total_1 {
+            position: absolute;
+            top: 568px;
+            right: 230px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .asalem {
+            position: absolute;
+            top: 568px;
+            right: 251px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .amoaf_az_razm {
+            position: absolute;
+            top: 568px;
+            right: 272px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .agroh_be {
+            position: absolute;
+            top: 568px;
+            right: 293px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .atajdiddoreh {
+            position: absolute;
+            top: 568px;
+            right: 314px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .aPrevious_service_record {
+            position: absolute;
+            top: 568px;
+            right: 336px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .aSufficiency_of_mobilization {
+            position: absolute;
+            top: 568px;
+            right: 357px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .acomision_shoro_dore {
+            position: absolute;
+            top: 568px;
+            right: 378px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .atotal_1 {
+            position: absolute;
+            top: 568px;
+            right: 399px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+
+        .amare_paziresh_shode {
+            position: absolute;
+            top: 568px;
+            right: 421px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .Previous_service_record2 {
+            position: absolute;
+            top: 568px;
+            right: 442px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .Sufficiency_of_mobilization2 {
+            position: absolute;
+            top: 568px;
+            right: 463px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .comision_shoro_dore2 {
+            position: absolute;
+            top: 568px;
+            right: 483px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .total_22 {
+            position: absolute;
+            top: 568px;
+            right: 506px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .aPrevious_service_record2 {
+            position: absolute;
+            top: 568px;
+            right: 526px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .aSufficiency_of_mobilization2 {
+            position: absolute;
+            top: 568px;
+            right: 547px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .acomision_shoro_dore2 {
+            position: absolute;
+            top: 568px;
+            right: 568px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .atotal_22 {
+            position: absolute;
+            top: 568px;
+            right: 589px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .shor_dore {
+            position: absolute;
+            top: 568px;
+            right: 631px;
+            font-weight: bold;
+            color: black;
+            /* متن عمودی از راست به چپ */
+            writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(1px, 2vw, 12px); /* تنظیم پویا اندازه فونت */
+            max-height: 32px;
+            line-height: 32px;
+        }
+
+        .a_bisavad {
+            position: absolute;
+            top: 654px;
+            right: 85px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_nehzad {
+            position: absolute;
+            top: 654px;
+            right: 128px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_ebtedai {
+            position: absolute;
+            top: 654px;
+            right: 171px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_rahinami {
+            position: absolute;
+            top: 654px;
+            right: 214px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_sikel {
+            position: absolute;
+            top: 654px;
+            right: 257px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_dabirestan {
+            position: absolute;
+            top: 654px;
+            right: 293px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_diplom {
+            position: absolute;
+            top: 654px;
+            right: 336px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_fogh_diplom {
+            position: absolute;
+            top: 654px;
+            right: 379px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_lisans {
+            position: absolute;
+            top: 654px;
+            right: 422px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_fogh_lisans {
+            position: absolute;
+            top: 654px;
+            right: 465px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_doctora {
+            position: absolute;
+            top: 654px;
+            right: 508px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_fogh_doctora {
+            position: absolute;
+            top: 654px;
+            right: 551px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .a_total {
+            position: absolute;
+            top: 654px;
+            right: 610px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_bisavad {
+            position: absolute;
+            top: 737px;
+            right: 88px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_nehzad {
+            position: absolute;
+            top: 737px;
+            right: 131px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_ebtedai {
+            position: absolute;
+            top: 737px;
+            right: 174px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_rahinami {
+            position: absolute;
+            top: 737px;
+            right: 217px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_sikel {
+            position: absolute;
+            top: 737px;
+            right: 260px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_dabirestan {
+            position: absolute;
+            top: 737px;
+            right: 303px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_diplom {
+            position: absolute;
+            top: 737px;
+            right: 346px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_fogh_diplom {
+            position: absolute;
+            top: 737px;
+            right: 387px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_lisans {
+            position: absolute;
+            top: 737px;
+            right: 430px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_fogh_lisans {
+            position: absolute;
+            top: 737px;
+            right: 473px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_course_doctora {
+            position: absolute;
+            top: 737px;
+            right: 516px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .in_courese_total {
+            position: absolute;
+            top: 737px;
+            right: 610px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .modire_niro_ensani {
+            position: absolute;
+            top: 870px;
+            right: 293px;
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="{% static 'img/st/gozaresh_shoro_dore.jpg' %}" alt="gozaresh_shoro_dore" class="image">
+
+    <div class="mozoe">موضوع : گزارش شروع دوره {{ en.shomare_dore }} - {{ en.esmedore }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="mantename"><p>
+        اللّهمّ صَلّ علی مُحمّد و آلِ مُحمّد، با تقدیم احترام، بدین وسیله گزارش شروع دوره {{ en.shomare_dore }} رزم
+        مقدماتی، اعزامِ {{ en.mahezam }} سال {{ en.sall }} به شرح جداول زیر، برای اطلاع و هرگونه بهره برداری، حضورتان
+        ارسال می گردد
+    </p>
+    </div>
+
+    <div class=tarihke_name_shoro_doreh>{{ en.tarihke_name_shoro_doreh }}</div>
+    <div class="shomare_name_shoro_doreh">{{ en.shomare_name_shoro_doreh }}</div>
+    <div class="shomre_dore1">{{ en.shomare_dore }}</div>
+    <div class="loc">آموزشگاه رزم مقدماتی المهدی(عج) بابل
+    </div>
+
+    <div class="tarikhpaziresh">{{ en.tarikhpaziresh }}</div>
+    <div class="tarikhetmampaziresh">{{ en.tarikhetmampaziresh }}</div>
+    <div class="tarihkeshorodoreh">{{ en.tarihkeshorodoreh }}</div>
+    <div class="tarihkepayanedore">{{ en.tarihkepayanedore }}</div>
+    <div class="tarikh_name">{{ en.tarikhpaziresh }}</div>
+    <div class="shomare_name">ز<bdi>512/106/6/<span>{{ en.shomare_dore }}0001</span></bdi>
+    </div>
+    <div class="saghfi_eblaghi">{{ en.saghfi_eblaghi }}</div>
+    <div class="salem">{{ salem }}</div>
+    <div class="moaf_az_razm">{{ moaf_az_razm }}</div>
+    <div class="groh_be">0</div>
+    <div class="tajdiddoreh">0</div>
+    <div class="Previous_service_record">{{ Previous_service_record }}</div>
+    <div class="Sufficiency_of_mobilization">{{ Sufficiency_of_mobilization }}</div>
+    <div class="comision_shoro_dore">{{ comision_shoro_dore }}</div>
+    <div class="total_1">{{ total_1 }}</div>
+    <div class="asalem">{{ asalem }}</div>
+    <div class="amoaf_az_razm">{{ amoaf_az_razm }}</div>
+    <div class="agroh_be">0</div>
+    <div class="atajdiddoreh">0</div>
+    <div class="aPrevious_service_record">{{ aPrevious_service_record }}</div>
+    <div class="aSufficiency_of_mobilization">{{ aSufficiency_of_mobilization }}</div>
+    <div class="acomision_shoro_dore">{{ acomision_shoro_dore }}</div>
+    <div class="atotal_1">{{ atotal_1 }}</div>
+    <div class="amare_paziresh_shode">{{ amare_paziresh_shode }}</div>
+    <div class="Previous_service_record2">{{ Previous_service_record }}</div>
+    <div class="Sufficiency_of_mobilization2">{{ Sufficiency_of_mobilization }}</div>
+    <div class="comision_shoro_dore2">{{ comision_shoro_dore }}</div>
+    <div class="total_22">{{ total_2 }}</div>
+    <div class="total_kaheshi">{{ total_kaheshi }}</div>
+    <div class="aPrevious_service_record2">{{ aPrevious_service_record }}</div>
+    <div class="aSufficiency_of_mobilization2">{{ aSufficiency_of_mobilization }}</div>
+    <div class="acomision_shoro_dore2">{{ acomision_shoro_dore }}</div>
+    <div class="atotal_22">{{ atotal_2 }}</div>
+    <div class="shor_dore">{{ shor_dore }}</div>
+    <div class="a_diplom">{{ a_diplom }}</div>
+    <div class="a_fogh_diplom">{{ a_fogh_diplom }}</div>
+    <div class="a_lisans">{{ a_lisans }}</div>
+    <div class="a_fogh_lisans">{{ a_fogh_lisans }}</div>
+    <div class="a_doctora">{{ a_doctora }}</div>
+    <div class="a_fogh_doctora">0</div>
+    <div class="a_bisavad">{{ a_bisavad }}</div>
+    <div class="a_nehzad">{{ a_nehzad }}</div>
+    <div class="a_rahinami">{{ a_rahinami }}</div>
+    <div class="a_sikel">{{ a_sikel }}</div>
+    <div class="a_dabirestan">{{ a_dabirestan }}</div>
+    <div class="a_ebtedai">{{ a_ebtedai }}</div>
+    <div class="a_total">{{ a_total }}</div>
+    <div class="in_course_diplom">{{ in_course_diplom }}</div>
+    <div class="in_course_fogh_diplom">{{ in_course_fogh_diplom }}</div>
+    <div class="in_course_lisans">{{ in_course_lisans }}</div>
+    <div class="in_course_fogh_lisans">{{ in_course_fogh_lisans }}</div>
+    <div class="in_course_doctora">{{ in_course_doctora }}</div>
+    <div class="in_course_bisavad">{{ in_course_bisavad }}</div>
+    <div class="in_course_nehzad">{{ in_course_nehzad }}</div>
+    <div class="in_course_rahinami">{{ in_course_rahinami }}</div>
+    <div class="in_course_sikel">{{ in_course_sikel }}</div>
+    <div class="in_course_dabirestan">{{ in_course_dabirestan }}</div>
+    <div class="in_course_ebtedai">{{ in_course_ebtedai }}</div>
+    <div class="in_courese_total">{{ in_courese_total }}</div>
+    <div class="modire_niro_ensani">{{ en.modire_niroye_ensani }}</div>
+
+</div>
+{#<script>#}
+{#    window.print()#}
+{#    window.onafterprint = function () {#}
+{#        window.close();#}
+{##}
+{#    }#}
+{#</script>#}
+</body>
+</html>

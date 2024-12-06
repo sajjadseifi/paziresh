@@ -1,0 +1,223 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+    <style>
+        .card-header-custom {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .card-custom {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-icon {
+            margin-right: 8px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+
+
+    <div class="container mt-5">
+
+        <!-- کارت مشخصات فردی -->
+        <div class="card card-custom">
+            <div class="card-header card-header-custom text-center">
+                <h4>مشخصات فردی</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="fa fa-user"></i><strong>نام:</strong> {{ soldier.name }}</p>
+                        <p><i class="fa fa-user"></i><strong>نام پدر:</strong> {{ soldier.fathers_name }}</p>
+                        <p><i class="fa fa-map-marker-alt"></i><strong>محل
+                            تولد:</strong> {{ soldier.place_of_birth }}</p>
+                        <p><i class="fa fa-phone"></i><strong>شماره
+                            موبایل:</strong> {{ soldier.phone_number }}</p>
+                        <p><i class="fa fa-praying-hands"></i><strong>مذهب:</strong> {{ soldier.Religion }}
+                        </p>
+                        <p><i class="fa fa-arrows-alt-v"></i><strong>قد:</strong> {{ soldier.height }}
+                            سانتی‌متر</p>
+                        <p><i class="fa fa-phone"></i><strong>شماره بستگان درجه 1
+                            :</strong> {{ soldier.Relative_to_inclusive_number }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><i class="fa fa-user"></i><strong>نام خانوادگی:</strong> {{ soldier.family }}</p>
+                        <p><i class="fa fa-id-card"></i><strong>کد ملی:</strong> {{ soldier.National_Code }}
+                        </p>
+                        <p><i class="fa fa-home"></i><strong>تاریخ تولد:</strong> {{ soldier.Date_of_birth }}</p>
+                        <p><i class="fa fa-home"></i><strong>آدرس:</strong> {{ soldier.Address }}</p>
+                        <p><i class="fa fa-users"></i><strong>وضعیت
+                            تاهل:</strong> {{ soldier.marital_status }}</p>
+                        <p><i class="fa fa-weight"></i><strong>وزن:</strong> {{ soldier.Weight }} کیلوگرم</p>
+                        <p><i class="fa fa-phone"></i><strong>شماره حساب
+                            :</strong> {{ soldier.bank_number }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- کارت اطلاعات تحصیلی و پزشکی -->
+        <div class="card card-custom">
+            <div class="card-header card-header-custom text-center">
+                <h4>اطلاعات تحصیلی و پزشکی</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="fa fa-graduation-cap"></i><strong>مقطع
+                            تحصیلی:</strong> {{ soldier.Grade }}</p>
+                        <p><i class="fa fa-clipboard-check"></i><strong>وضعیت
+                            جسمانی:</strong> {{ soldier.physical_condition }}</p>
+
+                    </div>
+                    <div class="col-md-6">
+                        <p><i class="fa fa-hospital"></i><strong>دفترچه
+                            بیمه:</strong> {{ soldier.health_insurance_card }}</p>
+                        <p><i class="fa fa-notes-medical"></i><strong>نوع
+                            بیماری:</strong> {{ soldier.Type_of_disease }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- کارت اطلاعات خدمت سربازی -->
+        <div class="card card-custom">
+            <div class="card-header card-header-custom text-center">
+                <h4>اطلاعات خدمت سربازی</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="fa fa-calendar-day"></i><strong>تاریخ
+                            اعزام:</strong> {{ soldier.Date_of_dispatch }}</p>
+                        <p><i class="fa fa-building"></i><strong>وضعیت
+                            امریه:</strong> {% if soldier.Amriye %}
+                            بله
+                        {% else %}
+                            خیر
+                        {% endif %} </p>
+                        <p><i class="fa fa-building"></i><strong>سازمان
+                            امریه:</strong> {{ soldier.Amriye_organization }}</p>
+                        <p><i class="fa fa-user-clock"></i><strong>تجدید
+                            دوره:</strong> {{ soldier.Renewal_of_the_previous_period }}</p>
+                        <p><i class="fa fa-calendar-day"></i><strong>
+                            گردان اولیه:</strong> {{ soldier.Gordan.name }}</p>
+                        <p><i class="fa fa-calendar-day"></i><strong>
+                            گروهان اولیه:</strong> {{ soldier.battalion_group.name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><i class="fa fa-user-md"></i><strong>کمیسیون پزشکی:</strong>
+                            {% if soldier.the_medical_commission %} بله {% else %} خیر {% endif %}</p>
+                        <p><i class="fa fa-weight"></i><strong>وضعیت کفایت بسیج:</strong>
+                            {% if soldier.Sufficiency_of_mobilization %}
+                                بله
+                            {% else %}
+                                خیر
+                            {% endif %} </p>
+                        <p><i class="fa fa-handshake"></i><strong>جذب موفق:</strong>
+                            {% if soldier.Successful_recruitment %} بله {% else %} خیر {% endif %}</p>
+                        <p><i class="fa fa-calendar-day"></i><strong>
+                            گردان نهایی:</strong> {{ soldier.t_Gordan.name }}</p>
+                        <p><i class="fa fa-calendar-day"></i><strong>
+                            گروهان نهایی:</strong> {{ soldier.t_battalion_group.name }}</p>
+                        <p><i class="fa fa-calendar-day"></i><strong>
+                            کد سازمانی نهایی:</strong> {{ soldier.code_gorhan_nahai }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- کارت ویژگی‌های اضافی -->
+        <div class="card card-custom">
+            <div class="card-header card-header-custom text-center">
+                <h4>ویژگی‌های اضافی</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="fa fa-code"></i><strong>تاریخ
+                            پذیرش:</strong> {{ soldier.tarikh_paziresh.date.year }}/{{ soldier.tarikh_paziresh.date.month }}/{{ soldier.tarikh_paziresh.date.day }}
+                        </p>
+                        <p><i class="fa fa-code"></i><strong>زمان
+                            پذیرش:</strong> {{ soldier.tarikh_paziresh.time }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><i class="fa fa-user-check"></i><strong>پذیرش شده:</strong>
+                            {% if soldier.has_been_accepted %} بله {% else %} خیر {% endif %}</p>
+                        <p><i class="fa fa-code"></i><strong>کد پذیرش:</strong> {{ soldier.acceptance_code }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card card-custom">
+            <div class="card-header card-header-custom text-center">
+                <h4>یگان بکارگیرنده</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="fa fa-arrows-alt-v"></i><strong>یگان خدمتی:</strong> {{ soldier.unit_name }}
+                        </p>
+                        <p><i class="fa fa-weight"></i><strong>نوع یگان خدمتی:</strong> {{ soldier.unit_type }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><i class="fa fa-handshake"></i><strong>آدرس یگان:</strong>{{ soldier.unit_address }}</p>
+                        <p><i class="fa fa-handshake"></i><strong>استان:</strong>{{ soldier.unit_province }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if normalLetter %}
+            <!-- کارت لیست نامه‌ها -->
+            <div class="card card-custom">
+                <div class="card-header card-header-custom text-center">
+                    <h4>نام های عادی</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>شماره نامه</th>
+                            <th>موضوع نامه</th>
+                            <th>تاریخ</th>
+                            <th>مقصد نامه</th>
+                            <th>توضیحات</th>
+                            <th>وضعیت</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for letter in normalLetter %}
+                            <tr>
+                                <td>{{ letter.number }}</td>
+                                <td>{{ letter.subject }}</td>
+                                <td>{{ letter.create_time.date }}</td>
+                                <td>{{ letter.destination }}</td>
+                                <td>{{ letter.description }}</td>
+                                <td>{{ letter.status }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block footer %}
+
+{% endblock %}

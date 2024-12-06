@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گواهی عضویت {{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        @page {
+            size: A5 portrait; /* تنظیم اندازه کاغذ به A5 و جهت گیری عمودی */
+        }
+
+        html, body {
+            width: 148mm;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: B Nazanin;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 100%; /* عرض عکس */
+            height: auto; /* ارتفاع خودکار */
+        }
+
+        .shoare_sall {
+            position: absolute;
+            top: 141px;
+            right: 116px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_des {
+            position: absolute;
+            top: 320px;
+            right: 34px;
+            font-size: 15px;
+            color: black;
+            font-weight: bold;
+            width: 449px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+
+        .destination {
+            position: absolute;
+            top: 167px;
+            right: 32px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .az {
+            position: absolute;
+            top: 189px;
+            right: 32px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_number {
+            position: absolute;
+            top: 44px;
+            right: 324px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_date {
+            position: absolute;
+            top: 69px;
+            right: 322px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .farmande_padegan {
+            position: absolute;
+            top: 577px;
+            right: 196px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .form_tasvie {
+            position: absolute;
+            top: 655px;
+            right: 37px;
+            font-size: 10px;
+            color: black;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .paziresh {
+            position: absolute;
+            top: 697px;
+            right: 41px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            width: 335px;
+            text-align: right;
+        }
+
+        .sater {
+            position: absolute;
+            top: 674px;
+            right: 38px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            width: 335px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="{% static 'img/letters/faraja_page-0001.jpg' %}" alt="farar" class="image">
+    <div class="letter_number">شماره نامه : 512/106/6/{{ leter.number }}ز</div>
+    <div class="letter_date">تاریخ نامه
+        : {{ leter.create_time.date.day }}-{{ leter.create_time.date.month }}-{{ leter.create_time.date.year }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="letter_des">
+        باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، بازگشت به نامه شماره {{ fara_detail.faraja_leter_number }} تاریخ
+        {{ fara_detail.faraja_leter_date }} از آن سازمان بدینوسیله ،
+        فراگیر {{ leter.soldire.name }} {{ leter.soldire.family }} فرزند {{ leter.soldire.fathers_name }} ، با شماره ملی
+        {{ leter.soldire.National_Code }} و تاریخ اعزام {{ leter.soldire.Date_of_dispatch }} ؛ در
+        تاریخ {{ checkout.create_time.date.year }}/{{ checkout.create_time.date.month }}/{{ checkout.create_time.day }}
+        به علت
+        {{ fara_detail.elat }} از این آموزشگاه تسویه حساب نموده و برای اقدامات بعدی حضورتان معرفی می گردد .
+    </div>
+    <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
+</div>
+<div class="container">
+    <img src="{% static 'img/letters/faraja_page-0001.jpg' %}" alt="farar" class="image">
+    <div class="letter_number">شماره نامه : 512/106/6/{{ leter.number }}ز</div>
+    <div class="letter_date">تاریخ نامه
+        : {{ leter.create_time.date.day }}-{{ leter.create_time.date.month }}-{{ leter.create_time.date.year }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="letter_des">
+        باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، بازگشت به نامه شماره {{ fara_detail.faraja_leter_number }} تاریخ
+        {{ fara_detail.faraja_leter_date }} از آن سازمان بدینوسیله ،
+        فراگیر {{ leter.soldire.name }} {{ leter.soldire.family }} فرزند {{ leter.soldire.fathers_name }} ، با شماره ملی
+        {{ leter.soldire.National_Code }} و تاریخ اعزام {{ leter.soldire.Date_of_dispatch }} ؛ در
+        تاریخ {{ checkout.create_time.date.year }}/{{ checkout.create_time.date.month }}/{{ checkout.create_time.day }}
+        به علت
+        {{ fara_detail.elat }} از این آموزشگاه تسویه حساب نموده و برای اقدامات بعدی حضورتان معرفی می گردد .
+    </div>
+    <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
+    <div class="form_tasvie">نامبرده طی فرم به شماره {{ checkout.number }} ، از مراجع ذیربط تسویه حساب نموده است
+    </div>
+    {% if suter is not None %}
+        <div class="sater">نامبرده ساتر تحویل گرفته است</div>
+    {% else %}
+        <div class="sater">نامبرده ساتر تحویل نگرفته است</div>
+    {% endif %}
+    <div class="paziresh"> عدد پذیرش : {{ leter.soldire.acceptance_code }}
+    </div>
+</div>
+{#<script>#}
+{#    window.print()#}
+{#    window.onafterprint = function () {#}
+{#        window.close();#}
+{##}
+{#    }#}
+{#</script>#}
+</body>
+</html>

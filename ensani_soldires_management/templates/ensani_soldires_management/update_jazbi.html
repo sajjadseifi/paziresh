@@ -1,0 +1,36 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">ارسال لیست جذبی ها</h3>
+        </div>
+        <form action="" method="post"  enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="box-body">
+                            <div class="input-group input-group-sm">
+                                {{ form.file }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form.type.label }}
+                            {{ form.type }}
+                            <span style='color: red'>{{ form.type.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success pull-right">ثبت
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

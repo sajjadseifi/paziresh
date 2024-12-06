@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرفی به گردان</title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+
+
+        html, body {
+            width: 80mm;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: B Nazanin;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
+
+        .image {
+            display: block;
+            width: 80mm; /* عرض عکس */
+            height: 100%; /* ارتفاع خودکار */
+        }
+
+        .namedoreh {
+            position: absolute;
+            top: 15px;
+            right: 29%;
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .Gordan {
+            position: absolute;
+            top: 99px;
+            right: 114px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .code_gorhan {
+            position: absolute;
+            top: 172px;
+            right: 122px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .battalion_group {
+            position: absolute;
+            top: 137px;
+            right: 119px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .addpaziresh {
+            position: absolute;
+            top: 56px;
+            right: 29%;
+            font-size: 20px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+        .name {
+            position: absolute;
+            top: 247px;
+            right: 112px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .family {
+            position: absolute;
+            top: 286px;
+            right: 110px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .fathers_name {
+            position: absolute;
+            top: 323px;
+            right: 110px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .place_of_birth {
+            position: absolute;
+            top: 144px; /* موقعیت افقی */
+            right: 391px; /* موقعیت عمودی */
+            font-size: 12px; /* اندازه متن */
+            color: black;
+            font-weight: bold;
+        }
+
+        .Date_of_birth {
+            position: absolute;
+            top: 144px; /* موقعیت افقی */
+            right: 482px; /* موقعیت عمودی */
+            font-size: 10px; /* اندازه متن */
+            color: black;
+            font-weight: bold;
+        }
+
+        .National_Code {
+            position: absolute;
+            top: 211px;
+            right: 154px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+        .educational_level_of_the_system {
+            position: absolute;
+            top: 365px;
+            right: 112px;
+            font-size: 14px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .Date_of_dispatch {
+            position: absolute;
+            top: 186px; /* موقعیت افقی */
+            right: 395px; /* موقعیت عمودی */
+            font-size: 9px; /* اندازه متن */
+            color: black;
+            font-weight: bold;
+        }
+
+
+        .Religion {
+            position: absolute;
+            top: 397px;
+            right: 117px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .physical_condition {
+            position: absolute;
+            top: 437px;
+            right: 117px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .Amriye {
+            position: absolute;
+            top: 481px;
+            right: 165px;
+            font-size: 21px;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+{% for sarbaz in sarbazha %}
+    <div class="container" style="page-break-after: always;">
+        <img src="{% static 'img/sw12.png' %}" alt="moarefi be gordan" class="image">
+        <div class="Gordan">{{ sarbaz.Gordan }}</div>
+        <div class="battalion_group">{{ sarbaz.battalion_group.name }}</div>
+        <div class="code_gorhan">{{ sarbaz.code_gorhan }}</div>
+        <div class="name">{{ sarbaz.name }}</div>
+        <div class="namedoreh">{{ en.shomare_dore }}-{{ en.esmedore }}</div>
+        <div class="addpaziresh">عدد پذیرش -{{ sarbaz.acceptance_code }}</div>
+        <div class="family">{{ sarbaz.family }}</div>
+        <div class="fathers_name">{{ sarbaz.fathers_name }}</div>
+        <div class="place_of_birth">{{ sarbaz.place_of_birth }}</div>
+        <div class="Date_of_birth">{{ sarbaz.Date_of_birth }}</div>
+        <div class="National_Code">{{ sarbaz.National_Code }}</div>
+        <div class="educational_level_of_the_system">{{ sarbaz.educational_level_of_the_system }}</div>
+        <div class="Date_of_dispatch">{{ sarbaz.Date_of_dispatch }}</div>
+        <div class="Religion">{{ sarbaz.Religion }}</div>
+        <div class="physical_condition">{{ sarbaz.physical_condition }}</div>
+        {% if sarbaz.Amriye == True %}
+            <div class="Amriye">بله</div>
+        {% endif %}
+
+    </div>
+{% endfor %}
+</body>
+</html>

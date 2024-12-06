@@ -1,0 +1,253 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="box">
+        <div class="container mt-5">
+            <h2 class="text-center">جستجوی پیشرفته سرباز</h2>
+
+            <form method="GET" action="{% url 'soldier_search' %}">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="acceptance_code">عدد پذیرش</label>
+                        <input type="text" class="form-control" id="acceptance_code" name="acceptance_code"
+                               placeholder="عدد پذیرش">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="name">نام</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="نام سرباز">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="family">نام خانوادگی</label>
+                            <input type="text" class="form-control" id="family" name="family"
+                                   placeholder="نام خانوادگی">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="national_code">کد ملی</label>
+                            <input type="text" class="form-control" id="national_code" name="national_code"
+                                   placeholder="کد ملی">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="physical_condition">وضعیت جسمانی</label>
+                            <select class="form-control" id="physical_condition" name="physical_condition">
+                                <option value="">همه</option>
+                                <option value="سالم">سالم</option>
+                                <option value="معاف از رزم">معاف از رزم</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="marital_status">وضعیت تاهل</label>
+                            <select class="form-control" id="marital_status" name="marital_status">
+                                <option value="">همه</option>
+                                <option value="مجرد">مجرد</option>
+                                <option value="متاهل">متاهل</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="religion">مذهب</label>
+                            <select class="form-control" id="religion" name="religion">
+                                <option value="">همه</option>
+                                <option value="شیعه">شیعه</option>
+                                <option value="اهل تسنن">اهل تسنن</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Grade">مدرک تحصیلی</label>
+                            <select class="form-control" id="Grade" name="Grade">
+                                <option value="">همه</option>
+                                <option value="زیر دیپلم">زیر دیپلم</option>
+                                <option value="دیپلم">دیپلم</option>
+                                <option value="فوق دیپلم">فوق دیپلم</option>
+                                <option value="لیسانس">لیسانس</option>
+                                <option value="فوق لیسانس">فوق لیسانس</option>
+                                <option value="دکتری">دکتری</option>
+                                <option value="نامشخص">نامشخص</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Grade_precise">مدرک تحصیلی دقیق</label>
+                            <select class="form-control" id="Grade_precise" name="Grade_precise">
+                                <option value="">همه</option>
+                                <option value="بی‌سواد">بی‌سواد</option>
+                                <option value="نهضت سواد آموزی">نهضت سواد آموزی</option>
+                                <option value="ابتدایی">ابتدایی</option>
+                                <option value="راهنمایی">راهنمایی</option>
+                                <option value="دبیرستان">دبیرستان</option>
+                                <option value="دبیرستان">دبیرستان</option>
+                                <option value="زیر دیپلم">زیر دیپلم</option>
+                                <option value="دیپلم">دیپلم</option>
+                                <option value="فوق دیپلم">فوق دیپلم</option>
+                                <option value="لیسانس">لیسانس</option>
+                                <option value="فوق لیسانس">فوق لیسانس</option>
+                                <option value="دکتری">دکتری</option>
+                                <option value="نامشخص">نامشخص</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Gordan">گردان</label>
+                            <select class="form-control" id="Gordan" name="Gordan">
+                                <option value="">همه</option>
+                                {% for g in gordan %}
+                                    <option value="{{ g.name }}">{{ g.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="battaliongroup">گروهان</label>
+                            <select class="form-control" id="battaliongroup" name="battaliongroup">
+                                <option value="">همه</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="amire">وضعیت امریه</label>
+                            <select class="form-control" id="amire" name="amire">
+                                <option value="">همه</option>
+                                <option value="True">بله</option>
+                                <option value="False">خیر</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">جستجو</button>
+                </div>
+            </form>
+
+            <hr>
+        </div>
+
+        <!-- نمایش نتایج جستجو -->
+        {% if results %}
+            <h3 class="text-center">نتایج جستجو</h3>
+            {% if op_result %}
+                <h3 class="text-center">تعداد <span style="color:red;"> {{ results.count }}</span> مورد یافت شد!</h3>
+            {% endif %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
+                    <th>کد ملی</th>
+                    <th>وضعیت جسمانی</th>
+                    <th>وضعیت تاهل</th>
+                    <th>مذهب</th>
+                    <th>محل</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for soldier in results %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ soldier.name }}</td>
+                        <td>{{ soldier.family }}</td>
+                        <td>{{ soldier.National_Code }}</td>
+                        <td>{{ soldier.physical_condition }}</td>
+                        <td>{{ soldier.marital_status }}</td>
+                        <td>{{ soldier.Religion }}</td>
+                        <td>{{ soldier.t_Gordan }}-{{ soldier.t_battalion_group.name }}-{{ soldier.code_gorhan_nahai }}</td>
+
+
+                        {% if soldier.has_been_accepted and soldier.willing_to_learn %}
+                            <td>درحال آموزش</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
+                            <td>کفایت بسیج</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
+                            <td>تجدید دوره کمیسیون</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
+                            <td>کمیسیون پزشکی شروع دوره</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
+                            <td>تجدید دوره</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted is False %}
+                            <td style="background-color: #ff9000">پذیرش نشده</td>
+                        {% endif %}
+                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i
+                                class="fa fa-eye"></i></a></td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h5 class="text-center">نتیجه‌ای یافت نشد.</h5>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block footer %}
+    <script>
+        document.getElementById('Gordan').addEventListener('change', function () {
+            const gordanName = this.value; // گرفتن مقدار انتخاب‌شده
+            const battalionGroup = document.getElementById('battaliongroup');
+
+            // پاک کردن گزینه‌های فعلی
+            battalionGroup.innerHTML = '<option value="">همه</option>';
+
+            if (gordanName) {
+                // ارسال درخواست Ajax
+                fetch(`{% url 'get_grohan_by_gordan_for_search' %}?gordan_name=${gordanName}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // اضافه کردن گزینه‌ها به سلکت‌باکس دوم
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.name;
+                            option.textContent = item.name;
+                            battalionGroup.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
+{% endblock %}
