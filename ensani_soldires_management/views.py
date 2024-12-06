@@ -470,7 +470,7 @@ def export_to_excel_list_sarbvaz_test_salamat_ravan(request):
         'acceptance_code', 'name', 'family',
         'National_Code', 't_Gordan__name', 't_battalion_group__name',
         'code_gorhan_nahai').order_by(
-        'acceptance_code')
+        't_Gordan__name', 't_battalion_group__name')
 
     df = pd.DataFrame(list(queryset))
 
@@ -1099,7 +1099,8 @@ def import_and_export_excel_maharat(request):
     for code in national_codes:
         soldier = Soldier.objects.filter(
             National_Code__icontains=code  # جستجوی تقریبی بر اساس کد ملی
-        ).values('National_Code', 'Date_of_birth', 'Address', 'home_phone_number', 'phone_number', 'Grade').first()
+        ).values('National_Code', 'Date_of_birth', 'Address', 'home_phone_number', 'phone_number', 'Grade', 'Address',
+                 'name', 'family', 'fathers_name').first()
 
         # افزودن به لیست نتایج در صورت یافتن
         if soldier:
