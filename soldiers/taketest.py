@@ -1,28 +1,50 @@
-# Workbook را باز کنید
-import xlrd
+def get_military_rank(education, score):
+    # تعریف جدول درجات و محدوده نمرات
+    rank_table = {
+        "دکتری": {
+            "ستوان یکم": (0, 20),
+        },
+        "فوق لیسانس": {
+            "ستوان یکم": (10, 20),
+            "ستوان دوم": (6, 9.9),
+            "ستوان سوم": (0, 5.9),
+        },
+        "لیسانس": {
+            "ستوان دوم": (10, 20),
+            "ستوان سوم": (7, 9.9),
+            "رزمدار یکم": (6, 6.9),
+            "رزمدار دوم": (4, 5.9),
+            "رزم‌آور یکم": (2, 3.9),
+            "رزم‌آور دوم": (0, 1.9),
+        },
+        "فوق دیپلم": {
+            "رزم‌آور یکم": (5, 20),
+            "رزم‌آور دوم": (2, 4.9),
+            "رزم‌آور سوم": (0, 1.9),
+        },
+        "دیپلم": {
+            "رزمیار": (5, 20),
+            "سرباز یکم": (2, 4.9),
+            "سرباز دوم": (0, 1.9),
+        },
+        "زیر دیپلم": {
+            "سرباز دوم": (2, 20),
+            "سرباز": (0, 1.9),
+        },
+    }
 
-exel = 'lst_of_yegan.xlsx'
-workbook = xlrd.open_workbook(exel)
+    # بررسی وجود مدرک تحصیلی در جدول
+    if education not in rank_table:
+        return "مدرک تحصیلی نامعتبر است."
 
-# شیت مورد نظر خود را انتخاب کنید (مثلاً شیت اول)
-sheet = workbook.sheet_by_index(0)
+    # جستجو در جدول برای پیدا کردن درجه مناسب
+    for rank, (min_score, max_score) in rank_table[education].items():
+        if min_score <= score <= max_score:
+            return rank
 
-# تعداد ردیف‌ها و ستون‌های شیت را بدست آورید
-num_rows = sheet.nrows
-num_cols = sheet.ncols
-# برای هر سطر
-for row_idx in range(1, num_rows):
-    one_soldire_list = []
-    for col_idx in range(num_cols):
-        # مقدار سلول را بخوانید
-        cell_value = sheet.cell_value(row_idx, col_idx)
-        # مقدار دهی به لیست
-        if str(cell_value).find('ي'):
-            cell_value = str(cell_value).replace('ي', 'ی')
-        if str(cell_value).find('ك'):
-            cell_value = str(cell_value).replace('ك', 'ک')
-        if str(cell_value).find('ك'):
-            cell_value = str(cell_value).replace('ؤ', 'و')
-        one_soldire_list.append(cell_value)
+    return "نمره در محدوده تعریف‌شده نیست."
 
-    print(one_soldire_list)
+# مثال استفاده
+print(get_military_rank("فوق لیسانس", 10))  # خروجی: ستوان دوم
+print(get_military_rank("دیپلم", 3))        # خروجی: سرباز یکم
+print(get_military_rank("دکتری", 21))      # خروجی: نمره در محدوده تعریف‌شده نیست.

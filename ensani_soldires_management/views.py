@@ -1211,3 +1211,198 @@ def export_to_excel_list_not_accepted(request):
     # تنظیم sheet به حالت راست به چپ
     worksheet.sheet_view.rightToLeft = True
     return response
+
+
+def get_military_rank(education, score):
+    # تعریف جدول درجات و محدوده نمرات
+    rank_table = {
+        "دکتری": {
+            "ستوان یکم": (0, 20),
+        },
+        "فوق لیسانس": {
+            "ستوان یکم": (10, 20),
+            "ستوان دوم": (6, 9.9),
+            "ستوان سوم": (0, 5.9),
+        },
+        "لیسانس": {
+            "ستوان دوم": (10, 20),
+            "ستوان سوم": (7, 9.9),
+            "رزمدار یکم": (6, 6.9),
+            "رزمدار دوم": (4, 5.9),
+            "رزم‌آور یکم": (2, 3.9),
+            "رزم‌آور دوم": (0, 1.9),
+        },
+        "فوق دیپلم": {
+            "رزم‌آور یکم": (5, 20),
+            "رزم‌آور دوم": (2, 4.9),
+            "رزم‌آور سوم": (0, 1.9),
+        },
+        "دیپلم": {
+            "رزمیار": (5, 20),
+            "سرباز یکم": (2, 4.9),
+            "سرباز دوم": (0, 1.9),
+        },
+        "زیر دیپلم": {
+            "سرباز دوم": (2, 20),
+            "سرباز": (0, 1.9),
+        },
+    }
+
+    # بررسی وجود مدرک تحصیلی در جدول
+    if education not in rank_table:
+        return "مدرک تحصیلی نامعتبر است."
+
+    # جستجو در جدول برای پیدا کردن درجه مناسب
+    for rank, (min_score, max_score) in rank_table[education].items():
+        if min_score <= score <= max_score:
+            return rank
+
+    return "نمره در محدوده تعریف‌شده نیست."
+
+
+def calculate_score():
+    total = 0
+    mapping_discipline_score = {
+        13: 0.5,
+        14: 0.5,
+        15: 1,
+        16: 1,
+        17: 1.5,
+        18: 1.5,
+        19: 2,
+        20: 2
+    }
+    mapping_battalion_activity = {
+        16: 0.5,
+        17: 1,
+        18: 1.5,
+        19: 2,
+        20: 2.5,
+    }
+    mapping_battalion_sample = {
+        True: 2
+    }
+    max_gordan = 4.5  # گردان
+    get_gordan = 0  # امتیاز دریافتی
+    discipline_score = 0  # انضباط (2 نمره)
+    battalion_activity = 0  # فعالیت در گردان (2.5 نمره)
+    battalion_sample = 0  # نمونه گردان (2 نمره مازاد)
+    mapping_discipline_score.get(20, 0)
+    mapping_battalion_activity.get(20, 0)
+    mapping_battalion_sample.get(True, 0)
+
+    # بسیج(4 نمره)
+    mapping_basij_efficiency = {
+        '30 روزه': 0.5,
+        '45 روزه': 1,
+    }
+    basij_experience = 0 * 0.0142857  # 0.0142857 سابقه بسیج فعال به ماه (2 نمره)
+    council_experience = 0 * 0.01  # سابقه عضو شورای پایگاه به ماه (1 نمره)0.01
+    basij_efficiency = 0  # کفایت بسیج (1 نمره)
+    mapping_basij_efficiency.get('30 روزه', 0)
+
+    # حوزه(1 نمره)
+    mapping_ideological_score = {
+        18: 0.4,
+        19: 0.7,
+        20: 1
+    }
+    ideological_score = 0  # نمره عقیدتی (1 نمره)
+    mapping_ideological_score.get(20, 0)
+
+    # آموزش(4 نمره)
+    shooting_score = 0  # نمره میدان تیر (2 نمره)
+    top_three = 0  # سه نفر برتر (2 نمره)
+    mapping_top_three = {
+        'نفر اول': 2,
+        'نفر دوم': 1.5,
+        'نفر سوم': 1,
+    }
+    mapping_shooting_score = {}
+    for i in range(80, 85):
+        mapping_shooting_score[i] = 0.4
+
+    for i in range(84, 90):
+        mapping_shooting_score[i] = 0.7
+
+    for i in range(90, 96):
+        mapping_shooting_score[i] = 1.5
+
+    for i in range(95, 101):
+        mapping_shooting_score = 2
+
+    mapping_shooting_score.get(20, 0)
+    mapping_top_three.get('نفر اول', 0)
+
+    # اطلاعات مربوط به فراگیر(6.5 نمره)
+    mapping_nahj_memorization = {
+        True: 1
+    }
+    mapping_sajjadiya_memorization = {
+        True: 1
+    }
+    mapping_global_awards = {
+        1: 0.3,
+        2: 0.4,
+    }
+    mapping_national_awards = {
+        1: 0.2,
+        2: 0.3,
+    }
+    mapping_provincial_awards = {
+        1: 0.1,
+        2: 0.2,
+    }
+    mapping_global_articles = {
+        1: 0.2,
+        2: 0.3,
+    }
+    mapping_publications = {
+        1: 0.2,
+        2: 0.3,
+    }
+
+    quran_memorization = 0 * 0.1  # حافظ قرآن (جزء) (3 نمره)
+    nahj_memorization = 0  # حافظ نهج البلاغه (1 نمره)
+    sajjadiya_memorization = 0  # حافظ صحیفه سجادیه (1 نمره)
+    global_awards = 0  # تعداد مقام جهانی
+    national_awards = 0  # تعداد مقام کشوری
+    provincial_awards = 0  # تعداد مقام استانی
+    global_articles = 0  # تعداد مقالات جهانی
+    publications = 0  # تعداد تالیفات
+    mapping_nahj_memorization.get(True, 0)
+    mapping_sajjadiya_memorization.get(True, 0)
+    if global_awards > 0 and global_awards < 3:
+        mapping_global_awards.get(global_awards)
+    elif global_awards < 0:
+        global_awards = 0
+    elif global_awards > 3:
+        global_awards = 0.4
+
+    if national_awards > 0 and national_awards < 3:
+        mapping_national_awards.get(national_awards)
+    elif national_awards < 0:
+        national_awards = 0
+    elif national_awards > 3:
+        national_awards = 0.3
+
+    if provincial_awards > 0 and provincial_awards < 3:
+        mapping_provincial_awards.get(provincial_awards)
+    elif provincial_awards < 0:
+        provincial_awards = 0
+    elif provincial_awards > 3:
+        provincial_awards = 0.2
+
+    if global_articles > 0 and global_articles < 3:
+        mapping_global_articles.get(global_articles)
+    elif global_articles < 0:
+        global_articles = 0
+    elif global_articles > 3:
+        global_articles = 0.3
+
+    if publications > 0 and publications < 3:
+        mapping_publications.get(publications)
+    elif publications < 0:
+        publications = 0
+    elif publications > 3:
+        publications = 0.3

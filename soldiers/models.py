@@ -83,5 +83,31 @@ class Soldier(models.Model):
     IsUnit = models.BooleanField(default=False, verbose_name='وضعیت یگان')
     bank_number = models.CharField(max_length=250, verbose_name='شماره حساب', null=True, blank=True)
 
+    # فیلدهای مرتبط با امتیازات مختلف
+    discipline_score = models.FloatField(default=0, verbose_name='انضباط')  # انضباط (2 نمره)
+    basij_experience = models.FloatField(default=0,
+                                         verbose_name='سابقه بسیج فعال به ماه')  # سابقه بسیج فعال به ماه (2 نمره)
+    council_experience = models.FloatField(default=0,
+                                           verbose_name='سابقه عضو شورای پایگاه به ماه')  # سابقه عضو شورای پایگاه به ماه (1 نمره)
+    ideological_score = models.FloatField(default=0, verbose_name='نمره عقیدتی')  # نمره عقیدتی (1 نمره)
+    shooting_score = models.FloatField(default=0, verbose_name='نمره میدان تیر')  # نمره میدان تیر (2 نمره)
+    global_awards = models.IntegerField(default=0, verbose_name='تعداد مقام جهانی')  # تعداد مقام جهانی
+    national_awards = models.IntegerField(default=0, verbose_name='تعداد مقام کشوری')  # تعداد مقام کشوری
+    provincial_awards = models.IntegerField(default=0, verbose_name='تعداد مقام استانی')  # تعداد مقام استانی
+    global_articles = models.IntegerField(default=0, verbose_name='تعداد مقالات جهانی')  # تعداد مقالات جهانی
+    publications = models.IntegerField(default=0, verbose_name='تعداد تالیفات')  # تعداد تالیفات
+    repeat_status = models.BooleanField(default=False, verbose_name='تکراری')  # تکراری
+    battalion_activity = models.FloatField(default=0, verbose_name='فعالیت در گردان')  # فعالیت در گردان (2.5 نمره)
+    battalion_sample = models.BooleanField(default=False, verbose_name='نمونه گردان')  # نمونه گردان (2 نمره مازاد)
+    basij_efficiency = models.FloatField(default=0, verbose_name='کفایت بسیج')  # کفایت بسیج (1 نمره)
+    top_three = models.CharField(max_length=100, blank=True, null=True,
+                                 verbose_name='سه نفر برتر')  # سه نفر برتر (2 نمره)
+    quran_memorization = models.IntegerField(default=0, verbose_name='حافظ قرآن')  # حافظ قرآن (جزء) (3 نمره)
+    nahj_memorization = models.BooleanField(default=False, verbose_name='حافظ نهج البلاغه')  # حافظ نهج البلاغه (1 نمره)
+    sajjadiya_memorization = models.BooleanField(default=False,
+                                                 verbose_name='حافظ صحیفه سجادیه')  # حافظ صحیفه سجادیه (1 نمره)
+    total_score = models.FloatField(default=0, verbose_name='امتیاز کل')  # امتیاز کل
+    rank = models.CharField(max_length=100, blank=True, null=True, verbose_name='درجه محاسبه‌شده')  # درجه محاسبه‌شده
+
     def __str__(self):
-        return self.name + " " + self.family
+        return f"{self.name} - {self.family} - {self.National_Code}"
