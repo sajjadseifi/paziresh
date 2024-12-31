@@ -3,6 +3,7 @@ from django.views import View
 
 from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYegankhedmati, \
     FormUpdateAllSoldiresHasbenAceptedInCourse, FormUpdateAllSoldires
+from soldiers.forms import FormUpdateRank
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels
 import pandas as pd
@@ -1261,7 +1262,7 @@ def get_military_rank(education, score):
 
 
 def calculate_score():
-    total = 0
+    soldire = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
     mapping_discipline_score = {
         13: 0.5,
         14: 0.5,
@@ -1282,24 +1283,12 @@ def calculate_score():
     mapping_battalion_sample = {
         True: 2
     }
-    max_gordan = 4.5  # گردان
-    get_gordan = 0  # امتیاز دریافتی
-    discipline_score = 0  # انضباط (2 نمره)
-    battalion_activity = 0  # فعالیت در گردان (2.5 نمره)
-    battalion_sample = 0  # نمونه گردان (2 نمره مازاد)
-    mapping_discipline_score.get(20, 0)
-    mapping_battalion_activity.get(20, 0)
-    mapping_battalion_sample.get(True, 0)
 
     # بسیج(4 نمره)
     mapping_basij_efficiency = {
         '30 روزه': 0.5,
         '45 روزه': 1,
     }
-    basij_experience = 0 * 0.0142857  # 0.0142857 سابقه بسیج فعال به ماه (2 نمره)
-    council_experience = 0 * 0.01  # سابقه عضو شورای پایگاه به ماه (1 نمره)0.01
-    basij_efficiency = 0  # کفایت بسیج (1 نمره)
-    mapping_basij_efficiency.get('30 روزه', 0)
 
     # حوزه(1 نمره)
     mapping_ideological_score = {
@@ -1307,12 +1296,6 @@ def calculate_score():
         19: 0.7,
         20: 1
     }
-    ideological_score = 0  # نمره عقیدتی (1 نمره)
-    mapping_ideological_score.get(20, 0)
-
-    # آموزش(4 نمره)
-    shooting_score = 0  # نمره میدان تیر (2 نمره)
-    top_three = 0  # سه نفر برتر (2 نمره)
     mapping_top_three = {
         'نفر اول': 2,
         'نفر دوم': 1.5,
@@ -1329,11 +1312,7 @@ def calculate_score():
         mapping_shooting_score[i] = 1.5
 
     for i in range(95, 101):
-        mapping_shooting_score = 2
-
-    mapping_shooting_score.get(20, 0)
-    mapping_top_three.get('نفر اول', 0)
-
+        mapping_shooting_score[i] = 2
     # اطلاعات مربوط به فراگیر(6.5 نمره)
     mapping_nahj_memorization = {
         True: 1
@@ -1362,47 +1341,140 @@ def calculate_score():
         2: 0.3,
     }
 
-    quran_memorization = 0 * 0.1  # حافظ قرآن (جزء) (3 نمره)
-    nahj_memorization = 0  # حافظ نهج البلاغه (1 نمره)
-    sajjadiya_memorization = 0  # حافظ صحیفه سجادیه (1 نمره)
-    global_awards = 0  # تعداد مقام جهانی
-    national_awards = 0  # تعداد مقام کشوری
-    provincial_awards = 0  # تعداد مقام استانی
-    global_articles = 0  # تعداد مقالات جهانی
-    publications = 0  # تعداد تالیفات
-    mapping_nahj_memorization.get(True, 0)
-    mapping_sajjadiya_memorization.get(True, 0)
-    if global_awards > 0 and global_awards < 3:
-        mapping_global_awards.get(global_awards)
-    elif global_awards < 0:
-        global_awards = 0
-    elif global_awards > 3:
-        global_awards = 0.4
+    for s in soldire:
+        total = 0
+        # محاسبه گردان
+        discipline_score = s.discipline_score  # انضباط (2 نمره)
+        battalion_activity = s.battalion_activity  # فعالیت در گردان (2.5 نمره)
+        battalion_sample = s.battalion_sample  # نمونه گردان (2 نمره مازاد)
+        total += mapping_discipline_score.get(int(discipline_score), 0)
+        total += mapping_battalion_activity.get(int(battalion_activity), 0)
+        total += mapping_battalion_sample.get(battalion_sample, 0)
+        # بسیح
+        basij_experience = int(s.basij_experience) * 0.0142857  # 0.0142857 سابقه بسیج فعال به ماه (2 نمره)
+        council_experience = int(s.council_experience) * 0.01  # سابقه عضو شورای پایگاه به ماه (1 نمره)0.01
+        basij_efficiency = s.basij_efficiency
+        total += basij_experience
+        total += council_experience
+        total += mapping_basij_efficiency.get(str(basij_efficiency), 0)
+        # عقیدتی
+        ideological_score = s.ideological_score  # نمره عقیدتی (1 نمره)
+        total += mapping_ideological_score.get(int(ideological_score), 0)
+        # آموزش
+        shooting_score = int(s.shooting_score)  # نمره میدان تیر (2 نمره)
+        top_three = s.top_three  # سه نفر برتر (2 نمره)
+        total += mapping_shooting_score.get(shooting_score, 0)
+        total += mapping_top_three.get(top_three, 0)
+        # اطلاعات مربوط به فراگیر
+        quran_memorization = s.quran_memorization * 0.1  # حافظ قرآن (جزء) (3 نمره)
+        nahj_memorization = s.nahj_memorization  # حافظ نهج البلاغه (1 نمره)
+        sajjadiya_memorization = s.sajjadiya_memorization  # حافظ صحیفه سجادیه (1 نمره)
+        global_awards = s.global_awards  # تعداد مقام جهانی
+        national_awards = s.national_awards  # تعداد مقام کشوری
+        provincial_awards = s.provincial_awards  # تعداد مقام استانی
+        global_articles = s.global_articles  # تعداد مقالات جهانی
+        publications = s.publications  # تعداد تالیفات
+        total += quran_memorization
+        total += mapping_nahj_memorization.get(nahj_memorization, 0)
+        total += mapping_sajjadiya_memorization.get(sajjadiya_memorization, 0)
+        if global_awards > 0 and global_awards < 3:
+            total += mapping_global_awards.get(global_awards, 0)
+        elif global_awards < 0:
+            total += mapping_global_awards.get(0, 0)
+        elif global_awards > 3:
+            total += 0.4
 
-    if national_awards > 0 and national_awards < 3:
-        mapping_national_awards.get(national_awards)
-    elif national_awards < 0:
-        national_awards = 0
-    elif national_awards > 3:
-        national_awards = 0.3
+        if national_awards > 0 and national_awards < 3:
+            total += mapping_national_awards.get(national_awards, 0)
+        elif national_awards < 0:
+            total += mapping_national_awards.get(0, 0)
+        elif national_awards > 3:
+            total += 0.3
 
-    if provincial_awards > 0 and provincial_awards < 3:
-        mapping_provincial_awards.get(provincial_awards)
-    elif provincial_awards < 0:
-        provincial_awards = 0
-    elif provincial_awards > 3:
-        provincial_awards = 0.2
+        if provincial_awards > 0 and provincial_awards < 3:
+            total += mapping_provincial_awards.get(provincial_awards, 0)
+        elif provincial_awards < 0:
+            total += mapping_provincial_awards.get(0, 0)
+        elif provincial_awards > 3:
+            total += 0.2
 
-    if global_articles > 0 and global_articles < 3:
-        mapping_global_articles.get(global_articles)
-    elif global_articles < 0:
-        global_articles = 0
-    elif global_articles > 3:
-        global_articles = 0.3
+        if global_articles > 0 and global_articles < 3:
+            total += mapping_global_articles.get(global_articles, 0)
+        elif global_articles < 0:
+            total += mapping_global_articles.get(0, 0)
+        elif global_articles > 3:
+            total += 0.3
 
-    if publications > 0 and publications < 3:
-        mapping_publications.get(publications)
-    elif publications < 0:
-        publications = 0
-    elif publications > 3:
-        publications = 0.3
+        if publications > 0 and publications < 3:
+            total += mapping_publications.get(publications, 0)
+        elif publications < 0:
+            total += mapping_publications.get(0, 0)
+        elif publications > 3:
+            total += 0.3
+
+        if total > 20:
+            total = 20
+        rank = get_military_rank(s.Grade, total)
+        s.rank = rank
+        s.total_score = total
+        s.save()
+
+
+class import_rank_from_exel(View):
+    def get(self, request):
+        form = FormUpdateRank()
+        cx = {'form': form}
+        return render(request,
+                      'ensani_soldires_management/import_rank_from_exel.html', cx)
+
+    def post(self, request):
+        form = FormUpdateRank(request.POST, request.FILES or None)
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request,
+                          'ensani_soldires_management/import_rank_from_exel.html',
+                          cx)
+
+        else:
+            exel = request.FILES['file']
+
+            workbook = openpyxl.load_workbook(exel)
+
+            # انتخاب شیت اول
+            sheet = workbook.active
+
+            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+            num_rows = sheet.max_row
+            num_cols = sheet.max_column
+
+            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+            for row_idx in range(2, num_rows + 1):
+                one_soldire_list = []
+                for col_idx in range(1, num_cols + 1):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
+                    one_soldire_list.append(cell_value)
+                if one_soldire_list[0] is not None:
+                    find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
+                    find_soldire.discipline_score = one_soldire_list[6]
+                    find_soldire.basij_experience = one_soldire_list[7]
+                    find_soldire.council_experience = one_soldire_list[8]
+                    find_soldire.ideological_score = one_soldire_list[9]
+                    find_soldire.shooting_score = one_soldire_list[10]
+                    find_soldire.global_awards = one_soldire_list[11]
+                    find_soldire.national_awards = one_soldire_list[12]
+                    find_soldire.provincial_awards = one_soldire_list[13]
+                    find_soldire.global_articles = one_soldire_list[14]
+                    find_soldire.publications = one_soldire_list[15]
+                    find_soldire.battalion_activity = one_soldire_list[17]
+                    find_soldire.battalion_sample = one_soldire_list[18] or False
+                    find_soldire.basij_efficiency = one_soldire_list[19]
+                    find_soldire.top_three = one_soldire_list[20]
+                    find_soldire.quran_memorization = one_soldire_list[21] or 0
+                    find_soldire.nahj_memorization = one_soldire_list[22] or False
+                    find_soldire.sajjadiya_memorization = one_soldire_list[23] or False
+                    find_soldire.save()
+        cx = {'form': form}
+        calculate_score()
+        return render(request,
+                      'ensani_soldires_management/import_rank_from_exel.html', cx)

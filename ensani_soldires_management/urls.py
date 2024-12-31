@@ -42,4 +42,7 @@ urlpatterns = [
     path('soldire/export_to_excel_list_not_accepted',
          export_to_excel_list_not_accepted,
          name='export_to_excel_list_not_accepted'),
+    path('soldire/import_rank_from_exel',
+         import_rank_from_exel.as_view(),
+         name='import_rank_from_exel'),
 ]

@@ -176,6 +176,46 @@
                 </div>
             </div>
         </div>
+        <!-- کارت اطلاعات درجات -->
+        <div class="card card-custom">
+            <div class="card-header card-header-custom text-center">
+                <h4>اطلاعات درجات</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>انضباط:</strong> {{ soldier.discipline }}</p>
+                        <p><strong>فعالیت در گردان:</strong> {{ soldier.activity_in_battalion }}</p>
+                        <p><strong>نمونه گردان:</strong> {{ soldier.exemplary_battalion }}</p>
+                        <p><strong>سابقه بسیج فعال (ماه):</strong> {{ soldier.active_bassij_months }}</p>
+                        <p><strong>سابقه عضو شورای پایگاه (ماه):</strong> {{ soldier.council_member_months }}</p>
+                        <p><strong>کفایت بسیج:</strong> {{ soldier.bassij_efficiency }}</p>
+                        <p><strong>نمره عقیدتی:</strong> {{ soldier.ideological_score }}</p>
+                        <p><strong>نمره میدان تیر:</strong> {{ soldier.shooting_score }}</p>
+                        <p><strong>سه نفر برتر:</strong> {% if soldier.top_three %} بله {% else %} خیر {% endif %}</p>
+                        <p><strong>نمره نهایی:</strong> {{ soldier.total_score }}</p>
+                        <p><strong>نوع درجه:</strong> {{ soldier.rank }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>حافظ قرآن (جزء):</strong> {{ soldier.quran_memorizer }}</p>
+                        <p><strong>حافظ نهج البلاغه:</strong> {% if soldier.nahj_al_balagha_memorizer %} بله {% else %}
+                            خیر {% endif %}</p>
+                        <p><strong>حافظ صحیفه سجادیه:</strong> {% if soldier.sajjadiyeh_memorizer %} بله {% else %}
+                            خیر {% endif %}</p>
+                        <p><strong>تعداد مقام جهانی:</strong> {{ soldier.global_rankings }}</p>
+                        <p><strong>تعداد مقام کشوری:</strong> {{ soldier.national_rankings }}</p>
+                        <p><strong>تعداد مقام استانی:</strong> {{ soldier.provincial_rankings }}</p>
+                        <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
+                        <p><strong>تعداد تالیفات:</strong> {{ soldier.authored_books }}</p>
+                        {% if soldier.rank %}
+                            <img src="{% static 'img/rank/'|add:soldier.rank|add:'.png' %}"
+                                 alt="{{ soldier.rank }}" class="img-fluid" style="width: 40px">
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% if normalLetter %}
             <!-- کارت لیست نامه‌ها -->
             <div class="card card-custom">

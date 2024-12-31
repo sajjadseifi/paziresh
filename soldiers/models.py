@@ -99,7 +99,8 @@ class Soldier(models.Model):
     repeat_status = models.BooleanField(default=False, verbose_name='تکراری')  # تکراری
     battalion_activity = models.FloatField(default=0, verbose_name='فعالیت در گردان')  # فعالیت در گردان (2.5 نمره)
     battalion_sample = models.BooleanField(default=False, verbose_name='نمونه گردان')  # نمونه گردان (2 نمره مازاد)
-    basij_efficiency = models.FloatField(default=0, verbose_name='کفایت بسیج')  # کفایت بسیج (1 نمره)
+    basij_efficiency = models.CharField(max_length=120, blank=True, null=True,
+                                        verbose_name='کفایت بسیج')  # کفایت بسیج (1 نمره)
     top_three = models.CharField(max_length=100, blank=True, null=True,
                                  verbose_name='سه نفر برتر')  # سه نفر برتر (2 نمره)
     quran_memorization = models.IntegerField(default=0, verbose_name='حافظ قرآن')  # حافظ قرآن (جزء) (3 نمره)
