@@ -718,3 +718,6 @@ class FormUpdatePazireshshode(forms.Form):
 
 class FormUpdateRank(forms.Form):
     file = forms.FileField()
+
+class FormUpdateBank(forms.Form):
+    file = forms.FileField()

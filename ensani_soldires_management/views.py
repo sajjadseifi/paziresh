@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.views import View
 
 from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYegankhedmati, \
-    FormUpdateAllSoldiresHasbenAceptedInCourse, FormUpdateAllSoldires
-from soldiers.forms import FormUpdateRank
+    FormUpdateAllSoldiresHasbenAceptedInCourse, FormUpdateAllSoldires, FormRankGroup
+from soldiers.forms import FormUpdateRank, FormUpdateBank
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels
 import pandas as pd
@@ -1414,7 +1414,11 @@ def calculate_score():
 
         if total > 20:
             total = 20
-        rank = get_military_rank(s.Grade, total)
+        rank = ''
+        if s.Amriye == True or s.physical_condition != 'سالم':
+            rank = get_military_rank(s.Grade, 0)
+        else:
+            rank = get_military_rank(s.Grade, total)
         s.rank = rank
         s.total_score = total
         s.save()
@@ -1478,3 +1482,134 @@ class import_rank_from_exel(View):
         calculate_score()
         return render(request,
                       'ensani_soldires_management/import_rank_from_exel.html', cx)
+
+
+def export_to_excel_list_bank(request):
+    queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
+        'name', 'family', 'fathers_name',
+        'National_Code', 'acceptance_code', 't_Gordan', 't_battalion_group', 'code_gorhan_nahai',
+        'bank_number').order_by('t_Gordan',
+                                't_battalion_group',
+                                'code_gorhan_nahai')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'National_Code': 'کدملی',
+        'acceptance_code': 'عددپذیرش',
+        't_Gordan': 'گردان',
+        't_battalion_group': 'گروهان',
+        'code_gorhan_nahai': 'کدسازمانی',
+        'bank_number': 'شماره حساب',
+
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=export_to_excel_list_bank_number.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response
+
+
+class import_bank_number_from_exel(View):
+    def get(self, request):
+        form = FormUpdateBank()
+        cx = {'form': form}
+        return render(request,
+                      'ensani_soldires_management/import_bank_from_exel.html', cx)
+
+    def post(self, request):
+        form = FormUpdateBank(request.POST, request.FILES or None)
+        if not form.is_valid():
+            cx = {'form': form}
+            return render(request,
+                          'ensani_soldires_management/import_bank_from_exel.html',
+                          cx)
+
+        else:
+            exel = request.FILES['file']
+
+            workbook = openpyxl.load_workbook(exel)
+
+            # انتخاب شیت اول
+            sheet = workbook.active
+
+            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+            num_rows = sheet.max_row
+            num_cols = sheet.max_column
+
+            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+            for row_idx in range(2, num_rows + 1):
+                one_soldire_list = []
+                for col_idx in range(1, num_cols + 1):
+                    # مقدار سلول را بخوانید
+                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
+                    one_soldire_list.append(cell_value)
+                if one_soldire_list[0] is not None:
+                    find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
+                    if find_soldire is not None:
+                        find_soldire.bank_number = one_soldire_list[1]
+                        find_soldire.save()
+        cx = {'form': form}
+        calculate_score()
+        return render(request,
+                      'ensani_soldires_management/import_bank_from_exel.html', cx)
+
+
+def rank_group_print(request):
+    if request.method == "GET":
+        form = FormRankGroup()
+
+        context = {
+            'form': form,
+        }
+        return render(request, 'ensani_soldires_management/rank_selector.html', context)
+    if request.method == "POST":
+        form = FormRankGroup(request.POST, request.FILES or None)
+        if not form.is_valid():
+            context = {
+                'form': form,
+            }
+            return render(request, 'ensani_soldires_management/rank_selector.html', context)
+        start = int(form.cleaned_data['start']) + 1
+        end = int(form.cleaned_data['end']) + 1
+
+        sarbazha = Soldier.objects.filter(in_coures=True,
+                                          has_been_accepted=True, willing_to_learn=True, acceptance_code__gte=start,
+                                          acceptance_code__lt=end).order_by(
+            'acceptance_code').all()
+        en = EnsaniSettings.objects.filter().first()
+        context = {
+            'sarbazha': sarbazha,
+            'en': en
+        }
+        return render(request, 'ensani_soldires_management/rank_print.html', context)
+
+
+def rank_group_print_gordani(request):
+        sarbazha = Soldier.objects.filter(in_coures=True,
+                                          has_been_accepted=True, willing_to_learn=True,
+                                         ).all().order_by(
+            't_Gordan','t_battalion_group','code_gorhan_nahai').all()
+        en = EnsaniSettings.objects.filter().first()
+        context = {
+            'sarbazha': sarbazha,
+            'en': en
+        }
+        return render(request, 'ensani_soldires_management/rank_print.html', context)

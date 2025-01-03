@@ -23,7 +23,7 @@ def amar_avalie(request):
             groups = battalion_group.objects.filter(gordan=bat)
             total_soldiers = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
                                                     the_medical_commission=False, Sufficiency_of_mobilization=False,
-                                                    Previous_service_record=False,Gordan=bat).all().count()
+                                                    Previous_service_record=False, Gordan=bat).all().count()
             battalion_name = bat.name
             lst = []
             salem = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
@@ -636,6 +636,189 @@ def amar_avalie_samane(request):
 
     }
     return render(request, 'ensani_statistics/amar_avlie_samane.html', cx)
+
+
+def amar_avalie_samane_baghimonde(request):
+    province_order = [
+        'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
+        'ایلام', 'بوشهر', 'تهران', 'چهارمحال و بختیاری', 'خراسان جنوبی',
+        'خراسان رضوی', 'خراسان شمالی', 'خوزستان', 'زنجان', 'سمنان',
+        'سیستان و بلوچستان', 'فارس', 'قزوین', 'قم', 'کردستان',
+        'کرمان', 'کرمانشاه', 'کهگیلویه و بویراحمد', 'گلستان', 'گیلان',
+        'لرستان', 'مازندران', 'مرکزی', 'همدان', 'یزد',
+        'نامشخص'
+    ]
+    data = []
+
+    for province in province_order:
+        total = Soldier.objects.filter(province_name=province, has_been_accepted=False).count()
+        salem = Soldier.objects.filter(province_name=province, physical_condition='سالم',
+                                       has_been_accepted=False).count()
+        moaf_az_razm = Soldier.objects.filter(province_name=province, physical_condition='معاف از رزم',
+                                              has_been_accepted=False).count()
+        goreh_b = Soldier.objects.filter(province_name=province, physical_condition='گروه ب',
+                                         has_been_accepted=False).count()
+        goreh_b_moaf_az_razm = Soldier.objects.filter(province_name=province, physical_condition='معاف+گروه ب',
+                                                      has_been_accepted=False).count()
+        amire_dar = Soldier.objects.filter(province_name=province, Amriye=True, has_been_accepted=False).count()
+        shie = Soldier.objects.filter(province_name=province, Religion='شیعه', has_been_accepted=False).count()
+        ahle_tasanon = Soldier.objects.filter(province_name=province, Religion='اهل تسنن',
+                                              has_been_accepted=False).count()
+        zire_diplom = Soldier.objects.filter(province_name=province, Grade='زیر دیپلم', has_been_accepted=False).count()
+        diplom = Soldier.objects.filter(province_name=province, Grade='دیپلم', has_been_accepted=False).count()
+        fogh_diplom = Soldier.objects.filter(province_name=province, Grade='فوق دیپلم', has_been_accepted=False).count()
+        lisans = Soldier.objects.filter(province_name=province, Grade='لیسانس', has_been_accepted=False).count()
+        fogh_lisans = Soldier.objects.filter(province_name=province, Grade='فوق لیسانس',
+                                             has_been_accepted=False).count()
+        doctora = Soldier.objects.filter(province_name=province, Grade='دکتری', has_been_accepted=False).count()
+        namoshakhas = total - (zire_diplom + diplom + fogh_diplom + lisans + fogh_lisans + doctora)
+
+        data.append({
+            'province': province,
+            'total': total,
+            'salem': salem,
+            'moaf_az_razm': moaf_az_razm,
+            'gorh_b': goreh_b,
+            'goth_b_moaf_az_razm': goreh_b_moaf_az_razm,
+            'shie': shie,
+            'ahle_tasanon': ahle_tasanon,
+            'amriye': amire_dar,
+            'zire_diplom': zire_diplom,
+            'diplom': diplom,
+            'fogh_diplom': fogh_diplom,
+            'lisans': lisans,
+            'fogh_lisans': fogh_lisans,
+            'doctora': doctora,
+            'namoshakhas': namoshakhas,
+        })
+    soldire_total = Soldier.objects.filter(date_improt_type='سامانه', has_been_accepted=False).all().count()
+    soldire_total_salem = Soldier.objects.filter(date_improt_type='سامانه', physical_condition='سالم',
+                                                 has_been_accepted=False).all().count()
+    soldire_total_moafazrazm = Soldier.objects.filter(date_improt_type='سامانه',
+                                                      physical_condition='معاف از رزم',
+                                                      has_been_accepted=False).all().count()
+    soldire_total_shie = Soldier.objects.filter(date_improt_type='سامانه', Religion='شیعه',
+                                                has_been_accepted=False).all().count()
+    soldire_total_tasanon = Soldier.objects.filter(date_improt_type='سامانه', Religion='اهل تسنن',
+                                                   has_been_accepted=False).all().count()
+    soldire_total_amire = Soldier.objects.filter(date_improt_type='سامانه', Amriye=True,
+                                                 has_been_accepted=False).all().count()
+    zire_diplom = Soldier.objects.filter(date_improt_type='سامانه', Grade='زیر دیپلم', has_been_accepted=False).count()
+    diplom = Soldier.objects.filter(date_improt_type='سامانه', Grade='دیپلم', has_been_accepted=False).count()
+    fogh_diplom = Soldier.objects.filter(date_improt_type='سامانه', Grade='فوق دیپلم', has_been_accepted=False).count()
+    lisans = Soldier.objects.filter(date_improt_type='سامانه', Grade='لیسانس', has_been_accepted=False).count()
+    fogh_lisans = Soldier.objects.filter(date_improt_type='سامانه', Grade='فوق لیسانس', has_been_accepted=False).count()
+    doctora = Soldier.objects.filter(date_improt_type='سامانه', Grade='دکتری', has_been_accepted=False).count()
+    namoshakhas = Soldier.objects.filter(date_improt_type='سامانه', Grade='نامشخص', has_been_accepted=False).count()
+    cx = {
+        'data': data,
+        'total': soldire_total,
+        'soldire_total_salem': soldire_total_salem,
+        'soldire_total_moafazrazm': soldire_total_moafazrazm,
+        'soldire_total_shie': soldire_total_shie,
+        'soldire_total_tasanon': soldire_total_tasanon,
+        'soldire_total_amire': soldire_total_amire,
+        'zire_diplom': zire_diplom,
+        'diplom': diplom,
+        'fogh_diplom': fogh_diplom,
+        'lisans': lisans,
+        'fogh_lisans': fogh_lisans,
+        'doctora': doctora,
+        'namoshakhas': namoshakhas
+
+    }
+    return render(request, 'ensani_statistics/amar_samane_baghimonde.html', cx)
+
+
+def amar_avalie_samane_paziresh_shode(request):
+    province_order = [
+        'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
+        'ایلام', 'بوشهر', 'تهران', 'چهارمحال و بختیاری', 'خراسان جنوبی',
+        'خراسان رضوی', 'خراسان شمالی', 'خوزستان', 'زنجان', 'سمنان',
+        'سیستان و بلوچستان', 'فارس', 'قزوین', 'قم', 'کردستان',
+        'کرمان', 'کرمانشاه', 'کهگیلویه و بویراحمد', 'گلستان', 'گیلان',
+        'لرستان', 'مازندران', 'مرکزی', 'همدان', 'یزد',
+        'نامشخص'
+    ]
+    data = []
+
+    for province in province_order:
+        total = Soldier.objects.filter(province_name=province, has_been_accepted=True).count()
+        salem = Soldier.objects.filter(province_name=province, physical_condition='سالم',
+                                       has_been_accepted=True).count()
+        moaf_az_razm = Soldier.objects.filter(province_name=province, physical_condition='معاف از رزم',
+                                              has_been_accepted=True).count()
+        goreh_b = Soldier.objects.filter(province_name=province, physical_condition='گروه ب',
+                                         has_been_accepted=False).count()
+        goreh_b_moaf_az_razm = Soldier.objects.filter(province_name=province, physical_condition='معاف+گروه ب',
+                                                      has_been_accepted=True).count()
+        amire_dar = Soldier.objects.filter(province_name=province, Amriye=True, has_been_accepted=True).count()
+        shie = Soldier.objects.filter(province_name=province, Religion='شیعه', has_been_accepted=True).count()
+        ahle_tasanon = Soldier.objects.filter(province_name=province, Religion='اهل تسنن',
+                                              has_been_accepted=True).count()
+        zire_diplom = Soldier.objects.filter(province_name=province, Grade='زیر دیپلم', has_been_accepted=True).count()
+        diplom = Soldier.objects.filter(province_name=province, Grade='دیپلم', has_been_accepted=True).count()
+        fogh_diplom = Soldier.objects.filter(province_name=province, Grade='فوق دیپلم', has_been_accepted=True).count()
+        lisans = Soldier.objects.filter(province_name=province, Grade='لیسانس', has_been_accepted=True).count()
+        fogh_lisans = Soldier.objects.filter(province_name=province, Grade='فوق لیسانس', has_been_accepted=True).count()
+        doctora = Soldier.objects.filter(province_name=province, Grade='دکتری', has_been_accepted=True).count()
+        namoshakhas = total - (zire_diplom + diplom + fogh_diplom + lisans + fogh_lisans + doctora)
+
+        data.append({
+            'province': province,
+            'total': total,
+            'salem': salem,
+            'moaf_az_razm': moaf_az_razm,
+            'gorh_b': goreh_b,
+            'goth_b_moaf_az_razm': goreh_b_moaf_az_razm,
+            'shie': shie,
+            'ahle_tasanon': ahle_tasanon,
+            'amriye': amire_dar,
+            'zire_diplom': zire_diplom,
+            'diplom': diplom,
+            'fogh_diplom': fogh_diplom,
+            'lisans': lisans,
+            'fogh_lisans': fogh_lisans,
+            'doctora': doctora,
+            'namoshakhas': namoshakhas,
+        })
+    soldire_total = Soldier.objects.filter(date_improt_type='سامانه', has_been_accepted=True).all().count()
+    soldire_total_salem = Soldier.objects.filter(date_improt_type='سامانه', physical_condition='سالم',
+                                                 has_been_accepted=True).all().count()
+    soldire_total_moafazrazm = Soldier.objects.filter(date_improt_type='سامانه',
+                                                      physical_condition='معاف از رزم',
+                                                      has_been_accepted=True).all().count()
+    soldire_total_shie = Soldier.objects.filter(date_improt_type='سامانه', Religion='شیعه',
+                                                has_been_accepted=True).all().count()
+    soldire_total_tasanon = Soldier.objects.filter(date_improt_type='سامانه', Religion='اهل تسنن',
+                                                   has_been_accepted=True).all().count()
+    soldire_total_amire = Soldier.objects.filter(date_improt_type='سامانه', Amriye=True,
+                                                 has_been_accepted=True).all().count()
+    zire_diplom = Soldier.objects.filter(date_improt_type='سامانه', Grade='زیر دیپلم', has_been_accepted=True).count()
+    diplom = Soldier.objects.filter(date_improt_type='سامانه', Grade='دیپلم', has_been_accepted=True).count()
+    fogh_diplom = Soldier.objects.filter(date_improt_type='سامانه', Grade='فوق دیپلم', has_been_accepted=True).count()
+    lisans = Soldier.objects.filter(date_improt_type='سامانه', Grade='لیسانس', has_been_accepted=True).count()
+    fogh_lisans = Soldier.objects.filter(date_improt_type='سامانه', Grade='فوق لیسانس', has_been_accepted=True).count()
+    doctora = Soldier.objects.filter(date_improt_type='سامانه', Grade='دکتری', has_been_accepted=True).count()
+    namoshakhas = Soldier.objects.filter(date_improt_type='سامانه', Grade='نامشخص', has_been_accepted=True).count()
+    cx = {
+        'data': data,
+        'total': soldire_total,
+        'soldire_total_salem': soldire_total_salem,
+        'soldire_total_moafazrazm': soldire_total_moafazrazm,
+        'soldire_total_shie': soldire_total_shie,
+        'soldire_total_tasanon': soldire_total_tasanon,
+        'soldire_total_amire': soldire_total_amire,
+        'zire_diplom': zire_diplom,
+        'diplom': diplom,
+        'fogh_diplom': fogh_diplom,
+        'lisans': lisans,
+        'fogh_lisans': fogh_lisans,
+        'doctora': doctora,
+        'namoshakhas': namoshakhas
+
+    }
+    return render(request, 'ensani_statistics/amare_samane_paziresh_shode.html', cx)
 
 
 def yegan_be_kar_girande(request):
@@ -1622,6 +1805,9 @@ def gozaresh_payan_dore(request):
         'total_2': total_2,
         'asalem': a_salem,
         'amoaf_az_razm': a_moaf_az_razm,
+        'gore_be': gore_be,
+        'a_gorh_be': a_gorh_be,
+        'a_goreh_be_moh_az_razm': a_goreh_be_moh_az_razm,
         'aSufficiency_of_mobilization': a_Sufficiency_of_mobilization,
         'aPrevious_service_record': a_Previous_service_record,
         'acomision_shoro_dore': a_comision_shoro_dore,

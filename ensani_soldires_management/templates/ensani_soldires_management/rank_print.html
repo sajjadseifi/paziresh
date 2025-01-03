@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حکم درجه</title>
+    <style>
+        @page {
+            size: A5;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'B Nazanin', 'Arial', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            width: 125mm;
+            height: 180mm;
+            margin: auto;
+            margin-top: 25px;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            direction: rtl;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .header p {
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .line {
+            border-top: 1px solid black;
+            margin: 10px 0;
+        }
+
+        .rank-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .rank-image img {
+            width: 60px;
+            height: auto;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header-details {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            text-align: left;
+            font-size: 12px;
+            padding-left: 10px;
+        }
+
+        .content {
+            font-size: 14px;
+        }
+
+        .signature {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            padding-top: 126px;
+        }
+    </style>
+</head>
+<body>
+{% for s in sarbazha %}
+    <div class="container" style="page-break-after: always;">
+        <div class="rank-image">
+            <img src="{% static 'img/rank/sepah.png' %}" alt="logo_sepah">
+        </div>
+
+
+        <div class="header">
+            <img src="{% static 'img/rank/name.jpg' %}" style="width: 60px;" alt="logo_sepah">
+            <p>فرمانده معظم کل قوا حضرت امام خامنه‌ای (مد ظله العالی)</p>
+
+            <div class="header-details">
+                <p>
+                    شماره: 512/106/2374<br>
+                    تاریخ: 1403/04/20
+                </p>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="content">
+            <h1 style="text-align: center;">حکم درجه</h1>
+
+            <p>
+                سرباز وظیفه <strong>{{ s.name }} {{ s.family }}</strong> فرزند <strong>{{ s.fathers_name }}</strong><br>
+                با کد ملی <strong>{{ s.National_Code }}</strong> و پایه خدمتی <strong>{{ s.Date_of_dispatch }}</strong>
+            </p>
+
+            <p>
+                سلام علیکم،<br>
+                با صلوات بر محمد و آل محمد، بدین‌وسیله به استناد گردشکار شماره 1776 مورخ 1403/04/20 جنابعالی به درجه
+                <strong>{{ s.rank }}</strong> نائل گردیده، ضمن عرض تبریک، مقتضی است نسبت به نصب درجه خود اقدام و در
+                اجرای کلیه
+                ضوابط و مقررات کوشا باشید.
+            </p>
+        </div>
+
+        <div class="signature">
+            <p>
+                {{ en.farmande_razme_moghadamati }}<br>
+                فرمانده آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>
+                گردان:{{ s.t_Gordan }} گروهان:{{ s.t_battalion_group }} - کد:{{ s.code_gorhan_nahai }}<br>
+                کد پذیرش: {{ s.acceptance_code }}
+            </p>
+        </div>
+    </div>
+{% endfor %}
+
+</body>
+</html>

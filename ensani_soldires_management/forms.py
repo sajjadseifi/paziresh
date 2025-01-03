@@ -33,3 +33,16 @@ class FormUpdateAllSoldiresHasbenAceptedInCourse(forms.Form):
 
 class FormUpdateAllSoldires(forms.Form):
     file = forms.FileField()
+
+
+class FormRankGroup(forms.Form):
+    start = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "start"}),
+        label='از',
+        required=False
+    )
+    end = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "end"}),
+        label='تا',
+        required=False
+    )

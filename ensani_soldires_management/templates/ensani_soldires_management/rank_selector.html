@@ -1,0 +1,38 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">چاپ حکم درجه گروهی</h3>
+        </div>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            {{ form.start.label }}
+                            {{ form.start }}
+                            <span style='color: red'>{{ form.start.errors }}</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            {{ form.end.label }}
+                            {{ form.end }}
+                            <span style='color: red'>{{ form.end.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success pull-right">چاپ
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

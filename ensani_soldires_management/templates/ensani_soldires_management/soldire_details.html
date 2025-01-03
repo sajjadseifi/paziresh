@@ -120,8 +120,10 @@
                             {% else %}
                                 خیر
                             {% endif %} </p>
-                        <p><i class="fa fa-handshake"></i><strong>جذب موفق:</strong>
+                        <p><i class="fa fa-handshake"></i><strong>جذب موفق المهدی:</strong>
                             {% if soldier.Successful_recruitment %} بله {% else %} خیر {% endif %}</p>
+                        <p><i class="fa fa-calendar-day"></i><strong>
+                            جذبی:</strong> {{ soldier.attraction_of_the_organization }}</p>
                         <p><i class="fa fa-calendar-day"></i><strong>
                             گردان نهایی:</strong> {{ soldier.t_Gordan.name }}</p>
                         <p><i class="fa fa-calendar-day"></i><strong>
@@ -179,7 +181,7 @@
         <!-- کارت اطلاعات درجات -->
         <div class="card card-custom">
             <div class="card-header card-header-custom text-center">
-                <h4>اطلاعات درجات</h4>
+                <h4>اطلاعات درجه</h4>
             </div>
             <div class="card-body">
                 <div class="row">

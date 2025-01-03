@@ -115,9 +115,26 @@
                             خدمت قبلی </a></li>
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی</a></li>
                         <li><a href="{% url 'import_rank_from_exel' %}">محاسبه درجات سرباز</a></li>
+                        <li><a href="{% url 'rank_group_print' %}">حکم درجه گروهی</a></li>
+                        <li><a href="{% url 'import_bank_number_from_exel' %}">بارگزاری شماره حساب گروهی</a></li>
+                        <li><a href="{% url 'export_to_excel_list_bank' %}">لیست شماره حساب سرباز</a></li>
                     {% endif %}
                 </ul>
             </li>
+
+            <li class="treeview">
+                <a href="#"><i class="fa fa-user-plus"></i> <span>مدیریت درجه</span>
+                    <span class="pull-left-container">
+                <i class="fa fa-angle-right pull-left"></i>
+              </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{% url 'import_rank_from_exel' %}">محاسبه درجات سرباز</a></li>
+                    <li><a href="{% url 'rank_group_print' %}">حکم درجه گروهی عددپذیرش</a></li>
+                    <li><a href="{% url 'rank_group_print_gordani' %}">حکم درجه گروهی گردانی</a></li>
+                </ul>
+            </li>
+
             {% if request.user.is_staff == True %}
                 <li class="treeview">
                     <a href="#"><i class="fa fa-group"></i> <span>مدیریت گردان ها</span>
@@ -167,6 +184,8 @@
                     <li><a href="{% url 'amar_shoro_doreh' %}">آمار شروع دوره</a></li>
                     <li><a href="{% url 'amar_payan_dore' %}">آمار پایان دوره</a></li>
                     <li><a href="{% url 'amar_avalie_samane' %}">آمار اولیه سامانه</a></li>
+                    <li><a href="{% url 'amar_avalie_samane_baghimonde' %}">آمار اولیه سامانه باقیمانده</a></li>
+                    <li><a href="{% url 'amar_avalie_samane_paziresh_shode' %}">آمار اولیه سامانه پذیرش شده</a></li>
                     <li><a href="{% url 'amare_yegan_bekar_girande_tabel' %}">آمار یگان بکارگیرنده</a></li>
                     {% if request.user.is_staff == True %}
                         <li><a href="{% url 'gozaresh_shoro_dore' %}">گزارش شروع دوره</a></li>
@@ -190,6 +209,7 @@
                     </ul>
                 </li>
             {% endif %}
+            <li><a href="{% url 'logout' %}"><i class="fa fa-home"></i> <span>خروج</span></a>
         </ul>
         <!-- /.sidebar-menu -->
     </section>
