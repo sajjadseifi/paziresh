@@ -28,4 +28,5 @@ urlpatterns = [
     path('sarbaz/update/update_db_from_exel_paziresh_shode',
          update_db_from_exel_paziresh_shode.as_view(),
          name='update_db_from_exel_paziresh_shode'),
+    path('soldire/search/paziresh/', soldier_search, name='soldier_search_paziresh'),
 ]

@@ -1,3 +1,4 @@
+import jdatetime
 from django.shortcuts import render
 from django.views import View
 
@@ -1595,21 +1596,25 @@ def rank_group_print(request):
                                           acceptance_code__lt=end).order_by(
             'acceptance_code').all()
         en = EnsaniSettings.objects.filter().first()
+        time = jdatetime.datetime.now()
         context = {
             'sarbazha': sarbazha,
-            'en': en
+            'en': en,
+            'time': time,
         }
         return render(request, 'ensani_soldires_management/rank_print.html', context)
 
 
 def rank_group_print_gordani(request):
-        sarbazha = Soldier.objects.filter(in_coures=True,
-                                          has_been_accepted=True, willing_to_learn=True,
-                                         ).all().order_by(
-            't_Gordan','t_battalion_group','code_gorhan_nahai').all()
-        en = EnsaniSettings.objects.filter().first()
-        context = {
-            'sarbazha': sarbazha,
-            'en': en
-        }
-        return render(request, 'ensani_soldires_management/rank_print.html', context)
+    sarbazha = Soldier.objects.filter(in_coures=True,
+                                      has_been_accepted=True, willing_to_learn=True,
+                                      ).all().order_by(
+        't_Gordan', 't_battalion_group', 'code_gorhan_nahai').all()
+    en = EnsaniSettings.objects.filter().first()
+    time = jdatetime.datetime.now()
+    context = {
+        'sarbazha': sarbazha,
+        'en': en,
+        'time': time,
+    }
+    return render(request, 'ensani_soldires_management/rank_print.html', context)

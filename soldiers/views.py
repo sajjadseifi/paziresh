@@ -1403,7 +1403,7 @@ class MainViewSoldires(LoginRequiredMixin, View):
         search = request.GET.get('table_search')
         if search is None:
             soldire = sarbaz.objects.filter().all()
-            cx = {'s': soldire}
+            cx = {'results': soldire}
             return render(request, 'soldiers/MainViewSoldires.html', cx)
         if str(search).find('ی'):
             search_y = str(search).replace('ی', 'ي')
@@ -1414,7 +1414,7 @@ class MainViewSoldires(LoginRequiredMixin, View):
             Q(name__icontains=search) | Q(family__icontains=search) | Q(name__icontains=search_y) | Q(
                 family__icontains=search_y) |
             Q(National_Code__icontains=search) | Q(id__icontains=search)).all()
-        cx = {'s': soldire}
+        cx = {'results': soldire}
         return render(request, 'soldiers/MainViewSoldires.html', cx)
 
 
@@ -2069,3 +2069,24 @@ class update_db_from_exel_paziresh_shode(View):
         cx = {'form': form}
         return render(request,
                       'soldiers/update_db_from_exel_paziresh_shode.html', cx)
+
+
+def soldier_search(request):
+    query = request.GET.get('name')
+    family = request.GET.get('family')
+    national_code = request.GET.get('national_code')
+    acceptance_code = request.GET.get('acceptance_code')
+    soldiers = sarbaz.objects.all()
+    if query:
+        soldiers = soldiers.filter(name__icontains=query)
+    if family:
+        soldiers = soldiers.filter(family__icontains=family)
+    if national_code:
+        soldiers = soldiers.filter(National_Code__icontains=national_code)
+    if acceptance_code:
+        soldiers = soldiers.filter(acceptance_code=acceptance_code)
+
+    context = {
+        'results': soldiers,
+    }
+    return render(request, 'soldiers/MainViewSoldires.html', context)

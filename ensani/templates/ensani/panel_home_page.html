@@ -1,6 +1,7 @@
 {% extends 'shared/_PanelMain.html' %}
+{% load static %}
 {% block main %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'dist/js/chart.js' %}"></script>
     <style>
 
         .card {
@@ -147,7 +148,7 @@
             datasets: [{
                 label: 'تعداد کل',
                 data: {{total_list|safe }}, // داده‌های مثال
-                backgroundColor: ['#4CAF50', '#8352ab','#b02f17','#a91e92','#FF5733','#FF5232'],
+                backgroundColor: ['#4CAF50', '#8352ab', '#b02f17', '#a91e92', '#FF5733', '#FF5232'],
             }]
         };
 

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حکم درجه</title>
     <style>
+
         @page {
             size: A5;
-            margin: 0;
         }
 
         body {
@@ -20,10 +20,9 @@
         }
 
         .container {
-            width: 125mm;
-            height: 180mm;
+            {#width: 125mm;#}
+            {#height: 180mm;#}
             margin: auto;
-            margin-top: 25px;
             background: #fff;
             padding: 20px;
             border: 1px solid black;
@@ -103,7 +102,8 @@
 </head>
 <body>
 {% for s in sarbazha %}
-    <div class="container" style="page-break-after: always;">
+    <div class="container" style="{% if not forloop.last %}page-break-after: always;{% endif %}">
+        <!-- محتوا -->
         <div class="rank-image">
             <img src="{% static 'img/rank/sepah.png' %}" alt="logo_sepah">
         </div>
@@ -115,8 +115,8 @@
 
             <div class="header-details">
                 <p>
-                    شماره: 512/106/2374<br>
-                    تاریخ: 1403/04/20
+                    شماره: 512/106/{{ en.shomare_dore }}{{ en.shomare_dore }}<br>
+                    تاریخ: {{ time.date.year }}/{{ time.date.month }}/{{ time.date.day }}
                 </p>
             </div>
         </div>

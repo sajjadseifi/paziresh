@@ -5,22 +5,44 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box">
-                    <div class="box-header">
-                        <h3 class="box-title">لیست سربازان</h3>
-
-                        <div class="box-tools">
-                            <form>
-                                <div class="input-group input-group-sm" style="width: 150px;">
-                                    <input type="text" name="table_search" class="form-control pull-right"
-                                           placeholder="جستجو">
-
-                                    <div class="input-group-btn">
-                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
-                                        </button>
+                    <div class="container mt-5">
+                        <h2 class="text-center">جستجوی سرباز</h2>
+                        <form method="GET" action="{% url 'soldier_search_paziresh' %}">
+                            <div class="row">
+                                <div class="form-group">
+                                    <label for="acceptance_code">عدد پذیرش</label>
+                                    <input type="text" class="form-control" id="acceptance_code" name="acceptance_code"
+                                           placeholder="عدد پذیرش">
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="name">نام</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                               placeholder="نام سرباز">
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="family">نام خانوادگی</label>
+                                        <input type="text" class="form-control" id="family" name="family"
+                                               placeholder="نام خانوادگی">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="national_code">کد ملی</label>
+                                        <input type="text" class="form-control" id="national_code" name="national_code"
+                                               placeholder="کد ملی">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">جستجو</button>
+                            </div>
+                        </form>
+
+                        <hr>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body table-responsive no-padding">
@@ -37,7 +59,8 @@
                                 <th>وضعیت پذیرش</th>
                                 <th>عملیات</th>
                             </tr>
-                            {% for sodire in s %}
+                            {% for sodire in results %}
+
                                 <tr>
                                     <td>{{ sodire.pk }}</td>
                                     <td>{{ sodire.acceptance_code }}</td>
@@ -54,7 +77,6 @@
                                     {% else %}
                                         <th></th>
                                     {% endif %}
-
                                     {% if sodire.has_been_accepted %}
                                         <td><span class="label label-success">شده</span></td>
                                     {% else %}
@@ -73,14 +95,20 @@
                                                 <a href="{% url 'get_sarbaz' pk=sodire.National_Code %}"
                                                    class="btn btn-default">ثبت پذیرش</a>
                                             {% endif %}
-                                            <a href="{% url 'sater' pk=sodire.pk %}" class="btn btn-default">ساتر</a>
-                                            <a href="{% url 'moarefibegordan' pk=sodire.pk %}" class="btn btn-default">معرفی گردان</a>
-
+                                            <a href="{% url 'sater' pk=sodire.pk %}"
+                                               class="btn btn-default">ساتر</a>
+                                            <a href="{% url 'moarefibegordan' pk=sodire.pk %}"
+                                               class="btn btn-default">معرفی
+                                                گردان</a>
+                                            <a href="{% url 'soldire_details' code=sodire.National_Code %}"
+                                               class="btn btn-default">مشاهده</a>
                                             {#                                            <a href="{% url 'SoldireProfile' %}"#}
                                             {#                                               class="btn btn-default">پذیرش</a>#}
                                         </div>
+
                                     </td>
                                 </tr>
+
                             {% endfor %}
                             </tbody>
                         </table>
