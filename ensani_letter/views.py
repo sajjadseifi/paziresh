@@ -1,15 +1,14 @@
 import jdatetime
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from soldiers.models import Soldier
-# Create your views here.
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
     CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom, CreateFarajaLetterFrom
 from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
     FarajaNormallLetter
-
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
 import random
@@ -72,7 +71,7 @@ def find_sepah_name(p):
         if iteam[1] == str(p):
             return iteam[2]
 
-
+@login_required
 def AllCheckoutLetter(request, *args, **kwargs):
     all_checkout_letter = CheckoutLetterModels.objects.filter().all()
     return render(request, 'ensani_letter/all_checkout_letter.html',
@@ -124,7 +123,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
         my_letter.save()
         return redirect(self.success_url)
 
-
+@login_required
 def AllNormalLetter(request, *args, **kwargs):
     all_normal_letter = NormalLetterModels.objects.filter().all()
     return render(request, 'ensani_letter/all_normal_letter.html',
@@ -430,7 +429,7 @@ class CreateFarajaLetter(LoginRequiredMixin, View):
         rn.save()
         return redirect(self.success_url)
 
-
+@login_required
 def PrintCheckoutLetter(request, *args, **kwargs):
     checkout_letter_pk = kwargs['pk']
     if checkout_letter_pk is None:
@@ -442,7 +441,7 @@ def PrintCheckoutLetter(request, *args, **kwargs):
     cx = {'checkout_letter': checkout_letter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_letter.html', cx)
 
-
+@login_required
 def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     checkout_commission_letter_pk = kwargs['pk']
     if checkout_commission_letter_pk is None:
@@ -454,7 +453,7 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 
-
+@login_required
 def PrintTrainingInquiryLetter(request, *args, **kwargs):
     training_inquiry_letter_pk = kwargs['pk']
     if training_inquiry_letter_pk is None:
@@ -464,7 +463,7 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     cx = {'training_inquiry_letter': training_inquiry_letter, 'en': en}
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
 
-
+@login_required
 def PrintRegisterLetter(request, *args, **kwargs):
     Normal_letter = kwargs['pk']
     if Normal_letter is None:
@@ -475,7 +474,7 @@ def PrintRegisterLetter(request, *args, **kwargs):
     cx = {'Normal_letter_Register': Normal_letter_Register, 'en': en, 'rg': Rg}
     return render(request, 'ensani_letter/print_register_normal_letter.html', cx)
 
-
+@login_required
 def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission_letter_pk = kwargs['pk']
     if before_course_commission_letter_pk is None:
@@ -485,7 +484,7 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     cx = {'before_course_commission_letter': before_course_commission, "sutter": sutter}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
 
-
+@login_required
 def PrintRunawayLetterLetter(request, *args, **kwargs):
     Runaway_letter_pk = kwargs['pk']
     if Runaway_letter_pk is None:
@@ -497,7 +496,7 @@ def PrintRunawayLetterLetter(request, *args, **kwargs):
     cx = {'leter': my, 'en': en, 'run_detail': run_detail, 'suter': suter}
     return render(request, 'ensani_letter/print_runaway_letter_letter.html', cx)
 
-
+@login_required
 def PrintFarajaLetter(request, *args, **kwargs):
     Faraja_letter_pk = kwargs['pk']
     if Faraja_letter_pk is None:
@@ -510,7 +509,7 @@ def PrintFarajaLetter(request, *args, **kwargs):
     cx = {'leter': my, 'en': en, 'fara_detail': fata_detail, 'suter': suter, 'checkout': checkout}
     return render(request, 'ensani_letter/print_faraja_letter.html', cx)
 
-
+@login_required
 def check_status_checkout(request, *args, **kwargs):
     checkout_id = kwargs['pk']
     if checkout_id is None:
@@ -520,7 +519,7 @@ def check_status_checkout(request, *args, **kwargs):
     checkout_letter.save()
     return redirect(reverse_lazy('AllCheckoutLetter'))
 
-
+@login_required
 def remove_checkout(request, *args, **kwargs):
     checkout_id = kwargs['pk']
     if checkout_id is None:
@@ -539,7 +538,7 @@ def remove_checkout(request, *args, **kwargs):
     checkout_letter.delete()
     return redirect(reverse_lazy('AllCheckoutLetter'))
 
-
+@login_required
 def remove_normall(request, *args, **kwargs):
     id = kwargs['pk']
     if id is None:

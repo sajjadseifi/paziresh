@@ -214,7 +214,7 @@ class FormSoldiers(forms.Form):
     Relative_to_inclusive_number = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "Relative_to_inclusive_number"}),
         label='شماره تماس نسبت فراگیر',
-        required=False
+        required=True,
     )
 
 
@@ -434,7 +434,7 @@ class FormSoldiersCreate(forms.Form):
     def clean_National_Code(self):
         s = sarbaz.objects.filter(National_Code=self.cleaned_data['National_Code']).first()
         if s is not None:
-            if s.willing_to_learn is False:
+            if s.has_been_accepted is False:
                 raise ValidationError("این سرباز باید از طریق کد ملی پذیرش شود")
             raise forms.ValidationError("کد ملی تکراری می باشد")
         else:
@@ -665,7 +665,7 @@ class SarbazCodeMeli(forms.Form):
         s = sarbaz.objects.filter(National_Code=self.cleaned_data['code_meli']).first()
         if s is None:
             raise ValidationError("این سرباز با این کد ملی وجود ندارد")
-        if s.willing_to_learn is True:
+        if s.has_been_accepted is True:
             raise ValidationError("این سرباز پذیرش شده")
         return self.cleaned_data['code_meli']
 

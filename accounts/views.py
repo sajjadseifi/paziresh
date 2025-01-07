@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
+from django.shortcuts import redirect
+from django.contrib.auth import logout
 from accounts.forms import LoginForm
 
 
@@ -25,3 +26,8 @@ def user_login_page(request, *args, **kwargs):
             return render(request, 'accounts/login_page.html', cx)
 
     return render(request, 'accounts/login_page.html', context={'login_form': login_form, })
+
+
+def c_logout(request):
+    logout(request)
+    return redirect('home_page')

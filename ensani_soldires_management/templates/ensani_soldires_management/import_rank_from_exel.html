@@ -17,7 +17,18 @@
                 <div class="input-group input-group-sm">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button type="submit" class="btn btn-info btn-flat">بررسی</button>
+                    <!-- دکمه‌ها -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <!-- دکمه بررسی -->
+                        <button type="submit" class="btn btn-success">
+                            ✅ بررسی
+                        </button>
+
+                        <!-- دکمه دانلود فایل راهنما -->
+                        <a href="{% url 'download_import_rank_sample_excel' %}" class="btn btn-warning">
+                            📥 دانلود فایل خام نمونه
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>

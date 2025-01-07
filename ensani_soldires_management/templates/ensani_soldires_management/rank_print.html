@@ -20,9 +20,7 @@
         }
 
         .container {
-            {#width: 125mm;#}
-            {#height: 180mm;#}
-            margin: auto;
+        {#width: 125mm;#}{#height: 180mm;#} margin: auto;
             background: #fff;
             padding: 20px;
             border: 1px solid black;
@@ -63,12 +61,6 @@
             height: auto;
         }
 
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-
         .logo img {
             width: 60px;
             height: auto;
@@ -96,7 +88,7 @@
         .footer {
             font-size: 12px;
             text-align: center;
-            padding-top: 126px;
+            padding-top: 5px;
         }
     </style>
 </head>
@@ -111,8 +103,10 @@
 
         <div class="header">
             <img src="{% static 'img/rank/name.jpg' %}" style="width: 60px;" alt="logo_sepah">
-            <p>فرمانده معظم کل قوا حضرت امام خامنه‌ای (مد ظله العالی)</p>
-
+            <p>فرمانده معظم کل قوا حضرت امام خامنه‌ای(حفظه الله)</p>
+            <p style="font-size: 10px">درجه به معناي يک نظم دقيق و تعيين ارتباط ويژه در بين کساني است که در خدمت دفاع از
+                انقلاب و کشور قرار
+                دارند.</p>
             <div class="header-details">
                 <p>
                     شماره: 512/106/{{ en.shomare_dore }}{{ en.shomare_dore }}<br>
@@ -126,20 +120,21 @@
         <div class="content">
             <h1 style="text-align: center;">حکم درجه</h1>
 
-            <p>
-                سرباز وظیفه <strong>{{ s.name }} {{ s.family }}</strong> فرزند <strong>{{ s.fathers_name }}</strong><br>
+            <p style="text-align: center">
+                سرباز وظیفه <strong>{{ s.name }} {{ s.family }}</strong> فرزند <strong>{{ s.fathers_name }}</strong>
                 با کد ملی <strong>{{ s.National_Code }}</strong> و پایه خدمتی <strong>{{ s.Date_of_dispatch }}</strong>
             </p>
-
             <p>
                 سلام علیکم،<br>
-                با صلوات بر محمد و آل محمد، بدین‌وسیله به استناد گردشکار شماره 1776 مورخ 1403/04/20 جنابعالی به درجه
+                با صلوات بر محمد و آل محمد، بدین‌وسیله به استناد گردشکار شماره {{ en.hokme_darje_gardeshkar }}
+                مورخ {{ en.tarikh_hokme_darje_gardeshkar }} جنابعالی به درجه
                 <strong>{{ s.rank }}</strong> نائل گردیده، ضمن عرض تبریک، مقتضی است نسبت به نصب درجه خود اقدام و در
                 اجرای کلیه
                 ضوابط و مقررات کوشا باشید.
             </p>
         </div>
-
+        <img src="{% static 'img/rank/'|add:s.rank|add:'.png' %}"
+             alt="{{ soldier.rank }}" class="img-fluid" style="width: 30px">
         <div class="signature">
             <p>
                 {{ en.farmande_razme_moghadamati }}<br>

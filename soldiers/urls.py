@@ -14,7 +14,6 @@ urlpatterns = [
     path('sarbaz/add_to_list_exel/', exel_add_to_db.as_view(), name='exel'),
     path('sarbaz/update_numbers/', exel_update_number.as_view(), name='exel_update_number'),
     path('export-excel/list_elame_hozor', export_to_excel_list_elame_hozor, name='export_to_excel_list_elame_hozor'),
-    path('testr', test_import, name='testr'),
     path('sarbaz/sater/group/', sater_group_print, name='sater_group_print'),
     path('sarbaz/moarefi/group/', moarefi_group_print, name='moarefi_begordan_group_print'),
     path('sarbaz/export_soldire_has_been_accepted_in_coures_all_data/',
@@ -29,4 +28,7 @@ urlpatterns = [
          update_db_from_exel_paziresh_shode.as_view(),
          name='update_db_from_exel_paziresh_shode'),
     path('soldire/search/paziresh/', soldier_search, name='soldier_search_paziresh'),
+    path('export_to_excel_bdone_madrak_tahsili', export_to_excel_bdone_madrak_tahsili, name='export_to_excel_bdone_madrak_tahsili'),
+
+
 ]

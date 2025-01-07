@@ -1,10 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from ensani_backup.forms import BackupUploadForm
 import io
 from django.http import HttpResponse
 from django.utils import timezone
-
-
+from django.contrib.auth.decorators import login_required
+@login_required
 def backup_database(request):
     # مسیر دیتابیس SQLite
     db_path = 'db.sqlite3'
@@ -27,7 +28,7 @@ def backup_database(request):
 
     return response
 
-
+@login_required
 def restore_database(request):
     if request.method == 'POST':
         form = BackupUploadForm(request.POST, request.FILES)

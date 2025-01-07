@@ -1,10 +1,14 @@
 import jdatetime
 import xlrd
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
 from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate, \
@@ -12,12 +16,22 @@ from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExel
 from saterapps.models import Sater
 from django.db.models import Q
 from ensaniapp_settings.models import EnsaniSettings
+from django.db import transaction, IntegrityError
+import openpyxl
 
 # all static data
 battalion_group_list = [(99999999, '')]
 g = battalion_group.objects.filter().all()
 for item in g:
     battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
+
+
+# تولید کد پذیرش یکتا
+def generate_acceptance_code():
+    code = sarbaz.objects.filter(has_been_accepted=True).count() + 1
+    while sarbaz.objects.filter(acceptance_code=code).exists():
+        code += 1
+    return code
 
 
 def categorize_educational_level(level_id):
@@ -224,7 +238,9 @@ Grade_precise_list = [
 
 Amriye_list = [(1, 'بله'), (2, 'خیر')]
 Amriye_organization_lsit = [(0, ''), (1, 'بنياد شهيد وامور ايثارگران انقلاب اسلامي'),
-                            (2, 'وزارت بهداشت درمان - پيام آوران')]
+                            (2, 'وزارت بهداشت درمان - پيام آوران'), (3, 'صندوق کارآفريني اميد'), (4, 'وزارت تعاون'),
+                            (5, 'وزارت ارتباطات و فناوري اطلاعات'), (6, 'سازمان نوسازي وتوسعه مدارس'),
+                            (7, 'مجلس شورای اسلامی'), (8, 'ستاد كل نيروهاي مسلح')]
 
 
 def get_id_of_list(ls, oj):
@@ -241,7 +257,7 @@ def get_name_of_list(ls, oj):
 
 # end static data
 
-
+@login_required
 def paziresh_code_meli(request, *args, **kwargs):
     sarbaz_code_meli = SarbazCodeMeli(request.POST or None)
     if sarbaz_code_meli.is_valid():
@@ -255,7 +271,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
     template = 'soldiers/sabte_paziresh_view.html'
 
     def get(self, request, pk):
-        soldire = sarbaz.objects.filter(National_Code=pk).first()
+        soldire = sarbaz.objects.filter(National_Code=pk, has_been_accepted=False).first()
         if soldire is None:
             cx = {}
             return render(request, self.template, cx)
@@ -692,81 +708,87 @@ class sabte_paziresh(LoginRequiredMixin, View):
             if iteam[0] == int(Sutter_id):
                 Sutter = iteam[1]
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
-        s = soldire
-        s.name = name
-        s.family = family
-        s.Relative_to_inclusive = Relative_to_inclusive
-        s.Relative_to_inclusive_number = Relative_to_inclusive_number
-        count_all_acceptance = sarbaz.objects.filter(has_been_accepted=True).count()
-        s.code_paziresh = int(count_all_acceptance) + 1
-        s.acceptance_code = int(count_all_acceptance) + 1
-        s.has_been_accepted = True
-        s.fathers_name = fathers_name
-        s.National_Code = National_Code
-        s.physical_condition = physical_condition
-        s.Type_of_disease = Type_of_disease
-        s.health_insurance_card = health_insurance_card
-        s.Grade = s.Grade
-        s.Grade_precise = Grade_precise
-        educational_level_of_the_system_name = ""
-        for iteam in educational_level_of_the_system_list:
-            if iteam[0] == int(educational_level_of_the_system):
-                educational_level_of_the_system_name = iteam[1]
-        s.educational_level_of_the_system = educational_level_of_the_system_name
-        s.Study_group = Study_group
-        s.marital_status = marital_status
-        s.Religion = Religion
-        s.Date_of_birth = Date_of_birth
-        s.place_of_birth = place_of_birth
-        s.phone_number = phone_number
-        s.home_phone_number = home_phone_number
-        s.Date_of_dispatch = Date_of_dispatch
-        s.province_name = province_name
-        s.city_name = city_name
-        s.Address = Address
-        s.Place_of_Issue = Place_of_Issue
-        s.height = height
-        s.Weight = Weight
-        s.Renewal_of_the_previous_period = Renewal_of_the_previous_period
-        s.Course_renewal_date = Course_renewal_date
-        s.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
-        if Amriye == 'بله':
-            s.Amriye = True
-        else:
-            s.Amriye = False
-        s.Amriye_organization = Amriye_organization
-        if Sufficiency_of_mobilization == 'خیر':
-            s.Sufficiency_of_mobilization = False
-            s.willing_to_learn = True
-            s.in_coures = True
-        else:
-            s.Sufficiency_of_mobilization = True
-            s.willing_to_learn = False
-        if Sufficiency_of_mobilization == "خیر":
-            b = battalion_group.objects.filter(id=f_battalion_group).first()
-            s.battalion_group = b
-            s.Gordan = b.gordan
-        s.attraction_of_the_organization = attraction_of_the_organization
-        s.Sutter = Sutter
-        s.Grade = Grade
-        c_s = sarbaz.objects.filter(has_been_accepted=True).all()
-        find_max_code_list = [0]
-        for iteam in c_s:
-            if iteam.code_paziresh is not None:
-                find_max_code_list.append(int(iteam.code_paziresh))
-        code_paziresh_max = max(find_max_code_list)
-        s.code_paziresh = code_paziresh_max + 1
-        s.tarikh_paziresh = jdatetime.datetime.now()
-        code_gorhan_list = [0]
-        c_s = sarbaz.objects.filter(battalion_group=s.battalion_group, Gordan=s.Gordan).all()
-        for item in c_s:
-            if item.code_gorhan is not None:
-                code_gorhan_list.append(int(item.code_gorhan))
-        if Sufficiency_of_mobilization == "خیر":
-            s.code_gorhan = max(code_gorhan_list) + 1
-            b.zarfiat = int(b.zarfiat) - 1
-            b.save()
-        s.save()
+        while True:
+            try:
+                with transaction.atomic():
+                    s = soldire
+                    s.name = name
+                    s.family = family
+                    s.Relative_to_inclusive = Relative_to_inclusive
+                    s.Relative_to_inclusive_number = Relative_to_inclusive_number
+                    count_all_acceptance = sarbaz.objects.filter(has_been_accepted=True).count()
+                    s.code_paziresh = int(count_all_acceptance) + 1
+                    s.acceptance_code = generate_acceptance_code()
+                    s.has_been_accepted = True
+                    s.fathers_name = fathers_name
+                    s.National_Code = National_Code
+                    s.physical_condition = physical_condition
+                    s.Type_of_disease = Type_of_disease
+                    s.health_insurance_card = health_insurance_card
+                    s.Grade = s.Grade
+                    s.Grade_precise = Grade_precise
+                    educational_level_of_the_system_name = ""
+                    for iteam in educational_level_of_the_system_list:
+                        if iteam[0] == int(educational_level_of_the_system):
+                            educational_level_of_the_system_name = iteam[1]
+                    s.educational_level_of_the_system = educational_level_of_the_system_name
+                    s.Study_group = Study_group
+                    s.marital_status = marital_status
+                    s.Religion = Religion
+                    s.Date_of_birth = Date_of_birth
+                    s.place_of_birth = place_of_birth
+                    s.phone_number = phone_number
+                    s.home_phone_number = home_phone_number
+                    s.Date_of_dispatch = Date_of_dispatch
+                    s.province_name = province_name
+                    s.city_name = city_name
+                    s.Address = Address
+                    s.Place_of_Issue = Place_of_Issue
+                    s.height = height
+                    s.Weight = Weight
+                    s.Renewal_of_the_previous_period = Renewal_of_the_previous_period
+                    s.Course_renewal_date = Course_renewal_date
+                    s.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
+                    if Amriye == 'بله':
+                        s.Amriye = True
+                    else:
+                        s.Amriye = False
+                    s.Amriye_organization = Amriye_organization
+                    if Sufficiency_of_mobilization == 'خیر':
+                        s.Sufficiency_of_mobilization = False
+                        s.willing_to_learn = True
+                        s.in_coures = True
+                    else:
+                        s.Sufficiency_of_mobilization = True
+                        s.willing_to_learn = False
+                    if Sufficiency_of_mobilization == "خیر":
+                        b = battalion_group.objects.filter(id=f_battalion_group).first()
+                        s.battalion_group = b
+                        s.Gordan = b.gordan
+                    s.attraction_of_the_organization = attraction_of_the_organization
+                    s.Sutter = Sutter
+                    s.Grade = Grade
+                    c_s = sarbaz.objects.filter(has_been_accepted=True).all()
+                    find_max_code_list = [0]
+                    for iteam in c_s:
+                        if iteam.code_paziresh is not None:
+                            find_max_code_list.append(int(iteam.code_paziresh))
+                    code_paziresh_max = max(find_max_code_list)
+                    s.code_paziresh = code_paziresh_max + 1
+                    s.tarikh_paziresh = jdatetime.datetime.now()
+                    code_gorhan_list = [0]
+                    c_s = sarbaz.objects.filter(battalion_group=s.battalion_group, Gordan=s.Gordan).all()
+                    for item in c_s:
+                        if item.code_gorhan is not None:
+                            code_gorhan_list.append(int(item.code_gorhan))
+                    if Sufficiency_of_mobilization == "خیر":
+                        s.code_gorhan = max(code_gorhan_list) + 1
+                        b.zarfiat = int(b.zarfiat) - 1
+                        b.save()
+                    s.save()
+                break  # اگر ذخیره موفق بود، از حلقه خارج شویم
+            except IntegrityError:
+                continue
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
 
@@ -819,7 +841,7 @@ class sater(LoginRequiredMixin, View):
         return render(request, 'soldiers/sater_adi_page.html', cx)
 
 
-class moarefibegordan(View):
+class moarefibegordan(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         my_sarbaz = sarbaz.objects.filter(pk=pk).first()
@@ -982,76 +1004,83 @@ class CreatePaziresh(LoginRequiredMixin, View):
         Relative_to_inclusive_number = form_soldiers.cleaned_data['Relative_to_inclusive_number']
 
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
-        s = sarbaz()
-        s.name = name
-        s.family = family
-        s.fathers_name = fathers_name
-        s.National_Code = National_Code
-        s.physical_condition = physical_condition
-        s.Type_of_disease = Type_of_disease
-        s.health_insurance_card = health_insurance_card
-        s.Grade = s.Grade
-        s.Grade_precise = Grade_precise
-        s.educational_level_of_the_system = educational_level_of_the_system
-        s.Study_group = Study_group
-        s.Relative_to_inclusive = Relative_to_inclusive
-        s.Relative_to_inclusive_number = Relative_to_inclusive_number
-        s.marital_status = marital_status
-        s.Religion = Religion
-        s.Date_of_birth = Date_of_birth
-        s.place_of_birth = place_of_birth
-        s.phone_number = phone_number
-        s.home_phone_number = home_phone_number
-        s.Date_of_dispatch = Date_of_dispatch
-        s.province_name = province_name
-        s.city_name = city_name
-        s.Address = Address
-        s.Place_of_Issue = Place_of_Issue
-        s.height = height
-        s.Weight = Weight
-        s.Renewal_of_the_previous_period = Renewal_of_the_previous_period
-        s.Course_renewal_date = Course_renewal_date
-        s.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
-        if Amriye == 'بله':
-            s.Amriye = True
-        else:
-            s.Amriye = False
-        s.Amriye_organization = Amriye_organization
-        if Sufficiency_of_mobilization == 'خیر':
-            s.Sufficiency_of_mobilization = False
-            s.willing_to_learn = True
-            s.in_coures = True
-        else:
-            s.Sufficiency_of_mobilization = True
-            s.willing_to_learn = False
-        b = battalion_group.objects.filter(id=f_battalion_group).first()
-        if b is not None:
-            s.battalion_group = b
-            s.Gordan = b.gordan
-        s.attraction_of_the_organization = attraction_of_the_organization
-        s.Sutter = Sutter
-        s.Grade = Grade
-        s.has_been_accepted = True
-        count_accepet_soldire = sarbaz.objects.filter(has_been_accepted=True).all().count()
-        s.code_paziresh = int(count_accepet_soldire) + 1
-        s.acceptance_code = int(count_accepet_soldire) + 1
-        c_s = sarbaz.objects.all()
-        find_max_code_list = [0]
-        for iteam in c_s:
-            if iteam.code_paziresh is not None:
-                find_max_code_list.append(int(iteam.code_paziresh))
-        code_paziresh_max = max(find_max_code_list)
-        s.code_paziresh = code_paziresh_max + 1
-        s.tarikh_paziresh = jdatetime.datetime.now()
-        code_gorhan_list = [0]
-        c_s = sarbaz.objects.filter(battalion_group=s.battalion_group, Gordan=s.Gordan).all()
-        for item in c_s:
-            if item.code_gorhan is not None:
-                code_gorhan_list.append(int(item.code_gorhan))
-                s.code_gorhan = max(code_gorhan_list) + 1
-                b.zarfiat = int(b.zarfiat) - 1
-                b.save()
-        s.save()
+
+        while True:
+            try:
+                with transaction.atomic():
+                    s = sarbaz()
+                    s.name = name
+                    s.family = family
+                    s.fathers_name = fathers_name
+                    s.National_Code = National_Code
+                    s.physical_condition = physical_condition
+                    s.Type_of_disease = Type_of_disease
+                    s.health_insurance_card = health_insurance_card
+                    s.Grade = s.Grade
+                    s.Grade_precise = Grade_precise
+                    s.educational_level_of_the_system = educational_level_of_the_system
+                    s.Study_group = Study_group
+                    s.Relative_to_inclusive = Relative_to_inclusive
+                    s.Relative_to_inclusive_number = Relative_to_inclusive_number
+                    s.marital_status = marital_status
+                    s.Religion = Religion
+                    s.Date_of_birth = Date_of_birth
+                    s.place_of_birth = place_of_birth
+                    s.phone_number = phone_number
+                    s.home_phone_number = home_phone_number
+                    s.Date_of_dispatch = Date_of_dispatch
+                    s.province_name = province_name
+                    s.city_name = city_name
+                    s.Address = Address
+                    s.Place_of_Issue = Place_of_Issue
+                    s.height = height
+                    s.Weight = Weight
+                    s.Renewal_of_the_previous_period = Renewal_of_the_previous_period
+                    s.Course_renewal_date = Course_renewal_date
+                    s.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
+                    if Amriye == 'بله':
+                        s.Amriye = True
+                    else:
+                        s.Amriye = False
+                    s.Amriye_organization = Amriye_organization
+                    if Sufficiency_of_mobilization == 'خیر':
+                        s.Sufficiency_of_mobilization = False
+                        s.willing_to_learn = True
+                        s.in_coures = True
+                    else:
+                        s.Sufficiency_of_mobilization = True
+                        s.willing_to_learn = False
+                    b = battalion_group.objects.filter(id=f_battalion_group).first()
+                    if b is not None:
+                        s.battalion_group = b
+                        s.Gordan = b.gordan
+                    s.attraction_of_the_organization = attraction_of_the_organization
+                    s.Sutter = Sutter
+                    s.Grade = Grade
+                    s.has_been_accepted = True
+                    count_accepet_soldire = sarbaz.objects.filter(has_been_accepted=True).all().count()
+                    s.code_paziresh = int(count_accepet_soldire) + 1
+                    s.acceptance_code = generate_acceptance_code()
+                    c_s = sarbaz.objects.all()
+                    find_max_code_list = [0]
+                    for iteam in c_s:
+                        if iteam.code_paziresh is not None:
+                            find_max_code_list.append(int(iteam.code_paziresh))
+                    code_paziresh_max = max(find_max_code_list)
+                    s.code_paziresh = code_paziresh_max + 1
+                    s.tarikh_paziresh = jdatetime.datetime.now()
+                    code_gorhan_list = [0]
+                    c_s = sarbaz.objects.filter(battalion_group=s.battalion_group, Gordan=s.Gordan).all()
+                    for item in c_s:
+                        if item.code_gorhan is not None:
+                            code_gorhan_list.append(int(item.code_gorhan))
+                            s.code_gorhan = max(code_gorhan_list) + 1
+                            b.zarfiat = int(b.zarfiat) - 1
+                            b.save()
+                    s.save()
+                break  # اگر ذخیره موفق بود، از حلقه خارج شویم
+            except IntegrityError:
+                continue
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': s.id}))
 
 
@@ -1065,7 +1094,6 @@ class UpdatePazireshPage(LoginRequiredMixin, View):
     def post(self, request):
         form = SarbazCodeMeli(request.POST, request.FILES or None)
         if not form.is_valid():
-
             cx = {'from': form}
             return render(request, 'soldiers/updatepaziresh_idcode_page.html', cx)
         else:
@@ -1374,26 +1402,24 @@ class UpdatePaziresh(LoginRequiredMixin, View):
 
         if Sufficiency_of_mobilization == 'خیر':
             sb.Sufficiency_of_mobilization = False
+            sb.willing_to_learn = True
+            sb.in_coures = True
         else:
             sb.Sufficiency_of_mobilization = True
             sb.willing_to_learn = False
+            sb.in_coures = False
         sb.Place_of_Issue = Place_of_Issue
         sb.Renewal_of_the_previous_period_code = Renewal_of_the_previous_period_code
         sb.attraction_of_the_organization = attraction_of_the_organization
         sb.Sutter = Sutter
-        # if sb.battalion_group != "99999999":
-        #     if not sb.battalion_group == battalion_group.objects.filter(id=f_battalion_group).first().id:
-        #         b_change = battalion_group.objects.filter(id=sb.battalion_group.id).first()
-        #         b_change.zarfiat = int(b_change.zarfiat) + 1
-        #         a_change = battalion_group.objects.filter(id=f_battalion_group).first()
-        #         a_change.zarfiat = int(a_change.zarfiat) - 1
-        #         sb.battalion_group = a_change
-        #         sb.Gordan = a_change.gordan
-        #         b_change.save()
-        #         a_change.save()
+
         bt = battalion_group.objects.filter(id=f_battalion_group).filter().first()
-        sb.Gordan = bt.gordan
-        sb.battalion_group = bt
+        if bt is None:
+            sb.Gordan = None
+            sb.battalion_group = None
+        else:
+            sb.Gordan = bt.gordan
+            sb.battalion_group = bt
         sb.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': sb.id}))
 
@@ -1418,7 +1444,7 @@ class MainViewSoldires(LoginRequiredMixin, View):
         return render(request, 'soldiers/MainViewSoldires.html', cx)
 
 
-class exel_add_to_db(View):
+class exel_add_to_db(LoginRequiredMixin, View):
     def get(self, request):
         form = FormAddExelToDb()
         cx = {'form': form}
@@ -1510,14 +1536,14 @@ class exel_add_to_db(View):
                         temp = i[0]
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
-                check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list)).first()
+                check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list[1])).first()
                 soldire.date_improt_type = "سامانه"
                 if check_soldire is None:
                     soldire.save()
         return render(request, 'soldiers/AddExelToDb.html', cx)
 
 
-class exel_update_number(View):
+class exel_update_number(LoginRequiredMixin, View):
     def get(self, request):
         form = FormAddExelToDb()
         cx = {'form': form}
@@ -1565,6 +1591,7 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 
 
+@login_required
 def export_to_excel_list_elame_hozor(request):
     queryset = sarbaz.objects.filter(has_been_accepted=True).values(
         'acceptance_code', 'name', 'family',
@@ -1602,102 +1629,7 @@ def export_to_excel_list_elame_hozor(request):
     return response
 
 
-import openpyxl
-
-
-def test_import(request):
-    # بارگذاری فایل اکسل
-    exel = 'D:/unittest/ensaniapp/soldiers/s.xlsx'
-    workbook = openpyxl.load_workbook(exel)
-
-    # انتخاب شیت اول
-    sheet = workbook.active
-
-    # بدست آوردن تعداد ردیف‌ها و ستون‌ها
-    num_rows = sheet.max_row
-    num_cols = sheet.max_column
-
-    # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
-    for row_idx in range(2, num_rows + 1):
-        one_soldire_list = []
-        for col_idx in range(1, num_cols + 1):
-            # مقدار سلول را بخوانید
-            cell_value = sheet.cell(row=row_idx, column=col_idx).value
-            if cell_value is not None:
-                # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
-                cell_value = str(cell_value)
-                cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و')
-            one_soldire_list.append(cell_value)
-        if one_soldire_list[0] is not None:
-            find_soldire = sarbaz.objects.filter(National_Code=one_soldire_list[0]).first()
-            if find_soldire is not None:
-                find_soldire.acceptance_code = one_soldire_list[1]
-                find_soldire.code_paziresh = one_soldire_list[1]
-                grodan_name = one_soldire_list[3]
-                grodan = battalion.objects.filter(name__icontains=grodan_name).filter().first()
-                find_soldire.t_Gordan = grodan
-                gorohan_name = one_soldire_list[4]
-                find_soldire.t_battalion_group = battalion_group.objects.filter(gordan=grodan,
-                                                                                name__icontains=gorohan_name).first()
-                code_nahi = int(one_soldire_list[5])
-                find_soldire.code_gorhan_nahai = code_nahi
-                find_soldire.save()
-    return HttpResponse("S")
-
-
-# def sater_group_print(request):
-#     if request.method == "GET":
-#         form = FormSaterGroup()
-#         form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
-#         context = {
-#             'form': form,
-#         }
-#         return render(request, 'soldiers/sater_group_selector.html', context)
-#     if request.method == "POST":
-#         form = FormSaterGroup(request.POST, request.FILES or None)
-#         form.fields['type'].choices = [(1, "عادی"), (2, "کفایت بسیج"), (3, "امریه داره"), (4, "خدمت قبلی")]
-#         if not form.is_valid():
-#             context = {
-#                 'form': form,
-#             }
-#             return render(request, 'soldiers/sater_group_selector.html', context)
-#         start = int(form.cleaned_data['start'])
-#         end = int(form.cleaned_data['end'])
-#         type = int(form.cleaned_data['type'])
-#         en = EnsaniSettings.objects.filter().first()
-#         if type == 1:
-#             sarbazha = sarbaz.objects.filter(Amriye=False, Sufficiency_of_mobilization=False, in_coures=True,
-#                                              has_been_accepted=True, Sutter='مجوز دارد').order_by(
-#                 'acceptance_code').all()[start:end:]
-#             context = {
-#                 'sarbazha': sarbazha, 'en': en
-#             }
-#             return render(request, 'soldiers/sater_group_adi_print.html', context)
-#         if type == 2:
-#             sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=True,
-#                                              has_been_accepted=True).order_by(
-#                 'acceptance_code').all()[start:end:]
-#             context = {
-#                 'sarbazha': sarbazha, 'en': en
-#             }
-#             return render(request, 'soldiers/sater_group_kefayatbasij.html', context)
-#         if type == 3:
-#             sarbazha = sarbaz.objects.filter(Amriye=True, Sufficiency_of_mobilization=False, in_coures=True,
-#                                              has_been_accepted=True, Sutter='مجوز دارد').order_by(
-#                 'acceptance_code').all()[start:end:]
-#             context = {
-#                 'sarbazha': sarbazha, 'en': en
-#             }
-#             return render(request, 'soldiers/sater_group_amirye.html', context)
-#
-#         if type == 4:
-#             sarbazha = sarbaz.objects.filter(Previous_service_record=True).order_by('acceptance_code').all()[start:end:]
-#             context = {
-#                 'sarbazha': sarbazha, 'en': en
-#             }
-#             return render(request, 'soldiers/sater_group_khedmat_ghabli.html', context)
-
-
+@login_required
 def sater_group_print(request):
     if request.method == "GET":
         form = FormSaterGroup()
@@ -1768,6 +1700,7 @@ def sater_group_print(request):
         return render(request, 'soldiers/sater_group_selector.html', {'form': form})
 
 
+@login_required
 def moarefi_group_print(request):
     if request.method == "GET":
         form = FormMoarefiGroup()
@@ -1798,6 +1731,7 @@ def moarefi_group_print(request):
         return render(request, 'soldiers/moarefi_be_gordan_group.html', context)
 
 
+@login_required
 def export_soldire_has_been_accepted_in_coures_all_data(request):
     queryset = sarbaz.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'National_Code', 'name', 'family', 'fathers_name', 'acceptance_code', 'Gordan__name',
@@ -1860,6 +1794,7 @@ def export_soldire_has_been_accepted_in_coures_all_data(request):
     return response
 
 
+@login_required
 def export_soldire_has_been_accepted_all_data(request):
     queryset = sarbaz.objects.filter(has_been_accepted=True).values(
         'National_Code', 'name', 'family', 'fathers_name', 'acceptance_code', 'Gordan__name',
@@ -1922,7 +1857,7 @@ def export_soldire_has_been_accepted_all_data(request):
     return response
 
 
-class update_db_from_exel_paziresh_hazer_bekhdmat(View):
+class update_db_from_exel_paziresh_hazer_bekhdmat(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdatePazireshHazer()
         cx = {'form': form}
@@ -1999,7 +1934,7 @@ class update_db_from_exel_paziresh_hazer_bekhdmat(View):
                       'soldiers/update_db_from_exel_paziresh_hazer_bekhdmat.html', cx)
 
 
-class update_db_from_exel_paziresh_shode(View):
+class update_db_from_exel_paziresh_shode(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdatePazireshshode()
         cx = {'form': form}
@@ -2071,6 +2006,7 @@ class update_db_from_exel_paziresh_shode(View):
                       'soldiers/update_db_from_exel_paziresh_shode.html', cx)
 
 
+@login_required
 def soldier_search(request):
     query = request.GET.get('name')
     family = request.GET.get('family')
@@ -2090,3 +2026,41 @@ def soldier_search(request):
         'results': soldiers,
     }
     return render(request, 'soldiers/MainViewSoldires.html', context)
+
+
+@login_required
+def export_to_excel_bdone_madrak_tahsili(request):
+    queryset = sarbaz.objects.filter(has_been_accepted=False, Grade='نامشخص').values(
+        'name', 'family', 'fathers_name',
+        'National_Code', 'phone_number', 'home_phone_number')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'National_Code': 'کدملی',
+        'phone_number': 'شماره تماس',
+        'home_phone_number': 'شماره تماس',
+
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=export_to_excel_list_bedone_madrak_samane.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response

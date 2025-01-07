@@ -4,7 +4,7 @@ from django.views import View
 from soldiers.models import Soldier
 from battalions.models import battalion, battalion_group
 from ensaniapp_settings.models import EnsaniSettings
-
+from django.contrib.auth.decorators import login_required
 
 class panel_home(LoginRequiredMixin, View):
     def get(self, request):
@@ -57,7 +57,7 @@ class panel_home(LoginRequiredMixin, View):
               'name_list': name_list, 'total_list': total_list}
         return render(request, 'ensani/panel_home_page.html', cx)
 
-
+@login_required
 def support(request, *args, **kwargs):
     return render(request, 'ensani/poshtibani.html')
 

@@ -186,29 +186,35 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>انضباط:</strong> {{ soldier.discipline_score }}</p>
-                        <p><strong>فعالیت در گردان:</strong> {{ soldier.battalion_activity }}</p>
-                        <p><strong>نمونه گردان:</strong> {{ soldier.battalion_sample }}</p>
-                        <p><strong>سابقه بسیج فعال (ماه):</strong> {{ soldier.basij_experience }}</p>
-                        <p><strong>سابقه عضو شورای پایگاه (ماه):</strong> {{ soldier.council_experience }}</p>
-                        <p><strong>کفایت بسیج:</strong> {{ soldier.basij_efficiency }}</p>
-                        <p><strong>نمره عقیدتی:</strong> {{ soldier.ideological_score }}</p>
-                        <p><strong>نمره میدان تیر:</strong> {{ soldier.shooting_score }}</p>
-                        <p><strong>سه نفر برتر:</strong> {% if soldier.top_three %} بله {% else %} خیر {% endif %}</p>
-                        <p><strong>نمره نهایی:</strong> {{ soldier.total_score }}</p>
+                        {% if request.user.is_staff == True %}
+                            <p><strong>انضباط:</strong> {{ soldier.discipline_score }}</p>
+                            <p><strong>فعالیت در گردان:</strong> {{ soldier.battalion_activity }}</p>
+                            <p><strong>نمونه گردان:</strong>{% if soldier.battalion_sample %} بله{% else %}
+                                خیر{% endif %} </p>
+                            <p><strong>سابقه بسیج فعال (ماه):</strong> {{ soldier.basij_experience }}</p>
+                            <p><strong>سابقه عضو شورای پایگاه (ماه):</strong> {{ soldier.council_experience }}</p>
+                            <p><strong>کفایت بسیج:</strong> {{ soldier.basij_efficiency }}</p>
+                            <p><strong>نمره عقیدتی:</strong> {{ soldier.ideological_score }}</p>
+                            <p><strong>نمره میدان تیر:</strong> {{ soldier.shooting_score }}</p>
+                            <p><strong>سه نفر برتر:</strong>{{ soldier.top_three }}</p>
+                            <p><strong>نمره نهایی:</strong> {{ soldier.total_score }}</p>
+                        {% endif %}
                         <p><strong>نوع درجه:</strong> {{ soldier.rank }}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>حافظ قرآن (جزء):</strong> {{ soldier.quran_memorization }}</p>
-                        <p><strong>حافظ نهج البلاغه:</strong> {% if soldier.nahj_memorization %} بله {% else %}
-                            خیر {% endif %}</p>
-                        <p><strong>حافظ صحیفه سجادیه:</strong> {% if soldier.sajjadiya_memorization %} بله {% else %}
-                            خیر {% endif %}</p>
-                        <p><strong>تعداد مقام جهانی:</strong> {{ soldier.global_awards }}</p>
-                        <p><strong>تعداد مقام کشوری:</strong> {{ soldier.national_awards }}</p>
-                        <p><strong>تعداد مقام استانی:</strong> {{ soldier.provincial_awards }}</p>
-                        <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
-                        <p><strong>تعداد تالیفات:</strong> {{ soldier.publications }}</p>
+                        {% if request.user.is_staff == True %}
+                            <p><strong>حافظ قرآن (جزء):</strong> {{ soldier.quran_memorization }}</p>
+                            <p><strong>حافظ نهج البلاغه:</strong> {% if soldier.nahj_memorization %} بله {% else %}
+                                خیر {% endif %}</p>
+                            <p><strong>حافظ صحیفه سجادیه:</strong> {% if soldier.sajjadiya_memorization %}
+                                بله {% else %}
+                                خیر {% endif %}</p>
+                            <p><strong>تعداد مقام جهانی:</strong> {{ soldier.global_awards }}</p>
+                            <p><strong>تعداد مقام کشوری:</strong> {{ soldier.national_awards }}</p>
+                            <p><strong>تعداد مقام استانی:</strong> {{ soldier.provincial_awards }}</p>
+                            <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
+                            <p><strong>تعداد تالیفات:</strong> {{ soldier.publications }}</p>
+                        {% endif %}
                         {% if soldier.rank %}
                             <img src="{% static 'img/rank/'|add:soldier.rank|add:'.png' %}"
                                  alt="{{ soldier.rank }}" class="img-fluid" style="width: 40px">

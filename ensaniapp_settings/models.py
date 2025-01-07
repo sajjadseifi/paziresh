@@ -30,3 +30,5 @@ class EnsaniSettings(models.Model):
     sall = models.CharField(max_length=100, verbose_name='سال', null=True, blank=True)
     saghfi_eblaghi = models.CharField(max_length=100, verbose_name='سقف نامه', null=True, blank=True)
     emza_masole_niro_ensani = models.ImageField(upload_to='images/', null=True, blank=True)
+    hokme_darje_gardeshkar = models.CharField(max_length=100, null=True, blank=True)
+    tarikh_hokme_darje_gardeshkar = models.CharField(max_length=100, null=True, blank=True)

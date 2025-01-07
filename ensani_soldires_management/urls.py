@@ -53,4 +53,5 @@ urlpatterns = [
          name='import_bank_number_from_exel'),
     path('soldire/rank/group/', rank_group_print, name='rank_group_print'),
     path('soldire/rank/group/grodani/', rank_group_print_gordani, name='rank_group_print_gordani'),
+    path('soldire/rank/export_to_excel_list_rank', export_to_excel_list_rank, name='export_to_excel_list_rank'),
 ]

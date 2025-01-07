@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'ensaniapp_settings',
     'ensani_soldires_management',
     'ensani_backup',
+    'help',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'timeout': 20,
     }
 }
 
@@ -136,3 +138,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static_cdn", "media_root")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login'
+LOGOUT_REDIRECT_URL = '/logout'

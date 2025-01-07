@@ -1,17 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restore Database</title>
-</head>
-<body>
-    <h1>Restore Database</h1>
-    <p>Upload a backup file to restore the database.</p>
-    <form action="{% url 'restore_database' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Restore</button>
-    </form>
-</body>
-</html>
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">بازگرداندن پایگاه داده</h3>
+        </div>
+        <form action="{% url 'restore_database' %}" method="POST" enctype="multipart/form-data">
+            <p>یک فایل پشتیبان بارگذاری کنید تا پایگاه داده بازیابی شود.</p>
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="input-group input-group-sm">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <!-- دکمه بررسی -->
+                        <button type="submit" class="btn btn-success">
+                            ✅ بررسی
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

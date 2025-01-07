@@ -44,7 +44,7 @@ class Soldier(models.Model):
     Sufficiency_of_mobilization = models.BooleanField(default=False, verbose_name='کفایت بسیج', blank=True, null=True)
     the_medical_commission = models.BooleanField(default=False, verbose_name='کمیسیون پزشکی', blank=True, null=True)
     has_been_accepted = models.BooleanField(default=False, verbose_name='پذیرش شده است', blank=True, null=True)
-    acceptance_code = models.IntegerField(null=True, blank=True, verbose_name='کد پذیرش')
+    acceptance_code = models.IntegerField(null=True, blank=True, verbose_name='کد پذیرش', unique=True)
 
     Reason_for_renewing_the_course = models.CharField(null=True, blank=True, max_length=150,
                                                       verbose_name='علت تجدید دوره')

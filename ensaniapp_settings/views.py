@@ -1,13 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-
-# Create your views here.
-# request, *args, **kwargs
 from django.views import View
 from .forms import EnsaniSettingsForm
 from .models import EnsaniSettings
-import jdatetime
-import datetime
 
 
 class CreateOrUpdateSettings(LoginRequiredMixin, View):

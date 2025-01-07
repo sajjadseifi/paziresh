@@ -1,14 +1,18 @@
 from django.shortcuts import render, HttpResponse
+from openpyxl.styles.builtins import total
+
+import soldiers.import_data_from_exel
 from soldiers.models import Soldier
 from django.db.models import Count, Case, When
 from battalions.models import battalion, battalion_group
 from ensani_letter.models import NormalLetterModels
 from ensaniapp_settings.models import EnsaniSettings
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
 
-
+@login_required
 def amar_avalie(request):
     settings = EnsaniSettings.objects.filter().first()
     if settings is None:
@@ -149,6 +153,7 @@ def amar_avalie(request):
         return render(request, 'ensani_statistics/vaziate_avalie.html', context)
 
 
+@login_required
 def amar_gordan_gorhan(request):
     settings = EnsaniSettings.objects.filter().first()
     if settings is None:
@@ -263,10 +268,12 @@ def amar_gordan_gorhan(request):
         return render(request, 'ensani_statistics/amar_gordan_gorhan.html', context)
 
 
+@login_required
 def amar_be_tafkik_madrk_tahsili(request):
     return render(request, 'ensani_statistics/amar_be_tafkik_madrak_tahsili.html')
 
 
+@login_required
 def gozaresh_shoro_dore(request):
     amare_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
     salem = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
@@ -412,6 +419,7 @@ def gozaresh_shoro_dore(request):
     return render(request, 'ensani_statistics/gozaresh_shoro_dore.html', cx)
 
 
+@login_required
 def amar_shoro_doreh(request):
     amare_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
     salem = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
@@ -474,6 +482,7 @@ def amar_shoro_doreh(request):
     return render(request, 'ensani_statistics/amar_shoro_doreh.html', cx)
 
 
+@login_required
 def amar_payan_dore(request):
     amare_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
     salem = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
@@ -557,6 +566,7 @@ def amar_payan_dore(request):
     return render(request, 'ensani_statistics/amar_payan_dore.html', cx)
 
 
+@login_required
 def amar_avalie_samane(request):
     province_order = [
         'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
@@ -638,6 +648,7 @@ def amar_avalie_samane(request):
     return render(request, 'ensani_statistics/amar_avlie_samane.html', cx)
 
 
+@login_required
 def amar_avalie_samane_baghimonde(request):
     province_order = [
         'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
@@ -730,6 +741,7 @@ def amar_avalie_samane_baghimonde(request):
     return render(request, 'ensani_statistics/amar_samane_baghimonde.html', cx)
 
 
+@login_required
 def amar_avalie_samane_paziresh_shode(request):
     province_order = [
         'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
@@ -821,10 +833,12 @@ def amar_avalie_samane_paziresh_shode(request):
     return render(request, 'ensani_statistics/amare_samane_paziresh_shode.html', cx)
 
 
+@login_required
 def yegan_be_kar_girande(request):
     return render(request, 'ensani_statistics/gozaresh_yeghan_be_kar_girande.html')
 
 
+@login_required
 def yegan_be_kar_girande_tabel(request):
     salem_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                               in_coures=True, physical_condition='سالم',
@@ -1693,6 +1707,7 @@ def yegan_be_kar_girande_tabel(request):
     return render(request, 'ensani_statistics/amar_yegan_be_kar_girande_tabel.html', context)
 
 
+@login_required
 def gozaresh_payan_dore(request):
     amare_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
     salem = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
@@ -1845,3 +1860,36 @@ def gozaresh_payan_dore(request):
 
     }
     return render(request, 'ensani_statistics/gozaresh_payan_dore.html', cx)
+
+
+@login_required
+def amar_rank(request):
+    rank_1 = Soldier.objects.filter(rank="سرباز").all().count()
+    rank_2 = Soldier.objects.filter(rank="سرباز دوم").all().count()
+    rank_3 = Soldier.objects.filter(rank="سرباز یکم").all().count()
+    rank_4 = Soldier.objects.filter(rank="رزمیار").all().count()
+    rank_5 = Soldier.objects.filter(rank="رزم‌آور سوم").all().count()
+    rank_6 = Soldier.objects.filter(rank="رزم‌آور دوم").all().count()
+    rank_7 = Soldier.objects.filter(rank="رزم‌آور یکم").all().count()
+    rank_8 = Soldier.objects.filter(rank="رزمدار دوم").all().count()
+    rank_9 = Soldier.objects.filter(rank="رزمدار یکم").all().count()
+    rank_10 = Soldier.objects.filter(rank="ستوان سوم").all().count()
+    rank_11 = Soldier.objects.filter(rank="ستوان دوم").all().count()
+    rank_12 = Soldier.objects.filter(rank="ستوان یکم").all().count()
+    total = rank_1 + rank_2 + rank_3 + rank_4 + rank_5 + rank_6 + rank_7 + rank_8 + rank_9 + rank_10 + rank_11 + rank_12
+    cx = {
+        'rank_1': rank_1,
+        'rank_2': rank_2,
+        'rank_3': rank_3,
+        'rank_4': rank_4,
+        'rank_5': rank_5,
+        'rank_6': rank_6,
+        'rank_7': rank_7,
+        'rank_8': rank_8,
+        'rank_9': rank_9,
+        'rank_10': rank_10,
+        'rank_11': rank_11,
+        'rank_12': rank_12,
+        'total': total,
+    }
+    return render(request, 'ensani_statistics/amar_rank.html', cx)

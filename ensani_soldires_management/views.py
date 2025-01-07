@@ -1,4 +1,5 @@
 import jdatetime
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
 
@@ -12,6 +13,9 @@ from django.http import HttpResponse, JsonResponse
 import openpyxl
 from battalions.models import battalion, battalion_group
 from ensaniapp_settings.models import EnsaniSettings
+from django.contrib.auth.decorators import login_required
+import io
+import zipfile
 
 list_yegan_bekargirande = [
     (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
@@ -205,7 +209,7 @@ list_yegan_bekargirande = [
 ]
 
 
-# Create your views here.
+@login_required
 def all_soldire(request):
     soldires = Soldier.objects.filter(has_been_accepted=True, in_coures=True)
     context = {
@@ -215,6 +219,7 @@ def all_soldire(request):
     return render(request, 'ensani_soldires_management/all_soldires.html', context)
 
 
+@login_required
 def soldier_search(request):
     query = request.GET.get('name')
     family = request.GET.get('family')
@@ -272,12 +277,14 @@ def soldier_search(request):
     return render(request, 'ensani_soldires_management/soldier_search.html', context)
 
 
+@login_required
 def get_grohan_by_gordan_for_search(request):
     gordan_name = request.GET.get('gordan_name')
     grohan_list = battalion_group.objects.filter(gordan__name__icontains=gordan_name).values('id', 'name')
     return JsonResponse(list(grohan_list), safe=False)
 
 
+@login_required
 def soldire_details(request, code):
     if request.method == "GET":
         soldire = Soldier.objects.filter(National_Code=code).first()
@@ -286,6 +293,7 @@ def soldire_details(request, code):
         return render(request, 'ensani_soldires_management/soldire_details.html', context)
 
 
+@login_required
 def export_to_excel_list_hazer_be_khdmat(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'acceptance_code', 'name', 'family',
@@ -324,6 +332,7 @@ def export_to_excel_list_hazer_be_khdmat(request):
     return response
 
 
+@login_required
 def export_to_excel_list_sarbaz_tatbigh_nashode(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, in_coures=True, the_medical_commission=False,
                                       Previous_service_record=False, Sufficiency_of_mobilization=False,
@@ -367,7 +376,7 @@ def export_to_excel_list_sarbaz_tatbigh_nashode(request):
     return response
 
 
-class exel_update_gordan(View):
+class exel_update_gordan(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateGordan()
         cx = {'form': form}
@@ -417,7 +426,7 @@ class exel_update_gordan(View):
         return render(request, 'ensani_soldires_management/update_gordan.html', cx)
 
 
-class exel_jazbi(View):
+class exel_jazbi(LoginRequiredMixin, View):
     def get(self, request):
         form = Formjazbi()
         form.fields['type'].choices = [("سپاه/مامور", 'سپاه/مامور'), ("نزسا", "نزسا"), ("موفق", "موفق")]
@@ -466,6 +475,7 @@ class exel_jazbi(View):
         return render(request, 'ensani_soldires_management/update_jazbi.html', cx)
 
 
+@login_required
 def export_to_excel_list_sarbvaz_test_salamat_ravan(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
                                       physical_condition="سالم", attraction_of_the_organization='هیچکدام').values(
@@ -505,6 +515,7 @@ def export_to_excel_list_sarbvaz_test_salamat_ravan(request):
     return response
 
 
+@login_required
 def export_to_excel_list_sarbaz_be_sorat_gorohi(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'acceptance_code', 'name', 'family',
@@ -544,41 +555,7 @@ def export_to_excel_list_sarbaz_be_sorat_gorohi(request):
     return response
 
 
-def import_exel_yegan_be_kar_girande(request):
-    # بارگذاری فایل اکسل
-    exel = 'D:/unittest/ensaniapp/soldiers/s.xlsx'
-    workbook = openpyxl.load_workbook(exel)
-
-    # انتخاب شیت اول
-    sheet = workbook.active
-
-    # بدست آوردن تعداد ردیف‌ها و ستون‌ها
-    num_rows = sheet.max_row
-    num_cols = sheet.max_column
-
-    # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
-    for row_idx in range(2, num_rows + 1):
-        one_soldire_list = []
-        for col_idx in range(1, num_cols + 1):
-            # مقدار سلول را بخوانید
-            cell_value = sheet.cell(row=row_idx, column=col_idx).value
-            if cell_value is not None:
-                # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
-                cell_value = str(cell_value)
-                cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و')
-            one_soldire_list.append(cell_value)
-        if one_soldire_list[0] is not None:
-            find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
-            if find_soldire is not None:
-                unit_name = str(one_soldire_list[1])
-                unit_type = str(one_soldire_list[2])
-                find_soldire.unit_type = unit_type
-                find_soldire.unit_name = unit_name
-                find_soldire.IsUnit = True
-                find_soldire.save()
-    return HttpResponse("S")
-
-
+@login_required
 def PrintPosheNokhodi(request):
     in_course_soldire = Soldier.objects.filter(in_coures=True, willing_to_learn=True).order_by('t_Gordan__name',
                                                                                                't_battalion_group__name',
@@ -588,7 +565,7 @@ def PrintPosheNokhodi(request):
     return render(request, 'ensani_soldires_management/print_poshe_nokhodi.html', cx)
 
 
-class exel_yegaan_khedmat(View):
+class exel_yegaan_khedmat(LoginRequiredMixin, View):
     def get(self, request):
         form = FormYegankhedmati()
         form.fields['type'].choices = [(1, 'عادی'), (2, "امریه")]
@@ -658,6 +635,7 @@ class exel_yegaan_khedmat(View):
         return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)
 
 
+@login_required
 def export_soldire_incoures_all_data(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'name', 'family', 'fathers_name', 'National_Code', 'acceptance_code', 't_Gordan__name',
@@ -726,6 +704,7 @@ def export_soldire_incoures_all_data(request):
     return response
 
 
+@login_required
 def export_soldire_Sufficiency_of_mobilization_all_data(request):
     queryset = Soldier.objects.filter(has_been_accepted=True,
                                       Sufficiency_of_mobilization=True).values(
@@ -792,6 +771,7 @@ def export_soldire_Sufficiency_of_mobilization_all_data(request):
     return response
 
 
+@login_required
 def export_soldire_Previous_service_record_all_data(request):
     queryset = Soldier.objects.filter(has_been_accepted=True,
                                       Previous_service_record=True).values(
@@ -858,7 +838,7 @@ def export_soldire_Previous_service_record_all_data(request):
     return response
 
 
-class update_db_from_exel_all_soldire_in_course(View):
+class update_db_from_exel_all_soldire_in_course(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateAllSoldiresHasbenAceptedInCourse()
         cx = {'form': form}
@@ -938,7 +918,7 @@ class update_db_from_exel_all_soldire_in_course(View):
         return render(request, 'ensani_soldires_management/update_yegann_khedmati.html', cx)
 
 
-class update_db_from_exel_all_soldire_Previous_service_record(View):
+class update_db_from_exel_all_soldire_Previous_service_record(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateAllSoldiresHasbenAceptedInCourse()
         cx = {'form': form}
@@ -1012,7 +992,7 @@ class update_db_from_exel_all_soldire_Previous_service_record(View):
                       'ensani_soldires_management/update_db_from_exel_all_soldire_Previous_service_record.html', cx)
 
 
-class update_db_from_exel_all_soldire_Sufficiency_of_mobilization(View):
+class update_db_from_exel_all_soldire_Sufficiency_of_mobilization(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateAllSoldiresHasbenAceptedInCourse()
         cx = {'form': form}
@@ -1088,6 +1068,7 @@ class update_db_from_exel_all_soldire_Sufficiency_of_mobilization(View):
                       'ensani_soldires_management/update_db_from_exel_all_soldire_Sufficiency_of_mobilization.html', cx)
 
 
+@login_required
 def import_and_export_excel_maharat(request):
     # خواندن فایل اکسل ورودی که حاوی کد ملی‌ها است
     input_file_path = "D:/unittest/ensaniapp/soldiers/xxx.xlsx"  # مسیر فایل اکسل ورودی
@@ -1121,11 +1102,7 @@ def import_and_export_excel_maharat(request):
     return response
 
 
-import io
-import zipfile
-from django.http import HttpResponse
-
-
+@login_required
 def import_and_export_multiple_excel_sakhtar_sazi(request):
     # ایجاد فایل فشرده در حافظه
     zip_buffer = io.BytesIO()
@@ -1178,6 +1155,7 @@ def import_and_export_multiple_excel_sakhtar_sazi(request):
     return response
 
 
+@login_required
 def export_to_excel_list_not_accepted(request):
     queryset = Soldier.objects.filter(has_been_accepted=False, date_improt_type='سامانه').values(
         'name', 'family', 'fathers_name',
@@ -1213,6 +1191,7 @@ def export_to_excel_list_not_accepted(request):
     # تنظیم sheet به حالت راست به چپ
     worksheet.sheet_view.rightToLeft = True
     return response
+
 
 
 def get_military_rank(education, score):
@@ -1425,7 +1404,7 @@ def calculate_score():
         s.save()
 
 
-class import_rank_from_exel(View):
+class import_rank_from_exel(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateRank()
         cx = {'form': form}
@@ -1459,32 +1438,36 @@ class import_rank_from_exel(View):
                     # مقدار سلول را بخوانید
                     cell_value = sheet.cell(row=row_idx, column=col_idx).value
                     one_soldire_list.append(cell_value)
+
                 if one_soldire_list[0] is not None:
                     find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
-                    find_soldire.discipline_score = one_soldire_list[6]
-                    find_soldire.basij_experience = one_soldire_list[7]
-                    find_soldire.council_experience = one_soldire_list[8]
-                    find_soldire.ideological_score = one_soldire_list[9]
-                    find_soldire.shooting_score = one_soldire_list[10]
-                    find_soldire.global_awards = one_soldire_list[11]
-                    find_soldire.national_awards = one_soldire_list[12]
-                    find_soldire.provincial_awards = one_soldire_list[13]
-                    find_soldire.global_articles = one_soldire_list[14]
-                    find_soldire.publications = one_soldire_list[15]
-                    find_soldire.battalion_activity = one_soldire_list[17]
-                    find_soldire.battalion_sample = one_soldire_list[18] or False
-                    find_soldire.basij_efficiency = one_soldire_list[19]
-                    find_soldire.top_three = one_soldire_list[20]
-                    find_soldire.quran_memorization = one_soldire_list[21] or 0
-                    find_soldire.nahj_memorization = one_soldire_list[22] or False
-                    find_soldire.sajjadiya_memorization = one_soldire_list[23] or False
-                    find_soldire.save()
+                    if find_soldire is not None:
+                        find_soldire.discipline_score = float(one_soldire_list[6])
+                        find_soldire.basij_experience = float(one_soldire_list[7])
+                        find_soldire.council_experience = float(one_soldire_list[8])
+                        find_soldire.ideological_score = float(one_soldire_list[9])
+                        find_soldire.shooting_score = one_soldire_list[10]
+                        find_soldire.global_awards = one_soldire_list[11]
+                        find_soldire.national_awards = one_soldire_list[12]
+                        find_soldire.provincial_awards = one_soldire_list[13]
+                        find_soldire.global_articles = one_soldire_list[14]
+                        find_soldire.publications = one_soldire_list[15]
+                        find_soldire.battalion_activity = one_soldire_list[16]
+                        find_soldire.battalion_sample = one_soldire_list[17] or False
+                        find_soldire.basij_efficiency = one_soldire_list[18]
+                        find_soldire.top_three = one_soldire_list[19]
+                        find_soldire.quran_memorization = one_soldire_list[20] or 0
+                        find_soldire.nahj_memorization = one_soldire_list[21] or False
+                        find_soldire.sajjadiya_memorization = one_soldire_list[22] or False
+                        find_soldire.save()
+
         cx = {'form': form}
         calculate_score()
         return render(request,
                       'ensani_soldires_management/import_rank_from_exel.html', cx)
 
 
+@login_required
 def export_to_excel_list_bank(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'name', 'family', 'fathers_name',
@@ -1528,7 +1511,7 @@ def export_to_excel_list_bank(request):
     return response
 
 
-class import_bank_number_from_exel(View):
+class import_bank_number_from_exel(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateBank()
         cx = {'form': form}
@@ -1573,6 +1556,7 @@ class import_bank_number_from_exel(View):
                       'ensani_soldires_management/import_bank_from_exel.html', cx)
 
 
+@login_required
 def rank_group_print(request):
     if request.method == "GET":
         form = FormRankGroup()
@@ -1605,6 +1589,7 @@ def rank_group_print(request):
         return render(request, 'ensani_soldires_management/rank_print.html', context)
 
 
+@login_required
 def rank_group_print_gordani(request):
     sarbazha = Soldier.objects.filter(in_coures=True,
                                       has_been_accepted=True, willing_to_learn=True,
@@ -1618,3 +1603,47 @@ def rank_group_print_gordani(request):
         'time': time,
     }
     return render(request, 'ensani_soldires_management/rank_print.html', context)
+
+
+@login_required
+def export_to_excel_list_rank(request):
+    queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
+        'name', 'family', 'fathers_name',
+        'National_Code', 'acceptance_code', 't_Gordan', 't_battalion_group', 'code_gorhan_nahai',
+        'rank').order_by('t_Gordan',
+                         't_battalion_group',
+                         'code_gorhan_nahai')
+
+    df = pd.DataFrame(list(queryset))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'National_Code': 'کدملی',
+        'acceptance_code': 'عددپذیرش',
+        't_Gordan': 'گردان',
+        't_battalion_group': 'گروهان',
+        'code_gorhan_nahai': 'کدسازمانی',
+        'rank': 'درجه',
+
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=export_to_excel_list_rank.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response
