@@ -18,8 +18,32 @@ def amar_avalie(request):
     if settings is None:
         return HttpResponse("تنظیمات دوره انجام نشده!")
     statistics = []
-
+    total_soldire = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                           the_medical_commission=False, Sufficiency_of_mobilization=False).count()
+    total_salme = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                         the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                         physical_condition='سالم').count()
+    total_gorh_be = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                           the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                           physical_condition='گروه ب').count()
+    total_moaf_az_razm = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                                the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                                physical_condition='معاف از رزم').count()
+    total_moaf_az_razm_groh_be = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                                        the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                                        physical_condition='معاف+گروه ب').count()
+    total_amrie_dar = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                             the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                             Amriye=True).count()
+    total_shie = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                        the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                        Religion='شیعه').count()
+    total_ahle_tasnon = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True,
+                                               the_medical_commission=False, Sufficiency_of_mobilization=False,
+                                               Religion='اهل تسنن').count()
+    statistics = []
     if settings.tatbigh == False:
+
         # ابتدا تمام گردان‌ها را بازیابی می‌کنیم
         battalions = battalion.objects.all()
         for bat in battalions:
@@ -85,7 +109,16 @@ def amar_avalie(request):
             })
             lst = []
         context = {
-            'statistics': statistics
+            'statistics': statistics,
+            'en': settings,
+            'total_salme': total_salme,
+            'total_gorh_be': total_gorh_be,
+            'total_moaf_az_razm': total_moaf_az_razm,
+            'total_moaf_az_razm_groh_be': total_moaf_az_razm_groh_be,
+            'total_shie': total_shie,
+            'total_ahle_tasnon': total_ahle_tasnon,
+            'total_soldire': total_soldire,
+            'total_amrie_dar': total_amrie_dar,
         }
 
         return render(request, 'ensani_statistics/vaziate_avalie.html', context)
@@ -147,7 +180,15 @@ def amar_avalie(request):
             lst = []
         context = {
             'statistics': statistics,
-            'en': settings
+            'en': settings,
+            'total_salme': total_salme,
+            'total_gorh_be': total_gorh_be,
+            'total_moaf_az_razm': total_moaf_az_razm,
+            'total_moaf_az_razm_groh_be': total_moaf_az_razm_groh_be,
+            'total_shie': total_shie,
+            'total_ahle_tasnon': total_ahle_tasnon,
+            'total_soldire': total_soldire,
+            'total_amrie_dar': total_amrie_dar,
         }
 
         return render(request, 'ensani_statistics/vaziate_avalie.html', context)

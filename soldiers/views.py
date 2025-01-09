@@ -1420,6 +1420,7 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         else:
             sb.Gordan = bt.gordan
             sb.battalion_group = bt
+        sb.Previous_service_record = False
         sb.save()
         return HttpResponseRedirect(reverse("moarefi_be_gordan_va_sater", kwargs={'pk': sb.id}))
 

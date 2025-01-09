@@ -1193,7 +1193,6 @@ def export_to_excel_list_not_accepted(request):
     return response
 
 
-
 def get_military_rank(education, score):
     # تعریف جدول درجات و محدوده نمرات
     rank_table = {
@@ -1472,9 +1471,9 @@ def export_to_excel_list_bank(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'name', 'family', 'fathers_name',
         'National_Code', 'acceptance_code', 't_Gordan', 't_battalion_group', 'code_gorhan_nahai',
-        'bank_number').order_by('t_Gordan',
-                                't_battalion_group',
-                                'code_gorhan_nahai')
+        'bank_number', 'province_name', 'city_name').order_by('t_Gordan',
+                                                              't_battalion_group',
+                                                              'code_gorhan_nahai')
 
     df = pd.DataFrame(list(queryset))
 
@@ -1488,6 +1487,8 @@ def export_to_excel_list_bank(request):
         't_Gordan': 'گردان',
         't_battalion_group': 'گروهان',
         'code_gorhan_nahai': 'کدسازمانی',
+        'province_name': 'استان',
+        'city_name': 'شهر',
         'bank_number': 'شماره حساب',
 
     }, inplace=True)

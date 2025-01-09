@@ -138,6 +138,7 @@ class BattalionGroupUpdate(View):
         bg_f.initial['diplom'] = bg.diplom
         bg_f.initial['ofghdiplom'] = bg.ofghdiplom
         bg_f.initial['lisans'] = bg.lisans
+        bg_f.initial['ofghlisans'] = bg.ofghlisans
         bg_f.initial['doctra'] = bg.doctra
         bg_f.initial['shie'] = bg.shie
         bg_f.initial['ahle_tasnon'] = bg.ahle_tasnon

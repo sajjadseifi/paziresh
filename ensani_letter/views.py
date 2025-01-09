@@ -71,6 +71,7 @@ def find_sepah_name(p):
         if iteam[1] == str(p):
             return iteam[2]
 
+
 @login_required
 def AllCheckoutLetter(request, *args, **kwargs):
     all_checkout_letter = CheckoutLetterModels.objects.filter().all()
@@ -122,6 +123,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
         my_letter.c_type = c_type
         my_letter.save()
         return redirect(self.success_url)
+
 
 @login_required
 def AllNormalLetter(request, *args, **kwargs):
@@ -217,6 +219,8 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
             find_soldire.acceptance_code = all_find_solidre + 1
         find_soldire.in_coures = False
         find_soldire.has_been_accepted = True
+        find_soldire.battalion_group = None
+        find_soldire.Gordan = None
         find_soldire.save()
         return redirect(self.success_url)
 
@@ -252,12 +256,13 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
         my_letter = NormalLetterModels()
         all_find_solidre = Soldier.objects.filter(has_been_accepted=True).all().count()
         find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        if find_soldire.has_been_accepted == False:
-            find_soldire.has_been_accepted = True
+        if find_soldire.acceptance_code is None:
             find_soldire.acceptance_code = all_find_solidre + 1
-            find_soldire.willing_to_learn = False
-            find_soldire.code_paziresh = all_find_solidre + 1
-            find_soldire.Previous_service_record = True
+        find_soldire.willing_to_learn = False
+        find_soldire.Previous_service_record = True
+        find_soldire.in_coures = False
+        find_soldire.Gordan = None
+        find_soldire.battalion_group = None
         find_soldire.save()
         my_letter.soldire = find_soldire
         my_letter.status = "درحال بررسی"
@@ -429,6 +434,7 @@ class CreateFarajaLetter(LoginRequiredMixin, View):
         rn.save()
         return redirect(self.success_url)
 
+
 @login_required
 def PrintCheckoutLetter(request, *args, **kwargs):
     checkout_letter_pk = kwargs['pk']
@@ -440,6 +446,7 @@ def PrintCheckoutLetter(request, *args, **kwargs):
     en = EnsaniSettings.objects.filter().first()
     cx = {'checkout_letter': checkout_letter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_letter.html', cx)
+
 
 @login_required
 def PrintCheckoutCommissionLetter(request, *args, **kwargs):
@@ -453,6 +460,7 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 
+
 @login_required
 def PrintTrainingInquiryLetter(request, *args, **kwargs):
     training_inquiry_letter_pk = kwargs['pk']
@@ -462,6 +470,7 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     en = EnsaniSettings.objects.filter().first()
     cx = {'training_inquiry_letter': training_inquiry_letter, 'en': en}
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
+
 
 @login_required
 def PrintRegisterLetter(request, *args, **kwargs):
@@ -474,6 +483,7 @@ def PrintRegisterLetter(request, *args, **kwargs):
     cx = {'Normal_letter_Register': Normal_letter_Register, 'en': en, 'rg': Rg}
     return render(request, 'ensani_letter/print_register_normal_letter.html', cx)
 
+
 @login_required
 def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     before_course_commission_letter_pk = kwargs['pk']
@@ -483,6 +493,7 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
     sutter = Sater.objects.filter(sarbaz=before_course_commission.soldire).last()
     cx = {'before_course_commission_letter': before_course_commission, "sutter": sutter}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
+
 
 @login_required
 def PrintRunawayLetterLetter(request, *args, **kwargs):
@@ -495,6 +506,7 @@ def PrintRunawayLetterLetter(request, *args, **kwargs):
     en = EnsaniSettings.objects.filter().last()
     cx = {'leter': my, 'en': en, 'run_detail': run_detail, 'suter': suter}
     return render(request, 'ensani_letter/print_runaway_letter_letter.html', cx)
+
 
 @login_required
 def PrintFarajaLetter(request, *args, **kwargs):
@@ -509,6 +521,7 @@ def PrintFarajaLetter(request, *args, **kwargs):
     cx = {'leter': my, 'en': en, 'fara_detail': fata_detail, 'suter': suter, 'checkout': checkout}
     return render(request, 'ensani_letter/print_faraja_letter.html', cx)
 
+
 @login_required
 def check_status_checkout(request, *args, **kwargs):
     checkout_id = kwargs['pk']
@@ -518,6 +531,7 @@ def check_status_checkout(request, *args, **kwargs):
     checkout_letter.status = "تایید"
     checkout_letter.save()
     return redirect(reverse_lazy('AllCheckoutLetter'))
+
 
 @login_required
 def remove_checkout(request, *args, **kwargs):
@@ -537,6 +551,7 @@ def remove_checkout(request, *args, **kwargs):
     sold.save()
     checkout_letter.delete()
     return redirect(reverse_lazy('AllCheckoutLetter'))
+
 
 @login_required
 def remove_normall(request, *args, **kwargs):
