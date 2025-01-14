@@ -32,3 +32,4 @@ class EnsaniSettings(models.Model):
     emza_masole_niro_ensani = models.ImageField(upload_to='images/', null=True, blank=True)
     hokme_darje_gardeshkar = models.CharField(max_length=100, null=True, blank=True)
     tarikh_hokme_darje_gardeshkar = models.CharField(max_length=100, null=True, blank=True)
+    emza_farmande = models.ImageField(upload_to='images/', null=True, blank=True)

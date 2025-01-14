@@ -1,6 +1,8 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
 
+
+
 {% block header %}
     <style>
         .card-header-custom {
@@ -170,6 +172,8 @@
                         </p>
                         <p><i class="fa fa-weight"></i><strong>نوع یگان خدمتی:</strong> {{ soldier.unit_type }}
                         </p>
+                        <p><i class="fa fa-weight"></i><strong>نوع یگان خدمتی:</strong> {{ soldier.yegan_name }}
+                        </p>
                     </div>
                     <div class="col-md-6">
                         <p><i class="fa fa-handshake"></i><strong>آدرس یگان:</strong>{{ soldier.unit_address }}</p>
@@ -215,9 +219,42 @@
                             <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
                             <p><strong>تعداد تالیفات:</strong> {{ soldier.publications }}</p>
                         {% endif %}
-                        {% if soldier.rank %}
-                            <img src="{% static 'img/rank/'|add:soldier.rank|add:'.png' %}"
-                                 alt="{{ soldier.rank }}" class="img-fluid" style="width: 40px">
+                        {% if soldier.rank == 'سرباز' %}
+                            <img src="{% static 'img/rank/1.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
+                                 style="width: 40px">
+                        {% elif soldier.rank == 'سرباز دوم' %}
+                            <img src="{% static 'img/rank/2.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
+                                 style="width: 40px">
+                        {% elif soldier.rank == 'سرباز یکم' %}
+                            <img src="{% static 'img/rank/3.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
+                                 style="width: 40px">
+                        {% elif soldier.rank == 'رزمیار' %}
+                            <img src="{% static 'img/rank/4.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
+                                 style="width: 40px">
+                        {% elif soldier.rank == 'رزم‌آور سوم' %}
+                            <img src="{% static 'img/rank/5.png' %}" alt="{{ soldier.rank }}"
+                                 class="img-fluid" style="width: 40px">
+                        {% elif soldier.rank == 'رزم‌آور دوم' %}
+                            <img src="{% static 'img/rank/6.png' %}" alt="{{ soldier.rank }}"
+                                 class="img-fluid" style="width: 40px">
+                        {% elif soldier.rank == 'رزم‌آور یکم' %}
+                            <img src="{% static 'img/rank/7.png' %}" alt="{{ soldier.rank }}"
+                                 class="img-fluid" style="width: 40px">
+                        {% elif soldier.rank == 'رزمدار دوم' %}
+                            <img src="{% static 'img/rank/8.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
+                                 style="width: 40px">
+                        {% elif soldier.rank == 'رزمدار یکم' %}
+                            <img src="{% static 'img/rank/9.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
+                                 style="width: 40px">
+                        {% elif soldier.rank == 'ستوان سوم' %}
+                            <img src="{% static 'img/rank/10.png' %}" alt="{{ soldier.rank }}"
+                                 class="img-fluid" style="width: 40px">
+                        {% elif soldier.rank == 'ستوان دوم' %}
+                            <img src="{% static 'img/rank/11.png' %}" alt="{{ soldier.rank }}"
+                                 class="img-fluid" style="width: 40px">
+                        {% elif soldier.rank == 'ستوان یکم' %}
+                            <img src="{% static 'img/rank/12.png' %}" alt="{{ soldier.rank }}"
+                                 class="img-fluid" style="width: 40px">
                         {% endif %}
                     </div>
                 </div>

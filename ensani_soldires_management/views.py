@@ -17,6 +17,21 @@ from django.contrib.auth.decorators import login_required
 import io
 import zipfile
 
+rank_mapping = {
+    "سرباز": "1",
+    "سرباز دوم": "2",
+    "سرباز یکم": "3",
+    "رزمیار": "4",
+    "رزم‌آور سوم": "5",
+    "رزم‌آور دوم": "6",
+    "رزم‌آور یکم": "7",
+    "رزمدار دوم": "8",
+    "رزمدار یکم": "9",
+    "ستوان سوم": "10",
+    "ستوان دوم": "11",
+    "ستوان یکم": "12",
+}
+
 list_yegan_bekargirande = [
     (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
     (2, 'سپاه نینوا - گلستان', 'سپاه و رده های اقماری', 'گلستان', 'گلستان-گرگان-فلکه بسیج'),
@@ -205,6 +220,25 @@ list_yegan_bekargirande = [
     (130, 'دانشگاه حضرت اميرالمومنين(ع) نزسا', 'نزسا', '******', '******'),
     (131, 'سپاه روح اله - مرکزي', 'سپاه و رده های اقماری', '******', '******'),
     (132, 'سپاه انصارالحسين (ع) - همدان', 'سپاه و رده های اقماری', '******', '******'),
+    (133, 'لشکر 25 کربلا', 'سپاه و رده های اقماری', '******', 'مازندران'),
+    (134, 'تيپ12 قائم(عج)', 'سپاه و رده های اقماری', '******', '******'),
+    (135, 'بيمارستان شهيد قاضي نزسا', 'نزسا', '******', '******'),
+    (136, 'نیروی زمینی', 'نزسا', '******', '******'),
+    (137, 'ندسا - معاونت بهداشت و درمان نيروي دريايي سپاه', 'ندسا', '******', '******'),
+    (138, 'تيپ 82 صاحب الامر(عج)', 'سپاه و رده های اقماری', '******', '******'),
+    (139, 'مرکز جنگال نيروي زميني سپاه', 'سپاه و رده های اقماری', '******', '******'),
+    (140, 'آموزشگاه وليعصر(عج) نزسا', 'نزسا', '******', '******'),
+    (141, 'ندسا - پايگاه دريايي مستقل امامت جاسک', 'ندسا', '******', '******'),
+    (142, 'تيپ 18 الغدير', 'سپاه و رده های اقماری', '******', '******'),
+    (143, 'قرارگاه منطقه اي حمزه سيد الشهداء(ع)(شمالغرب) نزسا', 'نزسا', '******', '******'),
+    (144, 'نیروی زمینی', 'نزسا', '******', '******'),
+    (145, 'معاونت آماد و پشتيباني نيروي زميني سپاه', 'سپاه و رده های اقماری', '******', '******'),
+    (146, 'مرکز پشتيباني عمومي و تخصصي اصفهان نزسا', 'نزسا', '******', '******'),
+    (147, 'نيروي هوافضاي سپاه', 'هوافضا', '******', '******'),
+    (148, 'سپاه نينوا - گلستان يگان حفاظت هواپيمايي', 'هوافضا', '******', '******'),
+    (149, 'تيپ 71 روح الله(ره)', 'سپاه و رده های اقماری', '******', '******'),
+    (150, 'ندسا - منطقه پنجم', 'ندسا', '******', '******'),
+    (151, ' قرارگاه فرهنگي بقيه ا... الاعظم عج', 'سپاه و رده های اقماری', '******', '******'),
 
 ]
 
@@ -289,7 +323,7 @@ def soldire_details(request, code):
     if request.method == "GET":
         soldire = Soldier.objects.filter(National_Code=code).first()
         normalLetter = NormalLetterModels.objects.filter(soldire=soldire).all()
-        context = {'soldier': soldire, 'normalLetter': normalLetter}
+        context = {'soldier': soldire, 'normalLetter': normalLetter, 'rank_mapping': rank_mapping, }
         return render(request, 'ensani_soldires_management/soldire_details.html', context)
 
 
@@ -565,6 +599,19 @@ def PrintPosheNokhodi(request):
     return render(request, 'ensani_soldires_management/print_poshe_nokhodi.html', cx)
 
 
+def clean_string(input_string):
+    # جدا کردن رشته بر اساس "-"
+    parts = input_string.split(" - ")
+
+    # بررسی تعداد "-" در رشته
+    if len(parts) > 2:
+        # دوباره چسباندن اولین و دومین قسمت با "-"
+        cleaned_string = " - ".join(parts[:2])
+        return cleaned_string
+    else:
+        return input_string
+
+
 class exel_yegaan_khedmat(LoginRequiredMixin, View):
     def get(self, request):
         form = FormYegankhedmati()
@@ -607,9 +654,14 @@ class exel_yegaan_khedmat(LoginRequiredMixin, View):
                     if form.cleaned_data['type'] == "1":
                         if find_soldire is not None:
                             for iteam in list_yegan_bekargirande:
+                                i_c = clean_string(one_soldire_list[1])
+                                i_c = i_c.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace(
+                                    "\u200c",
+                                    " ")
                                 if iteam[1].replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace(
                                         "\u200c",
-                                        " ") == one_soldire_list[1]:
+                                        " ") == i_c:
+                                    find_soldire.yegan_name = one_soldire_list[1]
                                     find_soldire.unit_name = iteam[1]
                                     find_soldire.unit_type = iteam[2]
                                     find_soldire.unit_province = iteam[3]
@@ -1441,20 +1493,35 @@ class import_rank_from_exel(LoginRequiredMixin, View):
                 if one_soldire_list[0] is not None:
                     find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
                     if find_soldire is not None:
-                        find_soldire.discipline_score = float(one_soldire_list[6])
-                        find_soldire.basij_experience = float(one_soldire_list[7])
-                        find_soldire.council_experience = float(one_soldire_list[8])
-                        find_soldire.ideological_score = float(one_soldire_list[9])
-                        find_soldire.shooting_score = one_soldire_list[10]
-                        find_soldire.global_awards = one_soldire_list[11]
-                        find_soldire.national_awards = one_soldire_list[12]
-                        find_soldire.provincial_awards = one_soldire_list[13]
-                        find_soldire.global_articles = one_soldire_list[14]
-                        find_soldire.publications = one_soldire_list[15]
+                        if one_soldire_list[6] is not None:
+                            find_soldire.discipline_score = float(one_soldire_list[6])
+                        else:
+                            find_soldire.discipline_score = 0
+                        if one_soldire_list[7] is not None:
+                            find_soldire.basij_experience = float(one_soldire_list[7])
+                        else:
+                            find_soldire.basij_experience = 0
+
+                        if one_soldire_list[8] is not None:
+                            find_soldire.council_experience = float(one_soldire_list[8])
+                        else:
+                            find_soldire.council_experience = 0
+
+                        if one_soldire_list[9] is not None:
+                            find_soldire.ideological_score = float(one_soldire_list[9])
+                        else:
+                            find_soldire.ideological_score = 0
+
+                        find_soldire.shooting_score = one_soldire_list[10] or 0
+                        find_soldire.global_awards = one_soldire_list[11] or 0
+                        find_soldire.national_awards = one_soldire_list[12] or 0
+                        find_soldire.provincial_awards = one_soldire_list[13] or 0
+                        find_soldire.global_articles = one_soldire_list[14] or 0
+                        find_soldire.publications = one_soldire_list[15] or 0
                         find_soldire.battalion_activity = one_soldire_list[16]
                         find_soldire.battalion_sample = one_soldire_list[17] or False
-                        find_soldire.basij_efficiency = one_soldire_list[18]
-                        find_soldire.top_three = one_soldire_list[19]
+                        find_soldire.basij_efficiency = one_soldire_list[18] or 0
+                        find_soldire.top_three = one_soldire_list[19] or 0
                         find_soldire.quran_memorization = one_soldire_list[20] or 0
                         find_soldire.nahj_memorization = one_soldire_list[21] or False
                         find_soldire.sajjadiya_memorization = one_soldire_list[22] or False
@@ -1470,7 +1537,7 @@ class import_rank_from_exel(LoginRequiredMixin, View):
 def export_to_excel_list_bank(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'name', 'family', 'fathers_name',
-        'National_Code', 'acceptance_code', 't_Gordan', 't_battalion_group', 'code_gorhan_nahai',
+        'National_Code', 'acceptance_code', 't_Gordan__name', 't_battalion_group__name', 'code_gorhan_nahai',
         'bank_number', 'province_name', 'city_name').order_by('t_Gordan',
                                                               't_battalion_group',
                                                               'code_gorhan_nahai')
@@ -1484,8 +1551,8 @@ def export_to_excel_list_bank(request):
         'fathers_name': 'نام پدر',
         'National_Code': 'کدملی',
         'acceptance_code': 'عددپذیرش',
-        't_Gordan': 'گردان',
-        't_battalion_group': 'گروهان',
+        't_Gordan__name': 'گردان',
+        't_battalion_group__name': 'گروهان',
         'code_gorhan_nahai': 'کدسازمانی',
         'province_name': 'استان',
         'city_name': 'شهر',
@@ -1598,6 +1665,7 @@ def rank_group_print_gordani(request):
         't_Gordan', 't_battalion_group', 'code_gorhan_nahai').all()
     en = EnsaniSettings.objects.filter().first()
     time = jdatetime.datetime.now()
+
     context = {
         'sarbazha': sarbazha,
         'en': en,
@@ -1610,7 +1678,7 @@ def rank_group_print_gordani(request):
 def export_to_excel_list_rank(request):
     queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
         'name', 'family', 'fathers_name',
-        'National_Code', 'acceptance_code', 't_Gordan', 't_battalion_group', 'code_gorhan_nahai',
+        'National_Code', 'acceptance_code', 't_Gordan__name', 't_battalion_group__name', 'code_gorhan_nahai',
         'rank').order_by('t_Gordan',
                          't_battalion_group',
                          'code_gorhan_nahai')
@@ -1624,8 +1692,8 @@ def export_to_excel_list_rank(request):
         'fathers_name': 'نام پدر',
         'National_Code': 'کدملی',
         'acceptance_code': 'عددپذیرش',
-        't_Gordan': 'گردان',
-        't_battalion_group': 'گروهان',
+        't_Gordan__name': 'گردان',
+        't_battalion_group__name': 'گروهان',
         'code_gorhan_nahai': 'کدسازمانی',
         'rank': 'درجه',
 

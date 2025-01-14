@@ -116,8 +116,6 @@
                             گروهی اطلاعات سربازان
                             خدمت قبلی </a></li>
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی</a></li>
-                        <li><a href="{% url 'import_rank_from_exel' %}">محاسبه درجات سرباز</a></li>
-                        <li><a href="{% url 'rank_group_print' %}">حکم درجه گروهی</a></li>
                         <li><a href="{% url 'import_bank_number_from_exel' %}">بارگزاری شماره حساب گروهی</a></li>
                         <li><a href="{% url 'export_to_excel_list_bank' %}">لیست شماره حساب سرباز</a></li>
                     {% endif %}
@@ -134,7 +132,7 @@
                         <li><a href="{% url 'import_rank_from_exel' %}">محاسبه درجات سربازان</a></li>
                         <li><a href="{% url 'rank_group_print' %}">حکم درجه گروهی عددپذیرش</a></li>
                         <li><a href="{% url 'rank_group_print_gordani' %}">حکم درجه گروهی گردانی</a></li>
-                        <li><a href="{% url 'export_to_excel_list_rank' %}">لیست درجه سربازن</a></li>
+                        <li><a href="{% url 'export_to_excel_list_rank' %}">لیست درجه سربازان</a></li>
                     </ul>
                 </li>
             {% endif %}
@@ -168,7 +166,7 @@
                         <li><a href="{% url 'CreateBeforeCourseCommissionLetter' %}">ایجاد نامه کمیسیون قبل شروع
                             دوره</a>
                         <li><a href="{% url 'CreateRegisterLetter' %}">ایجاد نامه گواهی عضویت</a>
-                        <li><a href="{% url 'CreateFarajaLetter' %}">ایجاد نامه تسویه حساب به فرجا</a>
+                        <li><a href="{% url 'CreateFarajaLetter' %}">ایجاد نامه تسویه حساب به فراجا</a>
                         <li><a href="{% url 'CreaterunawayLetter' %}">ایجاد نامه فرار</a>
                         </li>
                     </ul>

@@ -1905,18 +1905,30 @@ def gozaresh_payan_dore(request):
 
 @login_required
 def amar_rank(request):
-    rank_1 = Soldier.objects.filter(rank="سرباز").all().count()
-    rank_2 = Soldier.objects.filter(rank="سرباز دوم").all().count()
-    rank_3 = Soldier.objects.filter(rank="سرباز یکم").all().count()
-    rank_4 = Soldier.objects.filter(rank="رزمیار").all().count()
-    rank_5 = Soldier.objects.filter(rank="رزم‌آور سوم").all().count()
-    rank_6 = Soldier.objects.filter(rank="رزم‌آور دوم").all().count()
-    rank_7 = Soldier.objects.filter(rank="رزم‌آور یکم").all().count()
-    rank_8 = Soldier.objects.filter(rank="رزمدار دوم").all().count()
-    rank_9 = Soldier.objects.filter(rank="رزمدار یکم").all().count()
-    rank_10 = Soldier.objects.filter(rank="ستوان سوم").all().count()
-    rank_11 = Soldier.objects.filter(rank="ستوان دوم").all().count()
-    rank_12 = Soldier.objects.filter(rank="ستوان یکم").all().count()
+    rank_1 = Soldier.objects.filter(rank="سرباز", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_2 = Soldier.objects.filter(rank="سرباز دوم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_3 = Soldier.objects.filter(rank="سرباز یکم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_4 = Soldier.objects.filter(rank="رزمیار", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_5 = Soldier.objects.filter(rank="رزم‌آور سوم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_6 = Soldier.objects.filter(rank="رزم‌آور دوم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_7 = Soldier.objects.filter(rank="رزم‌آور یکم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_8 = Soldier.objects.filter(rank="رزمدار دوم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_9 = Soldier.objects.filter(rank="رزمدار یکم", willing_to_learn=True, in_coures=True,
+                                    has_been_accepted=True).all().count()
+    rank_10 = Soldier.objects.filter(rank="ستوان سوم", willing_to_learn=True, in_coures=True,
+                                     has_been_accepted=True).all().count()
+    rank_11 = Soldier.objects.filter(rank="ستوان دوم", willing_to_learn=True, in_coures=True,
+                                     has_been_accepted=True).all().count()
+    rank_12 = Soldier.objects.filter(rank="ستوان یکم", willing_to_learn=True, in_coures=True,
+                                     has_been_accepted=True).all().count()
     total = rank_1 + rank_2 + rank_3 + rank_4 + rank_5 + rank_6 + rank_7 + rank_8 + rank_9 + rank_10 + rank_11 + rank_12
     cx = {
         'rank_1': rank_1,

@@ -4,34 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
     <title>حکم درجه</title>
     <style>
+
 
         @page {
             size: A5;
         }
 
+        @media print {
+            .line {
+                border-top: 1px solid black;
+                margin: 20px 0;
+            }
+        }
+
         body {
             font-family: 'B Nazanin', 'Arial', sans-serif;
-            line-height: 1.8;
             margin: 0;
             padding: 0;
             background-color: #f9f9f9;
         }
 
         .container {
-        {#width: 125mm;#}{#height: 180mm;#} margin: auto;
-            background: #fff;
-            padding: 20px;
+        }
+
+        .my_border {
             border: 1px solid black;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            padding: 20px;
             direction: rtl;
             position: relative;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             position: relative;
         }
 
@@ -47,7 +56,8 @@
 
         .line {
             border-top: 1px solid black;
-            margin: 10px 0;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         .rank-image {
@@ -76,80 +86,146 @@
         }
 
         .content {
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .signature {
             margin-top: 30px;
             text-align: center;
-            font-size: 12px;
+            font-size: 18px;
+            font-weight: bold;
         }
+
 
         .footer {
             font-size: 12px;
             text-align: center;
-            padding-top: 5px;
+        }
+
+        .rahbari {
+            font-size: 14px;
+            text-align: center;
+            font-family: 'IranNastaliq';
+            line-height: 13px;
+        }
+
+        .emza {
+            position: absolute;
+            top: 550px;
+            right: 120px;
+            color: black;
+            font-weight: bold;
+            z-index: 1;
+            width: 210px;
         }
     </style>
 </head>
 <body>
 {% for s in sarbazha %}
-    <div class="container" style="{% if not forloop.last %}page-break-after: always;{% endif %}">
-        <!-- محتوا -->
-        <div class="rank-image">
-            <img src="{% static 'img/rank/sepah.png' %}" alt="logo_sepah">
-        </div>
+    <div class="container" style="page-break-after: always;">
+        <div class="my_border">
+            <!-- محتوا -->
+            <div class="rank-image">
+                <img src="{% static 'img/rank/sepah.png' %}" alt="logo_sepah">
+            </div>
 
 
-        <div class="header">
-            <img src="{% static 'img/rank/name.jpg' %}" style="width: 60px;" alt="logo_sepah">
-            <p>فرمانده معظم کل قوا حضرت امام خامنه‌ای(حفظه الله)</p>
-            <p style="font-size: 10px">درجه به معناي يک نظم دقيق و تعيين ارتباط ويژه در بين کساني است که در خدمت دفاع از
-                انقلاب و کشور قرار
-                دارند.</p>
-            <div class="header-details">
+            <div class="header">
+                <img src="{% static 'img/rank/name.jpg' %}" style="width: 60px;" alt="logo_sepah">
+                <div class="header-details">
+                    <p>
+                        شماره: 512/106/{{ en.shomare_dore }}{{ en.shomare_dore }}<br>
+                        تاریخ: {{ time.date.year }}/{{ time.date.month }}/{{ time.date.day }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="content">
+                <p class="rahbari">فرمانده معظم کل قوا حضرت امام خامنه‌ای(حفظه الله)</p>
+                <p class="rahbari">درجه به معناي يک نظم دقيق و تعيين ارتباط ويژه در بين کساني است که در خدمت دفاع از
+                    انقلاب و کشور قرار
+                    دارند.</p>
+                <h1 style="text-align: center;">حکم درجه</h1>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr;font-size: 16px;line-height: 15px">
+                    <div>
+                        <p style="text-align: right">سرباز وظیفه <strong>{{ s.name }} {{ s.family }}</strong></p>
+                        <p style="text-align: right">فرزند <strong>{{ s.fathers_name }}</strong></p>
+                        <p style="text-align: right">کدملی <strong>{{ s.National_Code }}</strong></p>
+                        <p style="text-align: right">پایه خدمتی <strong>{{ s.Date_of_dispatch }}</strong></p>
+                    </div>
+                    <div style="display: flex; justify-content: center; align-items: center;">
+                        <div style="padding-right: 110px;">
+                            {% if s.rank == 'سرباز' %}
+                                <img src="{% static 'img/rank/1.png' %}" alt="{{ s.rank }}" class="img-fluid"
+                                     style="width: 40px">
+                            {% elif s.rank == 'سرباز دوم' %}
+                                <img src="{% static 'img/rank/2.png' %}" alt="{{ s.rank }}" class="img-fluid"
+                                     style="width: 40px">
+                            {% elif s.rank == 'سرباز یکم' %}
+                                <img src="{% static 'img/rank/3.png' %}" alt="{{ s.rank }}" class="img-fluid"
+                                     style="width: 40px">
+                            {% elif s.rank == 'رزمیار' %}
+                                <img src="{% static 'img/rank/4.png' %}" alt="{{ s.rank }}" class="img-fluid"
+                                     style="width: 40px">
+                            {% elif s.rank == 'رزم‌آور سوم' %}
+                                <img src="{% static 'img/rank/5.png' %}" alt="{{ s.rank }}"
+                                     class="img-fluid" style="width: 40px">
+                            {% elif s.rank == 'رزم‌آور دوم' %}
+                                <img src="{% static 'img/rank/6.png' %}" alt="{{ s.rank }}"
+                                     class="img-fluid" style="width: 40px">
+                            {% elif s.rank == 'رزم‌آور یکم' %}
+                                <img src="{% static 'img/rank/7.png' %}" alt="{{ s.rank }}"
+                                     class="img-fluid" style="width: 40px">
+                            {% elif s.rank == 'رزمدار دوم' %}
+                                <img src="{% static 'img/rank/8.png' %}" alt="{{ s.rank }}" class="img-fluid"
+                                     style="width: 40px">
+                            {% elif s.rank == 'رزمدار یکم' %}
+                                <img src="{% static 'img/rank/9.png' %}" alt="{{ s.rank }}" class="img-fluid"
+                                     style="width: 40px">
+                            {% elif s.rank == 'ستوان سوم' %}
+                                <img src="{% static 'img/rank/10.png' %}" alt="{{ s.rank }}"
+                                     class="img-fluid" style="width: 40px">
+                            {% elif s.rank == 'ستوان دوم' %}
+                                <img src="{% static 'img/rank/11.png' %}" alt="{{ s.rank }}"
+                                     class="img-fluid" style="width: 40px">
+                            {% elif s.rank == 'ستوان یکم' %}
+                                <img src="{% static 'img/rank/12.png' %}" alt="{{ s.rank }}"
+                                     class="img-fluid" style="width: 40px">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size: 16px">
+                    سلام علیکم،<br>
+                    با صلوات بر محمد و آل محمد، بدین‌وسیله به استناد گردشکار شماره {{ en.hokme_darje_gardeshkar }} مورخه
+                    {{ en.tarikh_hokme_darje_gardeshkar }} فرماندهی محترم
+                    <strong>آموزشگاه رزم مقدماتی المهدی(عج)</strong> جنابعالی به درجه
+                    <strong>{{ s.rank }}</strong> نائل گردیده اید، ضمن عرض تبریک، مقتضی است برابر آئین نامه نسبت به نصب
+                    درجه
+                    مصوب اقدام نموده و دراجرای کلیه ضوابط وآداب و مقررات در چارچوب آئین نامه انضباطی نیروی های مسلح
+                    جمهوری
+                    اسلامی ایران کوشا باشید
+
+                </p>
+            </div>
+            <div class="signature">
                 <p>
-                    شماره: 512/106/{{ en.shomare_dore }}{{ en.shomare_dore }}<br>
-                    تاریخ: {{ time.date.year }}/{{ time.date.month }}/{{ time.date.day }}
+                    <img src="{{ en.emza_farmande.url }}" alt="emza" class="emza">
+                    {{ en.farmande_razme_moghadamati }}<br>
+                    فرمانده آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه
                 </p>
             </div>
         </div>
-
-        <div class="line"></div>
-
-        <div class="content">
-            <h1 style="text-align: center;">حکم درجه</h1>
-
-            <p style="text-align: center">
-                سرباز وظیفه <strong>{{ s.name }} {{ s.family }}</strong> فرزند <strong>{{ s.fathers_name }}</strong>
-                با کد ملی <strong>{{ s.National_Code }}</strong> و پایه خدمتی <strong>{{ s.Date_of_dispatch }}</strong>
-            </p>
-            <p>
-                سلام علیکم،<br>
-                با صلوات بر محمد و آل محمد، بدین‌وسیله به استناد گردشکار شماره {{ en.hokme_darje_gardeshkar }}
-                مورخ {{ en.tarikh_hokme_darje_gardeshkar }} جنابعالی به درجه
-                <strong>{{ s.rank }}</strong> نائل گردیده، ضمن عرض تبریک، مقتضی است نسبت به نصب درجه خود اقدام و در
-                اجرای کلیه
-                ضوابط و مقررات کوشا باشید.
-            </p>
-        </div>
-        <img src="{% static 'img/rank/'|add:s.rank|add:'.png' %}"
-             alt="{{ soldier.rank }}" class="img-fluid" style="width: 30px">
-        <div class="signature">
-            <p>
-                {{ en.farmande_razme_moghadamati }}<br>
-                فرمانده آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه
-            </p>
-        </div>
-
         <div class="footer">
             <p>
-                گردان:{{ s.t_Gordan }} گروهان:{{ s.t_battalion_group }} - کد:{{ s.code_gorhan_nahai }}<br>
+                گردان:{{ s.t_Gordan }} گروهان:{{ s.t_battalion_group }} - کد:{{ s.code_gorhan_nahai }}-
                 کد پذیرش: {{ s.acceptance_code }}
             </p>
         </div>
     </div>
 {% endfor %}
-
 </body>
 </html>
