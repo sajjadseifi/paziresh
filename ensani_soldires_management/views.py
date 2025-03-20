@@ -7,7 +7,7 @@ from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYe
     FormUpdateAllSoldiresHasbenAceptedInCourse, FormUpdateAllSoldires, FormRankGroup
 from soldiers.forms import FormUpdateRank, FormUpdateBank
 from soldiers.models import Soldier
-from ensani_letter.models import NormalLetterModels
+from ensani_letter.models import NormalLetterModels, CheckoutLetterModels
 import pandas as pd
 from django.http import HttpResponse, JsonResponse
 import openpyxl
@@ -1702,6 +1702,121 @@ def export_to_excel_list_rank(request):
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=export_to_excel_list_rank.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+
+        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
+        workbook = writer.book
+        worksheet = writer.sheets['MyModelData']
+
+        # تنظیم sheet به حالت راست به چپ
+        worksheet.sheet_view.rightToLeft = True
+
+    # تنظیم sheet به حالت راست به چپ
+    worksheet.sheet_view.rightToLeft = True
+    return response
+
+
+@login_required
+def export_to_excel_list_goili(request):
+    # queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
+    #     'name', 'family', 'fathers_name',
+    #     'National_Code', 'Grade', 'Study_group', 'Date_of_dispatch', 'attraction_of_the_organization',
+    #     'Renewal_of_the_previous_period', 'physical_condition',
+    #     'code_gorhan_nahai',
+    #     'rank').order_by('t_Gordan',
+    #                      't_battalion_group',
+    #                      'code_gorhan_nahai')
+    #
+    sold = Soldier.objects.filter(has_been_accepted=True).all()
+    en = EnsaniSettings.objects.filter().first()
+    data_list = []
+    for s in sold:
+        vazit = ""
+        if s.has_been_accepted is True and s.IsCheckout is False and s.in_coures is True and s.willing_to_learn is True:
+            vazit = "قبول"
+        if s.has_been_accepted is True and s.IsCheckout is True:
+            vazit = "مردود"
+        check_out = ""
+        check_out_date = ""
+        hozor_time = en.tarihkepayanedore - en.tarikhpaziresh
+        if s.IsCheckout is True:
+            c = CheckoutLetterModels.objects.filter(soldire_id=s.id).first()
+            if c is not None:
+                check_out_date = c.create_time.date()
+                hozor_time = (c.create_time.date() - en.tarikhpaziresh).days
+            n = NormalLetterModels.objects.filter(subject="سازمان وظیفه عمومی فراجا", soldire_id=s.id).first()
+            if s.the_medical_commission is True:
+                check_out = "کمیسیون"
+                vazit = "مردود"
+            elif s.Sufficiency_of_mobilization is True:
+                check_out = "کفایتی"
+                hozor_time = ""
+                vazit = ""
+            elif s.Previous_service_record is True:
+                check_out = "خدمت قبلی"
+                hozor_time = ""
+                vazit = ""
+            elif n is not None:
+                check_out = "سازمان وظیفه عمومی فراجا"
+                vazit = ""
+            else:
+                check_out = "تجدید دوره"
+
+        data_list.append(
+            {
+                "name": s.name,
+                "family": s.family,
+                "fathers_name": s.fathers_name,
+                "National_Code": s.National_Code,
+                "Grade": s.Grade,
+                "Study_group": s.Study_group,
+                "Date_of_dispatch": s.Date_of_dispatch,
+                "shomare_sore": en.shomare_dore,
+                "yegan_ezam": "المهدی",
+                "attraction_of_the_organization": s.attraction_of_the_organization,
+                "Renewal_of_the_previous_period": s.Renewal_of_the_previous_period,
+                "physical_condition": s.physical_condition,
+                "check_out": check_out,
+                "check_out_date": check_out_date,
+                "hozor": hozor_time,
+                "shoro_soreh": en.tarikhpaziresh,
+                "tarikh_payan": en.tarihkepayanedore,
+                "vaziat": vazit,
+                "yegan_khdmati": s.unit_name,
+            }
+        )
+
+        df = pd.DataFrame(list(data_list))
+
+    # تغییر نام ستون‌ها
+    df.rename(columns={
+        "name": "نام",
+        "family": "نام خانوادگی",
+        "fathers_name": "نام پدر",
+        "National_Code": "کدملی",
+        "Grade": "مدرک",
+        "Study_group": "رشته تحصیلی",
+        "Date_of_dispatch": "تاریخ اعزام",
+        "shomare_sore": "شماره دوره",
+        "yegan_ezam": "یگان اعزام کننده",
+        "attraction_of_the_organization": "نوع سهمیه",
+        "Renewal_of_the_previous_period": "تجدید دوره",
+        "physical_condition": "وضعیت جسمانی",
+        "check_out": "نوع ریزش",
+        "check_out_date": "تاریخ ریزش",
+        "hozor": "حضور",
+        "shoro_soreh": "تاریخ شروع",
+        "tarikh_payan": "تاریخ پایان",
+        "vaziat": "تاریخ پذیرش",
+        "yegan_khdmati": "یگان خدمتی",
+
+    }, inplace=True)
+    # تنظیمات پاسخ HTTP برای اکسل
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=export_to_excel_list_paayne.xlsx'
 
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='MyModelData')
