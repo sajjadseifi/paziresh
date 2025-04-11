@@ -84,6 +84,14 @@
                                             <i class="fa fa-edit"></i> حذف
                                         </a>
                                     {% endif %}
+                                    {% if c.subject == "معرفی نامه" %}
+                                        <a class="btn btn-app" href="{% url 'PrintMoarefiLetter' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> چاپ برگه
+                                        </a>
+                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
+                                            <i class="fa fa-edit"></i> حذف
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

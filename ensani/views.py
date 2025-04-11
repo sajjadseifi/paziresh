@@ -16,7 +16,7 @@ class panel_home(LoginRequiredMixin, View):
                                                  Previous_service_record=False, Sufficiency_of_mobilization=False,
                                                  tatbigh=False, IsCheckout=False).all().count()
         total_tegan_khdmati_in_course = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
-                                                               in_coures=True, IsCheckout=False).all().count()
+                                                               in_coures=True, IsCheckout=False,IsUnit=False).all().count()
         en = EnsaniSettings.objects.filter().first()
         b_soldire = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True).all()
         if en.tatbigh is False:

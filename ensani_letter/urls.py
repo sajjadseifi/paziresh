@@ -14,6 +14,7 @@ urlpatterns = [
     path('letter/all/normal', AllNormalLetter, name='AllNormalLetter'),
     path('letter/p/checkout/<int:pk>', PrintCheckoutLetter, name='PrintCheckoutLetter'),
     path('letter/p/normall/register/<int:pk>', PrintRegisterLetter, name='PrintRegisterLetter'),
+    path('letter/p/normall/moarefi/<int:pk>', PrintMoarefiLetter, name='PrintMoarefiLetter'),
     path('letter/p/checkout/commission/<int:pk>', PrintCheckoutCommissionLetter, name='PrintCheckoutCommissionLetter'),
     path('letter/p/checkout/before/course/commission/<int:pk>', PrintBeforeCourseCommissionLetter,
          name='PrintBeforeCourseCommissionLetter'),
@@ -23,4 +24,6 @@ urlpatterns = [
     path('letter/p/normall/training/inquiry/<int:pk>', PrintTrainingInquiryLetter, name='PrintTrainingInquiryLetter'),
     path('letter/p/normall/runaway/<int:pk>', PrintRunawayLetterLetter, name='PrintRunawayLetterLetter'),
     path('letter/p/normall/faraja/<int:pk>', PrintFarajaLetter, name='PrintFarajaLetter'),
+    path('letter/normall/moarefi/', CreateMoarefiLetter.as_view(), name='CreateMoarefiLetter'),
+    path('get-suttr-status/', get_suttr_status, name='get_suttr_status'),
 ]

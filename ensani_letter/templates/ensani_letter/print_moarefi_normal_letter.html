@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <title>معرفی نامه</title>
+    <style>
+
+
+        @page {
+            size: A5;
+        }
+
+        @media print {
+            .line {
+                border-top: 1px solid black;
+                margin: 20px 0;
+            }
+        }
+
+        body {
+            font-family: 'B Nazanin', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+        }
+
+        .my_border {
+            border: 1px solid black;
+            margin: auto;
+            padding: 20px;
+            direction: rtl;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .header p {
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .line {
+            border-top: 1px solid black;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .rank-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .rank-image img {
+            width: 60px;
+            height: auto;
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header-details {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            text-align: left;
+            font-size: 12px;
+            padding-left: 10px;
+        }
+
+        .content {
+            font-size: 12px;
+        }
+
+        .signature {
+            margin-top: 130px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+
+        .rahbari {
+            font-size: 14px;
+            text-align: center;
+            font-family: 'IranNastaliq';
+            line-height: 13px;
+        }
+
+        .emza {
+            position: absolute;
+            top: 550px;
+            right: 120px;
+            color: black;
+            font-weight: bold;
+            z-index: 1;
+            width: 210px;
+        }
+    </style>
+</head>
+<body>
+<div class="container" style="page-break-after: always;">
+    <div class="my_border">
+        <!-- محتوا -->
+        <div class="rank-image">
+            <img src="{% static 'img/rank/sepah.png' %}" alt="logo_sepah">
+        </div>
+
+
+        <div class="header">
+            <img src="{% static 'img/rank/name.jpg' %}" style="width: 60px;" alt="logo_sepah">
+            <div class="header-details">
+                <p>
+                    شماره: 512/106/{{ Normal_letter_moarefi.number }}<br>
+                    تاریخ: {{ Normal_letter_moarefi.create_time.date.year }}/{{ Normal_letter_moarefi.create_time.date.month }}/{{ Normal_letter_moarefi.create_time.date.day }}
+                </p>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="content">
+            <p class="rahbari">{{ en.shoare_sall }}</p>
+            <p style="font-size: 12px;padding-top: 10px"><strong>به:&nbsp;آموزشگاه رزم مقدماتی {{ ml.destination }} نیروی زمینی سپاه -
+                نیروی انسانی - منابع سرباز</strong></p>
+            <p style="font-size: 12px"><strong>از:&nbsp;آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی
+                - منابع سرباز</strong></p>
+            <p style="font-size: 18px"><strong>موضوع:معرفی</strong></p>
+            <p style="font-size: 18px;padding-top: 10px">
+                سلام علیکم،<br>
+                &nbsp;با صلوات بر محمد و آل محمد، بدینوسیله به استحضار می رساند، فراگیر آموزشی
+                {{ Normal_letter_moarefi.soldire.name }}{{ Normal_letter_moarefi.soldire.family }}
+                فرزند&nbsp;{{ Normal_letter_moarefi.soldire.fathers_name }} به شماره
+                ملی {{ Normal_letter_moarefi.soldire.National_Code }} به دلیل {{ ml.no_moarefi }} و به
+                منظور گذراندن دوره آموزشی از تاریخ {{ ml.tarikh_moarefi }} به حضور معرفی میگردد
+            </p>
+            {% if ml.sater == "گرفته است" %}
+                <p style="font-size: 16px;padding-top: 45px">
+                    <strong> ضمنا نامبرده جیره استحقاقی خود را دریافت نموده است.</strong>
+                </p>
+            {% else %}
+                <p style="font-size: 16px;padding-top: 45px">
+                    <strong> ضمنا نامبرده جیره استحقاقی خود را دریافت نکرده است.</strong>
+                </p>
+            {% endif %}
+        </div>
+        <div class="signature">
+            <p>
+
+                {{ en.farmande_razme_moghadamati }}<br>
+                فرمانده آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

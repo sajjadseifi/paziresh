@@ -1,23 +1,35 @@
 import jdatetime
+import io
+import zipfile
+import pandas as pd
+import openpyxl
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views import View
+from django.http import HttpResponse, JsonResponse
 
-from ensani_soldires_management.forms import FormUpdateGordan, Formjazbi, FormYegankhedmati, \
-    FormUpdateAllSoldiresHasbenAceptedInCourse, FormUpdateAllSoldires, FormRankGroup
+from ensani_soldires_management.forms import (
+    FormUpdateGordan,
+    Formjazbi,
+    FormYegankhedmati,
+    FormUpdateAllSoldiresHasbenAceptedInCourse,
+    FormUpdateAllSoldires,
+    FormRankGroup
+)
 from soldiers.forms import FormUpdateRank, FormUpdateBank
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels, CheckoutLetterModels
-import pandas as pd
-from django.http import HttpResponse, JsonResponse
-import openpyxl
 from battalions.models import battalion, battalion_group
 from ensaniapp_settings.models import EnsaniSettings
-from django.contrib.auth.decorators import login_required
-import io
-import zipfile
+from django.db import transaction
+import logging
 
-rank_mapping = {
+logger = logging.getLogger(__name__)
+from django.http import HttpResponseServerError
+
+# Constants
+RANK_MAPPING = {
     "سرباز": "1",
     "سرباز دوم": "2",
     "سرباز یکم": "3",
@@ -32,7 +44,7 @@ rank_mapping = {
     "ستوان یکم": "12",
 }
 
-list_yegan_bekargirande = [
+LIST_YEGAN_BEKARGIRANDE = [
     (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
     (2, 'سپاه نینوا - گلستان', 'سپاه و رده های اقماری', 'گلستان', 'گلستان-گرگان-فلکه بسیج'),
     (3, 'سپاه قدس - گیلان', 'سپاه و رده های اقماری', 'گیلان', 'رشت- یخ سازی - شهدای گمنام - سپاه قدس گیلان'),
@@ -242,6 +254,104 @@ list_yegan_bekargirande = [
 
 ]
 
+# Constants for military ranks
+MILITARY_RANK_TABLE = {
+    "دکتری": {
+        "ستوان یکم": (0, 20),
+    },
+    "فوق لیسانس": {
+        "ستوان یکم": (10, 20),
+        "ستوان دوم": (6, 9.9),
+        "ستوان سوم": (0, 5.9),
+    },
+    "لیسانس": {
+        "ستوان دوم": (10, 20),
+        "ستوان سوم": (7, 9.9),
+        "رزمدار یکم": (6, 6.9),
+        "رزمدار دوم": (4, 5.9),
+        "رزم‌آور یکم": (2, 3.9),
+        "رزم‌آور دوم": (0, 1.9),
+    },
+    "فوق دیپلم": {
+        "رزم‌آور یکم": (5, 20),
+        "رزم‌آور دوم": (2, 4.9),
+        "رزم‌آور سوم": (0, 1.9),
+    },
+    "دیپلم": {
+        "رزمیار": (5, 20),
+        "سرباز یکم": (2, 4.9),
+        "سرباز دوم": (0, 1.9),
+    },
+    "زیر دیپلم": {
+        "سرباز دوم": (2, 20),
+        "سرباز": (0, 1.9),
+    },
+}
+
+
+def get_military_rank(education, score):
+    """
+    Determine military rank based on education level and score.
+    
+    Args:
+        education (str): Education level of the soldier
+        score (float): Score achieved by the soldier
+        
+    Returns:
+        str: Military rank or error message
+    """
+    if education not in MILITARY_RANK_TABLE:
+        return "مدرک تحصیلی نامعتبر است."
+
+    for rank, (min_score, max_score) in MILITARY_RANK_TABLE[education].items():
+        if min_score <= score <= max_score:
+            return rank
+
+    return "نمره در محدوده تعریف‌شده نیست."
+
+
+# Utility functions
+def clean_persian_text(text):
+    """Replace Arabic characters with Persian equivalents and clean whitespace."""
+    if text is None:
+        return None
+    return str(text).replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace("\u200c", " ")
+
+
+def get_excel_response(df, filename):
+    """Create an Excel response with right-to-left formatting."""
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={filename}.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+        worksheet = writer.sheets['MyModelData']
+        worksheet.sheet_view.rightToLeft = True
+
+    return response
+
+
+def process_excel_file(file, process_row_func):
+    """Generic function to process Excel files."""
+    workbook = openpyxl.load_workbook(file)
+    sheet = workbook.active
+
+    for row_idx in range(2, sheet.max_row + 1):
+        row_data = []
+        for col_idx in range(1, sheet.max_column + 1):
+            cell_value = sheet.cell(row=row_idx, column=col_idx).value
+            if cell_value is not None:
+                cell_value = clean_persian_text(cell_value)
+            row_data.append(cell_value)
+
+        if row_data[0] is not None:  # Skip empty rows
+            process_row_func(row_data)
+
+
+def get_soldier_by_national_code(national_code):
+    """Get soldier by national code with error handling."""
+    return Soldier.objects.filter(National_Code=national_code).first()
+
 
 @login_required
 def all_soldire(request):
@@ -266,7 +376,7 @@ def soldier_search(request):
     Grade_precise = request.GET.get('Grade_precise')
     Gordan = request.GET.get('Gordan')
     amire = request.GET.get('amire')
-    battaliongroup = request.GET.get('battalion_group')
+    battaliongroup = request.GET.get('battaliongroup')
     soldiers = Soldier.objects.all()
     gordan = battalion.objects.filter().all()
     grohan = battalion_group.objects.filter().all()
@@ -291,10 +401,11 @@ def soldier_search(request):
         soldiers = soldiers.filter(Grade_precise=Grade_precise)
 
     if Gordan:
-        soldiers = soldiers.filter(Gordan__name__icontains=Gordan)
+        soldiers = soldiers.filter(t_Gordan__name__icontains=Gordan)
 
     if battaliongroup:
-        soldiers = soldiers.filter(battalion_group__name__icontains=battaliongroup)
+        if Gordan is not None:
+            soldiers = soldiers.filter(t_battalion_group__name__icontains=battaliongroup)
 
     if amire:
         soldiers = soldiers.filter(Amriye=amire)
@@ -312,6 +423,17 @@ def soldier_search(request):
 
 
 @login_required
+def soldier_in_almahdi(request):
+    soldiers = Soldier.objects.filter(unit_name="آموزشگاه المهدی (عج) نزسا").all()
+
+    context = {
+        'results': soldiers,
+    }
+
+    return render(request, 'ensani_soldires_management/soldier_list_almahdi.html', context)
+
+
+@login_required
 def get_grohan_by_gordan_for_search(request):
     gordan_name = request.GET.get('gordan_name')
     grohan_list = battalion_group.objects.filter(gordan__name__icontains=gordan_name).values('id', 'name')
@@ -323,20 +445,28 @@ def soldire_details(request, code):
     if request.method == "GET":
         soldire = Soldier.objects.filter(National_Code=code).first()
         normalLetter = NormalLetterModels.objects.filter(soldire=soldire).all()
-        context = {'soldier': soldire, 'normalLetter': normalLetter, 'rank_mapping': rank_mapping, }
+        context = {'soldier': soldire, 'normalLetter': normalLetter, 'rank_mapping': RANK_MAPPING, }
         return render(request, 'ensani_soldires_management/soldire_details.html', context)
 
 
 @login_required
 def export_to_excel_list_hazer_be_khdmat(request):
-    queryset = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).values(
-        'acceptance_code', 'name', 'family',
-        'National_Code', 't_Gordan__name', 't_battalion_group__name', 'code_gorhan_nahai').order_by(
-        'acceptance_code')
+    """Export list of soldiers ready for service to Excel."""
+    queryset = Soldier.objects.filter(
+        has_been_accepted=True,
+        willing_to_learn=True,
+        in_coures=True
+    ).values(
+        'acceptance_code',
+        'name',
+        'family',
+        'National_Code',
+        't_Gordan__name',
+        't_battalion_group__name',
+        'code_gorhan_nahai'
+    ).order_by('acceptance_code')
 
     df = pd.DataFrame(list(queryset))
-
-    # تغییر نام ستون‌ها
     df.rename(columns={
         'acceptance_code': 'کد پذیرش',
         'name': 'نام',
@@ -346,24 +476,86 @@ def export_to_excel_list_hazer_be_khdmat(request):
         't_battalion_group__name': 'نام گروهان',
         'code_gorhan_nahai': 'کد گروهان'
     }, inplace=True)
-    # تنظیمات پاسخ HTTP برای اکسل
 
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=list_hazer_be_khdmat.xlsx'
+    return get_excel_response(df, 'list_hazer_be_khdmat')
 
-    with pd.ExcelWriter(response, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='MyModelData')
 
-        # دسترسی به workbook و sheet برای تغییر جهت به راست به چپ
-        workbook = writer.book
-        worksheet = writer.sheets['MyModelData']
+@login_required
+def export_to_excel_list_tajdid_dore(request):
+    """Export list of soldiers ready for service to Excel."""
+    sold = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True).all()
+    en = EnsaniSettings.objects.filter().first()
+    data_list = []
+    for s in sold:
+        vazit = ""
+        if s.has_been_accepted is True and s.IsCheckout is False and s.in_coures is True and s.willing_to_learn is True:
+            vazit = "قبول"
+        if s.has_been_accepted is True and s.IsCheckout is True:
+            vazit = "مردود"
+        check_out = ""
+        check_out_date = ""
+        hozor_time = en.tarihkepayanedore - en.tarikhpaziresh
+        if s.IsCheckout is True:
+            c = CheckoutLetterModels.objects.filter(soldire_id=s.id).first()
+            if c is not None:
+                check_out_date = c.create_time.date()
+                hozor_time = (c.create_time.date() - en.tarikhpaziresh).days
+            n = NormalLetterModels.objects.filter(subject="سازمان وظیفه عمومی فراجا", soldire_id=s.id).first()
+            if s.the_medical_commission is True:
+                check_out = "کمیسیون"
+                vazit = "مردود"
+            elif s.Sufficiency_of_mobilization is True:
+                check_out = "کفایتی"
+                hozor_time = ""
+                vazit = ""
+            elif s.Previous_service_record is True:
+                check_out = "خدمت قبلی"
+                hozor_time = ""
+                vazit = ""
+            elif n is not None:
+                check_out = "سازمان وظیفه عمومی فراجا"
+                vazit = ""
+            else:
+                check_out = "تجدید دوره"
 
-        # تنظیم sheet به حالت راست به چپ
-        worksheet.sheet_view.rightToLeft = True
+        data_list.append(
+            {
+                "name": s.name,
+                "family": s.family,
+                "fathers_name": s.fathers_name,
+                "National_Code": s.National_Code,
+                "phone_number": s.phone_number,
+                "home_phone_number": s.home_phone_number,
+                "Relative_to_inclusive": s.Relative_to_inclusive,
+                "Relative_to_inclusive_number": s.Relative_to_inclusive_number,
+                "Date_of_dispatch": s.Date_of_dispatch,
+                "Renewal_of_the_previous_period": s.Renewal_of_the_previous_period,
+                "physical_condition": s.physical_condition,
+                "check_out": check_out,
+                "check_out_date": check_out_date,
+            }
+        )
+    df = pd.DataFrame(list(data_list))
 
-    # تنظیم sheet به حالت راست به چپ
-    worksheet.sheet_view.rightToLeft = True
-    return response
+    df.rename(columns={
+        'acceptance_code': 'کد پذیرش',
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'National_Code': 'کدملی',
+        'fathers_name': 'نام پدر',
+        'phone_number': 'موبایل',
+        'home_phone_number': 'خانه',
+        'Relative_to_inclusive': 'بستگان',
+        'Relative_to_inclusive_number': 'بستگان درجه یک',
+        'Date_of_dispatch': 'تاریخ اعزام',
+        'Renewal_of_the_previous_period': 'تجدید دوره از قبل',
+        'physical_condition':'وضعیت جسمانی',
+        'check_out':'تجدید دوره',
+        'check_out_date':'تاریخ تسویه حساب',
+
+    }, inplace=True)
+
+    return get_excel_response(df, 'list_tajdid_dore')
 
 
 @login_required
@@ -411,53 +603,42 @@ def export_to_excel_list_sarbaz_tatbigh_nashode(request):
 
 
 class exel_update_gordan(LoginRequiredMixin, View):
+    """View for updating soldier's battalion information from Excel."""
+    template_name = 'ensani_soldires_management/update_gordan.html'
+
     def get(self, request):
         form = FormUpdateGordan()
-        cx = {'form': form}
-        return render(request, 'ensani_soldires_management/update_gordan.html', cx)
+        return render(request, self.template_name, {'form': form})
+
+    def process_row(self, row_data):
+        """Process a single row of Excel data."""
+        if not row_data[0]:
+            return
+
+        soldier = get_soldier_by_national_code(row_data[0])
+        if not soldier:
+            return
+
+        if row_data[5]:  # Battalion name exists
+            t_gordan = battalion.objects.filter(name__icontains=row_data[5]).first()
+            if t_gordan and row_data[6]:  # Group name exists
+                t_gorohan = battalion_group.objects.filter(
+                    gordan=t_gordan,
+                    name__icontains=row_data[6]
+                ).first()
+
+                soldier.t_Gordan = t_gordan
+                soldier.t_battalion_group = t_gorohan
+                if row_data[7]:
+                    soldier.code_gorhan_nahai = int(row_data[7])
+                soldier.tatbigh = True
+                soldier.save()
 
     def post(self, request):
         form = FormUpdateGordan(request.POST, request.FILES or None)
-        cx = {'form': form}
-
         if form.is_valid():
-            exel = request.FILES['file']
-
-            workbook = openpyxl.load_workbook(exel)
-
-            # انتخاب شیت اول
-            sheet = workbook.active
-
-            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
-            num_rows = sheet.max_row
-            num_cols = sheet.max_column
-
-            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
-            for row_idx in range(2, num_rows + 1):
-                one_soldire_list = []
-                for col_idx in range(1, num_cols + 1):
-                    # مقدار سلول را بخوانید
-                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
-                    if cell_value is not None:
-                        # جایگزینی کاراکترهای عربی با کاراکترهای فارسی
-                        cell_value = str(cell_value)
-                        cell_value = cell_value.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و')
-                    one_soldire_list.append(cell_value)
-                    print(one_soldire_list)
-                if one_soldire_list[0] is not None:
-                    find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
-                    if find_soldire is not None:
-                        t_gordan = battalion.objects.filter(name__icontains=one_soldire_list[5]).first()
-                        t_gorohan = battalion_group.objects.filter(gordan=t_gordan,
-                                                                   name__icontains=one_soldire_list[6]).first()
-                        find_soldire.t_Gordan = t_gordan
-                        find_soldire.t_battalion_group = t_gorohan
-                        code_nahai_gorohan = one_soldire_list[7]
-                        find_soldire.code_gorhan_nahai = int(code_nahai_gorohan)
-                        find_soldire.tatbigh = True
-                        find_soldire.save()
-
-        return render(request, 'ensani_soldires_management/update_gordan.html', cx)
+            process_excel_file(request.FILES['file'], self.process_row)
+        return render(request, self.template_name, {'form': form})
 
 
 class exel_jazbi(LoginRequiredMixin, View):
@@ -653,7 +834,7 @@ class exel_yegaan_khedmat(LoginRequiredMixin, View):
                     find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
                     if form.cleaned_data['type'] == "1":
                         if find_soldire is not None:
-                            for iteam in list_yegan_bekargirande:
+                            for iteam in LIST_YEGAN_BEKARGIRANDE:
                                 i_c = clean_string(one_soldire_list[1])
                                 i_c = i_c.replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace(
                                     "\u200c",
@@ -671,7 +852,7 @@ class exel_yegaan_khedmat(LoginRequiredMixin, View):
                                     break
                     if form.cleaned_data['type'] == "2":
                         if find_soldire is not None:
-                            for iteam in list_yegan_bekargirande:
+                            for iteam in LIST_YEGAN_BEKARGIRANDE:
                                 if iteam[1].replace('ي', 'ی').replace('ك', 'ک').replace('ؤ', 'و').replace(
                                         "\u200c",
                                         " ") == one_soldire_list[1]:
@@ -1245,214 +1426,97 @@ def export_to_excel_list_not_accepted(request):
     return response
 
 
-def get_military_rank(education, score):
-    # تعریف جدول درجات و محدوده نمرات
-    rank_table = {
-        "دکتری": {
-            "ستوان یکم": (0, 20),
-        },
-        "فوق لیسانس": {
-            "ستوان یکم": (10, 20),
-            "ستوان دوم": (6, 9.9),
-            "ستوان سوم": (0, 5.9),
-        },
-        "لیسانس": {
-            "ستوان دوم": (10, 20),
-            "ستوان سوم": (7, 9.9),
-            "رزمدار یکم": (6, 6.9),
-            "رزمدار دوم": (4, 5.9),
-            "رزم‌آور یکم": (2, 3.9),
-            "رزم‌آور دوم": (0, 1.9),
-        },
-        "فوق دیپلم": {
-            "رزم‌آور یکم": (5, 20),
-            "رزم‌آور دوم": (2, 4.9),
-            "رزم‌آور سوم": (0, 1.9),
-        },
-        "دیپلم": {
-            "رزمیار": (5, 20),
-            "سرباز یکم": (2, 4.9),
-            "سرباز دوم": (0, 1.9),
-        },
-        "زیر دیپلم": {
-            "سرباز دوم": (2, 20),
-            "سرباز": (0, 1.9),
-        },
-    }
-
-    # بررسی وجود مدرک تحصیلی در جدول
-    if education not in rank_table:
-        return "مدرک تحصیلی نامعتبر است."
-
-    # جستجو در جدول برای پیدا کردن درجه مناسب
-    for rank, (min_score, max_score) in rank_table[education].items():
-        if min_score <= score <= max_score:
-            return rank
-
-    return "نمره در محدوده تعریف‌شده نیست."
-
-
 def calculate_score():
-    soldire = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
-    mapping_discipline_score = {
-        13: 0.5,
-        14: 0.5,
-        15: 1,
-        16: 1,
-        17: 1.5,
-        18: 1.5,
-        19: 2,
-        20: 2
-    }
-    mapping_battalion_activity = {
-        16: 0.5,
-        17: 1,
-        18: 1.5,
-        19: 2,
-        20: 2.5,
-    }
-    mapping_battalion_sample = {
-        True: 2
+    """Calculate scores for all eligible soldiers."""
+
+    # Score mapping constants
+    DISCIPLINE_SCORES = {13: 0.5, 14: 0.5, 15: 1, 16: 1, 17: 1.5, 18: 1.5, 19: 2, 20: 2}
+    BATTALION_ACTIVITY_SCORES = {16: 0.5, 17: 1, 18: 1.5, 19: 2, 20: 2.5}
+    BATTALION_SAMPLE_SCORE = 2
+    BASIJ_EFFICIENCY_SCORES = {'30 روزه': 0.5, '45 روزه': 1}
+    IDEOLOGICAL_SCORES = {18: 0.4, 19: 0.7, 20: 1}
+    TOP_THREE_SCORES = {'نفر اول': 2, 'نفر دوم': 1.5, 'نفر سوم': 1}
+
+    def get_shooting_score(score):
+        """Calculate shooting score based on ranges."""
+        if 80 <= score < 85:
+            return 0.4
+        elif 85 <= score < 90:
+            return 0.7
+        elif 90 <= score < 95:
+            return 1.5
+        elif 95 <= score <= 100:
+            return 2
+        return 0
+
+    def get_award_score(count, scores):
+        """Calculate award score based on count and score mapping."""
+        if count <= 0:
+            return 0
+        elif count > 3:
+            return max(scores.values())
+        return scores.get(count, 0)
+
+    AWARD_SCORES = {
+        'global': {1: 0.3, 2: 0.4},
+        'national': {1: 0.2, 2: 0.3},
+        'provincial': {1: 0.1, 2: 0.2}
     }
 
-    # بسیج(4 نمره)
-    mapping_basij_efficiency = {
-        '30 روزه': 0.5,
-        '45 روزه': 1,
+    ARTICLE_SCORES = {
+        'global': {1: 0.2, 2: 0.3},
+        'publications': {1: 0.2, 2: 0.3}
     }
 
-    # حوزه(1 نمره)
-    mapping_ideological_score = {
-        18: 0.4,
-        19: 0.7,
-        20: 1
-    }
-    mapping_top_three = {
-        'نفر اول': 2,
-        'نفر دوم': 1.5,
-        'نفر سوم': 1,
-    }
-    mapping_shooting_score = {}
-    for i in range(80, 85):
-        mapping_shooting_score[i] = 0.4
+    soldiers = Soldier.objects.filter(
+        has_been_accepted=True,
+        willing_to_learn=True,
+        in_coures=True
+    )
 
-    for i in range(84, 90):
-        mapping_shooting_score[i] = 0.7
-
-    for i in range(90, 96):
-        mapping_shooting_score[i] = 1.5
-
-    for i in range(95, 101):
-        mapping_shooting_score[i] = 2
-    # اطلاعات مربوط به فراگیر(6.5 نمره)
-    mapping_nahj_memorization = {
-        True: 1
-    }
-    mapping_sajjadiya_memorization = {
-        True: 1
-    }
-    mapping_global_awards = {
-        1: 0.3,
-        2: 0.4,
-    }
-    mapping_national_awards = {
-        1: 0.2,
-        2: 0.3,
-    }
-    mapping_provincial_awards = {
-        1: 0.1,
-        2: 0.2,
-    }
-    mapping_global_articles = {
-        1: 0.2,
-        2: 0.3,
-    }
-    mapping_publications = {
-        1: 0.2,
-        2: 0.3,
-    }
-
-    for s in soldire:
+    for soldier in soldiers:
         total = 0
-        # محاسبه گردان
-        discipline_score = s.discipline_score  # انضباط (2 نمره)
-        battalion_activity = s.battalion_activity  # فعالیت در گردان (2.5 نمره)
-        battalion_sample = s.battalion_sample  # نمونه گردان (2 نمره مازاد)
-        total += mapping_discipline_score.get(int(discipline_score), 0)
-        total += mapping_battalion_activity.get(int(battalion_activity), 0)
-        total += mapping_battalion_sample.get(battalion_sample, 0)
-        # بسیح
-        basij_experience = int(s.basij_experience) * 0.0142857  # 0.0142857 سابقه بسیج فعال به ماه (2 نمره)
-        council_experience = int(s.council_experience) * 0.01  # سابقه عضو شورای پایگاه به ماه (1 نمره)0.01
-        basij_efficiency = s.basij_efficiency
-        total += basij_experience
-        total += council_experience
-        total += mapping_basij_efficiency.get(str(basij_efficiency), 0)
-        # عقیدتی
-        ideological_score = s.ideological_score  # نمره عقیدتی (1 نمره)
-        total += mapping_ideological_score.get(int(ideological_score), 0)
-        # آموزش
-        shooting_score = int(s.shooting_score)  # نمره میدان تیر (2 نمره)
-        top_three = s.top_three  # سه نفر برتر (2 نمره)
-        total += mapping_shooting_score.get(shooting_score, 0)
-        total += mapping_top_three.get(top_three, 0)
-        # اطلاعات مربوط به فراگیر
-        quran_memorization = s.quran_memorization * 0.1  # حافظ قرآن (جزء) (3 نمره)
-        nahj_memorization = s.nahj_memorization  # حافظ نهج البلاغه (1 نمره)
-        sajjadiya_memorization = s.sajjadiya_memorization  # حافظ صحیفه سجادیه (1 نمره)
-        global_awards = s.global_awards  # تعداد مقام جهانی
-        national_awards = s.national_awards  # تعداد مقام کشوری
-        provincial_awards = s.provincial_awards  # تعداد مقام استانی
-        global_articles = s.global_articles  # تعداد مقالات جهانی
-        publications = s.publications  # تعداد تالیفات
-        total += quran_memorization
-        total += mapping_nahj_memorization.get(nahj_memorization, 0)
-        total += mapping_sajjadiya_memorization.get(sajjadiya_memorization, 0)
-        if global_awards > 0 and global_awards < 3:
-            total += mapping_global_awards.get(global_awards, 0)
-        elif global_awards < 0:
-            total += mapping_global_awards.get(0, 0)
-        elif global_awards > 3:
-            total += 0.4
 
-        if national_awards > 0 and national_awards < 3:
-            total += mapping_national_awards.get(national_awards, 0)
-        elif national_awards < 0:
-            total += mapping_national_awards.get(0, 0)
-        elif national_awards > 3:
-            total += 0.3
+        # Battalion scores
+        total += DISCIPLINE_SCORES.get(int(soldier.discipline_score), 0)
+        total += BATTALION_ACTIVITY_SCORES.get(int(soldier.battalion_activity), 0)
+        total += BATTALION_SAMPLE_SCORE if soldier.battalion_sample else 0
 
-        if provincial_awards > 0 and provincial_awards < 3:
-            total += mapping_provincial_awards.get(provincial_awards, 0)
-        elif provincial_awards < 0:
-            total += mapping_provincial_awards.get(0, 0)
-        elif provincial_awards > 3:
-            total += 0.2
+        # Basij scores
+        total += float(soldier.basij_experience) * 0.0142857  # Active Basij experience
+        total += float(soldier.council_experience) * 0.01  # Council experience
+        total += BASIJ_EFFICIENCY_SCORES.get(str(soldier.basij_efficiency), 0)
 
-        if global_articles > 0 and global_articles < 3:
-            total += mapping_global_articles.get(global_articles, 0)
-        elif global_articles < 0:
-            total += mapping_global_articles.get(0, 0)
-        elif global_articles > 3:
-            total += 0.3
+        # Ideological and training scores
+        total += IDEOLOGICAL_SCORES.get(int(soldier.ideological_score), 0)
+        total += get_shooting_score(int(soldier.shooting_score))
+        total += TOP_THREE_SCORES.get(soldier.top_three, 0)
 
-        if publications > 0 and publications < 3:
-            total += mapping_publications.get(publications, 0)
-        elif publications < 0:
-            total += mapping_publications.get(0, 0)
-        elif publications > 3:
-            total += 0.3
+        # Personal achievements
+        total += soldier.quran_memorization * 0.1  # Quran memorization
+        total += 1 if soldier.nahj_memorization else 0  # Nahj memorization
+        total += 1 if soldier.sajjadiya_memorization else 0  # Sajjadiya memorization
 
-        if total > 20:
-            total = 20
-        rank = ''
-        if s.Amriye == True or s.physical_condition != 'سالم':
-            rank = get_military_rank(s.Grade, 0)
+        # Awards and publications
+        total += get_award_score(soldier.global_awards, AWARD_SCORES['global'])
+        total += get_award_score(soldier.national_awards, AWARD_SCORES['national'])
+        total += get_award_score(soldier.provincial_awards, AWARD_SCORES['provincial'])
+        total += get_award_score(soldier.global_articles, ARTICLE_SCORES['global'])
+        total += get_award_score(soldier.publications, ARTICLE_SCORES['publications'])
+
+        # Cap total score at 20
+        total = min(total, 20)
+
+        # Determine rank
+        if soldier.Amriye or soldier.physical_condition != 'سالم':
+            rank = get_military_rank(soldier.Grade, 0)
         else:
-            rank = get_military_rank(s.Grade, total)
-        s.rank = rank
-        s.total_score = total
-        s.save()
+            rank = get_military_rank(soldier.Grade, total)
+
+        # Update soldier
+        soldier.rank = rank
+        soldier.total_score = total
+        soldier.save()
 
 
 class import_rank_from_exel(LoginRequiredMixin, View):
@@ -1579,49 +1643,91 @@ def export_to_excel_list_bank(request):
     return response
 
 
+#
+# class import_bank_number_from_exel(LoginRequiredMixin, View):
+#     def get(self, request):
+#         form = FormUpdateBank()
+#         cx = {'form': form}
+#         return render(request,
+#                       'ensani_soldires_management/import_bank_from_exel.html', cx)
+#
+#     def post(self, request):
+#         form = FormUpdateBank(request.POST, request.FILES or None)
+#         if not form.is_valid():
+#             cx = {'form': form}
+#             return render(request,
+#                           'ensani_soldires_management/import_bank_from_exel.html',
+#                           cx)
+#
+#         else:
+#             exel = request.FILES['file']
+#
+#             workbook = openpyxl.load_workbook(exel)
+#
+#             # انتخاب شیت اول
+#             sheet = workbook.active
+#
+#             # بدست آوردن تعداد ردیف‌ها و ستون‌ها
+#             num_rows = sheet.max_row
+#             num_cols = sheet.max_column
+#
+#             # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
+#             for row_idx in range(2, num_rows + 1):
+#                 one_soldire_list = []
+#                 for col_idx in range(1, num_cols + 1):
+#                     # مقدار سلول را بخوانید
+#                     cell_value = sheet.cell(row=row_idx, column=col_idx).value
+#                     one_soldire_list.append(cell_value)
+#                 if one_soldire_list[0] is not None:
+#                     find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
+#                     if find_soldire is not None:
+#                         find_soldire.bank_number = one_soldire_list[1]
+#                         find_soldire.save()
+#         cx = {'form': form}
+#         calculate_score()
+#         return render(request,
+#                       'ensani_soldires_management/import_bank_from_exel.html', cx)
+
+
 class import_bank_number_from_exel(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateBank()
-        cx = {'form': form}
-        return render(request,
-                      'ensani_soldires_management/import_bank_from_exel.html', cx)
+        return render(request, 'ensani_soldires_management/import_bank_from_exel.html', {'form': form})
 
     def post(self, request):
-        form = FormUpdateBank(request.POST, request.FILES or None)
+        form = FormUpdateBank(request.POST, request.FILES)
         if not form.is_valid():
-            cx = {'form': form}
-            return render(request,
-                          'ensani_soldires_management/import_bank_from_exel.html',
-                          cx)
+            return render(request, 'ensani_soldires_management/import_bank_from_exel.html', {'form': form})
 
-        else:
-            exel = request.FILES['file']
-
-            workbook = openpyxl.load_workbook(exel)
-
-            # انتخاب شیت اول
+        try:
+            excel_file = request.FILES['file']
+            # استفاده از حالت خواندن بهینه
+            workbook = openpyxl.load_workbook(excel_file, read_only=True)
             sheet = workbook.active
 
-            # بدست آوردن تعداد ردیف‌ها و ستون‌ها
-            num_rows = sheet.max_row
-            num_cols = sheet.max_column
+            soldiers_to_update = []
+            # استفاده از iter_rows برای خواندن بهینه‌ی ردیف‌ها
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                national_code = row[0]
+                bank_number = row[1]
+                if national_code is not None:
+                    soldier = Soldier.objects.filter(National_Code=national_code).first()
+                    if soldier:
+                        soldier.bank_number = bank_number
+                        soldiers_to_update.append(soldier)
 
-            # برای هر ردیف از ردیف دوم به بعد (برای نادیده‌گرفتن هدر)
-            for row_idx in range(2, num_rows + 1):
-                one_soldire_list = []
-                for col_idx in range(1, num_cols + 1):
-                    # مقدار سلول را بخوانید
-                    cell_value = sheet.cell(row=row_idx, column=col_idx).value
-                    one_soldire_list.append(cell_value)
-                if one_soldire_list[0] is not None:
-                    find_soldire = Soldier.objects.filter(National_Code=one_soldire_list[0]).first()
-                    if find_soldire is not None:
-                        find_soldire.bank_number = one_soldire_list[1]
-                        find_soldire.save()
-        cx = {'form': form}
-        calculate_score()
-        return render(request,
-                      'ensani_soldires_management/import_bank_from_exel.html', cx)
+            # به‌روزرسانی دسته‌ای برای کاهش تعداد فراخوانی‌های دیتابیس
+            if soldiers_to_update:
+                with transaction.atomic():
+                    Soldier.objects.bulk_update(soldiers_to_update, ['bank_number'])
+
+            calculate_score()
+
+        except Exception as e:
+            logger.exception("Error processing Excel file")
+            return HttpResponseServerError("An error occurred while processing the file.")
+
+        return render(request, 'ensani_soldires_management/import_bank_from_exel.html', {'form': form})
 
 
 @login_required

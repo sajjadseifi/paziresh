@@ -9,6 +9,12 @@ class battalion(models.Model):
     is_active = models.BooleanField(default=False, verbose_name='فعال/غیرفعال')
     order = models.IntegerField(null=True, blank=True, verbose_name='اولویت مرتب سازی')
 
+    class Meta:
+        verbose_name = "گردان"
+        verbose_name_plural = "گردان ها"
+
+
+
     def __str__(self):
         return self.name
 

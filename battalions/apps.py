@@ -4,3 +4,4 @@ from django.apps import AppConfig
 class BattalionsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'battalions'
+    verbose_name = 'مدیرت گردان و گروهان'

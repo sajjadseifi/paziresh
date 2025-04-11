@@ -1,0 +1,102 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+{% endblock %}
+
+{% block main %}
+
+    <div class="box box-warning">
+        <div class="box-header with-border">
+            <h3 class="box-title">ثبت نامه معرفی</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.soldire.label }}
+                    {{ form.soldire }}
+                    <span style='color: red'>{{ form.soldire.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.destination.label }}
+                    {{ form.destination }}
+                    <span style='color: red'>{{ form.destination.errors }}</span>
+                </div>
+                 <div class="form-group">
+                    {{ form.no_moarefi.label }}
+                    {{ form.no_moarefi }}
+                    <span style='color: red'>{{ form.no_moarefi.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.tarihki_moarefi.label }}
+                    {{ form.tarihki_moarefi }}
+                    <span style='color: red'>{{ form.tarihki_moarefi.errors }}</span>
+                </div>
+                <div class="form-group">
+                    {{ form.suttr.label }}
+                    {{ form.suttr }}
+                    <span style='color: red'>{{ form.suttr.errors }}</span>
+                </div>
+                <button type="submit" class="btn btn-success pull-right">ثبت نامه معرفی
+                </button>
+            </form>
+
+        </div>
+        <!-- /.box-body -->
+    </div>
+
+{% endblock %}
+
+
+{% block footer %}
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#id_soldire").change(function () {
+                var soldier_id = $(this).val();
+                if (soldier_id) {
+                    $.ajax({
+                        url: `{% url 'get_suttr_status' %}`,
+                        type: "GET",
+                        data: {'soldier_id': soldier_id},
+                        success: function (data) {
+                            if (data.status === "گرفته است") {
+                                $("#id_suttr").val("گرفته است");
+                            } else {
+                                $("#id_suttr").val("نگرفته است");
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        $(document).ready(function () {
+            $("#id_soldire").change(function () {
+                var soldier_id = $(this).val();
+                if (soldier_id) {
+                    $.ajax({
+                        url: `{% url 'get_suttr_status' %}`,
+                        type: "GET",
+                        data: {'soldier_id': soldier_id},
+                        success: function (data) {
+                            if (data.status) {
+                                $("#id_suttr").val(data.status).trigger('change');  // مقدار را تغییر داده و به Select2 اطلاع بدهد
+                            }
+                        },
+                        error: function (xhr) {
+                            console.log("Error:", xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

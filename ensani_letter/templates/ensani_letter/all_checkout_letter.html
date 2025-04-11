@@ -20,6 +20,7 @@
                             <th>کد ملی</th>
                             <th>تاریخ</th>
                             <th>علت</th>
+                            <th>توضیحات</th>
                             <th>وضعیت</th>
                             <th></th>
                         </tr>
@@ -31,6 +32,7 @@
                                 <td>{{ c.soldire.National_Code }}</td>
                                 <td>{{ c.create_time.date }}</td>
                                 <td>{{ c.c_type }}</td>
+                                <td>{{ c.description }}</td>
                                 <td>{{ c.status }}</td>
                                 <td>
                                     <a class="btn btn-app" href="{% url 'PrintCheckoutLetter' pk=c.pk %}">

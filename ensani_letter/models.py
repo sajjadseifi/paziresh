@@ -12,8 +12,12 @@ class NormalLetterModels(models.Model):
     number = models.CharField(max_length=200, verbose_name='شماره نامه', null=True, blank=True)
     status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)
 
+    class Meta:
+        verbose_name = "نامه عادی"
+        verbose_name_plural = "نامه‌های عادی"
+
     def __str__(self):
-        return self.soldire.name + " " + self.soldire.family
+        return f"{self.soldire}"
 
 
 class CheckoutLetterModels(models.Model):
@@ -25,7 +29,14 @@ class CheckoutLetterModels(models.Model):
     status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)
 
     def __str__(self):
-        return self.soldire.name + " " + self.soldire.family
+        return f"{self.soldire} - {self.c_type} - {self.status}"
+
+    class Meta:
+        verbose_name = "نامه تسویه حساب"
+        verbose_name_plural = "نامه‌های تسویه حساب"
+
+    def __str__(self):
+        return f"{self.soldire}"
 
 
 class RegisterNormalLetter(models.Model):
@@ -34,11 +45,25 @@ class RegisterNormalLetter(models.Model):
     in_come_submit_locations = models.CharField(max_length=100, verbose_name='مبدا صادر کننده', null=True, blank=True)
     normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')
 
+    def __str__(self):
+        return f"{self.in_come_letter_numbers} - {self.in_come_letter_data}"
+
+    class Meta:
+        verbose_name = "نامه گواهی عضویت"
+        verbose_name_plural = "نامه‌های گواهی عضویت"
+
 
 class RunawayNormallLetter(models.Model):
     type = models.CharField(max_length=120, verbose_name='دلیل فرار', null=True, blank=True)
     run_away_dated = models.CharField(max_length=120, verbose_name='تاریخ فرار', null=True, blank=True)
     normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی')
+
+    def __str__(self):
+        return f"نامه فرار"
+
+    class Meta:
+        verbose_name = "نامه فرار"
+        verbose_name_plural = "نامه‌های فرار"
 
 
 class FarajaNormallLetter(models.Model):
@@ -47,3 +72,26 @@ class FarajaNormallLetter(models.Model):
     elat = models.CharField(max_length=120, verbose_name='تاریخ نامه فراجا', null=True, blank=True)
     normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی', null=True,
                                       blank=True)
+
+    def __str__(self):
+        return f"نامه فراجا"
+
+    class Meta:
+        verbose_name = "نامه فراجا"
+        verbose_name_plural = "نامه‌های فراجا"
+
+
+class MoarefiNormallLetter(models.Model):
+    tarikh_moarefi = models.CharField(max_length=120, verbose_name='تاریخ معرفی', null=True, blank=True)
+    destination = models.CharField(max_length=250, verbose_name='مقصد نامه', null=True, blank=True)
+    no_moarefi = models.CharField(max_length=250, verbose_name='به علت', null=True, blank=True)
+    normal_letter = models.ForeignKey(NormalLetterModels, on_delete=models.CASCADE, verbose_name='نامه عادی', null=True,
+                                      blank=True)
+    sater = models.CharField(max_length=100, verbose_name='ساتر', null=True, blank=True)
+
+    def __str__(self):
+        return f"معرفی نامه"
+
+    class Meta:
+        verbose_name = "نامه معرفی"
+        verbose_name_plural = "نامه‌های معرفی"

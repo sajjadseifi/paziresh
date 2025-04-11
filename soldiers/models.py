@@ -110,5 +110,12 @@ class Soldier(models.Model):
     total_score = models.FloatField(default=0, verbose_name='امتیاز کل')  # امتیاز کل
     rank = models.CharField(max_length=100, blank=True, null=True, verbose_name='درجه محاسبه‌شده')  # درجه محاسبه‌شده
     yegan_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='اسم اصلی یگان')
+    tajdid_dore_moarefi_shode = models.BooleanField(default=False, verbose_name='تجدید دوره معرفی شده؟')
+
+    class Meta:
+        verbose_name = "سرباز"
+        verbose_name_plural = "سرباز ها"
+
+
     def __str__(self):
         return f"{self.name} - {self.family} - {self.National_Code}"

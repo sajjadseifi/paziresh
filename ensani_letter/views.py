@@ -6,12 +6,15 @@ from soldiers.models import Soldier
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
-    CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom, CreateFarajaLetterFrom
+    CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom, CreateFarajaLetterFrom, CreateMoarefiFrom
 from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
-    FarajaNormallLetter
+    FarajaNormallLetter, MoarefiNormallLetter
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
 import random
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Soldier  # مدل سرباز را ایمپورت کنید
 
 
 def generate_unique_number(length=4):
@@ -77,6 +80,19 @@ def AllCheckoutLetter(request, *args, **kwargs):
     all_checkout_letter = CheckoutLetterModels.objects.filter().all()
     return render(request, 'ensani_letter/all_checkout_letter.html',
                   context={'all_checkout_letter': all_checkout_letter})
+
+
+def get_suttr_status(request):
+    soldier_id = request.GET.get("soldier_id")
+    soldier = Soldier.objects.filter(National_Code=soldier_id).first()
+    sutter_get = Sater.objects.filter(sarbaz_id=soldier.id).first()
+    status = ""
+    if sutter_get.is_get is True:
+        status = "گرفته است"
+    else:
+        status = "نگرفته است"
+    # فرض می‌کنیم Soldier دارای یک فیلد status است که وضعیت ساتر را ذخیره می‌کند.
+    return JsonResponse({"status": status})
 
 
 class CreateCheckoutLetter(LoginRequiredMixin, View):
@@ -228,10 +244,6 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
 class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_training_inquiry_letter.html'
     success_url = reverse_lazy('AllNormalLetter')
-    soldire_list = []
-    g = Soldier.objects.filter().all()
-    for item in g:
-        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 
     def get(self, request):
         soldire_list = []
@@ -263,6 +275,7 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
         find_soldire.in_coures = False
         find_soldire.Gordan = None
         find_soldire.battalion_group = None
+        find_soldire.has_been_accepted = True
         find_soldire.save()
         my_letter.soldire = find_soldire
         my_letter.status = "درحال بررسی"
@@ -279,12 +292,12 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
 class CreateRegisterLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_register_letter.html'
     success_url = reverse_lazy('AllNormalLetter')
-    soldire_list = []
-    g = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
-    for item in g:
-        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 
     def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         soldire_list = []
         g = Soldier.objects.filter().all()
         for item in g:
@@ -333,12 +346,12 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
 class CreaterunawayLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_runaway_letter.html'
     success_url = reverse_lazy('AllNormalLetter')
-    soldire_list = []
-    g = Soldier.objects.filter(IsCheckout=True).all()
-    for item in g:
-        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 
     def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(IsCheckout=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         soldire_list = []
         g = Soldier.objects.filter(IsCheckout=True).all()
         for item in g:
@@ -386,12 +399,12 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
 class CreateFarajaLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_faraja_letter.html'
     success_url = reverse_lazy('AllNormalLetter')
-    soldire_list = []
-    g = Soldier.objects.filter(IsCheckout=True).all()
-    for item in g:
-        soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
 
     def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(IsCheckout=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
         soldire_list = []
         g = Soldier.objects.filter(IsCheckout=True).all()
         for item in g:
@@ -455,9 +468,10 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
         return 0
     en = EnsaniSettings.objects.filter().first()
     checkout_commission_letter = NormalLetterModels.objects.filter(pk=checkout_commission_letter_pk).first()
+    check_out = CheckoutLetterModels.objects.filter(soldire_id=checkout_commission_letter.soldire.id).first()
     sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
     checkout_commission_letter.status = "تجدید دوره کمیسیون"
-    cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en}
+    cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en, 'check_out': check_out}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 
 
@@ -470,6 +484,92 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     en = EnsaniSettings.objects.filter().first()
     cx = {'training_inquiry_letter': training_inquiry_letter, 'en': en}
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
+
+
+class CreateMoarefiLetter(LoginRequiredMixin, View):
+    template = 'ensani_letter/create_moarefi_letter.html'
+    success_url = reverse_lazy('AllNormalLetter')
+
+    template = 'ensani_letter/create_moarefi_letter.html'
+
+    def get(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True).all()
+        for item in g:
+            moarefi_status = ""
+            if item.tajdid_dore_moarefi_shode is True:
+                moarefi_status = "معرفی شده"
+            else:
+                moarefi_status = "معرفی نشده "
+            soldire_list.append(
+                (item.National_Code, F"{item.name} {item.family}  - {item.National_Code} - {moarefi_status}"))
+        # دریافت لیست سربازان قابل انتخاب
+        soldire_list = []
+        soldiers = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True).all()
+
+        for soldier in soldiers:
+            moarefi_status = "معرفی شده" if soldier.tajdid_dore_moarefi_shode else "معرفی نشده"
+            soldire_list.append(
+                (soldier.National_Code, f"{soldier.name} {soldier.family} - {soldier.National_Code} - {moarefi_status}")
+            )
+
+        # مقداردهی فرم
+        b_form = CreateMoarefiFrom()
+        b_form.fields['soldire'].choices = soldire_list  # پر کردن لیست سربازان
+        b_form.fields['suttr'].choices = [("گرفته است", "گرفته است"), ("نگرفته است", "نگرفته است")]  # مقداردهی صحیح
+
+        return render(request, self.template, {'form': b_form})
+
+    def post(self, request):
+        soldire_list = []
+        g = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True).all()
+        for item in g:
+            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        b_form = CreateMoarefiFrom(request.POST, request.FILES or None)
+        b_form.fields['soldire'].choices = soldire_list
+        if not b_form.is_valid():
+            cx = {'form': b_form}
+            return render(request, self.template, cx)
+        my_letter = NormalLetterModels()
+        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+        find_soldire.tajdid_dore_moarefi_shode = True
+        my_letter.soldire = find_soldire
+        my_letter.create_time = jdatetime.datetime.now()
+        my_letter.description = "معرفی نامه"
+        my_letter.destination = b_form.cleaned_data['destination']
+        my_letter.subject = "معرفی نامه"
+        ens = EnsaniSettings.objects.filter().first()
+        my_letter.number = my_letter.number = F"{ens.shomare_dore}44{generate_unique_number()}{find_soldire.National_Code[::3]}"
+        my_letter.status = "تایید"
+        my_letter.save()
+        find_soldire.save()
+        rn = MoarefiNormallLetter()
+        rn.normal_letter = my_letter
+        destination_to = b_form.cleaned_data['destination']
+        tarihki_moarefi = b_form.cleaned_data['tarihki_moarefi']
+        no_moarefi = b_form.cleaned_data['no_moarefi']
+        suttr = b_form.cleaned_data['suttr']
+        rn.sater = suttr
+        rn.tarikh_moarefi = tarihki_moarefi
+        if no_moarefi is not None:
+            rn.no_moarefi = no_moarefi
+        if destination_to is not None:
+            rn.destination = destination_to
+        rn.save()
+        return redirect(self.success_url)
+
+
+@login_required
+def PrintMoarefiLetter(request, *args, **kwargs):
+    Normal_letter = kwargs['pk']
+    if Normal_letter is None:
+        return 0
+    Normal_letter_moarefi = NormalLetterModels.objects.filter(pk=Normal_letter).first()
+    ml = MoarefiNormallLetter.objects.filter(normal_letter=Normal_letter_moarefi).first()
+    sater_get = Sater.objects.filter(sarbaz_id=Normal_letter_moarefi.soldire.id).first()
+    en = EnsaniSettings.objects.filter().last()
+    cx = {'Normal_letter_moarefi': Normal_letter_moarefi, 'en': en, 'ml': ml, 'sater_get': sater_get}
+    return render(request, 'ensani_letter/print_moarefi_normal_letter.html', cx)
 
 
 @login_required
@@ -581,6 +681,12 @@ def remove_normall(request, *args, **kwargs):
         normall.soldire.has_been_accepted = True
         normall.soldire.willing_to_learn = False
         normall.soldire.the_medical_commission = False
+        normall.soldire.save()
+        normall.save()
+        normall.delete()
+        return redirect(reverse_lazy('AllNormalLetter'))
+    if normall.subject == "معرفی نامه":
+        normall.soldire.tajdid_dore_moarefi_shode = False
         normall.soldire.save()
         normall.save()
         normall.delete()

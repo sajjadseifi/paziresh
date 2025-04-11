@@ -5,6 +5,7 @@ urlpatterns = [
     path('soldire/detail/<str:code>', soldire_details, name='soldire_details'),
     path('soldire/all/', all_soldire, name='all_soldire'),
     path('soldire/search/', soldier_search, name='soldier_search'),
+    path('soldire/in/almahdi/', soldier_in_almahdi, name='soldier_in_almahdi'),
     path('soldire/p/poshe_nokhodi', PrintPosheNokhodi, name='poshe_nokhodi'),
     path('soldire/export-excel/export_to_excel_list_hazer_be_khdmat', export_to_excel_list_hazer_be_khdmat,
          name='export_to_excel_list_hazer_be_khdmat'),
@@ -55,4 +56,6 @@ urlpatterns = [
     path('soldire/rank/group/grodani/', rank_group_print_gordani, name='rank_group_print_gordani'),
     path('soldire/rank/export_to_excel_list_rank', export_to_excel_list_rank, name='export_to_excel_list_rank'),
     path('soldire/export_to_excel_list_goili', export_to_excel_list_goili, name='export_to_excel_list_goili'),
+    path('soldire/export_to_excel_list_tajdid_dore', export_to_excel_list_tajdid_dore, name='export_to_excel_list_tajdid_dore'),
+
 ]

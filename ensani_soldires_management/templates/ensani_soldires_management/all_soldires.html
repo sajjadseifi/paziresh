@@ -49,6 +49,9 @@
                         {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
                             <td>تجدید دوره</td>
                         {% endif %}
+                        {% if soldier.has_been_accepted and soldier.Previous_service_record is True %}
+                            <td>کفایت از آموزش</td>
+                        {% endif %}
                         <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i
                                 class="fa fa-eye"></i></a></td>
 

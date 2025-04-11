@@ -1,0 +1,105 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="box">
+        <!-- نمایش نتایج جستجو -->
+        {% if results %}
+            {% if results %}
+                <h3 class="text-center">تعداد <span style="color:red;"> {{ results.count }}</span> مورد یافت شد!</h3>
+            {% endif %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
+                    <th>کد ملی</th>
+                    <th>وضعیت جسمانی</th>
+                    <th>وضعیت تاهل</th>
+                    <th>مذهب</th>
+                    <th>محل</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for soldier in results %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ soldier.name }}</td>
+                        <td>{{ soldier.family }}</td>
+                        <td>{{ soldier.National_Code }}</td>
+                        <td>{{ soldier.physical_condition }}</td>
+                        <td>{{ soldier.marital_status }}</td>
+                        <td>{{ soldier.Religion }}</td>
+                        <td>{{ soldier.t_Gordan }}-{{ soldier.t_battalion_group.name }}-{{ soldier.code_gorhan_nahai }}</td>
+
+
+                        {% if soldier.has_been_accepted and soldier.willing_to_learn %}
+                            <td>درحال آموزش</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
+                            <td>کفایت بسیج</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
+                            <td>تجدید دوره کمیسیون</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
+                            <td>کمیسیون پزشکی شروع دوره</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
+                            <td>تجدید دوره</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted and soldier.Previous_service_record is True %}
+                            <td>کفایت از آموزش</td>
+                        {% endif %}
+                        {% if soldier.has_been_accepted is False %}
+                            <td style="background-color: #ff9000">پذیرش نشده</td>
+                        {% endif %}
+                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i
+                                class="fa fa-eye"></i></a></td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h5 class="text-center">نتیجه‌ای یافت نشد.</h5>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block footer %}
+    <script>
+        document.getElementById('Gordan').addEventListener('change', function () {
+            const gordanName = this.value; // گرفتن مقدار انتخاب‌شده
+            const battalionGroup = document.getElementById('battaliongroup');
+
+            // پاک کردن گزینه‌های فعلی
+            battalionGroup.innerHTML = '<option value="">همه</option>';
+
+            if (gordanName) {
+                // ارسال درخواست Ajax
+                fetch(`{% url 'get_grohan_by_gordan_for_search' %}?gordan_name=${gordanName}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // اضافه کردن گزینه‌ها به سلکت‌باکس دوم
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.name;
+                            option.textContent = item.name;
+                            battalionGroup.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
+{% endblock %}

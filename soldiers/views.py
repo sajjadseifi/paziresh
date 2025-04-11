@@ -695,7 +695,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         Renewal_of_the_previous_period_code = form_soldiers.cleaned_data['Renewal_of_the_previous_period_code']
 
         Relative_to_inclusive = form_soldiers.cleaned_data['Relative_to_inclusive']
-        Relative_to_inclusive_number = form_soldiers.cleaned_data['Relative_to_inclusive']
+        Relative_to_inclusive_number = form_soldiers.cleaned_data['Relative_to_inclusive_number']
 
         attraction_of_the_organization_id = form_soldiers.cleaned_data['attraction_of_the_organization']
         attraction_of_the_organization = ""

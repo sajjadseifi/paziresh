@@ -281,7 +281,7 @@
         ملی {{ checkout_commission_letter.soldire.National_Code }} و تاریخ اعزام
         {{ checkout_commission_letter.soldire.Date_of_dispatch }} برابر تائید
         بهداری به علت {{ checkout_commission_letter.description }} معرفی به کمیسیون ، در
-        تاریخ {{ checkout_commission_letter.soldire.tarikh_paziresh.date.year }}/{{ checkout_commission_letter.soldire.tarikh_paziresh.date.month }}/{{ checkout_commission_letter.soldire.tarikh_paziresh.date.day }}
+        تاریخ {{ check_out.create_time.year }}/{{ check_out.create_time.month }}/{{ check_out.create_time.day }}
         از این آموزشگاه تسویه حساب نموده و
         جهت
         اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می گردد.
@@ -292,7 +292,7 @@
     <div class="letter_details">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
         عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
     </div>
-    <div class="farmande_padegan">سرهنگ پاسدار علی متولی طاهر</div>
+    <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
     <div class="letter_note">تذکر : مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان ، 59 روز از تاریخ فوق
         می باشد ، در صورت عدم ارسال به موقع ، فرار از خدمت برای نامبرده لحاظ می گردد.
     </div>
@@ -318,7 +318,7 @@
         ملی {{ checkout_commission_letter.soldire.National_Code }} و تاریخ اعزام
         {{ checkout_commission_letter.soldire.Date_of_dispatch }} برابر تائید
         بهداری به علت {{ checkout_commission_letter.description }} معرفی به کمیسیون ، در
-        تاریخ {{ checkout_commission_letter.soldire.tarikh_paziresh.date.year }}/{{ checkout_commission_letter.soldire.tarikh_paziresh.date.month }}/{{ checkout_commission_letter.soldire.tarikh_paziresh.date.day }}
+        تاریخ {{ check_out.create_time.year }}/{{ check_out.create_time.month }}/{{ check_out.create_time.day }}
         از این آموزشگاه تسویه حساب نموده و
         جهت
         اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می گردد.
@@ -328,11 +328,11 @@
     <div class="letter_details2">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
         عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
     </div>
-    <div class="farmande_padegan2">سرهنگ پاسدار علی متولی طاهر</div>
+    <div class="farmande_padegan2">{{ en.farmande_razme_moghadamati }}</div>
     <div class="letter_note2">تذکر : مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان ، 59 روز از تاریخ فوق
         می باشد ، در صورت عدم ارسال به موقع ، فرار از خدمت برای نامبرده لحاظ می گردد.
     </div>
-    <div class="code_paziresh"> عدد پذیرش : {{ checkout_commission_letter.soldire.code_paziresh }}</div>
+    <div class="code_paziresh"> عدد پذیرش : {{ checkout_commission_letter.soldire.acceptance_code }}</div>
     {% if sutter.is_get %}
         <div class="sutter">نامبرده ساتر تحویل گرفته است.</div>
     {% else %}

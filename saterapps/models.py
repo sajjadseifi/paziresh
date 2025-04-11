@@ -12,3 +12,10 @@ class Sater(models.Model):
     sub_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربرثبت کننده')
     sater_type = models.CharField(max_length=150, verbose_name='نوع ساتر', null=True)
     is_get = models.BooleanField(default=False, verbose_name='تایید ساتر')
+
+    class Meta:
+        verbose_name = "ساتر"
+        verbose_name_plural = "ساتر ها"
+
+    def __str__(self):
+        return f'{self.sarbaz}-{self.date}-{self.sater_type}'
