@@ -33,3 +33,8 @@ class EnsaniSettings(models.Model):
     hokme_darje_gardeshkar = models.CharField(max_length=100, null=True, blank=True)
     tarikh_hokme_darje_gardeshkar = models.CharField(max_length=100, null=True, blank=True)
     emza_farmande = models.ImageField(upload_to='images/', null=True, blank=True)
+
+
+    class Meta:
+        verbose_name = "تنظیمات"
+        verbose_name_plural = "تنظیمات"

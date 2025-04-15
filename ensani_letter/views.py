@@ -1,8 +1,8 @@
 import jdatetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction, IntegrityError
 from django.shortcuts import render, redirect
-from soldiers.models import Soldier
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
@@ -13,7 +13,6 @@ from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
 import random
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from .models import Soldier  # مدل سرباز را ایمپورت کنید
 
 
@@ -103,7 +102,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
         soldire_list = []
         g = Soldier.objects.filter(IsCheckout=False).all()
         for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
         b_form.fields['c_type'].choices = c_type_list
@@ -112,32 +111,54 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.all()
         for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
+
         b_form = CreateCheckoutLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
         b_form.fields['c_type'].choices = c_type_list
+
         if not b_form.is_valid():
             cx = {'form': b_form}
             return render(request, self.template, cx)
-        my_letter = CheckoutLetterModels()
-        my_letter.description = b_form.cleaned_data['description']
-        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        find_soldire.IsCheckout = True
-        find_soldire.willing_to_learn = False
-        find_soldire.save()
-        my_letter.soldire = find_soldire
-        my_letter.status = "ثبت اولیه"
-        my_letter.create_time = jdatetime.datetime.now()
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = F"{ens.shomare_dore}{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        c_type = ""
-        for iteam in c_type_list:
-            if iteam[0] == int(b_form.cleaned_data['c_type']):
-                c_type = iteam[1]
-        my_letter.c_type = c_type
-        my_letter.save()
+
+        while True:
+            try:
+                with transaction.atomic():
+                    my_letter = CheckoutLetterModels()
+                    my_letter.description = b_form.cleaned_data['description']
+
+                    find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+                    if not find_soldire:
+                        b_form.add_error('soldire', 'سرباز مورد نظر یافت نشد.')
+                        cx = {'form': b_form}
+                        return render(request, self.template, cx)
+
+                    find_soldire.IsCheckout = True
+                    find_soldire.willing_to_learn = False
+                    find_soldire.save()
+
+                    my_letter.soldire = find_soldire
+                    my_letter.status = "ثبت اولیه"
+                    my_letter.create_time = jdatetime.datetime.now()
+
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}{generate_unique_number()}{find_soldire.National_Code[::3]}"
+
+                    c_type = ""
+                    for item in c_type_list:
+                        if item[0] == int(b_form.cleaned_data['c_type']):
+                            c_type = item[1]
+
+                    my_letter.c_type = c_type
+                    my_letter.save()
+
+                break  # اگر موفق شد از حلقه بیرون بیاد
+
+            except IntegrityError:
+                continue  # در صورت خطای یکتایی یا مشابه، دوباره سعی کن
+
         return redirect(self.success_url)
 
 
@@ -167,26 +188,48 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
         b_form.initial['subject'] = "معرفی به کمیسیون"
         cl = CheckoutLetterModels.objects.filter(number=pk).first()
         b_form.initial['destination'] = find_sepah(cl.soldire.province_name)
+
         if not b_form.is_valid():
             cx = {'form': b_form, 'cl': cl}
             return render(request, self.template, cx)
-        my_letter = NormalLetterModels()
-        my_letter.description = b_form.cleaned_data['description']
-        my_letter.subject = b_form.cleaned_data['subject']
-        find_soldire = Soldier.objects.filter(id=cl.soldire.id).first()
-        my_letter.soldire = find_soldire
-        find_soldire.the_medical_commission = True
-        cl.status = "درحال معرفی به کمیسیون"
-        my_letter.create_time = jdatetime.datetime.now()
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = F"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        destination = ""
-        for iteam in sepah_ostan_list:
-            if iteam[0] == int(b_form.cleaned_data['destination']):
-                destination = iteam[2]
-        my_letter.destination = destination
-        my_letter.save()
-        find_soldire.save()
+
+        while True:
+            try:
+                with transaction.atomic():
+                    my_letter = NormalLetterModels()
+                    my_letter.description = b_form.cleaned_data['description']
+                    my_letter.subject = b_form.cleaned_data['subject']
+
+                    find_soldire = Soldier.objects.filter(id=cl.soldire.id).first()
+                    if not find_soldire:
+                        b_form.add_error(None, 'سرباز مورد نظر یافت نشد.')
+                        cx = {'form': b_form, 'cl': cl}
+                        return render(request, self.template, cx)
+
+                    my_letter.soldire = find_soldire
+                    find_soldire.the_medical_commission = True
+                    cl.status = "درحال معرفی به کمیسیون"
+
+                    my_letter.create_time = jdatetime.datetime.now()
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
+
+                    destination = ""
+                    for iteam in sepah_ostan_list:
+                        if iteam[0] == int(b_form.cleaned_data['destination']):
+                            destination = iteam[2]
+
+                    my_letter.destination = destination
+
+                    my_letter.save()
+                    find_soldire.save()
+                    cl.save()
+
+                break  # عملیات موفقیت‌آمیز بود
+
+            except IntegrityError:
+                continue  # اگر خطای یکپارچگی رخ داد، مجدد تلاش شود
+
         return redirect(self.success_url)
 
 
@@ -196,9 +239,9 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.all()
         for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateBeforeCourseCommissionLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
         cx = {'form': b_form}
@@ -206,38 +249,58 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.all()
         for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateBeforeCourseCommissionLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
+
         if not b_form.is_valid():
             cx = {'form': b_form}
             return render(request, self.template, cx)
-        my_letter = NormalLetterModels()
-        my_letter.description = b_form.cleaned_data['description']
-        my_letter.subject = "معرفی به کمیسیون شروع دوره آموزشی"
-        soldire_code_meli = b_form.cleaned_data['soldire']
-        find_soldire = Soldier.objects.filter(National_Code=soldire_code_meli).first()
-        my_letter.soldire = find_soldire
-        my_letter.create_time = jdatetime.datetime.now()
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = F"{ens.shomare_dore}33{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        destination = find_sepah_name(find_soldire.province_name)
-        my_letter.destination = destination
-        my_letter.status = "تایید"
-        my_letter.save()
-        all_find_solidre = Soldier.objects.filter(has_been_accepted=True).all().count()
-        if find_soldire.willing_to_learn is True:
-            find_soldire.willing_to_learn = False
-        find_soldire.the_medical_commission = True
-        if find_soldire.acceptance_code is None:
-            find_soldire.acceptance_code = all_find_solidre + 1
-        find_soldire.in_coures = False
-        find_soldire.has_been_accepted = True
-        find_soldire.battalion_group = None
-        find_soldire.Gordan = None
-        find_soldire.save()
+
+        while True:
+            try:
+                with transaction.atomic():
+                    my_letter = NormalLetterModels()
+                    my_letter.description = b_form.cleaned_data['description']
+                    my_letter.subject = "معرفی به کمیسیون شروع دوره آموزشی"
+
+                    soldire_code_meli = b_form.cleaned_data['soldire']
+                    find_soldire = Soldier.objects.filter(National_Code=soldire_code_meli).first()
+                    if not find_soldire:
+                        b_form.add_error(None, 'سرباز مورد نظر پیدا نشد.')
+                        cx = {'form': b_form}
+                        return render(request, self.template, cx)
+
+                    my_letter.soldire = find_soldire
+                    my_letter.create_time = jdatetime.datetime.now()
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}33{generate_unique_number()}{find_soldire.National_Code[::3]}"
+                    my_letter.destination = find_sepah_name(find_soldire.province_name)
+                    my_letter.status = "تایید"
+                    my_letter.save()
+
+                    all_find_soldire = Soldier.objects.filter(has_been_accepted=True).count()
+
+                    if find_soldire.willing_to_learn is True:
+                        find_soldire.willing_to_learn = False
+
+                    find_soldire.the_medical_commission = True
+                    if find_soldire.acceptance_code is None:
+                        find_soldire.acceptance_code = all_find_soldire + 1
+
+                    find_soldire.in_coures = False
+                    find_soldire.has_been_accepted = True
+                    find_soldire.battalion_group = None
+                    find_soldire.Gordan = None
+                    find_soldire.save()
+
+                break  # اگر همه چیز خوب بود، حلقه متوقف میشه
+
+            except IntegrityError:
+                continue  # اگر خطای پایگاه‌داده پیش اومد، دوباره تلاش می‌کنیم
+
         return redirect(self.success_url)
 
 
@@ -247,9 +310,9 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.all()
         for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
         cx = {'form': b_form}
@@ -257,35 +320,55 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter().all()
+        g = Soldier.objects.all()
         for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateCheckoutLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
+
         if not b_form.is_valid():
             cx = {'form': b_form}
             return render(request, self.template, cx)
-        my_letter = NormalLetterModels()
-        all_find_solidre = Soldier.objects.filter(has_been_accepted=True).all().count()
-        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        if find_soldire.acceptance_code is None:
-            find_soldire.acceptance_code = all_find_solidre + 1
-        find_soldire.willing_to_learn = False
-        find_soldire.Previous_service_record = True
-        find_soldire.in_coures = False
-        find_soldire.Gordan = None
-        find_soldire.battalion_group = None
-        find_soldire.has_been_accepted = True
-        find_soldire.save()
-        my_letter.soldire = find_soldire
-        my_letter.status = "درحال بررسی"
-        my_letter.create_time = jdatetime.datetime.now()
-        my_letter.description = "استعلام کفایت از آموزش"
-        my_letter.destination = "آموزش"
-        my_letter.subject = "استعلام کفایت از آموزش"
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        my_letter.save()
+
+        while True:
+            try:
+                with transaction.atomic():
+                    my_letter = NormalLetterModels()
+                    all_find_soldire = Soldier.objects.filter(has_been_accepted=True).count()
+                    find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+
+                    if not find_soldire:
+                        b_form.add_error(None, 'سرباز مورد نظر پیدا نشد.')
+                        cx = {'form': b_form}
+                        return render(request, self.template, cx)
+
+                    if find_soldire.acceptance_code is None:
+                        find_soldire.acceptance_code = all_find_soldire + 1
+
+                    find_soldire.willing_to_learn = False
+                    find_soldire.Previous_service_record = True
+                    find_soldire.in_coures = False
+                    find_soldire.Gordan = None
+                    find_soldire.battalion_group = None
+                    find_soldire.has_been_accepted = True
+                    find_soldire.save()
+
+                    my_letter.soldire = find_soldire
+                    my_letter.status = "درحال بررسی"
+                    my_letter.create_time = jdatetime.datetime.now()
+                    my_letter.description = "استعلام کفایت از آموزش"
+                    my_letter.destination = "آموزش"
+                    my_letter.subject = "استعلام کفایت از آموزش"
+
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+                    my_letter.save()
+
+                break  # عملیات موفقیت‌آمیز بود
+
+            except IntegrityError:
+                continue  # در صورت خطای یکپارچگی، تلاش مجدد
+
         return redirect(self.success_url)
 
 
@@ -295,13 +378,8 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
-        soldire_list = []
-        g = Soldier.objects.filter().all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        for item in Soldier.objects.all():
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateRegisterLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
         cx = {'form': b_form}
@@ -309,39 +387,56 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        for item in Soldier.objects.all():
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
         b_form = CreateRegisterLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
+
         if not b_form.is_valid():
             cx = {'form': b_form}
             return render(request, self.template, cx)
-        my_letter = NormalLetterModels()
-        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        my_letter.soldire = find_soldire
-        my_letter.create_time = jdatetime.datetime.now()
-        my_letter.description = "گواهی عضویت"
-        my_letter.destination = b_form.cleaned_data['destination']
-        my_letter.subject = "گواهی عضویت"
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = my_letter.number = F"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        my_letter.status = "تایید"
-        my_letter.save()
-        rn = RegisterNormalLetter()
-        rn.normal_letter = my_letter
-        in_come_letter_numbers = b_form.cleaned_data['destination_letter_number']
-        in_come_letter_date = b_form.cleaned_data['destination_letter_date']
-        in_come_submit_locations = b_form.cleaned_data['in_come_submit_locations']
-        if in_come_submit_locations is not None:
-            rn.in_come_submit_locations = in_come_submit_locations
-        if in_come_letter_date is not None:
-            rn.in_come_letter_data = in_come_letter_date
-        if in_come_letter_numbers is not None:
-            rn.in_come_letter_numbers = in_come_letter_numbers
-        rn.save()
-        return redirect(self.success_url)
 
+        while True:
+            try:
+                with transaction.atomic():
+                    find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+
+                    if not find_soldire:
+                        b_form.add_error(None, 'سرباز مورد نظر یافت نشد.')
+                        return render(request, self.template, {'form': b_form})
+
+                    my_letter = NormalLetterModels()
+                    my_letter.soldire = find_soldire
+                    my_letter.create_time = jdatetime.datetime.now()
+                    my_letter.description = "گواهی عضویت"
+                    my_letter.destination = b_form.cleaned_data['destination']
+                    my_letter.subject = "گواهی عضویت"
+
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
+                    my_letter.status = "تایید"
+                    my_letter.save()
+
+                    rn = RegisterNormalLetter(normal_letter=my_letter)
+
+                    in_come_letter_numbers = b_form.cleaned_data['destination_letter_number']
+                    in_come_letter_date = b_form.cleaned_data['destination_letter_date']
+                    in_come_submit_locations = b_form.cleaned_data['in_come_submit_locations']
+
+                    if in_come_submit_locations:
+                        rn.in_come_submit_locations = in_come_submit_locations
+                    if in_come_letter_date:
+                        rn.in_come_letter_data = in_come_letter_date
+                    if in_come_letter_numbers:
+                        rn.in_come_letter_numbers = in_come_letter_numbers
+
+                    rn.save()
+
+                break  # موفق بود، بی‌خیال تکرار
+            except IntegrityError:
+                continue  # تلاش مجدد در صورت خطای یکپارچگی
+
+        return redirect(self.success_url)
 
 class CreaterunawayLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_runaway_letter.html'
@@ -349,50 +444,63 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
 
     def get(self, request):
         soldire_list = []
-        g = Soldier.objects.filter(IsCheckout=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
-        soldire_list = []
-        g = Soldier.objects.filter(IsCheckout=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        for item in Soldier.objects.filter(IsCheckout=True):
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
+
         b_form = CreateRunAwayLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
-        b_form.fields['type'].choices = [('عدم حضور در محل آموزشگاه', 'عدم حضور در محل آموزشگاه'), (
-            'تجدید دوره و عدم تحویل برگه ی تسویه حساب', 'تجدید دوره و عدم تحویل برگه ی تسویه حساب')]
-        cx = {'form': b_form}
-        return render(request, self.template, cx)
+        b_form.fields['type'].choices = [
+            ('عدم حضور در محل آموزشگاه', 'عدم حضور در محل آموزشگاه'),
+            ('تجدید دوره و عدم تحویل برگه ی تسویه حساب', 'تجدید دوره و عدم تحویل برگه ی تسویه حساب')
+        ]
+        return render(request, self.template, {'form': b_form})
 
     def post(self, request):
         soldire_list = []
-        g = Soldier.objects.filter(IsCheckout=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        for item in Soldier.objects.filter(IsCheckout=True):
+            soldire_list.append((item.National_Code, f"{item.name} {item.family}  - {item.National_Code}"))
+
         b_form = CreateRunAwayLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
-        b_form.fields['type'].choices = [('عدم حضور در محل آموزشگاه', 'عدم حضور در محل آموزشگاه'), (
-            'تجدید دوره و عدم تحویل برگه ی تسویه حساب', 'تجدید دوره و عدم تحویل برگه ی تسویه حساب')]
+        b_form.fields['type'].choices = [
+            ('عدم حضور در محل آموزشگاه', 'عدم حضور در محل آموزشگاه'),
+            ('تجدید دوره و عدم تحویل برگه ی تسویه حساب', 'تجدید دوره و عدم تحویل برگه ی تسویه حساب')
+        ]
+
         if not b_form.is_valid():
-            cx = {'form': b_form}
-            return render(request, self.template, cx)
-        my_letter = NormalLetterModels()
-        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        my_letter.soldire = find_soldire
-        my_letter.create_time = jdatetime.datetime.now()
-        my_letter.description = "فرار"
-        my_letter.destination = "آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه- قسمت نیروی انسانی- قضایی و انضباطی"
-        my_letter.subject = "فرار"
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = my_letter.number = F"{ens.shomare_dore}85{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        my_letter.status = "تایید"
-        my_letter.save()
-        rn = RunawayNormallLetter()
-        rn.normal_letter = my_letter
-        type = b_form.cleaned_data['type']
-        run_away_dated = b_form.cleaned_data['date']
-        rn.type = type
-        rn.run_away_dated = run_away_dated
-        rn.save()
+            return render(request, self.template, {'form': b_form})
+
+        while True:
+            try:
+                with transaction.atomic():
+                    find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+                    if not find_soldire:
+                        b_form.add_error(None, 'سرباز مورد نظر یافت نشد.')
+                        return render(request, self.template, {'form': b_form})
+
+                    my_letter = NormalLetterModels()
+                    my_letter.soldire = find_soldire
+                    my_letter.create_time = jdatetime.datetime.now()
+                    my_letter.description = "فرار"
+                    my_letter.destination = "آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه- قسمت نیروی انسانی- قضایی و انضباطی"
+                    my_letter.subject = "فرار"
+
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}85{generate_unique_number()}{find_soldire.National_Code[::3]}"
+                    my_letter.status = "تایید"
+                    my_letter.save()
+
+                    runaway = RunawayNormallLetter(
+                        normal_letter=my_letter,
+                        type=b_form.cleaned_data['type'],
+                        run_away_dated=b_form.cleaned_data['date']
+                    )
+                    runaway.save()
+
+                break
+            except IntegrityError:
+                continue
+
         return redirect(self.success_url)
 
 
@@ -401,50 +509,58 @@ class CreateFarajaLetter(LoginRequiredMixin, View):
     success_url = reverse_lazy('AllNormalLetter')
 
     def get(self, request):
-        soldire_list = []
-        g = Soldier.objects.filter(IsCheckout=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
-        soldire_list = []
-        g = Soldier.objects.filter(IsCheckout=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        soldire_list = [
+            (item.National_Code, f"{item.name} {item.family}  - {item.National_Code}")
+            for item in Soldier.objects.filter(IsCheckout=True)
+        ]
         b_form = CreateFarajaLetterFrom()
         b_form.fields['soldire'].choices = soldire_list
-        cx = {'form': b_form}
-        return render(request, self.template, cx)
+        return render(request, self.template, {'form': b_form})
 
     def post(self, request):
-        soldire_list = []
-        g = Soldier.objects.filter(IsCheckout=True).all()
-        for item in g:
-            soldire_list.append((item.National_Code, F"{item.name} {item.family}  - {item.National_Code}"))
+        soldire_list = [
+            (item.National_Code, f"{item.name} {item.family}  - {item.National_Code}")
+            for item in Soldier.objects.filter(IsCheckout=True)
+        ]
         b_form = CreateFarajaLetterFrom(request.POST, request.FILES or None)
         b_form.fields['soldire'].choices = soldire_list
+
         if not b_form.is_valid():
-            cx = {'form': b_form}
-            return render(request, self.template, cx)
-        my_letter = NormalLetterModels()
-        find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
-        my_letter.soldire = find_soldire
-        my_letter.create_time = jdatetime.datetime.now()
-        my_letter.description = "سازمان وظیفه عمومی فراجا"
-        my_letter.destination = "سازمان وظیفه عمومی فراجا"
-        my_letter.subject = "سازمان وظیفه عمومی فراجا"
-        ens = EnsaniSettings.objects.filter().first()
-        my_letter.number = my_letter.number = F"{ens.shomare_dore}30{generate_unique_number()}{find_soldire.National_Code[::3]}"
-        my_letter.status = "تایید"
-        my_letter.save()
-        rn = FarajaNormallLetter()
-        rn.normal_letter = my_letter
-        faraja_leter_number = b_form.cleaned_data['faraja_leter_number']
-        faraja_leter_date = b_form.cleaned_data['faraja_leter_date']
-        elat = b_form.cleaned_data['elat']
-        rn.faraja_leter_number = faraja_leter_number
-        rn.faraja_leter_date = faraja_leter_date
-        rn.elat = elat
-        rn.normal_letter = my_letter
-        rn.save()
+            return render(request, self.template, {'form': b_form})
+
+        while True:
+            try:
+                with transaction.atomic():
+                    find_soldire = Soldier.objects.filter(National_Code=b_form.cleaned_data['soldire']).first()
+                    if not find_soldire:
+                        b_form.add_error(None, 'سرباز مورد نظر یافت نشد.')
+                        return render(request, self.template, {'form': b_form})
+
+                    my_letter = NormalLetterModels(
+                        soldire=find_soldire,
+                        create_time=jdatetime.datetime.now(),
+                        description="سازمان وظیفه عمومی فراجا",
+                        destination="سازمان وظیفه عمومی فراجا",
+                        subject="سازمان وظیفه عمومی فراجا",
+                        status="تایید"
+                    )
+
+                    ens = EnsaniSettings.objects.first()
+                    my_letter.number = f"{ens.shomare_dore}30{generate_unique_number()}{find_soldire.National_Code[::3]}"
+                    my_letter.save()
+
+                    faraja = FarajaNormallLetter(
+                        normal_letter=my_letter,
+                        faraja_leter_number=b_form.cleaned_data['faraja_leter_number'],
+                        faraja_leter_date=b_form.cleaned_data['faraja_leter_date'],
+                        elat=b_form.cleaned_data['elat']
+                    )
+                    faraja.save()
+
+                break
+            except IntegrityError:
+                continue
+
         return redirect(self.success_url)
 
 
@@ -591,7 +707,8 @@ def PrintBeforeCourseCommissionLetter(request, *args, **kwargs):
         return 0
     before_course_commission = NormalLetterModels.objects.filter(pk=before_course_commission_letter_pk).first()
     sutter = Sater.objects.filter(sarbaz=before_course_commission.soldire).last()
-    cx = {'before_course_commission_letter': before_course_commission, "sutter": sutter}
+    en = EnsaniSettings.objects.filter().last()
+    cx = {'before_course_commission_letter': before_course_commission, "sutter": sutter, 'en': en}
     return render(request, 'ensani_letter/print_before_course_commission_letter.html', cx)
 
 

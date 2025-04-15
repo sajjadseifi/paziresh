@@ -59,21 +59,6 @@ class CreateRegisterLetterFrom(forms.Form):
     )
 
 
-class CreateRegisterLetterFrom(forms.Form):
-    soldire = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': "form-control select2"}
-        ),
-        label='سرباز',
-        required=False
-    )
-    destination = forms.CharField(
-        label='مقصد نامه',
-        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
-        required=False
-    )
-
-
 class CreateMoarefiFrom(forms.Form):
     soldire = forms.ChoiceField(
         widget=forms.Select(attrs={'class': "form-control select2"}),

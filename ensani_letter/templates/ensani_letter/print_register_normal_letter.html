@@ -166,7 +166,7 @@
             {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
             ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
             اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
-            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh }} در این آموزشگاه پذیرش گردیده و در حال
+            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
             حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
             می باشد .
         </div>
@@ -177,7 +177,7 @@
             {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
             ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
             اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
-            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh }} در این آموزشگاه پذیرش گردیده و در حال
+            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
             حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
             می باشد .
         </div>
@@ -204,7 +204,7 @@
             {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
             ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
             اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
-            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh }} در این آموزشگاه پذیرش گردیده و در حال
+            {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
             حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
             می باشد .
         </div>
@@ -215,24 +215,24 @@
             {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
             ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
             اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
-            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh }} در این آموزشگاه پذیرش گردیده و در حال
+            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
             حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
             می باشد .
         </div>
     {% endif %}
     <div class="note">مراتب بنا بر درخواست فرد صادر گردیده و اعتبار دیگری ندارد</div>
     <div class="farmande_razm_moghadamati">{{ en.farmande_razme_moghadamati }}</div>
-    <div class="code_paziresh">عدد پذیرش :{{ Normal_letter_Register.soldire.code_paziresh }}</div>
+    <div class="code_paziresh">عدد پذیرش :{{ Normal_letter_Register.soldire.acceptance_code }}</div>
     <div class="gordan"> گردان : {{ Normal_letter_Register.soldire.t_Gordan.name }} ؛ گروهان
         : {{ Normal_letter_Register.soldire.t_battalion_group.name }} ؛ کد سازمانی
         :{{ Normal_letter_Register.soldire.code_gorhan_nahai }}</div>
 </div>
-{#<script>#}
-{#    window.print()#}
-{#    window.onafterprint = function () {#}
-{#        window.close();#}
-{##}
-{#    }#}
-{#</script>#}
+<script>
+    window.print()
+    window.onafterprint = function () {
+        window.close();
+
+    }
+</script>
 </body>
 </html>

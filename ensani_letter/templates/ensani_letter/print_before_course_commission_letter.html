@@ -287,7 +287,7 @@
     <img src="{% static 'img/letters/CheckoutCommissionLetter.jpg' %}" alt="CheckoutCommissionLetter" class="image">
     <div class="letter_number">{{ before_course_commission_letter.number }}</div>
     <div class="letter_date">{{ before_course_commission_letter.create_time.date }}</div>
-    <div class="shoare_sall">«افزایش توان دفاع همه جانبه در سال جهش تولید ومشارکت مردم »</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
     <div class="letter_to">به : {{ before_course_commission_letter.destination }}
         استان {{ before_course_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت
         منابع انسانی
@@ -315,7 +315,7 @@
     <div class="letter_details">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
         عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
     </div>
-    <div class="farmande_padegan">سرهنگ پاسدار علی متولی طاهر</div>
+    <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
     <div class="letter_note">تذکر : مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان ، 59 روز از تاریخ فوق
         می باشد ، در صورت عدم ارسال به موقع ، فرار از خدمت برای نامبرده لحاظ می گردد.
     </div>
@@ -323,7 +323,7 @@
 
     <div class="letter_number2">{{ before_course_commission_letter.number }}</div>
     <div class="letter_date2">{{ before_course_commission_letter.create_time.date }}</div>
-    <div class="shoare_sall2">«افزایش توان دفاع همه جانبه در سال جهش تولید ومشارکت مردم »</div>
+    <div class="shoare_sall2">{{ en.shoare_sall }}</div>
     <div class="letter_to2">به : {{ before_course_commission_letter.destination }}
         استان {{ before_course_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت
         منابع انسانی
@@ -351,7 +351,7 @@
     <div class="letter_details2">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
         عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
     </div>
-    <div class="farmande_padegan2">سرهنگ پاسدار علی متولی طاهر</div>
+    <div class="farmande_padegan2">{{ en.farmande_razme_moghadamati }}</div>
     <div class="letter_note2">تذکر : مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان ، 59 روز از تاریخ فوق
         می باشد ، در صورت عدم ارسال به موقع ، فرار از خدمت برای نامبرده لحاظ می گردد.
     </div>
@@ -363,12 +363,12 @@
     {% endif %}
 
 </div>
-{#<script>#}
-{#    window.print()#}
-{#    window.onafterprint = function () {#}
-{#        window.close();#}
-{##}
-{#    }#}
-{#</script>#}
+<script>
+    window.print()
+    window.onafterprint = function () {
+        window.close();
+
+    }
+</script>
 </body>
 </html>

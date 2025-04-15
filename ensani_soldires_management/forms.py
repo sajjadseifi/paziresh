@@ -46,3 +46,7 @@ class FormRankGroup(forms.Form):
         label='تا',
         required=False
     )
+
+
+class FormAmirMahart(forms.Form):
+    excel_file = forms.FileField()

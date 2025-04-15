@@ -69,7 +69,7 @@ class Soldier(models.Model):
                                           null=True, blank=True,
                                           related_name='gorohan_after_tatbigh')
     code_paziresh = models.CharField(max_length=100, verbose_name='کدپذیرش', null=True, blank=True)
-    code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True, blank=True)
+    code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True, blank=True,default="1")
     code_gorhan_nahai = models.IntegerField(verbose_name='کدگروهان علامی از گردان', null=True, blank=True)
     tarikh_paziresh = jmodels.jDateTimeField(null=True, verbose_name='تاریخ و زمان پذیرش', blank=True)
     IsCheckout = models.BooleanField(default=False, verbose_name='تسویه حساب', blank=True, null=True)

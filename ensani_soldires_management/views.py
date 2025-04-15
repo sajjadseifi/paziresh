@@ -15,7 +15,7 @@ from ensani_soldires_management.forms import (
     FormYegankhedmati,
     FormUpdateAllSoldiresHasbenAceptedInCourse,
     FormUpdateAllSoldires,
-    FormRankGroup
+    FormRankGroup, FormAmirMahart
 )
 from soldiers.forms import FormUpdateRank, FormUpdateBank
 from soldiers.models import Soldier
@@ -549,9 +549,9 @@ def export_to_excel_list_tajdid_dore(request):
         'Relative_to_inclusive_number': 'بستگان درجه یک',
         'Date_of_dispatch': 'تاریخ اعزام',
         'Renewal_of_the_previous_period': 'تجدید دوره از قبل',
-        'physical_condition':'وضعیت جسمانی',
-        'check_out':'تجدید دوره',
-        'check_out_date':'تاریخ تسویه حساب',
+        'physical_condition': 'وضعیت جسمانی',
+        'check_out': 'تجدید دوره',
+        'check_out_date': 'تاریخ تسویه حساب',
 
     }, inplace=True)
 
@@ -1303,36 +1303,49 @@ class update_db_from_exel_all_soldire_Sufficiency_of_mobilization(LoginRequiredM
 
 @login_required
 def import_and_export_excel_maharat(request):
-    # خواندن فایل اکسل ورودی که حاوی کد ملی‌ها است
-    input_file_path = "D:/unittest/ensaniapp/soldiers/xxx.xlsx"  # مسیر فایل اکسل ورودی
-    national_codes_df = pd.read_excel(input_file_path)
+    if request.method == 'POST':
+        form = FormAmirMahart(request.POST, request.FILES)
+        if form.is_valid():
+            excel_file = request.FILES['excel_file']
 
-    # اطمینان از اینکه ستون کد ملی به درستی خوانده شده است
-    national_codes = national_codes_df['National_Code'].tolist()
+            try:
+                national_codes_df = pd.read_excel(excel_file)
+                national_codes = national_codes_df['National_Code'].tolist()
+            except Exception as e:
+                return HttpResponse("خطا در خواندن فایل اکسل: " + str(e))
 
-    # واکشی اطلاعات سربازان براساس کد ملی‌ها
-    soldiers_data = []
-    for code in national_codes:
-        soldier = Soldier.objects.filter(
-            National_Code__icontains=code  # جستجوی تقریبی بر اساس کد ملی
-        ).values('National_Code', 'Date_of_birth', 'Address', 'home_phone_number', 'phone_number', 'Grade', 'Address',
-                 'name', 'family', 'fathers_name').first()
+            soldiers_data = []
+            for code in national_codes:
+                soldier = Soldier.objects.filter(
+                    National_Code__icontains=code
+                ).values('National_Code', 'Date_of_birth', 'Address', 'home_phone_number', 'phone_number', 'Grade',
+                         'name', 'family', 'fathers_name').first()
+                if soldier:
+                    soldiers_data.append(soldier)
 
-        # افزودن به لیست نتایج در صورت یافتن
-        if soldier:
-            soldiers_data.append(soldier)
-    # تبدیل داده‌ها به DataFrame با استفاده از pandas
-    df = pd.DataFrame(soldiers_data)
+            df = pd.DataFrame(soldiers_data)
+            df.rename(columns={
+                'fathers_name': 'نام پدر',
+                'family': 'نام خانوادگی',
+                'name': 'نام',
+                'Grade': 'مدرک تحصیلی',
+                'phone_number': 'شماره موبایل',
+                'home_phone_number': 'منزل',
+                'Address': 'آدرس',
+                'Date_of_birth': 'تاریخ تولد',
+                'National_Code': 'کدملی',
+            }, inplace=True)
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=soldiers_filtered_data.xlsx'
 
-    # ایجاد پاسخ HTTP برای دانلود فایل اکسل
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=soldiers_filtered_data.xlsx'
+            with pd.ExcelWriter(response, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False, sheet_name='Filtered Soldiers Data')
 
-    # ذخیره داده‌ها در قالب اکسل
-    with pd.ExcelWriter(response, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Filtered Soldiers Data')
+            return response
+    else:
+        form = FormAmirMahart()
 
-    return response
+    return render(request, 'ensani_soldires_management/import_export_maharat.html', {'form': form})
 
 
 @login_required
