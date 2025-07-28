@@ -9,7 +9,7 @@ from ensani_letter.models import NormalLetterModels
 from ensaniapp_settings.models import EnsaniSettings
 from django.contrib.auth.decorators import login_required
 
-list_yegan_bekargirande = [
+list_yegan_bekargirande =  [
     (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
     (2, 'سپاه نینوا - گلستان', 'سپاه و رده های اقماری', 'گلستان', 'گلستان-گرگان-فلکه بسیج'),
     (3, 'سپاه قدس - گیلان', 'سپاه و رده های اقماری', 'گیلان', 'رشت- یخ سازی - شهدای گمنام - سپاه قدس گیلان'),
@@ -216,6 +216,10 @@ list_yegan_bekargirande = [
     (149, 'تيپ 71 روح الله(ره)', 'سپاه و رده های اقماری', '******', '******'),
     (150, 'ندسا - منطقه پنجم', 'ندسا', '******', '******'),
     (151, ' قرارگاه فرهنگي بقيه ا... الاعظم عج', 'سپاه و رده های اقماری', '******', '******'),
+    (152, 'ندسا - معاونت نیروی انسانی نیروی دریایی سپاه', 'ندسا', '******', '******'),
+    (153, 'گروه 42 مهندسي قدر نزسا', 'نزسا', '******', '******'),
+    (153, 'لشکر22 بيت المقدس', 'سپاه و رده های اقماری', '******', '******'),
+    (154, 'نزسا-مرکز عمليات نيروي انساني', 'نزسا', '******', '******'),
 
 ]
 
@@ -1299,18 +1303,18 @@ def yegan_be_kar_girande(request):
 def yegan_be_kar_girande_tabel(request):
     salem_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                               in_coures=True, physical_condition='سالم',
-                                                              unit_type='سپاه و رده های اقماری').all().count()
+                                                              unit_type='سپاه و رده های اقماری',IsCheckout=False).all().count()
     moaf_az_razm_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                      in_coures=True, physical_condition='معاف از رزم',
-                                                                     unit_type='سپاه و رده های اقماری').all().count()
+                                                                     unit_type='سپاه و رده های اقماری',IsCheckout=False).all().count()
     groh_be_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                 in_coures=True, physical_condition='گروه ب',
-                                                                unit_type='سپاه و رده های اقماری').all().count()
+                                                                unit_type='سپاه و رده های اقماری',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
                                                                              willing_to_learn=True,
                                                                              in_coures=True,
                                                                              physical_condition='معاف+گروه ب',
-                                                                             unit_type='سپاه و رده های اقماری').all().count()
+                                                                             unit_type='سپاه و رده های اقماری',IsCheckout=False).all().count()
     total1_in_course_pa_radeh_aghmari = int(moaf_az_razm_in_course_pa_radeh_aghmari) + int(
         groh_be_in_course_pa_radeh_aghmari) + int(moaf_az_razm_gorh_be_in_course_pa_radeh_aghmari)
     total2_in_course_pa_radeh_aghmari = int(salem_in_course_pa_radeh_aghmari) + int(
@@ -1366,23 +1370,23 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_pa_radeh_aghmari) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_pa_radeh_aghmari)
     total_pa_radeh_aghmari = Soldier.objects.filter(has_been_accepted=True,
-                                                    unit_type='سپاه و رده های اقماری').all().count()
+                                                    unit_type='سپاه و رده های اقماری',IsCheckout=False).all().count()
 
     # نزسا
     salem_in_course_nezsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                    in_coures=True, physical_condition='سالم',
-                                                   unit_type='نزسا').all().count()
+                                                   unit_type='نزسا',IsCheckout=False).all().count()
     moaf_az_razm_in_course_nezsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                           in_coures=True, physical_condition='معاف از رزم',
-                                                          unit_type='نزسا').all().count()
+                                                          unit_type='نزسا',IsCheckout=False).all().count()
     groh_be_in_course_nezsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                      in_coures=True, physical_condition='گروه ب',
-                                                     unit_type='نزسا').all().count()
+                                                     unit_type='نزسا',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_nezsa = Soldier.objects.filter(has_been_accepted=True,
                                                                   willing_to_learn=True,
                                                                   in_coures=True,
                                                                   physical_condition='معاف+گروه ب',
-                                                                  unit_type='نزسا').all().count()
+                                                                  unit_type='نزسا',IsCheckout=False).all().count()
     total1_in_course_nezsa = int(moaf_az_razm_in_course_nezsa) + int(
         groh_be_in_course_nezsa) + int(moaf_az_razm_gorh_be_in_course_nezsa)
     total2_in_course_nezsa = int(salem_in_course_nezsa) + int(
@@ -1416,7 +1420,7 @@ def yegan_be_kar_girande_tabel(request):
     salem_Sufficiency_of_mobilization_nezsa = Soldier.objects.filter(has_been_accepted=True,
                                                                      physical_condition='سالم',
                                                                      unit_type='نزسا',
-                                                                     Sufficiency_of_mobilization=True).all().count()
+                                                                     Sufficiency_of_mobilization=True,).all().count()
     moaf_az_razm_Sufficiency_of_mobilization_nezsa = Soldier.objects.filter(has_been_accepted=True,
                                                                             physical_condition='معاف از رزم',
                                                                             unit_type='نزسا',
@@ -1438,22 +1442,22 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_nezsa) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_nezsa)
     total_nezsa = Soldier.objects.filter(has_been_accepted=True,
-                                         unit_type='نزسا').all().count()
+                                         unit_type='نزسا',IsCheckout=False).all().count()
     # نقسا
     salem_in_course_neghsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                     in_coures=True, physical_condition='سالم',
-                                                    unit_type='نقسا').all().count()
+                                                    unit_type='نقسا',IsCheckout=False).all().count()
     moaf_az_razm_in_course_neghsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                            in_coures=True, physical_condition='معاف از رزم',
-                                                           unit_type='نقسا').all().count()
+                                                           unit_type='نقسا',IsCheckout=False).all().count()
     groh_be_in_course_neghsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                       in_coures=True, physical_condition='گروه ب',
-                                                      unit_type='نقسا').all().count()
+                                                      unit_type='نقسا',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_neghsa = Soldier.objects.filter(has_been_accepted=True,
                                                                    willing_to_learn=True,
                                                                    in_coures=True,
                                                                    physical_condition='معاف+گروه ب',
-                                                                   unit_type='نقسا').all().count()
+                                                                   unit_type='نقسا',IsCheckout=False).all().count()
     total1_in_course_neghsa = int(moaf_az_razm_in_course_neghsa) + int(
         groh_be_in_course_neghsa) + int(moaf_az_razm_gorh_be_in_course_neghsa)
     total2_in_course_neghsa = int(salem_in_course_neghsa) + int(
@@ -1509,22 +1513,22 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_neghsa) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_neghsa)
     total_neghsa = Soldier.objects.filter(has_been_accepted=True,
-                                          unit_type='نقسا').all().count()
+                                          unit_type='نقسا',IsCheckout=False).all().count()
     # ندسا
     salem_in_course_ndsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                   in_coures=True, physical_condition='سالم',
-                                                  unit_type='ندسا').all().count()
+                                                  unit_type='ندسا',IsCheckout=False).all().count()
     moaf_az_razm_in_course_ndsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                          in_coures=True, physical_condition='معاف از رزم',
-                                                         unit_type='ندسا').all().count()
+                                                         unit_type='ندسا',IsCheckout=False).all().count()
     groh_be_in_course_ndsa = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                     in_coures=True, physical_condition='گروه ب',
-                                                    unit_type='ندسا').all().count()
+                                                    unit_type='ندسا',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_ndsa = Soldier.objects.filter(has_been_accepted=True,
                                                                  willing_to_learn=True,
                                                                  in_coures=True,
                                                                  physical_condition='معاف+گروه ب',
-                                                                 unit_type='ندسا').all().count()
+                                                                 unit_type='ندسا',IsCheckout=False).all().count()
     total1_in_course_ndsa = int(moaf_az_razm_in_course_ndsa) + int(
         groh_be_in_course_ndsa) + int(moaf_az_razm_gorh_be_in_course_ndsa)
     total2_in_course_ndsa = int(salem_in_course_ndsa) + int(
@@ -1580,22 +1584,22 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_ndsa) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_ndsa)
     total_ndsa = Soldier.objects.filter(has_been_accepted=True,
-                                        unit_type='ندسا').all().count()
+                                        unit_type='ندسا',IsCheckout=False).all().count()
     # هوافضا
     salem_in_course_havafaza = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                       in_coures=True, physical_condition='سالم',
-                                                      unit_type='هوافضا').all().count()
+                                                      unit_type='هوافضا',IsCheckout=False).all().count()
     moaf_az_razm_in_course_havafaza = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                              in_coures=True, physical_condition='معاف از رزم',
-                                                             unit_type='هوافضا').all().count()
+                                                             unit_type='هوافضا',IsCheckout=False).all().count()
     groh_be_in_course_havafaza = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                         in_coures=True, physical_condition='گروه ب',
-                                                        unit_type='هوافضا').all().count()
+                                                        unit_type='هوافضا',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_havafaza = Soldier.objects.filter(has_been_accepted=True,
                                                                      willing_to_learn=True,
                                                                      in_coures=True,
                                                                      physical_condition='معاف+گروه ب',
-                                                                     unit_type='هوافضا').all().count()
+                                                                     unit_type='هوافضا',IsCheckout=False).all().count()
     total1_in_course_havafaza = int(moaf_az_razm_in_course_havafaza) + int(
         groh_be_in_course_havafaza) + int(moaf_az_razm_gorh_be_in_course_havafaza)
     total2_in_course_havafaza = int(salem_in_course_havafaza) + int(
@@ -1651,22 +1655,22 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_havafaza) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_havafaza)
     total_havafaza = Soldier.objects.filter(has_been_accepted=True,
-                                            unit_type='هوافضا').all().count()
+                                            unit_type='هوافضا',IsCheckout=False).all().count()
     # سازمان بسیج
     salem_in_course_sazman_basij = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                           in_coures=True, physical_condition='سالم',
-                                                          unit_type='سازمان بسیج').all().count()
+                                                          unit_type='سازمان بسیج',IsCheckout=False).all().count()
     moaf_az_razm_in_course_sazman_basij = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                  in_coures=True, physical_condition='معاف از رزم',
-                                                                 unit_type='سازمان بسیج').all().count()
+                                                                 unit_type='سازمان بسیج',IsCheckout=False).all().count()
     groh_be_in_course_sazman_basij = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                             in_coures=True, physical_condition='گروه ب',
-                                                            unit_type='سازمان بسیج').all().count()
+                                                            unit_type='سازمان بسیج',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_sazman_basij = Soldier.objects.filter(has_been_accepted=True,
                                                                          willing_to_learn=True,
                                                                          in_coures=True,
                                                                          physical_condition='معاف+گروه ب',
-                                                                         unit_type='سازمان بسیج').all().count()
+                                                                         unit_type='سازمان بسیج',IsCheckout=False).all().count()
     total1_in_course_sazman_basij = int(moaf_az_razm_in_course_sazman_basij) + int(
         groh_be_in_course_sazman_basij) + int(moaf_az_razm_gorh_be_in_course_sazman_basij)
     total2_in_course_sazman_basij = int(salem_in_course_sazman_basij) + int(
@@ -1722,22 +1726,22 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_sazman_basij) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_sazman_basij)
     total_sazman_basij = Soldier.objects.filter(has_been_accepted=True,
-                                                unit_type='سازمان بسیج').all().count()
+                                                unit_type='سازمان بسیج',IsCheckout=False).all().count()
     # حوزه نمایندگی
     salem_in_course_hoze_namayandegi = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                               in_coures=True, physical_condition='سالم',
-                                                              unit_type='حوزه نمایندگی').all().count()
+                                                              unit_type='حوزه نمایندگی',IsCheckout=False).all().count()
     moaf_az_razm_in_course_hoze_namayandegi = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                      in_coures=True, physical_condition='معاف از رزم',
-                                                                     unit_type='حوزه نمایندگی').all().count()
+                                                                     unit_type='حوزه نمایندگی',IsCheckout=False).all().count()
     groh_be_in_course_hoze_namayandegi = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                 in_coures=True, physical_condition='گروه ب',
-                                                                unit_type='حوزه نمایندگی').all().count()
+                                                                unit_type='حوزه نمایندگی',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_hoze_namayandegi = Soldier.objects.filter(has_been_accepted=True,
                                                                              willing_to_learn=True,
                                                                              in_coures=True,
                                                                              physical_condition='معاف+گروه ب',
-                                                                             unit_type='حوزه نمایندگی').all().count()
+                                                                             unit_type='حوزه نمایندگی',IsCheckout=False).all().count()
     total1_in_course_hoze_namayandegi = int(moaf_az_razm_in_course_hoze_namayandegi) + int(
         groh_be_in_course_hoze_namayandegi) + int(moaf_az_razm_gorh_be_in_course_hoze_namayandegi)
     total2_in_course_hoze_namayandegi = int(salem_in_course_hoze_namayandegi) + int(
@@ -1797,20 +1801,20 @@ def yegan_be_kar_girande_tabel(request):
     # ستاد کل نیروهای مسلح
     salem_in_course_setad_koll_nirooye_mosalah = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                         in_coures=True, physical_condition='سالم',
-                                                                        unit_type='ستاد کل نیروهای مسلح').all().count()
+                                                                        unit_type='ستاد کل نیروهای مسلح',IsCheckout=False).all().count()
     moaf_az_razm_in_course_setad_koll_nirooye_mosalah = Soldier.objects.filter(has_been_accepted=True,
                                                                                willing_to_learn=True,
                                                                                in_coures=True,
                                                                                physical_condition='معاف از رزم',
-                                                                               unit_type='ستاد کل نیروهای مسلح').all().count()
+                                                                               unit_type='ستاد کل نیروهای مسلح',IsCheckout=False).all().count()
     groh_be_in_course_setad_koll_nirooye_mosalah = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                           in_coures=True, physical_condition='گروه ب',
-                                                                          unit_type='ستاد کل نیروهای مسلح').all().count()
+                                                                          unit_type='ستاد کل نیروهای مسلح',IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_setad_koll_nirooye_mosalah = Soldier.objects.filter(has_been_accepted=True,
                                                                                        willing_to_learn=True,
                                                                                        in_coures=True,
                                                                                        physical_condition='معاف+گروه ب',
-                                                                                       unit_type='ستاد کل نیروهای مسلح').all().count()
+                                                                                       unit_type='ستاد کل نیروهای مسلح',IsCheckout=False).all().count()
     total1_in_course_setad_koll_nirooye_mosalah = int(moaf_az_razm_in_course_setad_koll_nirooye_mosalah) + int(
         groh_be_in_course_setad_koll_nirooye_mosalah) + int(moaf_az_razm_gorh_be_in_course_setad_koll_nirooye_mosalah)
     total2_in_course_setad_koll_nirooye_mosalah = int(salem_in_course_setad_koll_nirooye_mosalah) + int(
@@ -1871,22 +1875,22 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_setad_koll_nirooye_mosalah)
     total_setad_koll_nirooye_mosalah = Soldier.objects.filter(has_been_accepted=True,
-                                                              unit_type='ستاد کل نیروهای مسلح').all().count()
+                                                              unit_type='ستاد کل نیروهای مسلح',IsCheckout=False).all().count()
     # امریه دار
     salem_in_course_amire = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                    in_coures=True, physical_condition='سالم',
-                                                   Amriye=True).all().count()
+                                                   Amriye=True,IsCheckout=False).all().count()
     moaf_az_razm_in_course_amire = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                           in_coures=True, physical_condition='معاف از رزم',
-                                                          Amriye=True).all().count()
+                                                          Amriye=True,IsCheckout=False).all().count()
     groh_be_in_course_amire = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                      in_coures=True, physical_condition='گروه ب',
-                                                     Amriye=True).all().count()
+                                                     Amriye=True,IsCheckout=False).all().count()
     moaf_az_razm_gorh_be_in_course_amire = Soldier.objects.filter(has_been_accepted=True,
                                                                   willing_to_learn=True,
                                                                   in_coures=True,
                                                                   physical_condition='معاف+گروه ب',
-                                                                  Amriye=True, ).all().count()
+                                                                  Amriye=True,IsCheckout=False).all().count()
     total1_in_course_amire = int(moaf_az_razm_in_course_amire) + int(
         groh_be_in_course_amire) + int(moaf_az_razm_gorh_be_in_course_amire)
     total2_in_course_amire = int(salem_in_course_amire) + int(
@@ -1942,7 +1946,7 @@ def yegan_be_kar_girande_tabel(request):
         groh_be_Sufficiency_of_mobilization_amire) + int(
         moaf_az_razm_gorh_be_Sufficiency_of_mobilization_amire)
     total_amire = Soldier.objects.filter(has_been_accepted=True,
-                                         Amriye=True).all().count()
+                                         Amriye=True,IsCheckout=False).all().count()
     barge_sazb = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True, in_coures=True).all().count()
     kefaiti = Soldier.objects.filter(has_been_accepted=True, Sufficiency_of_mobilization=True).all().count()
     khedmat_ghabli = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True).all().count()
@@ -1954,7 +1958,7 @@ def yegan_be_kar_girande_tabel(request):
         salem_in_course_setad_koll_nirooye_mosalah)
     total2 = int(total1_in_course_pa_radeh_aghmari) + int(total1_in_course_nezsa) + int(total1_in_course_neghsa) + int(
         total1_in_course_sazman_basij) + int(total1_in_course_hoze_namayandegi) + int(
-        total1_in_course_setad_koll_nirooye_mosalah)
+        total1_in_course_setad_koll_nirooye_mosalah)+int(total1_in_course_ndsa)+int(total1_in_course_havafaza)
     sum1 = int(total1) + int(total2)
     total3 = int(salem_Previous_service_record_pa_radeh_aghmari) + int(salem_Previous_service_record_nezsa) + int(
         salem_Previous_service_record_neghsa) + int(
