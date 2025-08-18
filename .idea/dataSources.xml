@@ -17,7 +17,7 @@
       </libraries>
     </data-source>
     <data-source source="LOCAL" name="db [2]" uuid="6a0adc15-1447-4e23-9faf-21f51fe9d5ad">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>da2f6acc-2409-4c18-8fc7-54f4c341522c</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\MyData\django_project\ensaniapp\db.sqlite3</jdbc-url>

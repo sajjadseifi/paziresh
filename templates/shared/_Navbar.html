@@ -178,11 +178,19 @@
                     <li><a href="{% url 'amar_avalie_samane_baghimonde' %}">آمار اولیه سامانه باقیمانده</a></li>
                     <li><a href="{% url 'amar_avalie_samane_paziresh_shode' %}">آمار اولیه سامانه پذیرش شده</a></li>
                     <li><a href="{% url 'amare_yegan_bekar_girande_tabel' %}">آمار یگان بکارگیرنده</a></li>
+                    <li><a href="{% url 'amar_rank' %}">آمار درجات</a></li>
+                </ul>
+            </li>
+         <li class="treeview">
+                <a href="#"><i class="fa fa-area-chart"></i> <span>گزارشات</span>
+                    <span class="pull-left-container">
+                <i class="fa fa-angle-right pull-left"></i>
+              </span>
+                </a>
+                <ul class="treeview-menu">
                     <li><a href="{% url 'gozaresh_shoro_dore' %}">گزارش شروع دوره</a></li>
                     <li><a href="{% url 'gozaresh_yegan_khedmati' %}">گزارش یگان بکارگیرنده</a></li>
                     <li><a href="{% url 'gozaresh_payan_dore' %}">گزارش پایان دوره</a></li>
-                    <li><a href="{% url 'amar_rank' %}">آمار درجات</a></li>
-
                 </ul>
             </li>
             {% if request.user.is_staff == True %}
