@@ -34,6 +34,7 @@ urlpatterns = [
     path('', include('ensani_soldires_management.urls')),
     path('backup/', include('ensani_backup.urls')),
     path('help/', include('help.urls')),
+    path('download/', include("ensani.urls")),
 
     re_path(r'^header_partial_view',
             header_partial_view,

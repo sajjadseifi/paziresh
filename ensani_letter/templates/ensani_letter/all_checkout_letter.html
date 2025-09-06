@@ -1,68 +1,415 @@
-{% extends 'shared/_PanelMain.html' %}
-{% load static %}
+{% extends 'shared/_PanelMain.html' %} {% load static %} {% block main %}
+<style>
+  /* ===== Header ===== */
+  .header-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .header-actions input[type="text"] {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    color: #333;
+  }
+  .header-actions button {
+    background: white;
+    color: #2193b0;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+  .header-actions button:hover {
+    transform: scale(1.05);
+  }
+  .header-actions a {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  .header-actions a:hover {
+    transform: scale(1.05);
+  }
+  .excel-btn {
+    background: #28a745;
+    color: white !important;
+  }
+  .add-btn {
+    background: #ffc107;
+    color: #333 !important;
+  }
 
+  /* ===== Count Badges ===== */
+  .count-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .count-badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    min-width: 100px;
+    text-align: center;
+  }
 
+  /* ===== Card List ===== */
+  .card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-item {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    background: white;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .header-left,
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .type-badge,
+  .number-badge,
+  .status {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 12px;
+    min-width: 90px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .type-badge {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+  }
+  .number-badge {
+    background: #f0f0f0;
+    color: #333;
+  }
+  .status-approved {
+    background: #28a745;
+    color: white;
+  }
+  .status-rejected {
+    background: #dc3545;
+    color: white;
+  }
+  .status-pending {
+    background: #ffc107;
+    color: #333;
+  }
+  .date {
+    font-size: 13px;
+    color: #555;
+  }
 
+  /* Content */
+  .card-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .card-content div {
+    flex: 1;
+    min-width: 150px;
+    font-weight: bold;
+  }
+  .card-content span {
+    font-weight: 600;
+    font-size: 15px;
+  }
 
-{% block main %}
-    <section class="content">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title"> نامه تسویه حساب</h3>
+  /* Actions */
+  .card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    width: 100%;
+  }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white !important;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none !important;
+  }
+  .action-btn i {
+    transition: transform 0.3s ease;
+  }
+  .action-btn:hover i {
+    transform: rotate(15deg) scale(1.2);
+  }
+  .action-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  }
+  .print-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  }
+  .approve-btn {
+    background: linear-gradient(135deg, #56ab2f, #a8e063);
+  }
+  .delete-btn {
+    background: linear-gradient(135deg, #ff512f, #dd2476);
+  }
+  .commission-btn {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    color: #333 !important;
+  }
+  .disabled-btn {
+    background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  .action-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.25);
+    transition: all 0.4s ease;
+  }
+  .action-btn:hover::before {
+    left: 100%;
+  }
 
-                <div class="box-body no-padding">
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th>شماره نامه</th>
-                            <th>نام</th>
-                            <th>نام خانوادگی</th>
-                            <th>کد ملی</th>
-                            <th>تاریخ</th>
-                            <th>علت</th>
-                            <th>توضیحات</th>
-                            <th>وضعیت</th>
-                            <th></th>
-                        </tr>
-                        {% for c in all_checkout_letter %}
-                            <tr>
-                                <td>{{ c.number }}</td>
-                                <td>{{ c.soldire.name }}</td>
-                                <td>{{ c.soldire.family }}</td>
-                                <td>{{ c.soldire.National_Code }}</td>
-                                <td>{{ c.create_time.date }}</td>
-                                <td>{{ c.c_type }}</td>
-                                <td>{{ c.description }}</td>
-                                <td>{{ c.status }}</td>
-                                <td>
-                                    <a class="btn btn-app" href="{% url 'PrintCheckoutLetter' pk=c.pk %}">
-                                        <i class="fa fa-print"></i> تسویه حساب
-                                    </a>
-                                    <a class="btn btn-app" href="{% url 'status_ok_checkout' pk=c.pk %}">
-                                        <i class="fa fa-edit"></i> تایید
-                                    </a>
-                                    <a class="btn btn-app" href="{% url 'delete_checkout' pk=c.pk %}">
-                                        <i class="fa fa-remove"></i> حذف
-                                    </a>
-                                    {% if c.c_type == "کمیسیون پزشکی" %}
-                                        <a class="btn btn-app"
-                                           href="{% url 'CreateCommissionLetter' pk=c.number %}">
-                                            <i class="fa fa-edit"></i> ثبت کمیسیون
-                                        </a>
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .header-actions {
+      justify-content: flex-start;
+      width: 100%;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .card-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .card-content {
+      flex-direction: column;
+    }
+  }
+  /* Container */
+.count-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
-                                    {% else %}
-                                        <a class="btn btn-app disabled" href="">
-                                            <i class="fa fa-edit"></i> ثبت کمیسیون
-                                        </a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.box-body -->
-            </div>
+/* هر بج */
+.count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+/* انیمیشن هاور */
+.count-badge:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* ریسپانسیو */
+@media (max-width: 576px) {
+    .count-badge {
+        font-size: 13px;
+        padding: 5px 10px;
+        min-width: 70px;
+    }
+}
+
+</style>
+
+<section class="content">
+  <!-- Header Section -->
+  <div class="header-container">
+    <h3 class="header-title">📄 مدیریت نامه‌های تسویه حساب</h3>
+   <div class="header-actions">
+    <form method="get" style="display:flex; gap:5px;">
+        <input
+            type="text"
+            name="q"
+            placeholder="جستجو..."
+            value="{{ request.GET.q }}"
+        />
+        <button type="submit">🔍</button>
+    </form>
+
+    <!-- دانلود اکسل -->
+    <a href="{% url 'AllCheckoutLetterExportExcel' %}?q={{ request.GET.q }}" class="excel-btn">
+        <i class="fa fa-download" style="margin-left:5px"></i> اکسل با فیلتر
+    </a>
+    <a href="{% url 'AllCheckoutLetterExportExcel' %}" class="excel-btn">
+        <i class="fa fa-download" style="margin-left:5px"></i> اکسل بدون فیلتر
+    </a>
+
+    <a href="{% url 'CreateCheckoutLetter' %}" class="add-btn">➕ ثبت نامه جدید</a>
+</div>
+  </div>
+
+  <div class="count-badges">
+    {% for t in type_counts %}
+    <span class="count-badge">{{ t.c_type }}: {{ t.count }}</span>
+    {% endfor %}
+  </div>
+  <!-- Cards List -->
+  <div class="card-list">
+    {% for c in all_checkout_letter %}
+    <div class="card-item">
+      <div class="card-header">
+        <div class="header-left">
+          <span class="type-badge">{{ c.c_type }}</span>
+          {% if c.status == "تایید شده" %}
+          <span class="status status-approved">{{ c.status }}</span>
+          {% elif c.status == "رد شده" %}
+          <span class="status status-rejected">{{ c.status }}</span>
+          {% else %}
+          <span class="status status-pending">{{ c.status }}</span>
+          {% endif %}
         </div>
-    </section>
+        <div class="header-right">
+          <span class="number-badge">شماره: {{ c.number }}</span>
+          <span class="date">📅 {{ c.create_time.date }}</span>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div>
+          نام و نام خانوادگی:
+          <span>{{ c.soldire.name }} {{ c.soldire.family }}</span>
+        </div>
+        <div>کد ملی: <span>{{ c.soldire.National_Code }}</span></div>
+        <div style="flex: 1">توضیحات: <span>{{ c.description }}</span></div>
+      </div>
+
+      <div class="card-actions">
+        <div style="font-weight:bold;font-size:18px;">وضعیت : {{c.status}}</div>
+        <div >
+        <a
+          href="{% url 'PrintCheckoutLetter' pk=c.pk %}"
+          class="action-btn print-btn"
+          ><i class="fa fa-print"></i> تسویه حساب</a
+        >
+        {% if c.c_type == "کمیسیون پزشکی" %}
+          <a
+            href="{% url 'CreateCommissionLetter' pk=c.number %}"
+            class="action-btn commission-btn"
+            ><i class="fa fa-edit"></i> ثبت کمیسیون</a
+          >
+        {% else %}
+          <a href="#" class="action-btn disabled-btn"
+            ><i class="fa fa-ban"></i> ثبت کمیسیون</a
+          >
+            {% endif %}
+          
+            {% if c.status == "تایید" %}
+            <a href="{% url 'status_ok_checkout' pk=c.pk %}" class="action-btn disabled-btn">
+               تایید شده
+            </a> 
+            {% else %}
+                <a href="#" class="action-btn approve-btn">
+              <i class="fa fa-check"></i> تایید
+            </a> 
+            {% endif %}
+          
+          <a
+            href="{% url 'delete_checkout' pk=c.pk %}"
+            class="action-btn delete-btn"
+            ><i class="fa fa-trash"></i> حذف</a
+          >
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">هیچ نامه تسویه حسابی یافت نشد.</div>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

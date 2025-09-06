@@ -1,105 +1,162 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
 
-
-
-
 {% block main %}
-    <section class="content">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">نامه عادی</h3>
+<section class="content px-4">
+    <!-- کارت‌های آماری بالای جدول -->
+    <div id="letter-stats" style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
+        <!-- JS کارت‌ها اضافه می‌شوند -->
+    </div>
 
-                <div class="box-body no-padding">
-                    <table class="table">
-                        <tbody>
-                        <tr>
+    <!-- عنوان صفحه و دکمه اکسل -->
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 >
+            <span style="font-weight: bold; color: #222;">نامه‌های عادی</span>
+             <span style="background:#fe4065; color:#fff; padding:2px 12px; border-radius:12px; font-size:0.7em;">
+            {{ all_normal_letter|length }}
+        </span>
+        </h3>
+          <a href="{% url 'ExportNormalLettersExcel' %}" 
+       style="background:#28a745; color:#fff; padding:8px 12px; border-radius:6px; text-decoration:none; display:flex; align-items:center; gap:6px;">
+        <i class="fa fa-file-excel-o"></i> دانلود اکسل
+    </a>
+    </div>
 
-                            <th>شماره نامه</th>
-                            <th>موضوع نامه</th>
-                            <th>نام</th>
-                            <th>نام خانوادگی</th>
-                            <th>کد ملی</th>
-                            <th>تاریخ</th>
-                            <th>مقصد نامه</th>
-                            <th>توضیحات</th>
-                            <th>وضعیت</th>
-                            <th></th>
-                        </tr>
-                        {% for c in all_normal_letter %}
-                            <tr>
-                                <td>{{ c.number }}</td>
-                                <td>{{ c.subject }}</td>
-                                <td>{{ c.soldire.name }}</td>
-                                <td>{{ c.soldire.family }}</td>
-                                <td>{{ c.soldire.National_Code }}</td>
-                                <td>{{ c.create_time.date }}</td>
-                                <td>{{ c.destination }}</td>
-                                <td>{{ c.description }}</td>
-                                <td>{{ c.status }}</td>
-                                <td>
-                                    {% if c.subject == "معرفی به کمیسیون" %}
-                                        <a class="btn btn-app" href="{% url 'PrintCheckoutCommissionLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                    {% endif %}
-                                    {% if c.subject == "معرفی به کمیسیون شروع دوره آموزشی" %}
-                                        <a class="btn btn-app"
-                                           href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> حذف
-                                        </a>
-                                    {% endif %}
-                                    {% if c.subject == "استعلام کفایت از آموزش" %}
-                                        <a class="btn btn-app" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> حذف
-                                        </a>
-                                    {% endif %}
-                                    {% if c.subject == "گواهی عضویت" %}
-                                        <a class="btn btn-app" href="{% url 'PrintRegisterLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> حذف
-                                        </a>
-                                    {% endif %}
-                                    {% if c.subject == "فرار" %}
-                                        <a class="btn btn-app" href="{% url 'PrintRunawayLetterLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> حذف
-                                        </a>
-                                    {% endif %}
-                                    {% if c.subject == "سازمان وظیفه عمومی فراجا" %}
-                                        <a class="btn btn-app" href="{% url 'PrintFarajaLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> حذف
-                                        </a>
-                                    {% endif %}
-                                    {% if c.subject == "معرفی نامه" %}
-                                        <a class="btn btn-app" href="{% url 'PrintMoarefiLetter' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> چاپ برگه
-                                        </a>
-                                        <a class="btn btn-app" href="{% url 'delete_normall' pk=c.pk %}">
-                                            <i class="fa fa-edit"></i> حذف
-                                        </a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.box-body -->
-            </div>
-        </div>
-    </section>
+
+    <!-- جدول نامه‌ها -->
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-striped table-hover" style="table-layout: fixed; width: 100%;">
+            <thead class="thead-dark">
+                <tr>
+                    <th style="width: 5%;">ردیف</th>
+                    <th style="width: 25%;">نامه</th>
+                    <th style="width: 30%;">اطلاعات نامه</th>
+                    <th style="width: 15%;">فراگیر</th>
+                    <th style="width: 10%;">وضعیت</th>
+                    <th style="width: 10%;">عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in all_normal_letter %}
+                <tr dir="rtl" style="vertical-align: top;">
+                    <!-- نامه -->
+                    <td>{{forloop.counter}}</td>
+                    <td>
+                        <div style="padding:6px 8px; background:#eef1f5; border-radius:6px; font-weight:700; font-size:1.1em; margin-bottom:6px; color:#222;">
+                            شماره: {{ c.number }}
+                        </div>
+                        <div style="padding:2px 0; font-size:0.88em; color:#555;">مقصد: {{ c.destination }}</div>
+                        <div dir="rtl" style="padding:2px 0; font-size:0.88em; color:#555;">تاریخ: <span dir="rtl">{{ c.create_time.date }}</span></div>
+                    </td>
+
+                    <!-- اطلاعات نامه -->
+                    <td>
+                        <div style="padding:6px 8px; background:#f7f9fc; border-radius:6px; font-weight:600; font-size:1em; margin-bottom:4px; color:#222;">
+                            عنوان: {{ c.subject }}
+                        </div>
+                        <div style="padding:2px 0; font-size:0.85em; color:#555;">توضیحات: {{ c.description }}</div>
+                    </td>
+
+                    <!-- فراگیر -->
+                    <td>
+                        <div style="padding:6px 8px; background:#f7f9fc; border-radius:6px; font-weight:600; font-size:0.95em; margin-bottom:4px; color:#222;">
+                            {{ c.soldire.name }} {{ c.soldire.family }}
+                        </div>
+                        <div style="font-size:0.85em; color:#555; padding:2px 0;">کد ملی: {{ c.soldire.National_Code }}</div>
+                    </td>
+
+                    <!-- وضعیت -->
+                    <td>
+                <span style="display:inline-block; padding:6px 12px; border-radius:14px; font-weight:600; font-size:0.7em; color:#fff; 
+    background-color:{% if c.status == 'تکمیل' %}#28a745{% elif c.status %}#ffc107{% else %}#6c757d{% endif %};">
+    {% if c.status %}{{ c.status }}{% else %}نامشخص{% endif %}
+</span>
+                    </td>
+
+                    <!-- عملیات -->
+                    <td>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+    {% if c.subject == "معرفی به کمیسیون" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintCheckoutCommissionLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ برگه
+        </a>
+    {% endif %}
+        {% if c.subject == "معرفی به کمیسیون" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintCheckoutCommissionLetterModern' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ مدرن
+        </a>
+    {% endif %}
+    {% if c.subject == "معرفی به کمیسیون شروع دوره آموزشی" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ برگه
+        </a>
+    {% endif %}
+    {% if c.subject == "استعلام کفایت از آموزش" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ برگه
+        </a>
+    {% endif %}
+    {% if c.subject == "گواهی عضویت" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintRegisterLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ برگه
+        </a>
+    {% endif %}
+    {% if c.subject == "فرار" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintRunawayLetterLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ برگه
+        </a>
+    {% endif %}
+    {% if c.subject == "سازمان وظیفه عمومی فراجا" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintFarajaLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ برگه
+        </a>
+    {% endif %}
+    {% if c.subject == "معرفی نامه" %}
+        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintMoarefiLetter' pk=c.pk %}">
+            <i class="fa fa-print"></i> چاپ معرفی
+        </a>
+    {% endif %}
+    {% if c.subject != "معرفی به کمیسیون" %}
+        <a class="btn btn-sm btn-danger d-flex align-items-center gap-1" href="{% url 'delete_normall' pk=c.pk %}">
+            <i class="fa fa-trash"></i> حذف
+        </a>
+    {% endif %}
+</div>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- JS برای کارت آماری ساده -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const letters = [
+        {% for c in all_normal_letter %}
+        "{{ c.subject }}",
+        {% endfor %}
+    ];
+    const counts = {};
+    letters.forEach(l => counts[l] = counts[l] ? counts[l]+1 : 1);
+
+    const statsContainer = document.getElementById('letter-stats');
+    for (const [title, count] of Object.entries(counts)) {
+        const card = document.createElement('div');
+        card.style.background = '#eaf4ff';
+        card.style.padding = '10px 15px';
+        card.style.borderRadius = '6px';
+        card.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+        card.style.flex = '1 1 200px';
+        card.style.display = 'flex';
+        card.style.justifyContent = 'space-between';
+        card.style.alignItems = 'center';
+        card.innerHTML = `<span style="font-weight:600; color:#555;">${title}</span>
+                          <span style="font-weight:bold; font-size:1.2em; color:#222;">${count}</span>`;
+        statsContainer.appendChild(card);
+    }
+});
+</script>
 {% endblock %}

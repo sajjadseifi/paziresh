@@ -3,7 +3,15 @@
 
 {% block header %}
     <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
-{% endblock %}
+    <style>
+        .select2-results__options > li:nth-child(6)  { color:#00ffff !important; }
+        .select2-results__options > li:nth-child(7)  { color:#00ffff !important; }
+        .select2-results__options > li:nth-child(8)  { color:#00ffff !important; }
+        .select2-results__options > li:nth-child(9)  { color:#00ffff !important; }
+        .select2-results__options > li:nth-child(10)  { color:#00ffff !important; }
+
+    </style>
+    {% endblock %}
 
 {% block main %}
 
@@ -20,11 +28,21 @@
                     {{ form.soldire }}
                     <span style='color: red'>{{ form.soldire.errors }}</span>
                 </div>
-                <div class="form-group">
-                    {{ form.destination.label }}
-                    {{ form.destination }}
-                    <span style='color: red'>{{ form.destination.errors }}</span>
-                </div>
+<div class="form-group">
+    <label for="id_destination">مقصد نامه</label>
+    <select id="id_destination" name="destination" class="form-control select2">
+        <option  value="">یک مقصد انتخاب کنید</option>
+        <option  value="هاشمی نژاد">هاشمی نژاد</option>
+        <option  value="شهدا">شهدا</option>
+        <option  value="شهید قاضی">شهید قاضی</option>
+        <option  value="شهید باکری">شهید باکری</option>
+        <option  value="شهید خاتمی">شهید خاتمی</option>
+        <option  value="ولیعصر (عح)">ولیعصر (عح)</option>
+        <option  value="شهید ثابت خواه">شهید ثابت خواه</option>
+        <option value="مالک اشتر">مالک اشتر</option>
+        <option value="شهید مدرس">شهید مدرس</option>
+    </select>
+</div>
                  <div class="form-group">
                     {{ form.no_moarefi.label }}
                     {{ form.no_moarefi }}
@@ -52,12 +70,18 @@
 
 
 {% block footer %}
+<script>
+$(document).ready(function() {
+    $('#id_destination').select2({
+        tags: true,       // اجازه اضافه کردن متن دلخواه
+        placeholder: "یک مقصد انتخاب کنید",
+        allowClear: true, // امکان پاک کردن انتخاب
+        multiple: false   // فقط یک انتخاب
+    });
+});
+</script>
     <script>
-        $(document).ready(function () {
-            $('.select2').select2();
-        });
-    </script>
-    <script>
+
         $(document).ready(function () {
             $("#id_soldire").change(function () {
                 var soldier_id = $(this).val();

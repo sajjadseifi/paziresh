@@ -2,7 +2,68 @@
 {% load static %}
 
 {% block header %}
+<style>
+    /* استایل فرم جستجوی پیشرفته */
+    .search-container {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
 
+    .search-container h2 {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #555;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    .btn-primary {
+        border-radius: 8px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0069d9;
+    }
+
+    /* جدول نتایج */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table.table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    table.table thead {
+        background: linear-gradient(90deg, #87CEEB, #00BFFF);
+        color: white;
+        font-weight: 600;
+    }
+
+    table.table tbody tr:hover {
+        background-color: #f1f7ff;
+    }
+
+    table.table tbody td {
+        vertical-align: middle;
+    }
+</style>
 {% endblock %}
 
 {% block main %}
@@ -10,7 +71,6 @@
     <div class="box">
         <div class="container mt-5">
             <h2 class="text-center">جستجوی پیشرفته سرباز</h2>
-
             <form method="GET" action="{% url 'soldier_search' %}">
                 <div class="row">
                     <div class="form-group">
@@ -38,9 +98,6 @@
                                    placeholder="کد ملی">
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="physical_condition">وضعیت جسمانی</label>
@@ -48,6 +105,9 @@
                                 <option value="">همه</option>
                                 <option value="سالم">سالم</option>
                                 <option value="معاف از رزم">معاف از رزم</option>
+                                <option value="گروه ب">گروه ب</option>
+                                <option value="معاف+گروه ب">معاف+گروه ب</option>
+                                <option value="نامشخص">نامشخص</option>
                             </select>
                         </div>
                     </div>
@@ -71,10 +131,8 @@
                             </select>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="Grade">مدرک تحصیلی</label>
                             <select class="form-control" id="Grade" name="Grade">
@@ -89,7 +147,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="Grade_precise">مدرک تحصیلی دقیق</label>
                             <select class="form-control" id="Grade_precise" name="Grade_precise">
@@ -110,9 +168,7 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="Gordan">گردان</label>
                             <select class="form-control" id="Gordan" name="Gordan">
@@ -123,7 +179,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="battaliongroup">گروهان</label>
                             <select class="form-control" id="battaliongroup" name="battaliongroup">
@@ -131,11 +187,7 @@
                             </select>
                         </div>
                     </div>
-                </div>
-
-
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="amire">وضعیت امریه</label>
                             <select class="form-control" id="amire" name="amire">
@@ -154,7 +206,6 @@
                     <button type="submit" class="btn btn-primary">جستجو</button>
                 </div>
             </form>
-
             <hr>
         </div>
 
@@ -208,7 +259,7 @@
                             <td>تجدید دوره</td>
                         {% endif %}
                         {% if soldier.has_been_accepted and soldier.Previous_service_record is True %}
-                            <td>کفایت از آموزش</td>
+                            <td>خدمت قبلی</td>
                         {% endif %}
                         {% if soldier.has_been_accepted is False %}
                             <td style="background-color: #ff9000">پذیرش نشده</td>

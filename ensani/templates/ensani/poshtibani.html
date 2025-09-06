@@ -1,89 +1,187 @@
 {% extends 'shared/_PanelMain.html' %}
+{% load static %}
 
 {% block header %}
-    <style>
-        body {
-            font-family: 'Vazir', sans-serif;
-            background-color: #e3f2fd;
-        }
+<style>
+body {
+    font-family: 'Vazir', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #212529;
+}
 
-        .card {
-            margin-top: 50px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #bbdefb;
-            border: none;
-        }
+/* Container اصلی */
+.about-container {
+    max-width: 1200px;
+    padding: 20px;
+}
 
-        .card-header {
-            background-color: #64b5f6;
-            color: white;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
+/* عنوان اصلی */
+.about-header {
+    text-align: center;
+    font-size: 3em;
+    font-weight: 700;
+    margin-bottom: 60px;
+}
 
-        .card-body {
-            text-align: center;
-        }
+/* بخش معرفی سامانه */
+.about-intro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 70px;
+}
 
-        .contact-info {
-            margin-top: 20px;
-        }
+.about-intro .text {
+    flex: 1 1 500px;
+    line-height: 1.8;
+    font-size: 1.15em;
+}
 
-        .btn-contact {
-            background-color: #42a5f5;
-            color: white;
-            border-radius: 25px;
-            padding: 10px 20px;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
-        }
+.about-intro .image {
+    flex: 1 1 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .btn-contact:hover {
-            background-color: #1e88e5;
-        }
+.about-intro .image img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
 
-        .animated-text {
-            animation: fadeIn 2s ease-in-out;
-        }
+/* بخش تیم */
+.team-section {
+    margin-bottom: 70px;
+}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
+.team-header {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+}
+
+.team-card {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px; /* فاصله بین عکس و متن */
+    direction: rtl; /* برای راست به چپ بودن عکس و متن */
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.team-card img {
+    width: 120px;
+    height: 120px;
+    background:black;
+    border-radius: 10%;
+}
+
+.team-card strong {
+    display: block;
+    font-size: 1.15em;
+    margin-bottom: 5px;
+}
+
+.team-card span {
+    font-size: 0.95em;
+    color: #555;
+}
+
+/* بخش تماس */
+.contact-section {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.contact-section a {
+    display: inline-block;
+    margin: 10px 12px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.contact-section a:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+</style>
 {% endblock %}
 
 {% block main %}
+<div class="about-container">
 
-    <div class="container">
-        <div class="card">
-            <div class="card-header">سامانه جامع رزم آموز المهدی(عج) - بخش پشتیبانی</div>
-            <div class="card-body">
-                <p style="font-size: 17px;padding-top: 35px">
-                    این سامانه با همت و تلاش‌های بی‌وقفه در دوران فرماندهی <strong>سرهنگ پاسدار علی متولی
-                    طاهر</strong>، فرمانده <strong>پادگان رزم مقدماتی المهدی(عج)</strong>، و با همکاری ارزشمند
-                    <strong>سرهنگ پاسدار رضا سروی</strong>، مدیر نیروی انسانی، و <strong>ستوان دوم پاسدار میثم
-                    گلبابازاده</strong>، مسئول منابع سربازان، طراحی و اجرا شده است.
-                </p>
-                <p style="font-size: 17px">
-                    این سامانه به‌دست <strong>ستوان دوم وظیفه سید محمدرضا رحیمایی</strong>، برنامه‌نویس و
-                    توسعه‌دهنده نرم‌افزار، با هدف بهبود فرآیندهای مدیریتی و افزایش دقت در ثبت و پیگیری امور سربازان،
-                    ساخته شده است.
-                </p>
-                <p class="text-center mt-4 font-weight-bold" style="font-size: 18px;font-weight: bold">افتخار ما خدمت به سربازان وطن است. 🌟</p>
-            </div>
+    <div class="about-header">درباره ما</div>
 
-            <div class="contact-info" style="text-align: center">
-                <p>شماره تماس: <strong>09914914853</strong></p>
-                <p>ایمیل: <strong>mohammad.rahimaee@gmail.com</strong></p>
-                <a href="tel:09914914853" class="btn btn-contact">تماس با پشتیبانی</a>
-            </div>
+    <!-- بخش معرفی سامانه -->
+    <div class="about-intro">
+        <div class="text">
+            سامانه جامع رزم‌آموز المهدی(عج) با هدف بهبود فرآیندهای مدیریتی و افزایش دقت در ثبت و پیگیری امور سربازان طراحی و اجرا شده است.
+            این سامانه در دوران فرماندهی <strong>سرهنگ پاسدار علی متولی طاهر</strong> و با همکاری <strong>سرهنگ پاسدار رضا سروی</strong> و <strong>ستوان دوم پاسدار میثم گلبابازاده</strong> توسعه یافته است.
+            <br><br>
+            توسعه و برنامه‌نویسی این سامانه به عهده <strong>ستوان دوم وظیفه سید محمدرضا رحیمایی</strong> بوده و با همکاری <strong>سجاد سیفی لر</strong> بخش پشتیبانی پروژه را بر عهده داشته است.
+        </div>
+        <div class="image">
+            <img src="{% static 'images/about_us_placeholder.png' %}" alt="About Us Image">
         </div>
     </div>
+
+    <!-- بخش تیم -->
+    <div class="team-section">
+        <div class="team-header">تیم کلیدی پروژه</div>
+<div class="team-grid">
+    <div class="team-card">
+        <img src="{% static 'img/support/golbaba.jpg' %}" alt="ستوان دوم پاسدار میثم گلبابازاده">
+        <div class="team-info">
+            <strong>ستوان دوم پاسدار میثم گلبابازاده</strong>
+            <span>مسئول منابع سربازان</span>
+        </div>
+    </div>
+    <div class="team-card">
+        <img src="{% static 'img/support/rahimaii.jpg' %}" alt="ستوان دوم وظیفه سید محمدرضا رحیمایی">
+        <div class="team-info">
+            <strong>ستوان دوم وظیفه سید محمدرضا رحیمایی</strong>
+            <span>برنامه‌نویس و توسعه‌دهنده نرم‌افزار</span>
+        </div>
+    </div>
+    <div class="team-card">
+        <img src="{% static 'img/support/sajjadseifi.jpg' %}" alt="سجاد سیفی لر">
+        <div class="team-info">
+            <strong>سجاد سیفی لر</strong>
+            <span>برنامه‌نویس و توسعه‌دهنده نرم‌افزار</span>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- بخش تماس -->
+    <div class="contact-section">
+        <a href="tel:09914914853">تماس با محمدرضا رحیمایی</a>
+        <a href="mailto:mohammad.rahimaee@gmail.com">ایمیل محمدرضا رحیمایی</a>
+        <a href="tel:09334497255">تماس با سجاد سیفی لر</a>
+        <a href="mailto:sajjadseifilor@gmail.com">ایمیل سجاد سیفی لر</a>
+    </div>
+
+</div>
 {% endblock %}

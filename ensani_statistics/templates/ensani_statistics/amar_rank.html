@@ -1,169 +1,223 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
 
-
-
 {% block header %}
-    <style>
-        body {
-            background-color: #f0f8ff;
-        }
+<style>
+    body {
+        background-color: #f0f8ff;
+    }
 
-        .card {
-            border: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
+    .card {
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
 
-        .table th, .table td {
-            text-align: center;
-            vertical-align: middle;
-        }
+    .card-header {
+        background: linear-gradient(90deg, #5bc0de, #31b0d5);
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        font-size: 20px;
+        padding: 15px;
+    }
 
-        .table thead th {
-            background-color: #5bc0de;
-            color: white;
-        }
+    .card-body {
+        padding: 20px;
+        background-color: #ffffff;
+    }
 
-        .bg-light-blue {
-            background-color: #d9edf7;
-        }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        .card-header {
-            background-color: #5bc0de;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            font-size: 20px;
-        }
-    </style>
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .table thead th {
+        background-color: #5bc0de;
+        color: white;
+    }
+
+
+    .table tbody tr:hover {
+        background-color: #d9edf7;
+    }
+
+    .table img {
+        width: 24px;
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    margin: 5px 5px 15px 0;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* رنگ و افکت دکمه‌ها */
+.btn-primary { background: linear-gradient(90deg, #5bc0de, #31b0d5); }
+.btn-primary:hover { background: linear-gradient(90deg, #31b0d5, #269abc); }
+
+.btn-success { background: linear-gradient(90deg, #28a745, #218838); }
+.btn-success:hover { background: linear-gradient(90deg, #218838, #1e7e34); }
+
+.btn-info { background: linear-gradient(90deg, #17a2b8, #117a8b); }
+.btn-info:hover { background: linear-gradient(90deg, #117a8b, #0f606f); }
+
+/* آیکون‌های FontAwesome */
+.btn i {
+    font-size: 16px;
+}
+
+</style>
 {% endblock %}
 
 {% block main %}
-
-
-
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header">
-                جدول تعداد نفرات به تفکیک درجه
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
+<div class="container mt-5">
+    <!-- دکمه‌ها -->
+    <button id="download-img" class="btn btn-primary">📷 دانلود تصویر جدول</button>
+    <a href="{% url 'create_rank_gardesh_kar' %}" class="btn btn-success">📝 ایجاد نامه گردشکار</a>
+    <a href="{% static 'templates/docs/GardeshKar.doc' %}" class="btn btn-info" download>📥 دانلود فایل Word قدیمی</a>
+    <div id="sheet0" class="card">
+        <div class="card-header">
+            جدول تعداد نفرات به تفکیک درجه
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
                         <th>ردیف</th>
                         <th>درجه</th>
                         <th>تعداد</th>
                     </tr>
-                    </thead>
-                    <tbody class="bg-light-blue">
+                </thead>
+                <tbody class="bg-light-blue">
                     <tr>
                         <td>1</td>
-                        <td>
-                            ستوان یکم (12)
-                              <img src="{% static 'img/rank/12.png' %}" STYLE="width: 20px" alt="">
+                        <td>ستوان یکم (12)
+                            <img src="{% static 'img/rank/12.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_12 }}</td>
                     </tr>
                     <tr>
                         <td>2</td>
-                        <td>
-                            ستوان دوم (11)
-                                   <img src="{% static 'img/rank/11.png' %}" STYLE="width: 20px" alt="">
+                        <td>ستوان دوم (11)
+                            <img src="{% static 'img/rank/11.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_11 }}</td>
                     </tr>
                     <tr>
                         <td>3</td>
-                        <td>
-                            ستوان سوم (10)
-                       <img src="{% static 'img/rank/10.png' %}" STYLE="width: 20px" alt="">
+                        <td>ستوان سوم (10)
+                            <img src="{% static 'img/rank/10.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_10 }}</td>
                     </tr>
                     <tr>
                         <td>4</td>
-                        <td>
-                            رزمدار یکم (9)
-                                <img src="{% static 'img/rank/9.png' %}" STYLE="width: 20px" alt="">
+                        <td>رزمدار یکم (9)
+                            <img src="{% static 'img/rank/9.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_9 }}</td>
                     </tr>
                     <tr>
                         <td>5</td>
-                        <td>
-                            رزمدار دوم (8)
-                            <img src="{% static 'img/rank/8.png' %}" STYLE="width: 20px" alt="">
+                        <td>رزمدار دوم (8)
+                            <img src="{% static 'img/rank/8.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_8 }}</td>
                     </tr>
                     <tr>
                         <td>6</td>
-                        <td>
-                            رزم‌آور یکم (7)
-                                  <img src="{% static 'img/rank/7.png' %}" STYLE="width: 20px" alt="">
+                        <td>رزم‌آور یکم (7)
+                            <img src="{% static 'img/rank/7.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_7 }}</td>
                     </tr>
                     <tr>
                         <td>7</td>
-                        <td>
-                            رزم‌آور دوم (6)
-                       <img src="{% static 'img/rank/6.png' %}" STYLE="width: 20px" alt="">
+                        <td>رزم‌آور دوم (6)
+                            <img src="{% static 'img/rank/6.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_6 }}</td>
                     </tr>
                     <tr>
                         <td>8</td>
-                        <td>
-                            رزم‌آور سوم (5)
-                                  <img src="{% static 'img/rank/5.png' %}" STYLE="width: 20px" alt="">
+                        <td>رزم‌آور سوم (5)
+                            <img src="{% static 'img/rank/5.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_5 }}</td>
                     </tr>
                     <tr>
                         <td>9</td>
-                        <td>
-                            رزمیار (4)
-                            <img src="{% static 'img/rank/4.png' %}" STYLE="width: 20px" alt="">
+                        <td>رزمیار (4)
+                            <img src="{% static 'img/rank/4.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_4 }}</td>
                     </tr>
                     <tr>
                         <td>10</td>
-                        <td>
-                            سرباز یکم (3)
-                                        <img src="{% static 'img/rank/3.png' %}" STYLE="width: 20px" alt="">
+                        <td>سرباز یکم (3)
+                            <img src="{% static 'img/rank/3.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_3 }}</td>
                     </tr>
                     <tr>
                         <td>11</td>
-                        <td>
-                            سرباز دوم (2)
-                            <img src="{% static 'img/rank/2.png' %}" STYLE="width: 20px" alt="">
+                        <td>سرباز دوم (2)
+                            <img src="{% static 'img/rank/2.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_2 }}</td>
                     </tr>
                     <tr>
                         <td>12</td>
-                        <td>
-                            سرباز (1)
-                            <img src="{% static 'img/rank/1.png' %}" STYLE="width: 20px" alt="">
+                        <td>سرباز (1)
+                            <img src="{% static 'img/rank/1.png' %}" style="width: 20px" alt="">
                         </td>
                         <td>{{ rank_1 }}</td>
                     </tr>
-                    <tr class="font-weight-bold">
+                    <tr class="font-weight-bold" style="background-color:#5bc0de; color:white;">
                         <td colspan="2">مجموع</td>
                         <td>{{ total }}</td>
                     </tr>
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-
-
+<script src="{% static 'build/js/html2canvas.js' %}"></script>
+<script>
+document.getElementById('download-img').addEventListener('click', () => {
+    const table = document.getElementById('sheet0');
+    html2canvas(table, {
+        scale: 2,
+        useCORS: true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'table.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+});
+</script>
 {% endblock %}

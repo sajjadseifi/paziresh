@@ -400,6 +400,8 @@
                 <div class="box">
                     <div class="box-header">
                         <h3 class="box-title">آمار سربازان پذیرش شده</h3>
+    <button id="download-img">دانلود تصویر جدول</button>
+                        
                         <br>
                         <br>
                         <br>
@@ -528,6 +530,23 @@
 
 
 {% block footer %}
+    <script src="{% static 'build/js/html2canvas.js' %}"></script>
+    <script>
+    document.getElementById('download-img').addEventListener('click', () => {
+        const table = document.getElementById('sheet0'); // آی‌دی جدول شما
+
+        html2canvas(table, {
+            scale: 2, // کیفیت بالاتر تصویر
+            useCORS: true // در صورت استفاده از تصاویر خارجی
+        }).then(canvas => {
+            // تبدیل به تصویر
+            const link = document.createElement('a');
+            link.download = 'table.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    });
+    </script>
     <script>
         window.addEventListener('beforeprint', function () {
             document.querySelector('.tabel-remove').classList.add('sheet0');

@@ -5,6 +5,9 @@ from soldiers.models import Soldier
 from battalions.models import battalion, battalion_group
 from ensaniapp_settings.models import EnsaniSettings
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from ensani.excel_utils  import export_soldiers_to_excel,export_kafiat_to_excel   
+from ensani_letter.models import NormalLetterModels,CheckoutLetterModels
 
 class panel_home(LoginRequiredMixin, View):
     def get(self, request):
@@ -17,9 +20,15 @@ class panel_home(LoginRequiredMixin, View):
                                                  Previous_service_record=False, Sufficiency_of_mobilization=False,
                                                  tatbigh=False, IsCheckout=False).all().count()
         total_tegan_khdmati_in_course = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
-                                                               in_coures=True, IsCheckout=False,IsUnit=False).all().count()
+                                                               in_coures=True, IsCheckout=False,IsUnit=True).all().count()
         en = EnsaniSettings.objects.filter().first()
         b_soldire = Soldier.objects.filter(has_been_accepted=True, in_coures=True, willing_to_learn=True).all()
+        basij = Soldier.objects.filter(has_been_accepted=True,Sufficiency_of_mobilization=True).all().count()
+        previous = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True).all().count()
+        shoro_komisyon = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",soldire__the_medical_commission=True).all().count()
+        komisyon = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون",soldire__the_medical_commission=True).all().count()
+        tajdiddoreh = CheckoutLetterModels.objects.filter(c_type="تجدید دوره").all().count()
+        
         if en.tatbigh is False:
             list_btn = []
             name_list = []
@@ -42,6 +51,7 @@ class panel_home(LoginRequiredMixin, View):
             total_list = []
             gordan = battalion.objects.filter().all().order_by('name')
             for iteam in gordan:
+                
                 gorhan = battalion_group.objects.filter(gordan=iteam).order_by('name')
                 tt = b_soldire.filter(t_Gordan=iteam).all().count()
                 if tt != 0:
@@ -50,12 +60,20 @@ class panel_home(LoginRequiredMixin, View):
                 for iteam in gorhan:
                     t = b_soldire.filter(t_battalion_group=iteam).all().count()
                     if t != 0:
-                        list_btn.append({'gordan': iteam.gordan.name, 'gorohan': iteam.name, 'count': t})
+                        list_btn.append({'gordan': iteam.gordan.name, 'gorohan': iteam.name, 'count': t,'capacity': int(iteam.zarfiat) - t})
 
-        cx = {'amar_kol': amar_kol, 'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,
+        cx = {
+            'amar_kol': amar_kol, 
+            'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,
               'amar_kole_paziresh_shode': amar_kole_paziresh_shode, 'tatbikh_nashode': tatbikh_nashode,
               'total_tegan_khdmati_in_course': total_tegan_khdmati_in_course, 'list_btn': list_btn,
-              'name_list': name_list, 'total_list': total_list,'amar_shoro_dore':amar_shoro_dore}
+              'name_list': name_list, 'total_list': total_list,'amar_shoro_dore':amar_shoro_dore,
+                 'basij':basij ,  # مثال
+                 'komisyon': komisyon,
+                 'shoro_komisyon':shoro_komisyon ,
+                 'previous':previous ,
+                 'tajdiddoreh':tajdiddoreh
+              }
         return render(request, 'ensani/panel_home_page.html', cx)
 
 @login_required
@@ -83,3 +101,55 @@ def footer_partial_view(request, *args, **kwargs):
 
 def footer_references_partial_view(request, *args, **kwargs):
     return render(request, 'shared/_FooterReferences.html')
+
+
+def get_excel_response(df, filename):
+    """Convert DataFrame to Excel and return as response."""
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={filename}.xlsx'
+    df.to_excel(response, index=False)
+    return response
+
+
+def download_amar_kol(request):
+    return export_soldiers_to_excel(filename='amar_kol')
+
+def download_shoro_dore(request):
+    return export_soldiers_to_excel(
+        filter_kwargs={'has_been_accepted': True, 'in_coures': True},
+        filename='shoro_dore'
+    )
+
+def download_hezer(request):
+    return export_soldiers_to_excel(
+        filter_kwargs={'has_been_accepted': True, 'willing_to_learn': True, 'in_coures': True},
+        filename='hezer'
+    )
+
+def download_paziresh(request):
+    return export_soldiers_to_excel(
+        filter_kwargs={'has_been_accepted': True},
+        filename='paziresh'
+    )
+
+def download_yegan(request):
+    return export_soldiers_to_excel(
+        filter_kwargs={'has_been_accepted': True, 'willing_to_learn': True, 'in_coures': True, 'IsCheckout': False, 'IsUnit': False},
+        filename='yegan'
+    )
+
+def download_tatbikh(request):
+    return export_soldiers_to_excel(
+        filter_kwargs={
+            'has_been_accepted': True, 'in_coures': True,
+            'the_medical_commission': False,
+            'Previous_service_record': False,
+            'Sufficiency_of_mobilization': False,
+            'tatbigh': False,
+            'IsCheckout': False
+        },
+        filename='tatbikh'
+    )
+
+def download_kafiat(request):
+    return export_kafiat_to_excel()

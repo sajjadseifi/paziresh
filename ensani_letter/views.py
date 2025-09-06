@@ -7,14 +7,15 @@ from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
     CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom, CreateFarajaLetterFrom, CreateMoarefiFrom
-from .models import CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
+from .models import Soldier,CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
     FarajaNormallLetter, MoarefiNormallLetter
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
 import random
-from django.http import JsonResponse
-from .models import Soldier  # مدل سرباز را ایمپورت کنید
-
+import pandas as pd
+from django.http import HttpResponse, JsonResponse
+from ensani_letter.excel_utils import export_checkout_letters_to_excel
+from django.db.models import Q,Count
 
 def generate_unique_number(length=4):
     return ''.join([str(random.randint(0, 9)) for _ in range(length)])
@@ -76,10 +77,40 @@ def find_sepah_name(p):
 
 @login_required
 def AllCheckoutLetter(request, *args, **kwargs):
-    all_checkout_letter = CheckoutLetterModels.objects.filter().all()
-    return render(request, 'ensani_letter/all_checkout_letter.html',
-                  context={'all_checkout_letter': all_checkout_letter})
+    query = request.GET.get('q', '').strip()
+    all_checkout_letter = CheckoutLetterModels.objects.all()
 
+    if query:
+        all_checkout_letter = all_checkout_letter.filter(
+            Q(soldire__name__icontains=query) |
+            Q(soldire__family__icontains=query) |
+            Q(number__icontains=query) |
+            Q(c_type__icontains=query)
+        )
+
+    # تعداد هر نوع نامه
+    type_counts = all_checkout_letter.values('c_type').annotate(count=Count('c_type')).order_by('c_type')
+
+    return render(request, 'ensani_letter/all_checkout_letter.html', {
+        'all_checkout_letter': all_checkout_letter,
+        'type_counts': type_counts,
+    })
+
+
+@login_required
+def AllCheckoutLetterExportExcel(request):
+    query = request.GET.get('q', '').strip()
+    letters = CheckoutLetterModels.objects.all()
+
+    if query:
+        letters = letters.filter(
+            Q(soldire__name__icontains=query) |
+            Q(soldire__family__icontains=query) |
+            Q(number__icontains=query) |
+            Q(c_type__icontains=query)
+        ).all()
+
+    return export_checkout_letters_to_excel(letters)
 
 def get_suttr_status(request):
     soldier_id = request.GET.get("soldier_id")
@@ -164,7 +195,7 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
 
 @login_required
 def AllNormalLetter(request, *args, **kwargs):
-    all_normal_letter = NormalLetterModels.objects.filter().all()
+    all_normal_letter = NormalLetterModels.objects.filter().all().order_by('-create_time')
     return render(request, 'ensani_letter/all_normal_letter.html',
                   context={'all_normal_letter': all_normal_letter})
 
@@ -587,9 +618,54 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     check_out = CheckoutLetterModels.objects.filter(soldire_id=checkout_commission_letter.soldire.id).first()
     sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
     checkout_commission_letter.status = "تجدید دوره کمیسیون"
+    
+
     cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en, 'check_out': check_out}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 
+
+@login_required
+def PrintCheckoutCommissionLetterModern(request, *args, **kwargs):
+    checkout_commission_letter_pk = kwargs.get('pk')
+    if not checkout_commission_letter_pk:
+        return 0  # یا return HttpResponseBadRequest()
+
+    en = EnsaniSettings.objects.first()
+    checkout_commission_letter = NormalLetterModels.objects.filter(pk=checkout_commission_letter_pk).first()
+    if not checkout_commission_letter:
+        return 0  # یا return HttpResponseNotFound()
+
+    check_out = CheckoutLetterModels.objects.filter(soldire_id=checkout_commission_letter.soldire.id).first()
+    sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
+
+    # وضعیت نامه را بروزرسانی می‌کنیم
+    checkout_commission_letter.status = "تجدید دوره کمیسیون"
+
+    # ساختار داده‌ای که تمپلیت `_LetterA5.html` استفاده می‌کند
+    letter = {
+        'date': checkout_commission_letter.create_time.date if checkout_commission_letter.create_time else '',
+        'letter_number': checkout_commission_letter.number,
+        'letter_type': "معرفی به کمیسیون",
+        'destination': f"{checkout_commission_letter.destination} {checkout_commission_letter.soldire.province_name} – معاونت نیروی انسانی - مدیریت منابع انسانی سرباز",
+        'soldier': {
+            'first_name': checkout_commission_letter.soldire.name,
+            'last_name': checkout_commission_letter.soldire.family,
+            'father_name': checkout_commission_letter.soldire.fathers_name,
+            'national_code': checkout_commission_letter.soldire.National_Code,
+            'enlistment_date': checkout_commission_letter.soldire.Date_of_dispatch,
+            'organizational_code': checkout_commission_letter.soldire.acceptance_code,
+        },
+        'description': checkout_commission_letter.description,
+        'status': checkout_commission_letter.status,
+    }
+    context = {
+        'letter': letter,
+        'en': en,
+        'check_out': check_out,
+        'sutter': sutter,
+    }
+
+    return render(request, 'ensani_letter/print_checkout_commission_letter_modern.html', context)
 
 @login_required
 def PrintTrainingInquiryLetter(request, *args, **kwargs):
@@ -808,3 +884,52 @@ def remove_normall(request, *args, **kwargs):
         normall.save()
         normall.delete()
         return redirect(reverse_lazy('AllNormalLetter'))
+
+
+def get_excel_response(df, filename):
+    """Create an Excel response with right-to-left formatting."""
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={filename}.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='MyModelData')
+        worksheet = writer.sheets['MyModelData']
+        worksheet.sheet_view.rightToLeft = True
+
+    return response
+
+
+@login_required
+def export_to_excel_normal_letters(request):
+    """Export list of normal letters to Excel."""
+    queryset = NormalLetterModels.objects.all().order_by('-create_time')
+
+    data = []
+    for letter in queryset:
+        data.append({
+            'number': letter.number,
+            'subject': letter.subject,
+            'soldire__name': letter.soldire.name,
+            'soldire__family': letter.soldire.family,
+            'soldire__National_Code': letter.soldire.National_Code,
+            'create_time':  letter.create_time.date(),
+            'destination': letter.destination,
+            'description': letter.description,
+            'status': letter.status
+        })
+
+    df = pd.DataFrame(data)
+
+    df.rename(columns={
+        'number': 'شماره نامه',
+        'subject': 'موضوع نامه',
+        'soldire__name': 'نام',
+        'soldire__family': 'نام خانوادگی',
+        'soldire__National_Code': 'کدملی',
+        'create_time': 'تاریخ',
+        'destination': 'مقصد نامه',
+        'description': 'توضیحات',
+        'status': 'وضعیت'
+    }, inplace=True)
+
+    return get_excel_response(df, 'normal_letters')

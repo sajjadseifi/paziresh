@@ -718,13 +718,14 @@
                         {% else %}
                             <h3 class="box-title">آمار گردان و گروهان(آمارآولیه)</h3>
                         {% endif %}
+                            <button id="download-img">دانلود تصویر جدول</button>
 
                         <br>
                         <br>
                         <br>
-                        <div class="box-body table-responsive no-padding">
+                        <div id="sheet0" class="box-body table-responsive no-padding">
                             {% for battalion in stats %}
-                                <table class="table table-hover">
+                                <table  class="table table-hover">
                                     <colgroup>
                                         <col class="col0">
                                         <col class="col1">
@@ -791,6 +792,25 @@
             </div>
         </div>
     </section>
+
+
+        <script src="{% static 'build/js/html2canvas.js' %}"></script>
+    <script>
+    document.getElementById('download-img').addEventListener('click', () => {
+        const table = document.getElementById('sheet0'); // آی‌دی جدول شما
+
+        html2canvas(table, {
+            scale: 2, // کیفیت بالاتر تصویر
+            useCORS: true // در صورت استفاده از تصاویر خارجی
+        }).then(canvas => {
+            // تبدیل به تصویر
+            const link = document.createElement('a');
+            link.download = 'table.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    });
+    </script>
 {% endblock %}
 
 

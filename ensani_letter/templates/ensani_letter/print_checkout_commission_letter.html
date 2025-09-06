@@ -1,350 +1,153 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>-برگه معرفی به کمیسیون{{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
-    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
-    <style>
-        @page {
-            size: A5 portrait; /* تنظیم اندازه کاغذ به A5 و جهت گیری عمودی */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برگه معرفی به کمیسیون {{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }}</title>
+<link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+<style>
+@page {
+    size: A5 portrait;
+    margin: 0;
+}
 
-        html, body {
-            width: 148mm;
-            margin: 0;
-            padding: 0;
-        }
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'B Nazanin';
+    direction: rtl;
+}
+.page:last-child {
+    page-break-after: none; /* یا none */
+}
+.page {
+    position: relative;
+    width: 148mm;
+    height: 210mm;
+    page-break-after: always;
+    background: url("{% static 'img/letters/CheckoutCommissionLetter.jpg' %}") no-repeat center center;
+    background-size: 105% 100%;
+    box-sizing: border-box;
+    padding: 45px 40px 20px 55px; /* فاصله‌ها از چهار جهت */
+    display: flex;
+    flex-direction: column;
+}
 
-        body {
-            font-family: B Nazanin;
-        }
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
 
-        .container {
-            position: relative;
-            text-align: center;
-            color: rgb(0, 0, 0); /* رنگ متن */
-        }
+.content div {
+    margin-bottom: 10px;
+    word-break: break-word;
+}
 
-        .image {
-            display: block;
-            width: 100%; /* عرض عکس */
-            height: auto; /* ارتفاع خودکار */
-        }
+.letter_number { position: absolute; top: 45px; left: 45px; font-size: 9px; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_date { position: absolute; top: 65px; left: 45px; font-size: 9px; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.shoare_sall { position: absolute; top: 145px; right: 120px; font-size: 13px; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_to { position: absolute; top: 170px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_create_location { position: absolute; top: 195px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_des { text-align:justify; position: absolute; top: 280px; right: 40px; font-size: 12px; font-weight: bold; width: 120mm; word-break: break-word;  direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_details { position: absolute; top: 400px; right: 40px; font-size: 12px; font-weight: normal; width: 120mm; word-break: break-word; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.farmande_padegan { position: absolute; top: 570px; right: 200px; font-size: 12px; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_note { position: absolute; top: 640px; right: 40px; font-size: 10px; width: 120mm; text-align: center; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.check_out { position: absolute;  top: 710px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.sutter { position: absolute; top: 690px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.code_paziresh { position: absolute; top: 710px; right:440px; font-size: 12px; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 
-        .shoare_sall {
-            position: absolute;
-            top: 141px;
-            right: 116px;
-            font-size: 13px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_to {
-            position: absolute;
-            top: 164px;
-            right: 32px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_create_location {
-            position: absolute;
-            top: 188px;
-            right: 32px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_des {
-            position: absolute;
-            top: 291px;
-            right: 34px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-            width: 449px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            direction: rtl;
-            text-align: right;
-            white-space: normal;
-        }
-
-        .letter_details {
-            position: absolute;
-            top: 392px;
-            right: 34px;
-            font-size: 12px;
-            color: black;
-            font-weight: normal;
-            width: 449px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            direction: rtl;
-            text-align: right;
-            white-space: normal;
-        }
-
-        .farmande_padegan {
-            position: absolute;
-            top: 590px;
-            right: 206px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_note {
-            position: absolute;
-            top: 675px;
-            right: 93px;
-            font-size: 10px;
-            color: black;
-            font-weight: normal;
-            width: 368px;
-        }
-
-        .letter_number {
-            position: absolute;
-            top: 46px;
-            right: 420px;
-            font-size: 8px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_date {
-            position: absolute;
-            top: 69px;
-            right: 425px;
-            font-size: 11px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_date2 {
-            position: absolute;
-            top: 862px;
-            right: 425px;
-            font-size: 11px;
-            color: black;
-            font-weight: bold;
-        }
-
-
-        .shoare_sall2 {
-            position: absolute;
-            top: 936px;
-            right: 116px;
-            font-size: 13px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_to2 {
-            position: absolute;
-            top: 960px;
-            right: 32px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_create_location2 {
-            position: absolute;
-            top: 983px;
-            right: 32px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_des2 {
-            position: absolute;
-            top: 1086px;
-            right: 34px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-            width: 449px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            direction: rtl;
-            text-align: right;
-            white-space: normal;
-        }
-
-        .letter_details2 {
-            position: absolute;
-            top: 1187px;
-            right: 34px;
-            font-size: 12px;
-            color: black;
-            font-weight: normal;
-            width: 449px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            direction: rtl;
-            text-align: right;
-            white-space: normal;
-        }
-
-        .farmande_padegan2 {
-            position: absolute;
-            top: 1385px;
-            right: 206px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .letter_note2 {
-            position: absolute;
-            top: 1470px;
-            right: 93px;
-            font-size: 10px;
-            color: black;
-            font-weight: normal;
-            width: 368px;
-        }
-
-        .letter_number2 {
-            position: absolute;
-            top: 839px;
-            right: 425px;
-            font-size: 11px;
-            color: black;
-            font-weight: bold;
-
-        }
-
-        .letter_note2 {
-            position: absolute;
-            top: 1258px;
-            right: 68px;
-            font-size: 12px;
-            color: black;
-            font-weight: normal;
-            width: 401px;
-        }
-
-        .code_paziresh {
-            position: absolute;
-            top: 1499px;
-            right: 393px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .sutter {
-            position: absolute;
-            top: 1473px;
-            right: 39px;
-            font-size: 12px;
-            color: black;
-            font-weight: bold;
-            text-align: right;
-            direction: rtl;
-        }
-
-    </style>
+@media print {
+    body, html {
+        width: 148mm;
+        height: 210mm;
+        margin: 0;
+        padding: 0;
+    }
+    .page {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <img src="{% static 'img/letters/CheckoutCommissionLetter.jpg' %}" alt="CheckoutCommissionLetter" class="image">
-    <img src="{% static 'img/letters/CheckoutCommissionLetter.jpg' %}" alt="CheckoutCommissionLetter" class="image">
+<!-- صفحه اول -->
+<div class="page">
+    <div class="content">
+        <div class="letter_number">ز<bdi>512/106/6/<span>{{ checkout_commission_letter.number }}</span></bdi></div>
+        <div class="letter_date">{{ checkout_commission_letter.create_time.date }}</div>
+        <div class="shoare_sall">{{ en.shoare_sall }}</div>
+        <div class="letter_to">
+            به: {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت منابع انسانی سرباز
+        </div>
+        <div class="letter_create_location">
+            از: آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع انسانی سرباز
+        </div>
+        <div class="letter_des">
+            باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استناد ابلاغیه شماره 40/4/10505س مورخ 90/10/28 ستاد کل سپاه،
+            فراگیر {{ checkout_commission_letter.soldire.name }} {{ checkout_commission_letter.soldire.family }} فرزند {{ checkout_commission_letter.soldire.fathers_name }}
+            با شناسه ملی {{ checkout_commission_letter.soldire.National_Code }} و تاریخ اعزام {{ checkout_commission_letter.soldire.Date_of_dispatch }}
+            برابر تائید بهداری به علت {{ checkout_commission_letter.description }} معرفی به کمیسیون، در تاریخ {{ check_out.create_time.year }}/{{ check_out.create_time.month }}/{{ check_out.create_time.day }}
+            از این آموزشگاه تسویه حساب نموده و جهت اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می‌گردد.
+        </div>
+        <div class="letter_details">
+            مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
+        </div>
+        <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
+        <div class="letter_note">
+            تذکر: مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان، 59 روز از تاریخ فوق می‌باشد، در صورت عدم ارسال به موقع، فرار از خدمت برای نامبرده لحاظ می‌گردد.
+        </div>
+        <div class="code_paziresh">عدد پذیرش: {{ checkout_commission_letter.soldire.acceptance_code }}</div>
+    </div>
+</div>
 
-    <div class="letter_number">ز<bdi>512/106/6/<span>{{ checkout_commission_letter.number }}</span></bdi>
-    </div>
-    <div class="letter_date">{{ checkout_commission_letter.create_time.date }}</div>
-    <div class="shoare_sall">{{ en.shoare_sall }}</div>
-    <div class="letter_to">به
-        : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت
-        نیروی انسانی- مدیریت
-        منابع انسانی
-        سرباز
-    </div>
-    <div class="letter_create_location">از : آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع
-        انسانی سرباز
-    </div>
-     <div class="letter_des">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استناد ابلاغیه شماره 40/4/10505س مورخ 90/10/28
-        ستاد کل سپاه ،
-        فراگیر {{ checkout_commission_letter.soldire.name }} {{ checkout_commission_letter.soldire.family }} فرزند
-        {{ checkout_commission_letter.soldire.fathers_name }} با شناسه
-        ملی {{ checkout_commission_letter.soldire.National_Code }} و تاریخ اعزام
-        {{ checkout_commission_letter.soldire.Date_of_dispatch }} برابر تائید
-        بهداری به علت {{ checkout_commission_letter.description }} معرفی به کمیسیون ، در
-        تاریخ {{ check_out.create_time.year }}/{{ check_out.create_time.month }}/{{ check_out.create_time.day }}
-        از این آموزشگاه تسویه حساب نموده و
-        جهت
-        اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می گردد.
+<!-- صفحه دوم -->
+<div class="page" style="page-break-after: auto;"> 
+    <div class="content">
+        <div class="letter_number">{{ checkout_commission_letter.number }}</div>
+        <div class="letter_date">{{ checkout_commission_letter.create_time.date }}</div>
+        <div class="shoare_sall">{{ en.shoare_sall }}</div>
+        <div class="letter_to">
+            به: {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت نیروی انسانی- مدیریت منابع انسانی سرباز
+        </div>
+        <div class="letter_create_location">
+            از: آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع انسانی سرباز
+        </div>
+        <div class="letter_des">
+            باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استناد ابلاغیه شماره 40/4/10505س مورخ 90/10/28 ستاد کل سپاه،
+            فراگیر {{ checkout_commission_letter.soldire.name }} {{ checkout_commission_letter.soldire.family }} فرزند {{ checkout_commission_letter.soldire.fathers_name }}
+            با شناسه ملی {{ checkout_commission_letter.soldire.National_Code }} و تاریخ اعزام {{ checkout_commission_letter.soldire.Date_of_dispatch }}
+            برابر تائید بهداری به علت {{ checkout_commission_letter.description }} معرفی به کمیسیون، در تاریخ {{ check_out.create_time.year }}/{{ check_out.create_time.month }}/{{ check_out.create_time.day }}
+            از این آموزشگاه تسویه حساب نموده و جهت اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می‌گردد.
+        </div>
+        <div class="letter_details">
+            مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
+        </div>
+        <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
+        <div class="letter_note">
+            تذکر: مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان، 59 روز از تاریخ فوق می‌باشد، در صورت عدم ارسال به موقع، فرار از خدمت برای نامبرده لحاظ می‌گردد.
+        </div>
+        <div class="code_paziresh">عدد پذیرش: {{ checkout_commission_letter.soldire.acceptance_code }}</div>
 
+        {% if sutter.is_get %}
+            <div class="sutter">نامبرده ساتر تحویل گرفته است.</div>
+        {% else %}
+            <div class="sutter">نامبرده ساتر تحویل نگرفته است.</div>
+        {% endif %}
 
+        {% if check_out %}
+            <div class="check_out">نامبرده تسویه حساب کرده است.</div>
+        {% endif %}
     </div>
-
-    <div class="letter_details">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
-        عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
-    </div>
-    <div class="farmande_padegan">{{ en.farmande_razme_moghadamati }}</div>
-    <div class="letter_note">تذکر : مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان ، 59 روز از تاریخ فوق
-        می باشد ، در صورت عدم ارسال به موقع ، فرار از خدمت برای نامبرده لحاظ می گردد.
-    </div>
-
-
-    <div class="letter_number2">{{ checkout_commission_letter.number }}</div>
-    <div class="letter_date2">{{ checkout_commission_letter.create_time.date }}</div>
-    <div class="shoare_sall2">{{ en.shoare_sall }}</div>
-    <div class="letter_to2">به
-        : {{ checkout_commission_letter.destination }} {{ checkout_commission_letter.soldire.province_name }} – معاونت
-        نیروی انسانی- مدیریت
-        منابع انسانی
-        سرباز
-    </div>
-    <div class="letter_create_location2">از : آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع
-        انسانی سرباز
-    </div>
-    <div class="letter_des2">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استناد ابلاغیه شماره 40/4/10505س مورخ
-        90/10/28
-        ستاد کل سپاه ،
-        فراگیر {{ checkout_commission_letter.soldire.name }} {{ checkout_commission_letter.soldire.family }} فرزند
-        {{ checkout_commission_letter.soldire.fathers_name }} با شناسه
-        ملی {{ checkout_commission_letter.soldire.National_Code }} و تاریخ اعزام
-        {{ checkout_commission_letter.soldire.Date_of_dispatch }} برابر تائید
-        بهداری به علت {{ checkout_commission_letter.description }} معرفی به کمیسیون ، در
-        تاریخ {{ check_out.create_time.year }}/{{ check_out.create_time.month }}/{{ check_out.create_time.day }}
-        از این آموزشگاه تسویه حساب نموده و
-        جهت
-        اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می گردد.
-
-
-    </div>
-    <div class="letter_details2">مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان در صورت معاف دائم به سازمان وظیفه
-        عمومی و در صورت سلامت و معاف از رزم نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمائید.
-    </div>
-    <div class="farmande_padegan2">{{ en.farmande_razme_moghadamati }}</div>
-    <div class="letter_note2">تذکر : مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان ، 59 روز از تاریخ فوق
-        می باشد ، در صورت عدم ارسال به موقع ، فرار از خدمت برای نامبرده لحاظ می گردد.
-    </div>
-    <div class="code_paziresh"> عدد پذیرش : {{ checkout_commission_letter.soldire.acceptance_code }}</div>
-    {% if sutter.is_get %}
-        <div class="sutter">نامبرده ساتر تحویل گرفته است.</div>
-    {% else %}
-        <div class="sutter">نامبرده ساتر تحویل نگرفته است.</div>
-    {% endif %}
-
 </div>
 <script>
     window.print()
     window.onafterprint = function () {
         window.close();
-
     }
 </script>
 </body>

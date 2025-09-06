@@ -426,16 +426,20 @@ def soldier_search(request):
     return render(request, 'ensani_soldires_management/soldier_search.html', context)
 
 
-@login_required
 def soldier_in_almahdi(request):
-    soldiers = Soldier.objects.filter(unit_name="آموزشگاه المهدی (عج) نزسا").all()
+    units = [
+        "آموزشگاه المهدی (عج) نزسا",
+        "آموزشگاه المهدی (عج)",
+        "(عج) المهدی آموزشگاه",
+    ]
+
+    soldiers = Soldier.objects.filter(unit_name__in=units)
 
     context = {
         'results': soldiers,
     }
 
     return render(request, 'ensani_soldires_management/soldier_list_almahdi.html', context)
-
 
 @login_required
 def get_grohan_by_gordan_for_search(request):

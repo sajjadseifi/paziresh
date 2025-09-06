@@ -156,10 +156,13 @@
     <div class="shoare_sall">{{ en.shoare_sall }}</div>
     <div class="destination">به : {{ Normal_letter_Register.destination }}</div>
     <div class="az">از : آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی</div>
-    {% if rg is not None %}
-        <div class="bazgasht">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، بازگشت به نامه شماره
-            {{ rg.in_come_letter_numbers }} مورخ {{ rg.in_come_letter_data }} از
-            بابل به استحضار می رساند :
+    {% if rg is not None  %}
+        <div class="bazgasht">
+            باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، بازگشت به نامه شماره
+            {% if rg.in_come_letter_numbers or rg.in_come_letter_data %}
+                    {{ rg.in_come_letter_numbers }} {% if rg.in_come_letter_data %} مورخ {{ rg.in_come_letter_data }} {% endif %} از بابل
+            {% endif %}
+            به استحضار می رساند :
         </div>
         <div class="letter_des">
             فراگیر {{ Normal_letter_Register.soldire.name }} {{ Normal_letter_Register.soldire.family }} فرزند

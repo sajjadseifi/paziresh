@@ -16,4 +16,6 @@ urlpatterns = [
     path('gozaresh_yegan_khedmati', yegan_be_kar_girande, name='gozaresh_yegan_khedmati'),
     path('amare_yegan_bekar_girande_tabel', yegan_be_kar_girande_tabel, name='amare_yegan_bekar_girande_tabel'),
     path('amara_rank', amar_rank, name='amar_rank'),
+    path('amara_rank/gardeshkar/download', generate_gardesh_kar, name='generate_gardesh_kar'),
+    path('amara_rank/gardeshkar', create_rank_gardesh_kar, name='create_rank_gardesh_kar'),
 ]

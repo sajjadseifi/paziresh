@@ -1,0 +1,345 @@
+{% load render_partial %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}نامه داخلی{% endblock %}</title>
+    {% render_partial 'header_references_partial_view' %}
+ 
+  <style>
+    @media print {
+      @page {
+        size: A5 portrait;
+        margin: 0;
+      }
+      html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow: visible !important;
+      }
+      
+      body {
+        display: block !important;
+        position: static !important;
+      }
+      * {
+        visibility: hidden;
+      }
+    .pages .page {
+      margin : 0;
+    }
+    .print-content {
+      border: 0 none;
+    }
+
+       .pages *, 
+       .pages .page,
+       .pages .page * 
+       {
+        visibility: visible;
+      }
+      
+      .pages {
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+      }
+      .control,
+      .no-print {
+        display: none !important;
+      }
+
+    }
+    
+
+
+    .print-content {
+      width: 148mm;
+      height: 210mm;
+      background: white;
+      padding: 8mm;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border : 1px solid #cacaca !important;
+   }
+
+    .pages .page {
+      margin : 0 0 5px 0;
+    }
+     .content {
+        font-size: 12px;
+        line-height:1.8;
+        text-align: justify;
+        margin-top: 5px;
+      }
+      .flex-content {
+         min-height:auto;
+      }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #aaa !important;
+      padding: 10px;
+      border-radius: 5px;
+      
+    }
+
+    .header img {
+      height: 50px;
+    }
+
+    .left-info {
+      font-size: 14px;
+      text-align: right;
+      flex:1;
+    }
+    .sepah-logo {
+      flex:1;
+      text-align:left;
+    }
+    .slogan {
+      text-align: center;
+      font-weight: bold;
+      margin: 0 auto;
+      font-size: 13px;
+      background: #fafafa;
+      border: 1px solid #aaa !important;
+      padding: 5px;
+      border-radius: 0 0 10px 10px;
+      border-top:0 none;
+      width:max-content;
+    }
+
+    .content-box {
+      border: 1px solid #aaa !important;
+      border-radius: 5px;
+      padding: 5px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin:5px 0;
+    }
+
+    .footer {
+      margin-top: 25px;
+    }
+
+    .signature {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+ .signature-box {
+        height:80px;
+        width:200px;
+        border-radius:4px;
+        margin:0 auto;
+        border:1px dashed #aaa;
+        background-color: #fafafa !important;; 
+        margin:0 auto;
+
+      }
+    .signature-name {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .manager-title {
+      font-size: 13px;
+    }
+
+    .org-code {
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    .code-badge {
+      background-color: #00000008 !important;;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 13px;
+    }
+     .signature-name {
+        margin: 10px 0;
+      }
+      .signature-shape {
+                 border-radius:4px;
+        border:1px dashed #aaa !important;;
+        background-color: #00000008;
+      }
+
+   .breaker {
+      border-top:2px dashed #555 !important;;
+      margin:10px 0 5px 0;
+   }
+   body {
+    display :flex;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+   }
+   .control {
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+   }
+   .pages {
+    height:100%;
+    overflow-y:scroll;
+   }
+  </style>
+  <style>
+
+
+.control-part {
+  width: 100%;
+  max-width: 220px;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.control-title {
+  font-size: 16px;
+  text-align: center;
+  margin: 0;
+  color: #333;
+}
+
+.control-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-card button {
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-family: inherit;
+}
+
+.print-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.print-btn:hover {
+  background-color: #218838;
+}
+
+.back-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.back-btn:hover {
+  background-color: #c82333;
+}
+
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+   <div class="pages">
+          <div class="page default-page">
+              <div class="print-content">
+          <div>
+              <div class="header">
+                <div class="left-info">
+                    <strong>تاریخ:</strong> {{ letter.date }}<br>
+                    <strong>شماره نامه:</strong> {{ letter.letter_number }}
+                </div>
+                <div>
+                    <img src="{% static 'img/allah-placeholder.png' %}" alt="آرم وسط">
+                </div>
+                <div class="sepah-logo">
+                    <img src="{% static 'img/Sepah.png' %}" alt="آرم راست">
+                </div>
+              </div>
+          <div>
+              <div class="slogan">
+              «افزایش توان دفاع همه‌جانبه در سال جهش تولید با مشارکت مردم»
+          </div>
+          </div>
+          </div>
+          <div class="content-box">
+              <div>
+               <strong>به:</strong> {{ letter.destination }}
+                <br>
+          <strong>از:</strong> قسمت نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه
+        </div>
+              <div style="margin-top:10px; font-weight:bold;">
+                موضوع: {{ letter.letter_type }}
+              </div>
+              
+              <div  class="content">
+                با صلوات بر محمّد (ص) وآل محمّد (ص) و با احترام، 
+              {% block content %}
+              <!-- این بخش در قالب‌های فرعی جایگزین می‌شود -->
+              {% endblock %}
+              </div>
+              <!-- امضا و نام مدیر ثابت -->
+              <div class="footer">
+              <div class="signature">
+                <div class="signature-box signature-shape"></div>
+                <div class="signature-name">
+                    <span class="manager-dagre">سرهنگ پاسدار</span>
+                    <span style="margin:0 20px;"></span>
+                    <span class="manager-name">علی متولی طاهر</span>
+                </div>
+                <div class="manager-title">
+                    مدیر نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه
+                </div>
+              </div>
+              </div>
+          </div>
+
+
+          <!-- کد سازمانی (اختیاری) -->
+          {% if letter.soldier.organizational_code %}
+          <div class="org-code">
+            عدد پذیرش :   <span class="code-badge">{{ letter.soldier.organizational_code }}</span>
+          </div>
+          {% endif %}
+        </div>
+        </div>
+
+      {% block pages %} {% endblock %}
+   </div>
+
+
+      <div class="control no-print">
+        <div class="control-part ">
+          <h3 class="control-title">🛠 عملیات پرینت</h3>
+          <div class="control-card">
+            <button class="print-btn" onclick="window.print()">🖨 چاپ نامه</button>
+            <button class="back-btn" onclick="history.back()">🔙 بازگشت</button>
+          </div>
+        </div>
+      </div>
+
+ </div>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

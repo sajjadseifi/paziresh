@@ -1,13 +1,14 @@
 from django.shortcuts import render, HttpResponse
 from openpyxl.styles.builtins import total
-
-import soldiers.import_data_from_exel
 from soldiers.models import Soldier
 from django.db.models import Count, Case, When
 from battalions.models import battalion, battalion_group
-from ensani_letter.models import NormalLetterModels
+from ensani_letter.models import NormalLetterModels,CheckoutLetterModels
 from ensaniapp_settings.models import EnsaniSettings
 from django.contrib.auth.decorators import login_required
+import os
+from django.conf import settings
+import jdatetime
 
 list_yegan_bekargirande =  [
     (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
@@ -684,6 +685,15 @@ def amar_shoro_doreh(request):
     moaf_az_razm = Soldier.objects.filter(has_been_accepted=True, in_coures=True, physical_condition='معاف از رزم',
                                           Sufficiency_of_mobilization=False, Amriye=False,
                                           Previous_service_record=False).all().count()
+    
+    
+    gore_be = Soldier.objects.filter(has_been_accepted=True, in_coures=True, physical_condition='گروه ب',
+                                     Sufficiency_of_mobilization=False, Amriye=False,
+                                     Previous_service_record=False).all().count()
+    gore_be_moafezrazm = Soldier.objects.filter(has_been_accepted=True, in_coures=True,
+                                                physical_condition='معاف+گروه ب',
+                                                Sufficiency_of_mobilization=False, Amriye=False,
+                                                Previous_service_record=False).all().count()
     Sufficiency_of_mobilization = Soldier.objects.filter(has_been_accepted=True,
                                                          Sufficiency_of_mobilization=True, Amriye=False).all().count()
     Previous_service_record = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True,
@@ -691,7 +701,7 @@ def amar_shoro_doreh(request):
     comision_shoro_dore = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",
                                                             soldire__the_medical_commission=True,
                                                             soldire__Amriye=False).all().count()
-    total_1 = int(salem) + int(moaf_az_razm) + int(Sufficiency_of_mobilization) + int(comision_shoro_dore) + int(
+    total_1 = int(salem) + int(moaf_az_razm) + int(gore_be) + int(gore_be_moafezrazm) + int(Sufficiency_of_mobilization) + int(comision_shoro_dore) + int(
         Previous_service_record)
     total_2 = int(Sufficiency_of_mobilization) + int(comision_shoro_dore) + int(Previous_service_record)
 
@@ -722,6 +732,8 @@ def amar_shoro_doreh(request):
         'Sufficiency_of_mobilization': Sufficiency_of_mobilization,
         'Previous_service_record': Previous_service_record,
         'comision_shoro_dore': comision_shoro_dore,
+        'gore_be': gore_be,
+        'gore_be_moafezrazm': gore_be_moafezrazm,
         'total_1': total_1,
         'total_2': total_2,
         'asalem': a_salem,
@@ -2218,6 +2230,7 @@ def gozaresh_payan_dore(request):
     a_comision_shoro_dore = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",
                                                               soldire__the_medical_commission=True,
                                                               soldire__Amriye=True).all().count()
+
     a_total_1 = int(a_salem) + int(a_moaf_az_razm) + int(a_gorh_be) + int(
         a_goreh_be_moh_az_razm) + int(a_Sufficiency_of_mobilization) + int(
         a_comision_shoro_dore) + int(
@@ -2270,6 +2283,11 @@ def gozaresh_payan_dore(request):
         in_course_bisavad) + int(in_course_nehzad) + int(in_course_rahinami) + int(in_course_sikel) + int(
         in_course_dabirestan) + int(in_course_ebtedai)
     en = EnsaniSettings.objects.filter().first()
+    
+    
+    tajdiddoreh = CheckoutLetterModels.objects.filter(c_type="تجدید دوره",soldire__Amriye=False).all().count()
+    a_tajdiddoreh = CheckoutLetterModels.objects.filter(c_type="تجدید دوره",soldire__Amriye=True).all().count()
+    # print(a_tajdiddoreh,tajdiddoreh,kol)
     cx = {
 
         'salem': salem,
@@ -2282,9 +2300,10 @@ def gozaresh_payan_dore(request):
         'total_2': total_2,
         'asalem': a_salem,
         'amoaf_az_razm': a_moaf_az_razm,
-        'gore_be': gore_be,
-        'a_gorh_be': a_gorh_be,
-        'a_goreh_be_moh_az_razm': a_goreh_be_moh_az_razm,
+        'gore_be': gore_be + gore_be_moafezrazm,
+        'tajdiddoreh':tajdiddoreh,
+        'a_tajdiddoreh':a_tajdiddoreh,
+        'a_gorh_be': a_gorh_be + a_goreh_be_moh_az_razm,
         'aSufficiency_of_mobilization': a_Sufficiency_of_mobilization,
         'aPrevious_service_record': a_Previous_service_record,
         'acomision_shoro_dore': a_comision_shoro_dore,
@@ -2367,3 +2386,135 @@ def amar_rank(request):
         'total': total,
     }
     return render(request, 'ensani_statistics/amar_rank.html', cx)
+
+@login_required
+def create_rank_gardesh_kar(request):
+    """View برای ایجاد فرم و نمایش داده‌های آماری جهت نامه گردش کار درجه"""
+
+    # محاسبه آمار رده‌ها
+    rank_titles = [
+        "سرباز", "سرباز دوم", "سرباز یکم", "رزمیار",
+        "رزم‌آور سوم", "رزم‌آور دوم", "رزم‌آور یکم",
+        "رزمدار دوم", "رزمدار یکم", "ستوان سوم",
+        "ستوان دوم", "ستوان یکم"
+    ]
+
+    rank_data = {
+        f"D{i}": Soldier.objects.filter(
+            rank=rank,
+            willing_to_learn=True,
+            in_coures=True,
+            has_been_accepted=True
+        ).count()
+        for i, rank in enumerate(rank_titles, start=1)
+    }
+    rank_data["DC"] = sum(rank_data.values())
+
+    # سایر آمار
+    en = EnsaniSettings.objects.last()
+    total_in_course = Soldier.objects.filter(
+        has_been_accepted=True,
+        willing_to_learn=True,
+        in_coures=True,
+        IsCheckout=False,
+        IsUnit=False
+    ).count()
+    basij_count = Soldier.objects.filter(
+        has_been_accepted=True,
+        Sufficiency_of_mobilization=True
+    ).count()
+    previous_service_count = Soldier.objects.filter(
+        has_been_accepted=True,
+        Previous_service_record=True
+    ).count()
+
+    # دیکشنری داده‌ها برای کلاینت
+    context = {
+        "today": jdatetime.date.today().strftime("%Y/%m/%d"),
+        "course_number": en.shomare_dore if en else "",
+        "course_name": en.esmedore if en else "",
+        "rank_data": rank_data,
+        "total_in_course": total_in_course,
+        "basij_count": basij_count,
+        "previous_service_count": previous_service_count,
+    }
+
+    return render(request, "ensani_statistics/create_rank_gardesh_kar_form.html", context)
+
+
+def replace_placeholders(doc, replacements):
+    for p in doc.paragraphs:
+        for key, value in replacements.items():
+                inline = p.runs
+                for i in range(len(inline)):
+                    print(i," - ",key,inline[i].text,f"${{{key}}}" in p.text)
+                    if f"${{{key}}}" in inline[i].text:
+                        inline[i].text = inline[i].text.replace(f"${{{key}}}", str(value))
+
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                replace_placeholders(cell, replacements)
+
+# استفاده
+@login_required
+def generate_gardesh_kar(request):
+    # داده‌های رده‌ها
+    rank_data = {
+        f"D{i}": Soldier.objects.filter(
+            rank=rank, willing_to_learn=True, in_coures=True, has_been_accepted=True
+        ).count()
+        for i, rank in enumerate([
+            "سرباز", "سرباز دوم", "سرباز یکم", "رزمیار",
+            "رزم‌آور سوم", "رزم‌آور دوم", "رزم‌آور یکم",
+            "رزمدار دوم", "رزمدار یکم", "ستوان سوم",
+            "ستوان دوم", "ستوان یکم"
+        ], start=1)
+    }
+    rank_data["DC"] = sum(rank_data.values())
+
+    # داده‌های فرم
+    LNUM = request.POST.get("lnum")
+    LDATE = request.POST.get("ldate")
+    SHKH = request.POST.get("shkh")
+
+    # بارگذاری قالب
+    template_path = os.path.join(settings.BASE_DIR, "templates", "docs", "GardeshKar.docx")
+    doc = Document(template_path)
+
+    en = EnsaniSettings.objects.last()
+    total_tegan_khdmati_in_course = Soldier.objects.filter(
+        has_been_accepted=True, willing_to_learn=True, in_coures=True, IsCheckout=False, IsUnit=False
+    ).count()
+    basij = Soldier.objects.filter(has_been_accepted=True, Sufficiency_of_mobilization=True).count()
+    previous = Soldier.objects.filter(has_been_accepted=True, Previous_service_record=True).count()
+
+    # دیکشنری جایگزینی
+    replacements = {
+        "LNUM": LNUM,
+        "LDATE": LDATE,
+        "COURSENUM": en.shomare_dore,
+        "COURSENAME": en.esmedore,
+        "ALLCOUNT": str(rank_data["DC"]),
+        "SHKH": SHKH,
+        "EX": total_tegan_khdmati_in_course,
+        "KB": basij,
+        "KH": previous,
+        **rank_data
+    }
+
+    replace_placeholders(doc, replacements)
+
+    # نام فایل خروجی
+    course_number = en.shomare_dore
+    course_name = en.esmedore
+    doc_date = LDATE or "بدون تاریخ"
+    file_name = f"گردش کار حکم درجه - دوره ({course_number}) - {course_name} - {doc_date}.docx"
+
+    # آماده‌سازی پاسخ دانلود
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    doc.save(response)
+    return response

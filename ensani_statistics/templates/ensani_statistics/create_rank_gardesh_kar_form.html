@@ -1,0 +1,454 @@
+{% load static %}
+{% block main %}
+<style>
+  body {
+    font-family:  Vazirmatn, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+  }
+
+  .wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 20px;
+  }
+
+  .form-card {
+    background: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+    box-sizing: border-box;
+    height:max-content;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+
+  .card-header {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  /* فرم */
+  .form-group {
+    display: flex;
+    align-items:center;
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    flex:1
+  }
+  .form-group input {
+    flex:3;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+  .form-group input:focus {
+    border-color: #28a745;
+    outline: none;
+  }
+  .form-actions {
+    text-align: center;
+    margin-top: 15px;
+  }
+  .form-actions button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .form-actions button:hover {
+    background: #218838;
+  }
+
+  /* Preview */
+  .preview-card {
+    padding: 0;
+  }
+  #preview {
+    font-size: 13px;
+    padding: 15px;
+      width: 210mm;
+      height: 297mm;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background: #fff;
+  }
+
+  /* Header */
+  .letter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid black;
+    border-radius: 12px;
+    padding: 5px 20px;
+    margin:0px 0;
+  }
+  .letter-header .col {
+    flex: 1;
+  }
+  .letter-header .col.center {
+    text-align: center;
+  }
+  .letter-header .col.right {
+    text-align: right;
+  }
+  .letter-header .col.left {
+    font-weight: bold;
+    font-size: 14px;
+    display:flex;
+    align-items:center;
+    justify-content:end;
+  }
+  .letter-header img {
+    max-height: 60px;
+    object-fit: contain;
+  }
+
+  /* Body */
+  .letter-body {
+    padding: 15px;
+    line-height: 1.5;
+    font-size: 13px;
+    border: 2px solid black;
+    border-radius: 12px;
+    margin:5px 0;
+  }
+
+  /* جدول */
+  .letter-table {
+    width: 70%;
+    border-collapse: collapse;
+    margin: 10px auto;
+    font-size: 12px;
+  }
+  .letter-table th, .letter-table td {
+    border: 2px solid #444;
+    text-align: center;
+    font-size:14px;
+    padding: 2px 3px;
+    font-weight:bold;
+  }
+
+  /* Footer */
+  .letter-footer {
+    padding: 12px 20px 0;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight:bold;
+  }
+  .letter-footer .left {
+    text-align: left;
+  }
+  .letter-footer .right {
+    text-align: right;
+  }
+
+  .print-btn, .download-btn {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 18px;
+    background: #17a2b8;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+  }
+  .print-btn:hover, .download-btn:hover {
+    background: #138496;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .key-pair {
+    padding:0;
+    margin:3px 0;
+  }
+
+  hr {
+  border: 0;
+  border-top: 2px solid black; /* ضخامت و رنگ دلخواه */
+  margin: 10px 0; /* فاصله بالا و پایین */
+  height: 2px;
+}
+@media print {
+  hr {
+  border: 0;
+  border-top: 2px solid black; /* ضخامت و رنگ دلخواه */
+  margin: 10px 0; /* فاصله بالا و پایین */
+  height: 2px;
+}
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    direction: rtl;
+
+  }
+
+  .wrapper { display: block; }
+  .form-card { display: none; }
+
+  #preview {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0; /* حذف padding اضافی */
+    border: 0 none;
+    border-radius: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+  }
+
+
+
+  .letter-table {
+    width: 70%;
+    border-collapse: collapse; /* مطمئن شوید collapse اعمال شده */
+    margin: 0 auto;
+    page-break-inside: avoid;
+  }
+
+}
+</style>
+
+<div class="wrapper">
+
+  <!-- فرم سمت راست -->
+  <div class="form-card">
+    <div class="card-header">
+      📄 ایجاد نامه گردش کار درجه
+    </div>
+    <div class="card-body">
+      <form id="gardesh-form">
+        <div class="form-group">
+          <label for="lnum">شماره نامه</label>
+          <input type="text" id="lnum" name="lnum" required>
+        </div>
+        <div class="form-group">
+          <label for="ldate">تاریخ</label>
+          <input type="text" id="ldate" name="ldate" value="{{ today }}" required>
+        </div>
+        <div class="form-group">
+          <label for="shkh">شماره خودکارسازی</label>
+          <input type="text" id="shkh" name="shkh" required>
+        </div>
+      </form>
+      <button class="print-btn" onclick="printPreview()">🖨️ پرینت</button>
+    </div>
+  </div>
+
+  <!-- پیش نمایش نامه -->
+  <div>
+    <div id="preview">
+      <header class="letter-header">
+        <div class="col right">
+          <img style="width:80px;height:80px;" src="{% static '/img/sepah.png' %}" alt="لوگو سپاه">
+        </div>
+        <div class="col center">
+          <img style="width:80px;height:80px;" src="{% static '/img/allah-placeholder.png' %}" alt="الله">
+        </div>
+        <div class="col left">
+           <div style="text-align:right; font-weight:bold;">
+            <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
+              <span>شماره:</span>
+              <span>
+                <span id="pv-lnum" dir="ltr">----</span>/<span dir="ltr">512/106/6</span><span>ز</span>
+              </span>
+            </p>
+            <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
+              <span>تاریخ:</span>
+              <span><span id="pv-ldate" dir="ltr">----</span></span>
+            </p>
+            <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
+              <span>پیوست:</span>
+              <span>1 برگ</span>
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="letter-body">
+        <!-- بخش اول -->
+        <p>
+          به : قسمت نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه – منابع انسانی سرباز<br>
+          از : فرمانده آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه
+        </p>
+
+        <p><strong>موضوع :</strong> تصویب و ابلاغ درجه سربازان کارکنان وظیفه</p>
+
+        <p>
+          با سلام و صلوات بر محمد و آل محمد (ص)؛ بازگشت به نامه شماره
+          <span id="pv-lnum2">----</span>/6/106/512ز مورخ <span id="pv-ldate2">----</span>،
+          درجه کارکنان وظیفه جمعی این یگان (دوره آموزش رزم مقدماتی <span id="pv-coursenum">--</span>) مزین به نام
+          <span id="pv-coursename">--</span> به تعداد <span id="pv-allcount">--</span> نفر
+          با مشخصات ذیل‌الذکر تصویب و جهت سیر مراحل قانونی و اعطاء درجه ابلاغ می‌گردد.
+        </p>
+
+        <p style="text-align:left;">سرهنگ پاسدار علی متولی طاهر<br>فرمانده آموزشگاه رزم مقدماتی المهدی(عج)</p>
+
+        <hr/>
+
+        <!-- بخش دوم -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+          <div style="flex:1; text-align:right;">
+            <p>
+              به : فرمانده آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه<br>
+              از : قسمت نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه – منابع انسانی سرباز
+            </p>
+          </div>
+            <div style="text-align:right; font-weight:bold; margin-top:10px;">
+              <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
+                <span>شماره:</span>
+                <span>
+                  <span id="pv-lnum-top" dir="ltr">----</span>/<span dir="ltr">512/106/6</span><span>ز</span>
+                </span>
+              </p>
+              <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
+                <span>تاریخ:</span>
+                <span><span id="pv-ldate-top" dir="ltr">----</span></span>
+              </p>
+            </div>
+
+        </div>
+
+        <p><strong>موضوع :</strong> گردشکار درجه کارکنان وظیفه (دوره آموزش رزم مقدماتی 
+           <span id="pv-coursename2">--</span> - <span id="pv-coursenum2">--</span>)
+        </p>
+
+        <p>
+          سلام علیکم<br><br>
+          با سلام و صلوات بر محمد و آل محمد (ص)؛ با استناد به دستورالعمل اعطاء درجه سرباز به شماره 5658 مورخه 27/04/1402 
+          معاونت نیروی انسانی نزسا (خودکارسازی 4964606 و 1089155)، با توجه به اطلاعات ذیل 
+          از آن مقام محترم درخواست می‌گردد در صورت صلاحدید در جهت انجام مراحل اداری و تصویب درجات 
+          دستورات لازم را صادر فرمایید.
+        </p>
+
+        <!-- جدول -->
+        <table class="letter-table">
+          <thead>
+            <tr><th>ردیف</th><th>درجه</th><th>تعداد</th></tr>
+          </thead>
+          <tbody>
+<tr><td>12</td><td>ستوان یکم (12)</td><td id="pv-d12">--</td></tr>
+<tr><td>11</td><td>ستوان دوم (11)</td><td id="pv-d11">--</td></tr>
+<tr><td>10</td><td>ستوان سوم (10)</td><td id="pv-d10">--</td></tr>
+<tr><td>9</td><td>رزمدار یکم (9)</td><td id="pv-d9">--</td></tr>
+<tr><td>8</td><td>رزمدار دوم (8)</td><td id="pv-d8">--</td></tr>
+<tr><td>7</td><td>رزم‌آور یکم (7)</td><td id="pv-d7">--</td></tr>
+<tr><td>6</td><td>رزم‌آور دوم (6)</td><td id="pv-d6">--</td></tr>
+<tr><td>5</td><td>رزم‌آور سوم (5)</td><td id="pv-d5">--</td></tr>
+<tr><td>4</td><td>رزمیار (4)</td><td id="pv-d4">--</td></tr>
+<tr><td>3</td><td>سرباز یکم (3)</td><td id="pv-d3">--</td></tr>
+<tr><td>2</td><td>سرباز دوم (2)</td><td id="pv-d2">--</td></tr>
+<tr><td>1</td><td>سرباز (1)</td><td id="pv-d1">--</td></tr>
+<tr><td colspan="2">مجموع</td><td id="pv-dc">--</td></tr>
+
+          </tbody>
+        </table>
+
+        <p style="margin-top:20px;text-align:center;">
+          <span>سرهنگ دوم پاسدار رضا سرو‌ی</span><br>
+          <span>مسئول نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج)</span>
+        </p>
+      </main>
+
+      <footer class="letter-footer">
+        <div class="right">
+          شماره خودکارسازی: <span id="pv-shkh">--</span>
+        </div>
+        <div class="left">
+          حاضر در دوره: <span id="pv-ex">--</span> –
+          کفایتدار بسیج: <span id="pv-kb">--</span> –
+          خدمت قبلی: <span id="pv-kh">--</span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const inputs = ["lnum", "ldate", "shkh"];
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("input", updateLetter);
+      el.addEventListener("change", updateLetter);
+    }
+  });
+  updateLetter();
+});
+
+function updateLetter() {
+  const data = {
+    LNUM: document.getElementById("lnum")?.value || "",
+    LDATE: document.getElementById("ldate")?.value || "",
+    SHKH: document.getElementById("shkh")?.value || "",
+    COURSENUM: "{{ course_number|default:'' }}",
+    COURSENAME: "{{ course_name|default:'' }}",
+    ALLCOUNT: "{{ rank_data.DC|default:'0' }}",
+    EX: "{{ total_in_course|default:'0' }}",
+    KB: "{{ basij_count|default:'0' }}",
+    KH: "{{ previous_service_count|default:'0' }}",
+    {% for key, value in rank_data.items %}
+    {{ key }}: "{{ value }}",
+    {% endfor %}
+  };
+
+  document.getElementById("pv-lnum").innerText = data.LNUM || "----";
+  document.getElementById("pv-ldate").innerText = data.LDATE || "----";
+  document.getElementById("pv-lnum-top").innerText = data.LNUM || "----";
+  document.getElementById("pv-ldate-top").innerText = data.LDATE || "----";
+  document.getElementById("pv-lnum2").innerText = data.LNUM || "----";
+  document.getElementById("pv-ldate2").innerText = data.LDATE || "----";
+
+  document.getElementById("pv-coursenum").innerText = data.COURSENUM || "--";
+  document.getElementById("pv-coursename").innerText = data.COURSENAME || "--";
+  document.getElementById("pv-allcount").innerText = data.ALLCOUNT || "--";
+  document.getElementById("pv-coursenum2").innerText = data.COURSENUM || "--";
+  document.getElementById("pv-coursename2").innerText = data.COURSENAME || "--";
+  document.getElementById("pv-shkh").innerText = data.SHKH || "--";
+  document.getElementById("pv-ex").innerText = data.EX || "--";
+  document.getElementById("pv-kb").innerText = data.KB || "--";
+  document.getElementById("pv-kh").innerText = data.KH || "--";
+
+  for (let i = 1; i <= 12; i++) {
+    document.getElementById(`pv-d${i}`).innerText = data[`D${i}`] || "0";
+  }
+  document.getElementById("pv-dc").innerText = data.DC || "0";
+}
+
+function printPreview() {
+  window.print();
+}
+</script>
+{% endblock %}
