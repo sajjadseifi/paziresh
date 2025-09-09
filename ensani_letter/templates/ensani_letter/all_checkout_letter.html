@@ -375,6 +375,11 @@
                   <a href="#" class="action-btn disabled-btn">
                       <i class="fa fa-ban"></i> کمیسیون ثبت و تایید شد
                   </a>
+                  {%if c.letter %}
+                    <a  target="_blank" href="{% url 'PrintCheckoutCommissionLetter' pk=c.letter.pk %}" style="gap:6px; padding:0;color:red; font-weight:600; font-size:0.95em;  text-decoration:none;">
+                        <i class="fa fa-reply"></i> نامه کمیسیون : {{ c.letter.number }}
+                    </a>
+                  {% endif %}
             {% endif %}
         </div>
         <div >

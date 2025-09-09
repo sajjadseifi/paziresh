@@ -91,6 +91,17 @@ def AllCheckoutLetter(request, *args, **kwargs):
     # تعداد هر نوع نامه
     type_counts = all_checkout_letter.values('c_type').annotate(count=Count('c_type')).order_by('c_type')
 
+    # همه شماره نامه‌ها
+    numbers = [obj.number for obj in all_checkout_letter]
+
+    # همه نرمال لترهای متناظر را بگیر
+    normal_letters = NormalLetterModels.objects.filter(parent_letter_number__in=numbers)
+    normal_map = {nl.parent_letter_number: nl for nl in normal_letters}
+    print(normal_letters)
+    # به هر checkout یک فیلد جدید اضافه کن
+    for checkout in all_checkout_letter:
+        checkout.letter = normal_map.get(checkout.number, None)
+
     return render(request, 'ensani_letter/all_checkout_letter.html', {
         'all_checkout_letter': all_checkout_letter,
         'type_counts': type_counts,
