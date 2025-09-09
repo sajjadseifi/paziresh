@@ -153,3 +153,6 @@ def download_tatbikh(request):
 
 def download_kafiat(request):
     return export_kafiat_to_excel()
+
+def data_app(request):
+    return render(request, 'ensani/data_page.html')

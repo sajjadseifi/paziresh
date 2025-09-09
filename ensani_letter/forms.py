@@ -100,10 +100,12 @@ class CreateCommissionLetterFrom(forms.Form):
         widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
         required=False
     )
-    destination = forms.CharField(
+    destination = forms.ChoiceField(
         label='مقصد نامه',
-        widget=forms.TextInput(attrs={'class': "form-control select2"}),  # بدون multiple
         required=True,
+        widget=forms.Select(
+            attrs={'class': "form-control select2"}
+        ),
     )
 
 

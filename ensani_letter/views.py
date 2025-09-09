@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
     CreateBeforeCourseCommissionLetterFrom, CreateRunAwayLetterFrom, CreateFarajaLetterFrom, CreateMoarefiFrom
-from .models import Soldier,CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
+from .models import LetterType,Soldier,CheckoutLetterModels, NormalLetterModels, RegisterNormalLetter, RunawayNormallLetter, \
     FarajaNormallLetter, MoarefiNormallLetter
 from saterapps.models import Sater
 from ensaniapp_settings.models import EnsaniSettings
@@ -78,8 +78,8 @@ def find_sepah_name(p):
 @login_required
 def AllCheckoutLetter(request, *args, **kwargs):
     query = request.GET.get('q', '').strip()
-    all_checkout_letter = CheckoutLetterModels.objects.all()
-
+    all_checkout_letter = CheckoutLetterModels.objects.all().order_by('-create_time')
+    
     if query:
         all_checkout_letter = all_checkout_letter.filter(
             Q(soldire__name__icontains=query) |
@@ -195,9 +195,33 @@ class CreateCheckoutLetter(LoginRequiredMixin, View):
 
 @login_required
 def AllNormalLetter(request, *args, **kwargs):
-    all_normal_letter = NormalLetterModels.objects.filter().all().order_by('-create_time')
+    all_letters = NormalLetterModels.objects.all().order_by('-create_time')
+
+    letters_with_parent_id = []
+    for letter in all_letters:
+        parent_pk = None
+        if letter.parent_letter_number:
+            # تلاش برای پیدا کردن نامه والد در همان جدول
+            parent_letter = CheckoutLetterModels.objects.filter(number=letter.parent_letter_number).first()
+            if parent_letter:
+                parent_pk = parent_letter.pk
+
+        letters_with_parent_id.append({
+            'pk': letter.pk,
+            'number': letter.number,
+            'destination': letter.destination,
+            'create_time': letter.create_time,
+            'subject': letter.subject,
+            'description': letter.description,
+            'soldire': letter.soldire,
+            'status': letter.status,
+            'parent_letter_number': letter.parent_letter_number,
+            'parent_letter_type': letter.parent_letter_type,
+            'parent_letter_pk': parent_pk,  # اینجا شناسه واقعی نامه والد
+        })
+
     return render(request, 'ensani_letter/all_normal_letter.html',
-                  context={'all_normal_letter': all_normal_letter})
+                  context={'all_normal_letter': letters_with_parent_id})
 
 
 class CreateCommissionLetter(LoginRequiredMixin, View):
@@ -206,6 +230,7 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         b_form = CreateCommissionLetterFrom()
+        print(sepah_ostan_list2)
         b_form.fields['destination'].choices = sepah_ostan_list2
         b_form.initial['subject'] = "معرفی به کمیسیون"
         cl = CheckoutLetterModels.objects.filter(number=pk).first()
@@ -240,10 +265,11 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
                     my_letter.soldire = find_soldire
                     find_soldire.the_medical_commission = True
                     cl.status = "درحال معرفی به کمیسیون"
-
+                    
                     my_letter.create_time = jdatetime.datetime.now()
                     ens = EnsaniSettings.objects.first()
                     my_letter.number = f"{ens.shomare_dore}00{generate_unique_number()}{find_soldire.National_Code[::3]}"
+                    my_letter.status = "درحال بررسی"
 
                     destination = ""
                     for iteam in sepah_ostan_list:
@@ -252,6 +278,8 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
 
                     my_letter.destination = destination
 
+                    my_letter.parent_letter_number = cl.number
+                    my_letter.parent_letter_type = LetterType.CHECKOUT
                     my_letter.save()
                     find_soldire.save()
                     cl.save()
@@ -814,15 +842,21 @@ def PrintFarajaLetter(request, *args, **kwargs):
     cx = {'leter': my, 'en': en, 'fara_detail': fata_detail, 'suter': suter, 'checkout': checkout}
     return render(request, 'ensani_letter/print_faraja_letter.html', cx)
 
-
 @login_required
 def check_status_checkout(request, *args, **kwargs):
     checkout_id = kwargs['pk']
     if checkout_id is None:
         return redirect(reverse_lazy('AllCheckoutLetter'))
-    checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_id).first()
-    checkout_letter.status = "تایید"
-    checkout_letter.save()
+    cl = CheckoutLetterModels.objects.filter(pk=checkout_id).first()
+    cl.status = "تایید"
+    
+    
+    normal_letter = NormalLetterModels.objects.filter(parent_letter_number=cl.number).first()
+    if normal_letter:
+        normal_letter.status = "تایید"
+        normal_letter.save()
+    cl.save()
+    
     return redirect(reverse_lazy('AllCheckoutLetter'))
 
 
@@ -933,3 +967,8 @@ def export_to_excel_normal_letters(request):
     }, inplace=True)
 
     return get_excel_response(df, 'normal_letters')
+
+
+@login_required
+def CreateLetter(request, *args, **kwargs):
+    return render(request, 'ensani_letter/create_letter.html')

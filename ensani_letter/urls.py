@@ -10,6 +10,7 @@ urlpatterns = [
     path('letter/create/register', CreateRegisterLetter.as_view(), name='CreateRegisterLetter'),
     path('letter/create/runaway', CreaterunawayLetter.as_view(), name='CreaterunawayLetter'),
     path('letter/create/faraja', CreateFarajaLetter.as_view(), name='CreateFarajaLetter'),
+    path('letter/create',CreateLetter, name='CreateLetter'),
     path('letter/all/checkout', AllCheckoutLetter, name='AllCheckoutLetter'),
     path('letter/all/checkout/export-excel', AllCheckoutLetterExportExcel, name='AllCheckoutLetterExportExcel'),
     path('letter/all/normal', AllNormalLetter, name='AllNormalLetter'),

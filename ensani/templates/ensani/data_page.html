@@ -1,0 +1,226 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'bower_components/datatables.net-dt/css/jquery.dataTables.min.css' %}">
+<script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+
+<style>
+/* دکمه دانلود */
+.btn-download {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+    text-decoration: none;
+}
+.btn-download:hover {
+    background: linear-gradient(135deg, #357ABD, #2a5c91);
+}
+
+/* هدر جدول */
+table.dataTable thead th {
+    background: #4a90e2 !important;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 12px 8px !important;
+    text-align: center;
+}
+
+/* ستون عنوان فایل Bold و بزرگتر */
+table.dataTable tbody td.title {
+    font-weight: 700;
+    font-size: 1em;
+    color: #333;
+}
+
+/* ستون توضیحات نرمال و کمی کمرنگ */
+table.dataTable tbody td.desc {
+    font-weight: 400;
+    color: #555;
+    font-size: 0.92em;
+}
+
+/* ردیف‌ها مرکز چین */
+table.dataTable tbody td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* سکشن های گروهی */
+.section-header {
+    font-weight: 700;
+    text-align: center;
+}
+.section-header.acceptance {
+    background: #dbeeff;
+    color: #1a3f7a;
+}
+.section-header.info {
+    background: #f0f0f0;
+    color: #333;
+}
+.section-header.print {
+    background: #dff0d8;
+    color: #3c763d;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<h1 style="font-size:1.6em; font-weight:700; margin-bottom:20px; color:#333;">مدیریت داده‌ها و گزارش‌ها</h1>
+
+<div class="table-responsive" style="background:#f7f9fc; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+    <table id="excelTable" class="display table table-striped table-hover" style="width:100%;">
+        <thead>
+            <tr>
+                <th>ردیف</th>
+                <th>عنوان فایل / عملیات</th>
+                <th>توضیح کوتاه</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        <!-- گروه 1: پذیرش و وضعیت حضور -->
+        <tr class="section-header acceptance">
+            <td colspan="4">پذیرش و وضعیت حضور</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td class="title">اکسل پذیرش شده‌ها</td>
+            <td class="desc">لیست سربازانی که پذیرش شده‌اند</td>
+            <td><a href="{% url 'export_soldire_has_been_accepted_all_data_' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td class="title">اکسل پذیرش شده حاضر</td>
+            <td class="desc">سربازانی که پذیرش شده و در دوره حاضرند</td>
+            <td><a href="{% url 'export_soldire_has_been_accepted_in_coures_all_data' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td class="title">عدم حضور</td>
+            <td class="desc">سربازانی که اعلام حضور نکرده‌اند</td>
+            <td><a href="{% url 'export_to_excel_list_not_accepted' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td class="title">اعلام حضور سامانه</td>
+            <td class="desc">ثبت اعلام حضور سربازان در سامانه</td>
+            <td><a href="{% url 'export_to_excel_list_elame_hozor' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td class="title">حاضر به خدمت</td>
+            <td class="desc">اطلاعات سربازان حاضر به خدمت</td>
+            <td><a href="{% url 'export_to_excel_list_hazer_be_khdmat' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+
+        <!-- گروه 2: اطلاعات و گزارش‌های آموزشی -->
+        <tr class="section-header info">
+            <td colspan="4">اطلاعات و گزارش‌های آموزشی</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td class="title">تمامی سربازها</td>
+            <td class="desc">لیست کامل سربازها</td>
+            <td><a href="{% url 'MainViewSoldires' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td class="title">درجه سربازان</td>
+            <td class="desc">اطلاعات تمامی درجه‌های سربازان</td>
+            <td><a href="{% url 'export_to_excel_list_rank' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td class="title">شماره حساب سربازان</td>
+            <td class="desc">اطلاعات حساب بانکی سربازان</td>
+            <td><a href="{% url 'export_to_excel_list_bank' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td class="title">آمار کل دوره</td>
+            <td class="desc">گزارش آماری تمام دوره‌ها</td>
+            <td><a href="{% url 'export_to_excel_list_goili' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td class="title">تجدید دوره</td>
+            <td class="desc">سربازانی که دوره آنها تجدید شده</td>
+            <td><a href="{% url 'export_to_excel_list_tajdid_dore' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td class="title">سربازان خدمت قبلی</td>
+            <td class="desc">اطلاعات کامل خدمت قبلی سربازان</td>
+            <td><a href="{% url 'export_soldire_Previous_service_record_all_data' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td class="title">سربازان کفایت بسیج</td>
+            <td class="desc">گزارش کامل کفایت بسیج</td>
+            <td><a href="{% url 'export_soldire_Sufficiency_of_mobilization_all_data' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td class="title">سربازان حاضر در دوره</td>
+            <td class="desc">اطلاعات حاضرین دوره</td>
+            <td><a href="{% url 'exel_export_all_soldire_in_course' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td class="title">سربازان تطبیق نشده</td>
+            <td class="desc">لیست سربازان بدون تطبیق</td>
+            <td><a href="{% url 'export_to_excel_list_sarbaz_tatbigh_nashode' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td class="title">تست سلامت روان</td>
+            <td class="desc">نتایج تست سلامت روان سربازان</td>
+            <td><a href="{% url 'export_to_excel_list_sarbvaz_test_salamat_ravan' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>16</td>
+            <td class="title">سربازان حاضر گردانی</td>
+            <td class="desc">اطلاعات حضور سربازان به‌صورت گردانی</td>
+            <td><a href="{% url 'export_to_excel_list_sarbaz_be_sorat_gorohi' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        <tr>
+            <td>17</td>
+            <td class="title">سربازان المهدی</td>
+            <td class="desc">گزارش کامل سربازان المهدی</td>
+            <td><a href="{% url 'soldier_in_almahdi' %}" class="btn-download"><i class="fa fa-download"></i> دانلود</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+$(document).ready(function() {
+    $('#excelTable').DataTable({
+        "language": {
+            "search": "جستجو:",
+            "lengthMenu": "نمایش _MENU_ ردیف",
+            "info": "نمایش _START_ تا _END_ از _TOTAL_ ردیف",
+            "paginate": {
+                "first": "اول",
+                "last": "آخر",
+                "next": "بعدی",
+                "previous": "قبلی"
+            },
+            "zeroRecords": "هیچ داده‌ای یافت نشد"
+        }
+    });
+});
+</script>
+{% endblock %}

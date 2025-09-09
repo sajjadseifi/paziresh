@@ -345,13 +345,13 @@
     <div class="card-item">
       <div class="card-header">
         <div class="header-left">
-          <span class="type-badge">{{ c.c_type }}</span>
+          <span style="min-width:200px;" class="type-badge">{{ c.c_type }}</span>
           {% if c.status == "تایید شده" %}
-          <span class="status status-approved">{{ c.status }}</span>
+          <span style="min-width:200px;" class="status status-approved">وضعیت : {{ c.status }}</span>
           {% elif c.status == "رد شده" %}
-          <span class="status status-rejected">{{ c.status }}</span>
+          <span style="min-width:200px;" class="status status-rejected">وضعیت : {{ c.status }}</span>
           {% else %}
-          <span class="status status-pending">{{ c.status }}</span>
+          <span style="min-width:200px;" class="status status-pending">وضعیت : {{ c.status }}</span>
           {% endif %}
         </div>
         <div class="header-right">
@@ -370,34 +370,28 @@
       </div>
 
       <div class="card-actions">
-        <div style="font-weight:bold;font-size:18px;">وضعیت : {{c.status}}</div>
+        <div>
+            {% if c.c_type == "کمیسیون پزشکی" and  c.status == "تایید" %}
+                  <a href="#" class="action-btn disabled-btn">
+                      <i class="fa fa-ban"></i> کمیسیون ثبت و تایید شد
+                  </a>
+            {% endif %}
+        </div>
         <div >
         <a
           href="{% url 'PrintCheckoutLetter' pk=c.pk %}"
           class="action-btn print-btn"
           ><i class="fa fa-print"></i> تسویه حساب</a
         >
-        {% if c.c_type == "کمیسیون پزشکی" %}
-          <a
-            href="{% url 'CreateCommissionLetter' pk=c.number %}"
-            class="action-btn commission-btn"
-            ><i class="fa fa-edit"></i> ثبت کمیسیون</a
-          >
-        {% else %}
-          <a href="#" class="action-btn disabled-btn"
-            ><i class="fa fa-ban"></i> ثبت کمیسیون</a
-          >
-            {% endif %}
-          
-            {% if c.status == "تایید" %}
-            <a href="{% url 'status_ok_checkout' pk=c.pk %}" class="action-btn disabled-btn">
-               تایید شده
-            </a> 
-            {% else %}
-                <a href="#" class="action-btn approve-btn">
+      {% if c.c_type == "کمیسیون پزشکی" and   c.status != "تایید"  %}
+              <a href="{% url 'CreateCommissionLetter' pk=c.number %}" class="action-btn commission-btn">
+                  <i class="fa fa-edit"></i> ثبت کمیسیون
+              </a>
+      {% endif %}
+
+            <a href="{% url 'status_ok_checkout' pk=c.pk %}" class="action-btn approve-btn">
               <i class="fa fa-check"></i> تایید
             </a> 
-            {% endif %}
           
           <a
             href="{% url 'delete_checkout' pk=c.pk %}"

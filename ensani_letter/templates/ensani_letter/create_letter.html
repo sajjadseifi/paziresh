@@ -1,0 +1,15 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+{% include '../layout/NavCreateLetterForm.html' %}
+
+<div style="display:flex; justify-content:center; align-items:center; height:200px; margin-top:20px;">
+    <div style="text-align:center; padding:30px 40px; background:#f0f4f8; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-width:500px;">
+        <i class="fa fa-hand-pointer-o" style="font-size:2.5em; color:#4a90e2; margin-bottom:15px;"></i>
+        <h2 style="font-size:1.4em; font-weight:600; color:#333; margin-bottom:10px;">ایجاد نامه جدید</h2>
+        <p style="color:#555; font-size:0.95em;">برای ایجاد نامه جدید، یکی از تب‌ها را انتخاب کنید</p>
+    </div>
+</div>
+
+{% endblock %}

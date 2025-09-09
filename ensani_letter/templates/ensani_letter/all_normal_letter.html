@@ -4,54 +4,56 @@
 {% block main %}
 <section class="content px-4">
     <!-- کارت‌های آماری بالای جدول -->
-    <div id="letter-stats" style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
+    <div id="letter-stats" style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:25px;">
         <!-- JS کارت‌ها اضافه می‌شوند -->
     </div>
 
     <!-- عنوان صفحه و دکمه اکسل -->
-    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 >
-            <span style="font-weight: bold; color: #222;">نامه‌های عادی</span>
-             <span style="background:#fe4065; color:#fff; padding:2px 12px; border-radius:12px; font-size:0.7em;">
-            {{ all_normal_letter|length }}
-        </span>
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap:wrap; gap:10px;">
+        <h3 style="font-weight:bold; color:#222; font-size:1.4em;">
+            نامه‌های عادی
+            <span style="background:#fe4065; color:#fff; padding:4px 14px; border-radius:12px; font-size:0.85em;">
+                {{ all_normal_letter|length }}
+            </span>
         </h3>
-          <a href="{% url 'ExportNormalLettersExcel' %}" 
-       style="background:#28a745; color:#fff; padding:8px 12px; border-radius:6px; text-decoration:none; display:flex; align-items:center; gap:6px;">
-        <i class="fa fa-file-excel-o"></i> دانلود اکسل
-    </a>
+        <a href="{% url 'ExportNormalLettersExcel' %}" 
+           style="background:#28a745; color:#fff; padding:10px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:0.3s;">
+            <i class="fa fa-file-excel-o"></i> دانلود اکسل
+        </a>
     </div>
 
-
     <!-- جدول نامه‌ها -->
-    <div class="box-body table-responsive no-padding">
-        <table class="table table-striped table-hover" style="table-layout: fixed; width: 100%;">
-            <thead class="thead-dark">
-                <tr>
-                    <th style="width: 5%;">ردیف</th>
-                    <th style="width: 25%;">نامه</th>
-                    <th style="width: 30%;">اطلاعات نامه</th>
-                    <th style="width: 15%;">فراگیر</th>
-                    <th style="width: 10%;">وضعیت</th>
-                    <th style="width: 10%;">عملیات</th>
-                </tr>
-            </thead>
+    <div class="box-body table-responsive no-padding" style="background:#f8f9fa; padding:15px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+        <table class="table table-hover" style="table-layout: fixed; width: 100%; border-collapse: separate; border-spacing:0 12px;">
+            <thead>
+    <tr style="background:#4a90e2; color:#fff; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <th style="width: 5%; padding:12px 8px; text-align:center; font-weight:700; font-size:0.95em;">ردیف</th>
+        <th style="width: 25%; padding:12px 8px; text-align:center; font-weight:700; font-size:0.95em;">نامه</th>
+        <th style="width: 30%; padding:12px 8px; text-align:center; font-weight:700; font-size:0.95em;">اطلاعات نامه</th>
+        <th style="width: 15%; padding:12px 8px; text-align:center; font-weight:700; font-size:0.95em;">فراگیر</th>
+        <th style="width: 10%; padding:12px 8px; text-align:center; font-weight:700; font-size:0.95em;">وضعیت</th>
+        <th style="width: 10%; padding:12px 8px; text-align:center; font-weight:700; font-size:0.95em;">عملیات</th>
+    </tr>
+</thead>
             <tbody>
                 {% for c in all_normal_letter %}
-                <tr dir="rtl" style="vertical-align: top;">
+                <tr dir="rtl" style="vertical-align: top; background:#fff; border-radius:12px; box-shadow:0 1px 5px rgba(0,0,0,0.05); margin-bottom:10px; display:table-row;">
                     <!-- نامه -->
                     <td>{{forloop.counter}}</td>
                     <td>
-                        <div style="padding:6px 8px; background:#eef1f5; border-radius:6px; font-weight:700; font-size:1.1em; margin-bottom:6px; color:#222;">
+                        <div style="padding:8px 12px; background:#e3f2fd; border-radius:8px; font-weight:700; font-size:1.1em; margin-bottom:6px; color:#222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
                             شماره: {{ c.number }}
                         </div>
-                        <div style="padding:2px 0; font-size:0.88em; color:#555;">مقصد: {{ c.destination }}</div>
-                        <div dir="rtl" style="padding:2px 0; font-size:0.88em; color:#555;">تاریخ: <span dir="rtl">{{ c.create_time.date }}</span></div>
+                        <div style="padding:3px 0; font-size:0.88em; color:#555;">مقصد: {{ c.destination }}</div>
+                        <div style="padding:3px 0; font-size:0.88em; color:#555;">تاریخ: <span dir="rtl">{{ c.create_time.date }}</span></div>
                     </td>
-
-                    <!-- اطلاعات نامه -->
                     <td>
-                        <div style="padding:6px 8px; background:#f7f9fc; border-radius:6px; font-weight:600; font-size:1em; margin-bottom:4px; color:#222;">
+                        {% if c.parent_letter_number %}
+                        <a  target="_blank" href="{% url 'PrintCheckoutLetter' pk=c.pk %}" style="display:flex; align-items:center; gap:6px; padding:0; font-weight:600; font-size:0.95em; color:#007bff; text-decoration:none;">
+                            <i class="fa fa-reply"></i> بازگشت به نامه: {{ c.parent_letter_number }}
+                        </a>
+                        {% endif %}
+                        <div style="padding:6px 10px; background:#f1f3f5; border-radius:8px; font-weight:600; font-size:1em; margin-top:6px; margin-bottom:4px; color:#222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
                             عنوان: {{ c.subject }}
                         </div>
                         <div style="padding:2px 0; font-size:0.85em; color:#555;">توضیحات: {{ c.description }}</div>
@@ -59,7 +61,7 @@
 
                     <!-- فراگیر -->
                     <td>
-                        <div style="padding:6px 8px; background:#f7f9fc; border-radius:6px; font-weight:600; font-size:0.95em; margin-bottom:4px; color:#222;">
+                        <div style="padding:6px 10px; background:#f1f3f5; border-radius:8px; font-weight:600; font-size:0.95em; margin-bottom:4px; color:#222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
                             {{ c.soldire.name }} {{ c.soldire.family }}
                         </div>
                         <div style="font-size:0.85em; color:#555; padding:2px 0;">کد ملی: {{ c.soldire.National_Code }}</div>
@@ -67,62 +69,57 @@
 
                     <!-- وضعیت -->
                     <td>
-                <span style="display:inline-block; padding:6px 12px; border-radius:14px; font-weight:600; font-size:0.7em; color:#fff; 
-    background-color:{% if c.status == 'تکمیل' %}#28a745{% elif c.status %}#ffc107{% else %}#6c757d{% endif %};">
-    {% if c.status %}{{ c.status }}{% else %}نامشخص{% endif %}
-</span>
+                        <span style="display:inline-block; padding:6px 12px; border-radius:14px; font-weight:600; font-size:0.75em; color:#fff; 
+                            background-color:{% if c.status == 'تکمیل' %}#28a745{% elif c.status %}#ffc107{% else %}#6c757d{% endif %};
+                            box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+                            {% if c.status %}{{ c.status }}{% else %}نامشخص{% endif %}
+                        </span>
                     </td>
 
                     <!-- عملیات -->
                     <td>
                         <div style="display:flex; flex-direction:column; gap:6px;">
-    {% if c.subject == "معرفی به کمیسیون" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintCheckoutCommissionLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ برگه
-        </a>
-    {% endif %}
-        {% if c.subject == "معرفی به کمیسیون" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintCheckoutCommissionLetterModern' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ مدرن
-        </a>
-    {% endif %}
-    {% if c.subject == "معرفی به کمیسیون شروع دوره آموزشی" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ برگه
-        </a>
-    {% endif %}
-    {% if c.subject == "استعلام کفایت از آموزش" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ برگه
-        </a>
-    {% endif %}
-    {% if c.subject == "گواهی عضویت" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintRegisterLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ برگه
-        </a>
-    {% endif %}
-    {% if c.subject == "فرار" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintRunawayLetterLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ برگه
-        </a>
-    {% endif %}
-    {% if c.subject == "سازمان وظیفه عمومی فراجا" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintFarajaLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ برگه
-        </a>
-    {% endif %}
-    {% if c.subject == "معرفی نامه" %}
-        <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintMoarefiLetter' pk=c.pk %}">
-            <i class="fa fa-print"></i> چاپ معرفی
-        </a>
-    {% endif %}
-    {% if c.subject != "معرفی به کمیسیون" %}
-        <a class="btn btn-sm btn-danger d-flex align-items-center gap-1" href="{% url 'delete_normall' pk=c.pk %}">
-            <i class="fa fa-trash"></i> حذف
-        </a>
-    {% endif %}
-</div>
-
+                            {% if c.subject == "معرفی به کمیسیون" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintCheckoutCommissionLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ برگه
+                            </a>
+                            {% endif %}
+                            {% if c.subject == "معرفی به کمیسیون شروع دوره آموزشی" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintBeforeCourseCommissionLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ برگه
+                            </a>
+                            {% endif %}
+                            {% if c.subject == "استعلام کفایت از آموزش" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintTrainingInquiryLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ برگه
+                            </a>
+                            {% endif %}
+                            {% if c.subject == "گواهی عضویت" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintRegisterLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ برگه
+                            </a>
+                            {% endif %}
+                            {% if c.subject == "فرار" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintRunawayLetterLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ برگه
+                            </a>
+                            {% endif %}
+                            {% if c.subject == "سازمان وظیفه عمومی فراجا" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintFarajaLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ برگه
+                            </a>
+                            {% endif %}
+                            {% if c.subject == "معرفی نامه" %}
+                            <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="{% url 'PrintMoarefiLetter' pk=c.pk %}">
+                                <i class="fa fa-print"></i> چاپ معرفی
+                            </a>
+                            {% endif %}
+                            {% if c.subject != "معرفی به کمیسیون" %}
+                            <a class="btn btn-sm btn-danger d-flex align-items-center gap-1" href="{% url 'delete_normall' pk=c.pk %}">
+                                <i class="fa fa-trash"></i> حذف
+                            </a>
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -131,7 +128,7 @@
     </div>
 </section>
 
-<!-- JS برای کارت آماری ساده -->
+<!-- JS برای کارت آماری با آیکون -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const letters = [
@@ -143,20 +140,52 @@ document.addEventListener('DOMContentLoaded', () => {
     letters.forEach(l => counts[l] = counts[l] ? counts[l]+1 : 1);
 
     const statsContainer = document.getElementById('letter-stats');
-    for (const [title, count] of Object.entries(counts)) {
-        const card = document.createElement('div');
-        card.style.background = '#eaf4ff';
-        card.style.padding = '10px 15px';
-        card.style.borderRadius = '6px';
-        card.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-        card.style.flex = '1 1 200px';
-        card.style.display = 'flex';
-        card.style.justifyContent = 'space-between';
-        card.style.alignItems = 'center';
-        card.innerHTML = `<span style="font-weight:600; color:#555;">${title}</span>
-                          <span style="font-weight:bold; font-size:1.2em; color:#222;">${count}</span>`;
-        statsContainer.appendChild(card);
-    }
+    const icons = {
+        "معرفی به کمیسیون":"fa-users",
+        "معرفی به کمیسیون شروع دوره آموزشی":"fa-graduation-cap",
+        "استعلام کفایت از آموزش":"fa-check-circle",
+        "گواهی عضویت":"fa-id-card",
+        "فرار":"fa-running",
+        "سازمان وظیفه عمومی فراجا":"fa-building",
+        "معرفی نامه":"fa-envelope"
+    };
+for (const [title, count] of Object.entries(counts)) {
+    const card = document.createElement('div');
+    // بک‌گراند گرادیانت ملایم
+    card.style.background = 'linear-gradient(135deg, #e0f7fa, #b2ebf2)';
+    card.style.padding = '14px 20px';
+    card.style.borderRadius = '12px';
+    card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    card.style.flex = '1 1 280px';
+    card.style.display = 'flex';
+    card.style.alignItems = 'center';
+    card.style.justifyContent = 'space-between';
+    card.style.gap = '12px';
+    card.style.transition = 'transform 0.2s, box-shadow 0.2s, background 0.3s';
+    card.style.cursor = 'default';
+
+    // Hover effect
+    card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-3px)';
+        card.style.boxShadow = '0 8px 18px rgba(0,0,0,0.2)';
+        card.style.background = 'linear-gradient(135deg, #b2ebf2, #80deea)';
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        card.style.background = 'linear-gradient(135deg, #e0f7fa, #b2ebf2)';
+    });
+
+    card.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i class="fa ${icons[title] || 'fa-file'}" style="font-size:1.5em; color:#007bff;"></i>
+            <span style="font-weight:600; color:#555; font-size:1em;">${title}</span>
+        </div>
+        <span style="font-weight:bold; font-size:1.3em; color:#222;">${count}</span>
+    `;
+    statsContainer.appendChild(card);
+}
+
 });
 </script>
 {% endblock %}

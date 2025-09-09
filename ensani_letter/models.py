@@ -2,7 +2,14 @@ from django.db import models
 from soldiers.models import Soldier
 from django_jalali.db import models as jmodels
 
-
+class LetterType(models.TextChoices):
+    NORMAL = "normal", "نامه عادی"
+    CHECKOUT = "checkout", "نامه تسویه حساب"
+    RUNAWAY = "runaway", "نامه فرار"
+    FARAJA = "faraja", "نامه فراجا"
+    MOAREFI = "moarefi", "نامه معرفی"
+    REGISTER = "register", "نامه گواهی عضویت"
+    
 class NormalLetterModels(models.Model):
     subject = models.CharField(max_length=100, verbose_name='موضوع نامه')
     soldire = models.ForeignKey(Soldier, on_delete=models.CASCADE, verbose_name='سرباز')
@@ -11,7 +18,16 @@ class NormalLetterModels(models.Model):
     description = models.CharField(max_length=150, verbose_name='توضیحات', null=True, blank=True)
     number = models.CharField(max_length=200, verbose_name='شماره نامه', null=True, blank=True)
     status = models.CharField(max_length=200, verbose_name='وضعیت', null=True, blank=True)
-
+    
+    parent_letter_number = models.CharField(max_length=200, verbose_name='بازگشت به شماره نامه', null=True, blank=True)
+    parent_letter_type = models.CharField(
+        max_length=20,
+        choices=LetterType.choices,
+        null=True,
+        blank=True,
+        verbose_name="نوع نامه والد"
+    )
+    
     class Meta:
         verbose_name = "نامه عادی"
         verbose_name_plural = "نامه‌های عادی"

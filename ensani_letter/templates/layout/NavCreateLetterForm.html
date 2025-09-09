@@ -1,0 +1,98 @@
+<style>
+/* عنوان با گرادینت و انیمیشن */
+h1 {
+    font-size: 1.6em;
+    font-weight: 700;
+    background: linear-gradient(90deg, #4a90e2, #50e3c2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 3s ease infinite alternate;
+    margin-bottom: 16px;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* تب‌ها کارت‌مانند، انیمیشنی و رنگی */
+.tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-nav a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 8px 8px 0 0;
+    background: #f7f9fc;
+color: #28c2a0; 
+    font-weight: 500;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transform: translateY(0);
+}
+
+.tab-nav a i {
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+/* حالت hover */
+.tab-nav a:hover {
+    background: #50e3c2;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.tab-nav a:hover i {
+    color: #fff;
+    transform: scale(1.2);
+}
+ 
+
+/* حالت فعال */
+.tab-nav a.active {
+    background: #28c2a0;
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid #50e3c2;
+}
+
+.tab-nav a.active i {
+    color: #fff;
+    transform: scale(1.1);
+}
+</style>
+
+<h1>ایجاد نامه جدید</h1>
+<div class="tab-nav">
+    <a href="{% url 'CreateCheckoutLetter' %}" class="{% if request.resolver_match.url_name == 'CreateCheckoutLetter' %}active{% endif %}">
+        <i class="fa fa-credit-card"></i> تسویه حساب
+    </a>
+    <a href="{% url 'CreateTrainingInquiryLetter' %}" class="{% if request.resolver_match.url_name == 'CreateTrainingInquiryLetter' %}active{% endif %}">
+        <i class="fa fa-search"></i> استعلام آموزش
+    </a>
+    <a href="{% url 'CreateBeforeCourseCommissionLetter' %}" class="{% if request.resolver_match.url_name == 'CreateBeforeCourseCommissionLetter' %}active{% endif %}">
+        <i class="fa fa-user-md"></i> کمیسیون قبل دوره
+    </a>
+    <a href="{% url 'CreateRegisterLetter' %}" class="{% if request.resolver_match.url_name == 'CreateRegisterLetter' %}active{% endif %}">
+        <i class="fa fa-id-card"></i> گواهی عضویت
+    </a>
+    <a href="{% url 'CreateFarajaLetter' %}" class="{% if request.resolver_match.url_name == 'CreateFarajaLetter' %}active{% endif %}">
+        <i class="fa fa-university"></i> تسویه فراجا
+    </a>
+    <a href="{% url 'CreaterunawayLetter' %}" class="{% if request.resolver_match.url_name == 'CreaterunawayLetter' %}active{% endif %}">
+        <i class="fa fa-male"></i> نامه فرار
+    </a>
+    <a href="{% url 'CreateMoarefiLetter' %}" class="{% if request.resolver_match.url_name == 'CreateMoarefiLetter' %}active{% endif %}">
+        <i class="fa fa-handshake-o"></i> نامه معرفی
+    </a>
+</div>
