@@ -2,7 +2,7 @@ import jdatetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction, IntegrityError
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from .forms import CreateCheckoutLetterFrom, CreateCommissionLetterFrom, CreateRegisterLetterFrom, \
@@ -16,7 +16,7 @@ import pandas as pd
 from django.http import HttpResponse, JsonResponse
 from ensani_letter.excel_utils import export_checkout_letters_to_excel
 from django.db.models import Q,Count
-
+from ensani import log_helper
 def generate_unique_number(length=4):
     return ''.join([str(random.randint(0, 9)) for _ in range(length)])
 
@@ -97,7 +97,6 @@ def AllCheckoutLetter(request, *args, **kwargs):
     # همه نرمال لترهای متناظر را بگیر
     normal_letters = NormalLetterModels.objects.filter(parent_letter_number__in=numbers)
     normal_map = {nl.parent_letter_number: nl for nl in normal_letters}
-    print(normal_letters)
     # به هر checkout یک فیلد جدید اضافه کن
     for checkout in all_checkout_letter:
         checkout.letter = normal_map.get(checkout.number, None)
@@ -294,7 +293,7 @@ class CreateCommissionLetter(LoginRequiredMixin, View):
                     my_letter.save()
                     find_soldire.save()
                     cl.save()
-
+                    log_helper.log_letter_create(my_letter)
                 break  # عملیات موفقیت‌آمیز بود
 
             except IntegrityError:
@@ -348,8 +347,10 @@ class CreateBeforeCourseCommissionLetter(LoginRequiredMixin, View):
                     ens = EnsaniSettings.objects.first()
                     my_letter.number = f"{ens.shomare_dore}33{generate_unique_number()}{find_soldire.National_Code[::3]}"
                     my_letter.destination = find_sepah_name(find_soldire.province_name)
+                    prev_status = my_letter.status
                     my_letter.status = "تایید"
                     my_letter.save()
+                    log_helper.log_letter_status_change(my_letter,prev_status,my_letter.status)
 
                     all_find_soldire = Soldier.objects.filter(has_been_accepted=True).count()
 
@@ -433,6 +434,8 @@ class CreateTrainingInquiryLetter(LoginRequiredMixin, View):
                     ens = EnsaniSettings.objects.first()
                     my_letter.number = f"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
                     my_letter.save()
+                    log_helper.log_letter_create(my_letter)
+                    
 
                 break  # عملیات موفقیت‌آمیز بود
 
@@ -486,6 +489,7 @@ class CreateRegisterLetter(LoginRequiredMixin, View):
                     my_letter.number = f"{ens.shomare_dore}99{generate_unique_number()}{find_soldire.National_Code[::3]}"
                     my_letter.status = "تایید"
                     my_letter.save()
+                    log_helper.log_letter_create(my_letter)
 
                     rn = RegisterNormalLetter(normal_letter=my_letter)
 
@@ -559,6 +563,7 @@ class CreaterunawayLetter(LoginRequiredMixin, View):
                     my_letter.number = f"{ens.shomare_dore}85{generate_unique_number()}{find_soldire.National_Code[::3]}"
                     my_letter.status = "تایید"
                     my_letter.save()
+                    log_helper.log_letter_create(my_letter)
 
                     runaway = RunawayNormallLetter(
                         normal_letter=my_letter,
@@ -618,6 +623,7 @@ class CreateFarajaLetter(LoginRequiredMixin, View):
                     ens = EnsaniSettings.objects.first()
                     my_letter.number = f"{ens.shomare_dore}30{generate_unique_number()}{find_soldire.National_Code[::3]}"
                     my_letter.save()
+                    log_helper.log_letter_create(my_letter)
 
                     faraja = FarajaNormallLetter(
                         normal_letter=my_letter,
@@ -640,8 +646,11 @@ def PrintCheckoutLetter(request, *args, **kwargs):
     if checkout_letter_pk is None:
         return 0
     checkout_letter = CheckoutLetterModels.objects.filter(pk=checkout_letter_pk).first()
+    prev_status = checkout_letter.status
     checkout_letter.status = "چاپ برگه-درحال بررسی"
     checkout_letter.save()
+    log_helper.log_letter_print(checkout_letter)
+    log_helper.log_letter_status_change(checkout_letter,prev_status,checkout_letter.status)
     en = EnsaniSettings.objects.filter().first()
     cx = {'checkout_letter': checkout_letter, 'en': en}
     return render(request, 'ensani_letter/print_checkout_letter.html', cx)
@@ -656,8 +665,10 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     checkout_commission_letter = NormalLetterModels.objects.filter(pk=checkout_commission_letter_pk).first()
     check_out = CheckoutLetterModels.objects.filter(soldire_id=checkout_commission_letter.soldire.id).first()
     sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
+    prev_status = checkout_commission_letter.status
     checkout_commission_letter.status = "تجدید دوره کمیسیون"
-    
+    log_helper.log_letter_print(checkout_commission_letter)
+    log_helper.log_letter_status_change(checkout_commission_letter,prev_status,checkout_commission_letter.status)
 
     cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en, 'check_out': check_out}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
@@ -676,10 +687,11 @@ def PrintCheckoutCommissionLetterModern(request, *args, **kwargs):
 
     check_out = CheckoutLetterModels.objects.filter(soldire_id=checkout_commission_letter.soldire.id).first()
     sutter = Sater.objects.filter(sarbaz=checkout_commission_letter.soldire).first()
-
+    prev_status = checkout_commission_letter.status
     # وضعیت نامه را بروزرسانی می‌کنیم
     checkout_commission_letter.status = "تجدید دوره کمیسیون"
-
+    log_helper.log_letter_print(checkout_commission_letter)
+    log_helper.log_letter_status_change(checkout_commission_letter,prev_status,checkout_commission_letter.status)
     # ساختار داده‌ای که تمپلیت `_LetterA5.html` استفاده می‌کند
     letter = {
         'date': checkout_commission_letter.create_time.date if checkout_commission_letter.create_time else '',
@@ -712,6 +724,11 @@ def PrintTrainingInquiryLetter(request, *args, **kwargs):
     if training_inquiry_letter_pk is None:
         return 0
     training_inquiry_letter = NormalLetterModels.objects.filter(pk=training_inquiry_letter_pk).first()
+    prev_status = training_inquiry_letter.status
+    training_inquiry_letter.status = "چاپ برگه-درحال بررسی"
+    log_helper.log_letter_print(training_inquiry_letter)
+    log_helper.log_letter_status_change(training_inquiry_letter,prev_status,training_inquiry_letter.status)
+
     en = EnsaniSettings.objects.filter().first()
     cx = {'training_inquiry_letter': training_inquiry_letter, 'en': en}
     return render(request, 'ensani_letter/print_training_inquiry_letter.html', cx)
@@ -800,6 +817,7 @@ def PrintMoarefiLetter(request, *args, **kwargs):
     sater_get = Sater.objects.filter(sarbaz_id=Normal_letter_moarefi.soldire.id).first()
     en = EnsaniSettings.objects.filter().last()
     cx = {'Normal_letter_moarefi': Normal_letter_moarefi, 'en': en, 'ml': ml, 'sater_get': sater_get}
+    
     return render(request, 'ensani_letter/print_moarefi_normal_letter.html', cx)
 
 
@@ -859,8 +877,9 @@ def check_status_checkout(request, *args, **kwargs):
     if checkout_id is None:
         return redirect(reverse_lazy('AllCheckoutLetter'))
     cl = CheckoutLetterModels.objects.filter(pk=checkout_id).first()
+    prev_status = cl.status 
     cl.status = "تایید"
-    
+    log_helper.log_letter_status_change(cl,prev_status,cl.status)
     
     normal_letter = NormalLetterModels.objects.filter(parent_letter_number=cl.number).first()
     if normal_letter:
@@ -983,3 +1002,102 @@ def export_to_excel_normal_letters(request):
 @login_required
 def CreateLetter(request, *args, **kwargs):
     return render(request, 'ensani_letter/create_letter.html')
+
+
+from .models import RawLetter
+from .forms import CreateRawLetterForm
+
+
+# ==============================
+# فهرست نامه‌های خام
+# ==============================
+def list_raw_letters(request):
+    letters = RawLetter.objects.all().order_by("-created_at")
+    return render(request, "ensani_letter/raw_letter_list.html", {"letters": letters})
+
+
+# ==============================
+# ایجاد نامه خام
+# ==============================
+def create_raw_letter(request):
+    if request.method == "POST":
+        form = CreateRawLetterForm(request.POST)
+        print(form.errors)  # نمایش خطاهای فرم
+
+        if form.is_valid():
+            data = form.cleaned_data
+
+            # مقدار letter_type بر اساس title تعیین شده
+            title = data.get("title", "")
+            found = False
+            for choice_value, choice_label in LetterType.choices:
+                if title == choice_label:
+                    data['letter_type'] = choice_value
+                    found = True
+                    break
+
+            if not found:
+                data['letter_type'] = 'other'  # اگر عنوان در choices نبود، نوع نامه سایر است
+
+            ens = EnsaniSettings.objects.first()
+            nationa_code = data['soldier_national_code']
+            unique_number =generate_unique_number()
+            letter_code= '100'
+            number = f"{ens.shomare_dore}{letter_code}{unique_number}{nationa_code}"
+            data['number'] = number
+            data['date'] = jdatetime.datetime.now()
+            data['status'] = 'ایجاد شده'
+            # ذخیره در مدل
+            letter = RawLetter.objects.create(**data)
+            log_helper.log_letter_create(letter)
+
+            return redirect("AllRawLetters")
+    else:
+        form = CreateRawLetterForm()
+
+    return render(request, "ensani_letter/create_raw_letter.html", {"form": form})
+
+# ==============================
+# لیست نامه‌ها
+# ==============================
+def list_raw_letters(request):
+    letters = RawLetter.objects.all().order_by("-created_at")
+    return render(request, "ensani_letter/raw_letter_list.html", {"letters": letters})
+# ==============================
+# حذف نامه
+# ==============================
+def delete_raw_letter(request, pk):
+    letter = get_object_or_404(RawLetter, pk=pk)
+    if request.method == "POST":
+        letter.delete()
+    
+    return redirect("AllRawLetters")
+# ==============================
+# تغییر وضعیت نامه
+# ==============================
+def change_status_raw_letter(request, pk):
+    letter = get_object_or_404(RawLetter, pk=pk)
+    if request.method == "POST":
+        new_status = request.POST.get("status", "")
+        if new_status:
+            letter.status = new_status
+            letter.save()
+    
+    return redirect("AllRawLetters")
+# ==============================
+# چاپ نامه
+# ==============================
+def print_raw_letter(request, pk):
+    letter = get_object_or_404(RawLetter, pk=pk)
+    ens = EnsaniSettings.objects.first()
+    if letter:
+        prev_status = letter.status
+        letter.status = 'درحال چاپ و بررسی'
+        letter.save()
+        log_helper.log_letter_print(letter)
+        log_helper.log_letter_status_change(letter.save(),prev_status,letter.status)
+
+    # می‌توانی از قالب HTML برای چاپ استفاده کنی
+    return render(request, "ensani_letter/print_raw_letter.html", {"letter": letter,'ens':ens})
+
+

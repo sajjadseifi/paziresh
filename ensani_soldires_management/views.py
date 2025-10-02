@@ -24,6 +24,7 @@ from battalions.models import battalion, battalion_group
 from ensaniapp_settings.models import EnsaniSettings
 from django.db import transaction
 import logging
+import xlwt
 
 logger = logging.getLogger(__name__)
 from django.http import HttpResponseServerError
@@ -1355,7 +1356,12 @@ def import_and_export_excel_maharat(request):
 
     return render(request, 'ensani_soldires_management/import_export_maharat.html', {'form': form})
 
-
+import io
+import zipfile
+import xlwt
+import pandas as pd
+from django.http import HttpResponse
+from ensani.excel_utils import sakhtar_kafiat_to_excel_bytes,sakhtar_kafiat_to_excel_xls_bytes
 @login_required
 def import_and_export_multiple_excel_sakhtar_sazi(request):
     # ایجاد فایل فشرده در حافظه
@@ -1402,12 +1408,68 @@ def import_and_export_multiple_excel_sakhtar_sazi(request):
                 # افزودن فایل اکسل به فایل فشرده
                 zf.writestr(f'{file_name}.xlsx', excel_buffer.getvalue())
 
-    # آماده‌سازی فایل ZIP برای دانلود
+        excel_bytes = sakhtar_kafiat_to_excel_bytes()
+        zf.writestr(f'کفایتی.xlsx', excel_bytes.getvalue())
+
     zip_buffer.seek(0)
     response = HttpResponse(zip_buffer, content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="sakhtar_sazi.zip"'
     return response
 
+
+@login_required
+def import_and_export_multiple_excel_sakhtar_sazi_xls(request):
+    # ایجاد فایل فشرده در حافظه
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w") as zf:
+        data_sets = {}
+
+        bn = battalion.objects.all()
+        for b in bn:
+            for bg in battalion_group.objects.filter(gordan=b):
+                soldiers_filtered_data = Soldier.objects.filter(
+                    t_battalion_group=bg,
+                    t_Gordan=b,
+                    willing_to_learn=True,
+                    in_coures=True
+                ).order_by('code_gorhan_nahai').values(
+                    'National_Code', 'code_gorhan_nahai'
+                )
+                data_sets[f"{b.name}_{bg.name}"] = soldiers_filtered_data
+
+        for file_name, queryset in data_sets.items():
+            df = pd.DataFrame(list(queryset))
+            if not df.empty:
+                df.rename(columns={
+                    'National_Code': 'کد ملی',
+                    'code_gorhan_nahai': 'کد سازمانی'
+                }, inplace=True)
+
+                excel_buffer = io.BytesIO()
+                wb = xlwt.Workbook()
+                ws = wb.add_sheet("فهرست-فراگیران")
+
+                # نوشتن هدر
+                for col_idx, col_name in enumerate(df.columns):
+                    ws.write(0, col_idx, col_name)
+
+                # نوشتن داده‌ها
+                for row_idx, row in enumerate(df.itertuples(index=False), start=1):
+                    for col_idx, value in enumerate(row):
+                        ws.write(row_idx, col_idx, value)
+
+                wb.save(excel_buffer)
+                zf.writestr(f"{file_name}.xls", excel_buffer.getvalue())
+
+        # کفایتی هم می‌توان به همان صورت اضافه کرد
+        excel_bytes = sakhtar_kafiat_to_excel_xls_bytes()  # این فایل هنوز xlsx است
+        zf.writestr(f'کفایتی.xls', excel_bytes.getvalue())
+
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="sakhtar_sazi_xls.zip"'
+    return response
 
 @login_required
 def export_to_excel_list_not_accepted(request):

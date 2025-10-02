@@ -30,4 +30,14 @@ urlpatterns = [
     path('letter/normall/moarefi/', CreateMoarefiLetter.as_view(), name='CreateMoarefiLetter'),
     path('get-suttr-status/', get_suttr_status, name='get_suttr_status'),
     path('letter/all/export-excel', export_to_excel_normal_letters, name='ExportNormalLettersExcel'),
+    # فهرست نامه‌های خام
+    path('letter/raw/all/', list_raw_letters, name='AllRawLetters'),
+    # ایجاد نامه خام
+    path('letter/raw/create/', create_raw_letter, name='CreateRawLetter'),
+    # حذف نامه خام
+    path('letter/raw/delete/<int:pk>/', delete_raw_letter, name='DeleteRawLetter'),
+    # تغییر وضعیت نامه خام
+    path('letter/raw/update_status/<int:pk>/', change_status_raw_letter, name='UpdateStatusRawLetter'),
+    # چاپ نامه خام
+    path('letter/raw/print/<int:pk>/', print_raw_letter, name='PrintRawLetter'),
 ]

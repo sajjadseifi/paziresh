@@ -2518,3 +2518,205 @@ def generate_gardesh_kar(request):
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
     doc.save(response)
     return response
+
+
+from django.db.models import Avg, Max, Min
+import json
+
+def physical_stats_view(request):
+    soldiers = Soldier.objects.all()
+    valid_soldiers = soldiers.exclude(height__isnull=True).exclude(height='').exclude(height='0')
+
+    # محاسبه آمار کلی
+    total_users = valid_soldiers.count()
+    avg_height = valid_soldiers.aggregate(Avg('height'))['height__avg']
+    avg_weight = valid_soldiers.aggregate(Avg('Weight'))['Weight__avg']
+
+    # بلندقد ترین و کوتاه قد ترین فرد
+    tallest_user = valid_soldiers.order_by('-height').first()
+    shortest_user = valid_soldiers.order_by('height').first()
+
+    # میانگین سن (فرض بر اساس تاریخ تولد)
+    ages = []
+    from datetime import date
+    for s in valid_soldiers:
+        try:
+            birth_year = int(s.Date_of_birth.split('/')[0])
+            age = date.today().year - birth_year
+            ages.append(age)
+        except:
+            continue
+    avg_age = round(sum(ages)/len(ages), 1) if ages else None
+
+
+    context = {
+        'total_users': total_users,
+        'avg_height': round(avg_height,1) if avg_height else None,
+        'avg_weight': round(avg_weight,1) if avg_weight else None,
+        'tallest_user': tallest_user,
+        'shortest_user': shortest_user,
+        'avg_age': avg_age,
+    }
+
+    return render(request, 'soldiers_phycical/physical_stats.html', context)
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.db.models import Count, Q
+
+@login_required
+def physical_table_view(request):
+    # گرفتن قدهای معتبر و مرتب
+    soldiers =Soldier.objects.all()
+    soldiers = soldiers.exclude(height__isnull=True).exclude(height='').exclude(height='0')
+    
+    # گرفتن لیست قدها به ترتیب
+    heights = sorted(set([int(float(s.height)) for s in soldiers]))
+    soldiers_without_height = Soldier.objects.filter(height__isnull=True) | \
+                              Soldier.objects.filter(height='') | \
+                              Soldier.objects.filter(height='0')
+    data = []
+    if soldiers_without_height.exists():
+        group = soldiers_without_height
+        data.insert(0, {   # بذاریم اول لیست
+            'height': 'تعریف نشده',
+            'salem': group.filter(physical_condition='سالم').count(),
+            'moaf_az_razm': group.filter(physical_condition='معاف از رزم').count(),
+            'gorh_b': group.filter(physical_condition='گروه ب').count(),
+            'goth_b_moaf_az_razm': group.filter(physical_condition='معاف+گروه ب').count(),
+            'shie': group.filter(Religion='شیعه').count(),
+            'ahle_tasanon': group.filter(Religion='اهل تسنن').count(),
+            'amriye': group.filter(Amriye=True).count(),
+            'zire_diplom': group.filter(Grade='زیر دیپلم').count(),
+            'diplom': group.filter(Grade='دیپلم').count(),
+            'fogh_diplom': group.filter(Grade='فوق دیپلم').count(),
+            'lisans': group.filter(Grade='لیسانس').count(),
+            'fogh_lisans': group.filter(Grade='فوق لیسانس').count(),
+            'doctora': group.filter(Grade='دکتری').count(),
+            'namoshakhas': group.exclude(Grade__in=['زیر دیپلم','دیپلم','فوق دیپلم','لیسانس','فوق لیسانس','دکتری']).count(),
+        })
+
+    for h in heights:
+        # فیلتر سربازانی که قد برابر h دارند
+        group = soldiers.filter(height=h)
+        print(h,len(soldiers),len(group))
+        data.append({
+            'height': h,
+            'salem': group.filter(physical_condition='سالم').count(),
+            'moaf_az_razm': group.filter(physical_condition='معاف از رزم').count(),
+            'gorh_b': group.filter(physical_condition='گروه ب').count(),
+            'goth_b_moaf_az_razm': group.filter(physical_condition='معاف+گروه ب').count(),
+            'shie': group.filter(Religion='شیعه').count(),
+            'ahle_tasanon': group.filter(Religion='اهل تسنن').count(),
+            'amriye': group.filter(Amriye=True).count(),
+            'zire_diplom': group.filter(Grade='زیر دیپلم').count(),
+            'diplom': group.filter(Grade='دیپلم').count(),
+            'fogh_diplom': group.filter(Grade='فوق دیپلم').count(),
+            'lisans': group.filter(Grade='لیسانس').count(),
+            'fogh_lisans': group.filter(Grade='فوق لیسانس').count(),
+            'doctora': group.filter(Grade='دکتری').count(),
+            'namoshakhas': group.exclude(Grade__in=['زیر دیپلم','دیپلم','فوق دیپلم','لیسانس','فوق لیسانس','دکتری']).count(),
+        })
+
+    # مجموع کل‌ها
+    total = soldiers.count()
+    total_salem = soldiers.filter(physical_condition='سالم').count()
+    total_moafazrazm = soldiers.filter(physical_condition='معاف از رزم').count()
+    total_shie = soldiers.filter(Religion='شیعه').count()
+    total_tasanon = soldiers.filter(Religion='اهل تسنن').count()
+    total_amire = soldiers.filter(Amriye=True).count()
+    total_zire_diplom = soldiers.filter(Grade='زیر دیپلم').count()
+    total_diplom = soldiers.filter(Grade='دیپلم').count()
+    total_fogh_diplom = soldiers.filter(Grade='فوق دیپلم').count()
+    total_lisans = soldiers.filter(Grade='لیسانس').count()
+    total_fogh_lisans = soldiers.filter(Grade='فوق لیسانس').count()
+    total_doctora = soldiers.filter(Grade='دکتری').count()
+    total_namoshakhas = total - (total_zire_diplom + total_diplom + total_fogh_diplom +
+                                 total_lisans + total_fogh_lisans + total_doctora)
+
+    context = {
+        'data': data,
+        'total': total,
+        'soldire_total_salem': total_salem,
+        'soldire_total_moafazrazm': total_moafazrazm,
+        'soldire_total_shie': total_shie,
+        'soldire_total_tasanon': total_tasanon,
+        'soldire_total_amire': total_amire,
+        'zire_diplom': total_zire_diplom,
+        'diplom': total_diplom,
+        'fogh_diplom': total_fogh_diplom,
+        'lisans': total_lisans,
+        'fogh_lisans': total_fogh_lisans,
+        'doctora': total_doctora,
+        'namoshakhas': total_namoshakhas,
+    }
+
+    return render(request, 'soldiers_phycical/physical_table.html', context)
+
+
+# صفحه نمودار قد و وزن
+def height_weight_chart_view(request):
+    soldiers = Soldier.objects.all()
+
+    # میانگین سن (فرض بر اساس تاریخ تولد)
+    ages = []
+    from datetime import date
+    for s in soldiers:
+        try:
+            birth_year = int(s.Date_of_birth.split('/')[0])
+            age = date.today().year - birth_year
+            ages.append(age)
+        except:
+            continue
+    avg_age = round(sum(ages)/len(ages), 1) if ages else None
+
+    # داده های Scatter Plot برای قد و وزن
+    scatter_data = []
+    for s in soldiers:
+        try:
+            h = float(s.height)
+            w = float(s.Weight)
+            bmi = w / ((h/100)**2)  # BMI = وزن / قد^2
+            scatter_data.append({'x': h, 'y': w, 'bmi': bmi})
+        except:
+            continue
+
+    context = {
+        'scatter_data': json.dumps(scatter_data),
+    }
+
+    return render(request, 'soldiers_phycical/height_weight_chart.html', context)
+
+def bmi_chart_view(request):
+    soldiers = Soldier.objects.all()
+
+    # محاسبه BMI و دسته‌بندی
+    bmi_bins = {'کمبود وزن':0, 'نرمال':0, 'اضافه وزن':0, 'چاقی':0}
+    scatter_data = []
+
+    for s in soldiers:
+        try:
+            height_m = float(s.height) / 100  # تبدیل قد به متر
+            weight_kg = float(s.Weight)
+            bmi = weight_kg / (height_m ** 2)
+
+            # دسته‌بندی BMI
+            if bmi < 18.5:
+                bmi_bins['کمبود وزن'] += 1
+            elif 18.5 <= bmi < 25:
+                bmi_bins['نرمال'] += 1
+            elif 25 <= bmi < 30:
+                bmi_bins['اضافه وزن'] += 1
+            else:
+                bmi_bins['چاقی'] += 1
+
+            scatter_data.append({'x': round(height_m*100, 1), 'y': weight_kg, 'bmi': round(bmi,1)})
+        except:
+            continue
+
+    context = {
+        'soldiers': soldiers,
+        'bmi_bins': bmi_bins,
+        'scatter_data': scatter_data
+    }
+    return render(request, 'soldiers_phycical/bmi_chart.html', context)

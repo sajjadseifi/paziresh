@@ -1,0 +1,40 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+{% include './__navbar.html' %}
+
+<div class="container mt-4">
+
+   <h4 style="font-weight:bold; margin-bottom:15px;">نمودار قد و وزن کاربران</h4>
+    <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <canvas id="heightWeightChart"></canvas>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'dist/js/chart.js' %}"></script>
+<script>
+const ctx = document.getElementById('heightWeightChart').getContext('2d');
+new Chart(ctx, {
+    type: 'scatter',
+    data: {
+        datasets: [{
+            label: 'قد و وزن',
+            data: {{ scatter_data|safe }},
+            backgroundColor: {{ scatter_data|safe }}.map(d => d.bmi>25?'red':d.bmi<18.5?'orange':'green')
+        }]
+    },
+    options: {
+        responsive:true,
+        plugins:{ legend:{ display:true } },
+        scales: {
+            x: { title: { display:true, text:'قد (cm)' } },
+            y: { title: { display:true, text:'وزن (kg)' } }
+        }
+    }
+});
+</script>
+{% endblock %}

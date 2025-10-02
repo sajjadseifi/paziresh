@@ -70,14 +70,15 @@
                                style="font-size: 10px">بروزرسانی
                             گروهی اطلاعات سربازان
                             خدمت قبلی </a></li>
-                        <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی</a></li>
+                        <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی (xlsx)</a></li>
+                        <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi_xls' %}">ساختار سازی (xls)</a></li>
                         <li><a href="{% url 'import_bank_number_from_exel' %}">بارگزاری شماره حساب گروهی</a></li>
                         <li><a href="{% url 'import_and_export_excel_maharat' %}">مهارت آموزی</a></li>
                     {% endif %}
                 </ul>
             </li>
             {% if request.user.is_staff == True %}
-            <li class="treeview">
+            <li >
                     <a href="{% url 'data_app' %}">
                     <i class="fa fa-database"></i>
                     <span>بانک اطلاعات</span>
@@ -116,16 +117,15 @@
                 </li>
             {% endif %}
             {% if request.user.is_staff == True %}
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-envelope"></i> <span>نامه ها</span>
-                        <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
-              </span>
+                <li >
+                    <a href="{% url 'AllNormalLetter' %}">
+                        <i class="fa fa-envelope"></i> 
+                        <span>نامه ها</span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'AllNormalLetter' %}">نامه های عادی</a></li>
-                        <li><a href="{% url 'AllCheckoutLetter' %}"> تسویه حساب ها</a></li>
-                        <li><a href="{% url 'CreateLetter' %}">ایجاد نامه جدید</a></li>
+                        {% comment %} <li><a href="{% url 'AllNormalLetter' %}">نامه های عادی</a></li>
+                        <li><a href="{% url 'AllCheckoutLetter' %}"> تسویه حساب ها</a></li> {% endcomment %}
+                        {% comment %} <li><a href="{% url 'CreateLetter' %}">ایجاد نامه جدید</a></li> {% endcomment %}
                         
                         {% comment %} <li><a href="{% url 'CreateCheckoutLetter' %}">ایجاد نامه تسویه حساب</a></li>
                         <li><a href="{% url 'CreateTrainingInquiryLetter' %}">ایجاد نامه استعلام کفایت از آموزش</a></li>
@@ -156,6 +156,7 @@
                     <li><a href="{% url 'amar_avalie_samane_paziresh_shode' %}">آمار اولیه سامانه پذیرش شده</a></li>
                     <li><a href="{% url 'amare_yegan_bekar_girande_tabel' %}">آمار یگان بکارگیرنده</a></li>
                     <li><a href="{% url 'amar_rank' %}">آمار درجات</a></li>
+                    <li><a href="{% url 'physical_stats' %}">آمار جسمانی</a></li>
                 </ul>
             </li>
          <li class="treeview">

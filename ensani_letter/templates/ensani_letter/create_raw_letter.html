@@ -1,0 +1,380 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+{% block header %}
+<link
+  rel="stylesheet"
+  href="{% static 'bower_components/select2/dist/css/select2.min.css' %}"
+/>
+<style>
+  .raw-letter-form {
+    max-width: 1400px;
+    margin: auto;
+    font-family: "Vazir", sans-serif;
+  }
+
+  /* کارت‌ها */
+  .sections-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+  .card-section {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+    transition: transform 0.2s;
+  }
+  .card-section:hover {
+    transform: translateY(-3px);
+  }
+  .card-section h4 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+  }
+  .form-group {
+    margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 8px rgba(79, 70, 229, 0.2);
+  }
+
+  /* قالب‌ها */
+  .templates-box {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    padding-right: 5px;
+  }
+  .templates-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .templates-box li {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    margin: 4px 0;
+    cursor: pointer;
+    background: #f5f5ff;
+    border-radius: 12px;
+    transition: all 0.2s;
+    align-items: center;
+  }
+  .templates-box li:hover {
+    background: #eef2ff;
+    transform: translateY(-2px);
+  }
+  .templates-box h2 {
+    font-size: 15px;
+    margin: 0 0 4px 0;
+    color: #1f2937;
+    border-bottom: 1px solid #cbd5e1;
+    font-weight:bold;
+    padding-bottom:4px;
+  }
+  .templates-box p {
+    font-size: 13px;
+    margin: 0;
+    color: #555;
+  }
+  .templates-box input[type="radio"] {
+    display: none;
+  }
+  .templates-box input[type="radio"]:checked + div {
+    border-left: 4px solid #4f46e5;
+    padding-left: 8px;
+  }
+
+  /* دکمه‌ها */
+  .form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .form-actions button, .form-actions a {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .form-actions button {
+    background-color: #4f46e5;
+    color: #fff;
+  }
+  .form-actions button:hover {
+    background-color: #3730a3;
+  }
+  .form-actions a.btn-back {
+    border: 2px solid #4f46e5;
+    color: #4f46e5;
+  }
+  .form-actions a.btn-back:hover {
+    background-color: #4f46e5;
+    color: #fff;
+  }
+
+  @media (max-width: 992px) {
+    .sections-row {
+      flex-direction: column;
+    }
+  }
+   select option.extra-option {
+    background-color: #f0f4ff; /* رنگ روشن آبی */
+    color: #1e40af; /* آبی تیره برای متن */
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+{% include '../layout/NavCreateLetterForm.html'%}
+
+<div class="container">
+  <div class="raw-letter-form">
+    <form method="post">
+      {% csrf_token %}
+      <div class="sections-row">
+        <!-- اطلاعات سرباز -->
+        <div class="card-section">
+          <h4>اطلاعات سرباز</h4>
+          {% for field in form %}
+            {% if "soldier" in field.name %}
+            <div class="form-group">
+              {{ field.label_tag }} {{ field }}
+              {% if field.errors %}
+              <div class="text-danger">{{ field.errors }}</div>
+              {% endif %}
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- اطلاعات نامه -->
+        <div class="card-section">
+          <h4>اطلاعات نامه</h4>
+          <div class="form-group">
+            {{ form.return_to_number.label_tag }} {{ form.return_to_number }}
+          </div>
+          <div class="form-group">
+            <label for="id_title">عنوان / نوع نامه</label>
+            <select id="id_title" name="title" class="form-control select2">
+              <option value="">یک نوع نامه انتخاب یا وارد کنید</option>
+              {% for choice in form.letter_type.field.choices %}
+                {% if choice.0 != 'normal' %}
+                  <option value="{{ choice.1 }}">{{ choice.1 }}</option>
+                {% endif %}
+              {% endfor %}
+               <option value="درخواست مرخصی" class="extra-option">درخواست مرخصی</option>
+               <option value="گواهی وضعیت خدمت" class="extra-option">گواهی وضعیت خدمت</option>
+               <option value="اعلام ماموریت" class="extra-option">اعلام ماموریت</option>
+               <option value="تسویه حساب مالی" class="extra-option">تسویه حساب مالی</option>
+            </select>
+          </div>
+
+<div class="form-group">
+  <label for="id_destination">گیرنده / مقصد</label>
+  <select
+    id="id_destination"
+    name="destination"
+    class="form-control select2"
+  >
+    <option value="" disabled selected>یک مقصد انتخاب کنید</option>
+    <option value="سپاه کربلا مازندران">سپاه کربلا مازندران</option>
+    <option value="اداره نظام وظیفه">اداره نظام وظیفه</option>
+    <option value="کمیسیون پزشکی">کمیسیون پزشکی</option>
+    <option value="کمیسیون پزشکی - ستاد">کمیسیون پزشکی - ستاد</option>
+    <option value="مرکز آموزش قبلی">مرکز آموزش قبلی</option>
+    <option value="یگان آموزشی قبلی">یگان آموزشی قبلی</option>
+    <option value="اداره آموزش">اداره آموزش</option>
+    <option value="اداره پرسنلی">اداره پرسنلی</option>
+    <option value="اداره مالی">اداره مالی</option>
+    {% for dest in server_destinations %}
+      <option value="{{ dest }}">{{ dest }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+
+          <div class="form-group">
+            {{ form.description.label_tag }} {{ form.description }}
+          </div>
+
+          <div class="form-actions">
+            <a href="{% url 'AllRawLetters' %}" class="btn-back">بازگشت</a>
+            <button type="submit">ثبت نامه</button>
+          </div>
+        </div>
+
+        <!-- قالب‌های آماده -->
+        <div class="card-section">
+          <h4>قالب‌های آماده</h4>
+          <div class="templates-box">
+            <ul id="templatesList"></ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+  const letterTemplates = [
+  {
+    id: 1,
+    title: "تسویه حساب",
+    text: "سرباز وظیفه {soldier_name} {soldier_family} فرزند {soldier_fathers_name} با کد ملی {soldier_national_code} و تاریخ اعزام {soldier_date_of_dispatch} از پادگان تسویه حساب ننموده است."
+  },
+  {
+    id: 2,
+    title: "گواهی خدمت",
+    text: "بدین‌وسیله گواهی می‌شود سرباز {soldier_name} {soldier_family} فرزند {soldier_fathers_name} با کد ملی {soldier_national_code} از تاریخ {soldier_date_of_dispatch} در این یگان مشغول خدمت می‌باشد."
+  },
+  {
+    id: 3,
+    title: "معرفی‌نامه مرخصی",
+    text: "سرباز {soldier_name} {soldier_family} به شماره ملی {soldier_national_code} جهت استفاده از مرخصی از تاریخ {leave_start} تا {leave_end} به مرخصی اعزام می‌گردد."
+  },
+  {
+    id: 4,
+    title: "اعزام به مأموریت",
+    text: "سرباز {soldier_name} {soldier_family} فرزند {soldier_fathers_name} با کد ملی {soldier_national_code} از تاریخ {mission_start} تا {mission_end} به مأموریت اعزام می‌گردد."
+  },
+  {
+    id: 5,
+    title: "مرخصی استعلاجی",
+    text: "سرباز {soldier_name} {soldier_family} با شماره ملی {soldier_national_code} جهت مرخصی استعلاجی از تاریخ {leave_start} تا {leave_end} مرخص گردیده است."
+  },
+  {
+    id: 6,
+    title: "انتقال به واحد دیگر",
+    text: "سرباز {soldier_name} {soldier_family} با شماره ملی {soldier_national_code} از تاریخ {transfer_date} به واحد {new_unit} منتقل گردید."
+  },
+  {
+    id: 7,
+    title: "تایید حضور",
+    text: "بدین وسیله تایید می‌گردد که سرباز {soldier_name} {soldier_family} با شماره ملی {soldier_national_code} از تاریخ {soldier_date_of_dispatch} در این یگان حضور داشته است."
+  },
+  {
+    id: 8,
+    title: "بازگشت از مأموریت",
+    text: "سرباز {soldier_name} {soldier_family} با شماره ملی {soldier_national_code} از تاریخ {mission_start} تا {mission_end} به مأموریت اعزام شده و اکنون بازگشته است."
+  }
+];
+
+
+  function fillTemplate(text) {
+    function safeValue(id) {
+      const el = document.getElementById(id);
+      return el && el.value.trim() !== "" ? el.value : "---";
+    }
+
+    return text
+      .replace("{soldier_name}", safeValue("id_soldier_name"))
+      .replace("{soldier_family}", safeValue("id_soldier_family"))
+      .replace("{soldier_fathers_name}", safeValue("id_soldier_fathers_name"))
+      .replace("{soldier_national_code}", safeValue("id_soldier_national_code"))
+      .replace("{soldier_date_of_dispatch}", safeValue("id_soldier_date_of_dispatch"))
+      .replace("{leave_start}", safeValue("id_leave_start"))
+      .replace("{leave_end}", safeValue("id_leave_end"))
+      .replace("{mission_start}", safeValue("id_mission_start"))
+      .replace("{mission_end}", safeValue("id_mission_end"))
+      .replace("{transfer_date}", safeValue("id_transfer_date"))
+      .replace("{new_unit}", safeValue("id_new_unit"))
+  }
+
+  function renderTemplates() {
+    const ul = document.getElementById("templatesList");
+    ul.innerHTML = "";
+    letterTemplates.forEach((tpl) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <input type="radio" name="template" value="${tpl.id}" />
+        <div>
+          <h2>${tpl.title}</h2>
+          <p>${fillTemplate(tpl.text)}</p>
+        </div>`;
+      
+      // انتخاب وقتی روی کل کارت کلیک شد
+      li.addEventListener("click", () => {
+        const radio = li.querySelector('input[type="radio"]');
+        radio.checked = true;
+        document.getElementById("id_description").value = fillTemplate(tpl.text);
+      });
+
+      ul.appendChild(li);
+    });
+  }
+
+  function autoSelectTemplate(title) {
+    const tpl = letterTemplates.find(t => t.title === title);
+    if (tpl) {
+      document.getElementById("id_description").value = fillTemplate(tpl.text);
+      const radio = document.querySelector(`input[value="${tpl.id}"]`);
+      if (radio) radio.checked = true;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    renderTemplates();
+    $("#id_title").select2({ tags: true, allowClear: true , placeholder: "یک عنوان انتخاب کنید",});
+    $("#id_destination").select2({ tags: true, allowClear: true , placeholder: "یک مقصد انتخاب کنید",});
+    $("#id_title").on("change", function () { autoSelectTemplate($(this).val()); });
+
+    const soldierFields = [
+      "id_soldier_name",
+      "id_soldier_family",
+      "id_soldier_fathers_name",
+      "id_soldier_national_code",
+      "id_soldier_date_of_dispatch"
+    ];
+
+    soldierFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", () => {
+          const selectedRadio = document.querySelector('input[name="template"]:checked');
+          const selectedId = selectedRadio ? selectedRadio.value : null;
+
+          renderTemplates();
+
+          if (selectedId) {
+            const tpl = letterTemplates.find(t => t.id == selectedId);
+            const radio = document.querySelector(`input[name="template"][value="${selectedId}"]`);
+            if (tpl && radio) {
+              radio.checked = true;
+              document.getElementById("id_description").value = fillTemplate(tpl.text);
+            }
+          }
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

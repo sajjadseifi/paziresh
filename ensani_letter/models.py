@@ -111,3 +111,44 @@ class MoarefiNormallLetter(models.Model):
     class Meta:
         verbose_name = "نامه معرفی"
         verbose_name_plural = "نامه‌های معرفی"
+
+
+
+
+class RawLetter(models.Model):
+    # ========================
+    # اطلاعات سرباز
+    # ========================
+    soldier_name = models.CharField(null=True, blank=True, max_length=100, verbose_name="نام سرباز")
+    soldier_family = models.CharField(null=True, blank=True, max_length=100, verbose_name="نام خانوادگی سرباز")
+    soldier_fathers_name = models.CharField(null=True, blank=True, max_length=100, verbose_name="نام پدر سرباز")
+    soldier_national_code = models.CharField(null=True, blank=True, max_length=20, verbose_name="کد ملی سرباز")
+    soldier_acceptance_code = models.IntegerField(null=True, blank=True, unique=True, verbose_name="کد پذیرش سرباز")
+    soldier_date_of_dispatch = models.CharField(null=True, blank=True, max_length=100, verbose_name="تاریخ اعزام سرباز")
+
+    # ========================
+    # اطلاعات کلی نامه
+    # ========================
+    title = models.CharField(max_length=200, verbose_name="عنوان نامه", null=True, blank=True)
+    letter_type = models.CharField(
+        max_length=20,
+        choices=LetterType.choices,
+        default=('other', 'سایر') ,
+        verbose_name="نوع نامه",
+    )
+    number = models.CharField(max_length=100, verbose_name="شماره نامه", null=True, blank=True)
+    return_to_number = models.CharField(max_length=100, verbose_name="بازگشت به شماره نامه", null=True, blank=True)
+    date = jmodels.jDateTimeField(null=True, blank=True, verbose_name="تاریخ نامه")
+    destination = models.CharField(max_length=200, verbose_name="گیرنده/مقصد", null=True, blank=True)
+    description = models.TextField(verbose_name="متن/توضیحات", null=True, blank=True)
+    status = models.CharField(max_length=100, verbose_name="وضعیت", null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="آخرین بروزرسانی")
+
+    class Meta:
+        verbose_name = "نامه خام"
+        verbose_name_plural = "نامه‌های خام"
+
+    def __str__(self):
+        return f"{self.title or 'نامه بدون عنوان'} - {self.get_letter_type_display()}"

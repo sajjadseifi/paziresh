@@ -9,13 +9,12 @@
         .select2-results__options > li:nth-child(8)  { color:#00ffff !important; }
         .select2-results__options > li:nth-child(9)  { color:#00ffff !important; }
         .select2-results__options > li:nth-child(10)  { color:#00ffff !important; }
-
     </style>
-    {% endblock %}
+{% endblock %}
 
 {% block main %}
-{% include '../layout/NavCreateLetterForm.html' %}
 
+{% include '../layout/NavCreateLetterForm.html' %}
     <div class="box box-warning">
         <div class="box-header with-border">
             <h3 class="box-title">ثبت نامه معرفی</h3>
@@ -72,16 +71,14 @@
 
 {% block footer %}
 <script>
-$(document).ready(function() {
-    $('#id_destination').select2({
-        tags: true,       // اجازه اضافه کردن متن دلخواه
-        placeholder: "یک مقصد انتخاب کنید",
-        allowClear: true, // امکان پاک کردن انتخاب
-        multiple: false   // فقط یک انتخاب
-    });
-});
-</script>
-    <script>
+        $(document).ready(function() {
+            $('#id_destination').select2({
+                tags: true,       // اجازه اضافه کردن متن دلخواه
+                placeholder: "یک مقصد انتخاب کنید",
+                allowClear: true, // امکان پاک کردن انتخاب
+                multiple: false   // فقط یک انتخاب
+            });
+        });
 
         $(document).ready(function () {
             $("#id_soldire").change(function () {

@@ -18,4 +18,8 @@ urlpatterns = [
     path('amara_rank', amar_rank, name='amar_rank'),
     path('amara_rank/gardeshkar/download', generate_gardesh_kar, name='generate_gardesh_kar'),
     path('amara_rank/gardeshkar', create_rank_gardesh_kar, name='create_rank_gardesh_kar'),
+    path('physical/stats/', physical_stats_view, name='physical_stats'),
+    path('physical/table/', physical_table_view, name='physical_table'),
+    path('physical/height_weight_chart/', height_weight_chart_view, name='physical_height_weight_chart'),
+    path('physical/bmi_chart/', bmi_chart_view, name='physical_bmi_chart'),
 ]

@@ -1,0 +1,80 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+<!-- ریسپانسیو: برای موبایل یک ستونه -->
+<style>
+@media (max-width: 768px) {
+    div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+{% include './__navbar.html' %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">داشبورد BMI کاربران</h1>
+<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:20px;">
+
+    <!-- Bar Chart -->
+    <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+        <h4>تعداد سربازان در هر دسته BMI</h4>
+        <canvas id="bmiBarChart"></canvas>
+    </div>
+
+    <!-- Pie Chart -->
+    <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+        <h4>درصد سربازان در هر دسته BMI</h4>
+        <canvas id="bmiPieChart"></canvas>
+    </div>
+
+
+</div>
+
+
+
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'dist/js/chart.js' %}"></script>
+<script>
+const bmiLabels = Object.keys({{ bmi_bins|safe }});
+const bmiValues = Object.values({{ bmi_bins|safe }});
+
+// Bar Chart
+new Chart(document.getElementById('bmiBarChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels: bmiLabels, datasets: [{ label:'تعداد سربازان', data:bmiValues, backgroundColor:'rgba(54,162,235,0.7)', borderColor:'rgba(54,162,235,1)', borderWidth:1 }] },
+    options: { responsive:true, scales:{ y:{ beginAtZero:true, title:{display:true,text:'تعداد سربازان'} } } }
+});
+
+// Pie Chart
+new Chart(document.getElementById('bmiPieChart').getContext('2d'), {
+    type:'pie',
+    data:{ labels:bmiLabels, datasets:[{ data:bmiValues, backgroundColor:['#FF6384','#36A2EB','#FFCE56','#4BC0C0'] }] },
+    options:{ responsive:true }
+});
+
+// Doughnut Chart
+new Chart(document.getElementById('bmiDoughnutChart').getContext('2d'), {
+    type:'doughnut',
+    data:{ labels:bmiLabels, datasets:[{ data:bmiValues, backgroundColor:['#FF6384','#36A2EB','#FFCE56','#4BC0C0'] }] },
+    options:{ responsive:true }
+});
+
+// Scatter Plot
+new Chart(document.getElementById('bmiScatterChart').getContext('2d'), {
+    type:'scatter',
+    data:{
+        datasets:[{
+            label:'قد و وزن',
+            data: {{ scatter_data|safe }},
+            backgroundColor: {{ scatter_data|safe }}.map(d => d.bmi>25?'red':d.bmi<18.5?'orange':'green')
+        }]
+    },
+    options:{ scales:{ x:{ title:{display:true,text:'قد (cm)'} }, y:{ title:{display:true,text:'وزن (kg)'} } } }
+});
+
+</script>
+{% endblock %}

@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from ensani.excel_utils  import export_soldiers_to_excel,export_kafiat_to_excel   
 from ensani_letter.models import NormalLetterModels,CheckoutLetterModels
+from django.utils import timezone
+from .models import ActivityLog
 
 class panel_home(LoginRequiredMixin, View):
     def get(self, request):
@@ -61,8 +63,11 @@ class panel_home(LoginRequiredMixin, View):
                     t = b_soldire.filter(t_battalion_group=iteam).all().count()
                     if t != 0:
                         list_btn.append({'gordan': iteam.gordan.name, 'gorohan': iteam.name, 'count': t,'capacity': int(iteam.zarfiat) - t})
-
+        today = timezone.localtime(timezone.now()).date()
+        logs_today = ActivityLog.objects.filter(created_at__date=today).count()
+        print(today, logs_today)
         cx = {
+            'logs_today': logs_today,
             'amar_kol': amar_kol, 
             'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,
               'amar_kole_paziresh_shode': amar_kole_paziresh_shode, 'tatbikh_nashode': tatbikh_nashode,
@@ -156,3 +161,35 @@ def download_kafiat(request):
 
 def data_app(request):
     return render(request, 'ensani/data_page.html')
+
+def activity_logs(request):
+    today = timezone.localtime(timezone.now()).date()
+    
+    # گرفتن مقادیر GET برای فیلترها
+    note_type = request.GET.get('note_type', '')
+    action = request.GET.get('action', '')
+    date_str = request.GET.get('date', today.strftime("%Y-%m-%d"))
+    
+    logs = ActivityLog.objects.all()
+    
+    # فیلتر بر اساس تاریخ
+    if date_str:
+        logs = logs.filter(created_at__date=date_str)
+    
+    # فیلتر بر اساس نوع یادداشت
+    if note_type:
+        logs = logs.filter(note_type=note_type)
+    
+    # فیلتر بر اساس عملیات
+    if action:
+        logs = logs.filter(action=action)
+    
+    context = {
+        "logs": logs.order_by('-created_at'),
+        "note_types": ActivityLog.NoteType.choices,
+        "actions": ActivityLog.Action.choices,
+        "selected_note_type": note_type,
+        "selected_action": action,
+        "selected_date": date_str,
+    }
+    return render(request, 'ensani/activity_logs.html', context)

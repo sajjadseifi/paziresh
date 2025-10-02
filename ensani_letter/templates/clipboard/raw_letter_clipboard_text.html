@@ -1,0 +1,175 @@
+<!-- Modal Backdrop -->
+<div id="rawLetterModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>📋 متن‌های آماده نامه</h3>
+      <span class="close-btn">&times;</span>
+    </div>
+    <div id="template_buttons" class="template-list"></div>
+  </div>
+</div>
+
+<textarea id="generated_text" placeholder="متن نامه را اینجا بنویسید..." rows="4"></textarea>
+
+<style>
+/* Backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Card */
+.modal-card {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  background: #f9fafb;
+}
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+.close-btn {
+  cursor: pointer;
+  font-size: 22px;
+  color: #555;
+}
+.close-btn:hover {
+  color: #000;
+}
+
+/* List */
+.template-list {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+.template-list button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #4f46e5;
+  background: #f3f4f6;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: right;
+}
+.template-list button:hover {
+  background: #e0e7ff;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+#generated_text {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin: 15px 0;
+}
+</style>
+
+<script>
+export function initRawLetterClipboard({
+  textareaId = "generated_text",
+  modalId = "rawLetterModal",
+  letterTypeInputs = [],
+  templatesByType = {}
+}) {
+  const textarea = document.getElementById(textareaId);
+  const modal = document.getElementById(modalId);
+  const templateContainer = modal.querySelector("#template_buttons");
+  const closeBtn = modal.querySelector(".close-btn");
+
+  let formData = {};
+
+  function generateLetterText(data, type) {
+    if (templatesByType[type] && templatesByType[type][0]) {
+      return templatesByType[type][0]
+        .replace(/\{name\}/g, data.name || "")
+        .replace(/\{family\}/g, data.family || "")
+        .replace(/\{father_name\}/g, data.father_name || "")
+        .replace(/\{nationalCode\}/g, data.nationalCode || "")
+        .replace(/\{start_date\}/g, data.start_date || "");
+    }
+    return "";
+  }
+
+  function openModal() {
+    modal.style.display = "flex";
+    loadTextsInContainer();
+  }
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", e => {
+    if (e.target === modal) closeModal();
+  });
+
+  function loadTextsInContainer() {
+    templateContainer.innerHTML = "";
+    Object.keys(templatesByType).forEach(type => {
+      templatesByType[type].forEach(textTemplate => {
+        const btn = document.createElement("button");
+        btn.textContent = textTemplate
+          .replace(/\{name\}/g, formData.name || "")
+          .replace(/\{family\}/g, formData.family || "")
+          .slice(0, 50) + "...";
+        btn.addEventListener("click", () => {
+          textarea.value = textTemplate
+            .replace(/\{name\}/g, formData.name || "")
+            .replace(/\{family\}/g, formData.family || "")
+            .replace(/\{father_name\}/g, formData.father_name || "")
+            .replace(/\{nationalCode\}/g, formData.nationalCode || "")
+            .replace(/\{start_date\}/g, formData.start_date || "");
+          closeModal();
+        });
+        templateContainer.appendChild(btn);
+      });
+    });
+  }
+
+  textarea.addEventListener("focus", openModal);
+
+  letterTypeInputs.forEach(input => {
+    input.addEventListener("change", () => {
+      const type = input.value;
+      textarea.value = generateLetterText(formData, type);
+    });
+  });
+
+  return {
+    setFormData: (data) => { formData = data; }
+  };
+}
+</script>

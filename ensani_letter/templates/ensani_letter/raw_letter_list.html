@@ -1,0 +1,176 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+{% block main %}
+{% include '../layout/NavCreateLetterForm.html' %}
+
+<section class="content px-4">
+    <!-- کارت‌های آماری بالای جدول -->
+    <div id="letter-stats" style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:25px;"></div>
+
+    <!-- عنوان صفحه و دکمه ایجاد نامه جدید -->
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap:wrap; gap:10px;">
+        <h3 style="font-weight:bold; color:#222; font-size:1.4em;">
+            نامه‌های خام
+            <span style="background:#fe4065; color:#fff; padding:4px 14px; border-radius:12px; font-size:0.85em;">
+                {{ letters|length }}
+            </span>
+        </h3>
+        <a href="{% url 'CreateRawLetter' %}" 
+           style="background:#28a745; color:#fff; padding:10px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:0.3s;">
+            <i class="fa fa-plus"></i> ایجاد نامه جدید
+        </a>
+    </div>
+
+    <!-- جدول نامه‌ها -->
+    <div class="box-body table-responsive no-padding" style="background:#f8f9fa; padding:15px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+        <table class="table table-hover" style="table-layout: fixed; width: 100%; border-collapse: separate; border-spacing:0 12px;">
+            <thead>
+                <tr style="background:#4a90e2; color:#fff; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); text-align:center;">
+                    <th style="width:5%; padding:12px;">ردیف</th>
+                    <th style="width:15%; padding:12px;">شماره نامه</th>
+                    <th style="width:20%; padding:12px;">نوع نامه / گیرنده</th>
+                    <th style="width:30%; padding:12px;">اطلاعات سرباز</th>
+                    <th style="width:10%; padding:12px;">تاریخ نامه</th>
+                    <th style="width:10%; padding:12px;">عملیات</th>
+                    <th style="width:10%; padding:12px;">وضعیت</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for letter in letters %}
+                <tr dir="rtl" style="vertical-align: top; background:#fff; border-radius:12px; box-shadow:0 1px 5px rgba(0,0,0,0.05); margin-bottom:10px; display:table-row;">
+                    <td>{{ forloop.counter }}</td>
+
+                    <!-- شماره نامه و بازگشت به نامه -->
+                    <td>
+                        <div style="padding:6px 8px; background:#e3f2fd; border-radius:8px; font-weight:700; font-size:0.95em; color:#222;">
+                            {{ letter.number }}
+                        </div>
+                        {% if letter.return_to_number %}
+                        <div style="margin-top:4px;">
+                            <span class="badge bg-secondary">{{ letter.return_to_number }} بازگشت به</span>
+                        </div>
+                        {% endif %}
+                    </td>
+
+                    <!-- نوع نامه / گیرنده -->
+                    <td>
+                        <span class="badge bg-info text-dark">{{ letter.get_letter_type_display }}</span>
+                        <div class="mt-1"><i class="bi bi-geo-alt-fill"></i> {{ letter.destination }}</div>
+                    </td>
+
+                    <!-- اطلاعات سرباز -->
+                    <td>
+                        <div style="padding:6px 10px; background:#f1f3f5; border-radius:8px; font-weight:600; font-size:0.95em; color:#222; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
+                            {{ letter.soldier_name }} {{ letter.soldier_family }}
+                        </div>
+                        <div style="font-size:0.85em; color:#555; padding:2px 0;">پدر: {{ letter.soldier_fathers_name }}</div>
+                        <div style="font-size:0.85em; color:#555; padding:2px 0;">کد ملی: {{ letter.soldier_national_code }}</div>
+                        <div style="font-size:0.85em; color:#555; padding:2px 0;">کد پذیرش: {{ letter.soldier_acceptance_code }}</div>
+                        <div style="font-size:0.85em; color:#555; padding:2px 0;">تاریخ اعزام: {{ letter.soldier_date_of_dispatch }}</div>
+                    </td>
+
+                    <!-- تاریخ نامه فقط yyyy/mm/dd -->
+                    <td class="text-center">{{ letter.date|date:"Y/m/d" }}</td>
+
+                    <!-- عملیات -->
+                    <td>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <a href="{% url 'UpdateStatusRawLetter' letter.id %}" 
+                               style="background:#ffc107; color:#222; padding:6px 10px; border-radius:6px; font-size:0.85em; text-align:center; display:block; text-decoration:none; box-shadow:0 1px 4px rgba(0,0,0,0.15);">
+                               تغییر وضعیت
+                            </a>
+                            <a href="{% url 'PrintRawLetter' letter.id %}" target="_blank" 
+                               style="background:#28a745; color:#fff; padding:6px 10px; border-radius:6px; font-size:0.85em; text-align:center; display:block; text-decoration:none; box-shadow:0 1px 4px rgba(0,0,0,0.15);">
+                               چاپ
+                            </a>
+                            <form action="{% url 'DeleteRawLetter' letter.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background:#dc3545; color:#fff; padding:6px 10px; border-radius:6px; font-size:0.85em; display:block; border:none; width:100%; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.15);" onclick="return confirm('آیا مطمئن هستید؟')">
+                                    حذف
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+
+                    <!-- وضعیت -->
+                    <td class="text-center">
+                        {% if letter.status %}
+                            <span style="display:inline-block; padding:6px 12px; border-radius:14px; font-weight:600; font-size:0.75em; color:#fff; 
+                                background-color:{% if letter.status == 'تکمیل شده' %}#28a745{% elif letter.status == 'در حال بررسی' %}#ffc107{% else %}#6c757d{% endif %};
+                                box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+                                {{ letter.status }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">نامشخص</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">هیچ نامه‌ای ثبت نشده است.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- JS برای کارت آماری با آیکون -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const letters = [
+        {% for letter in letters %}
+        "{{ letter.get_letter_type_display }}",
+        {% endfor %}
+    ];
+    const counts = {};
+    letters.forEach(l => counts[l] = counts[l] ? counts[l]+1 : 1);
+
+    const statsContainer = document.getElementById('letter-stats');
+    const icons = {
+        "معرفی به کمیسیون":"fa-users",
+        "معرفی به کمیسیون شروع دوره آموزشی":"fa-graduation-cap",
+        "استعلام کفایت از آموزش":"fa-check-circle",
+        "گواهی عضویت":"fa-id-card",
+        "فرار":"fa-running",
+        "سازمان وظیفه عمومی فراجا":"fa-building",
+        "معرفی نامه":"fa-envelope"
+    };
+    for (const [title, count] of Object.entries(counts)) {
+        const card = document.createElement('div');
+        card.style.background = 'linear-gradient(135deg, #e0f7fa, #b2ebf2)';
+        card.style.padding = '14px 20px';
+        card.style.borderRadius = '12px';
+        card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        card.style.flex = '1 1 280px';
+        card.style.display = 'flex';
+        card.style.alignItems = 'center';
+        card.style.justifyContent = 'space-between';
+        card.style.gap = '12px';
+        card.style.transition = 'transform 0.2s, box-shadow 0.2s, background 0.3s';
+        card.style.cursor = 'default';
+
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-3px)';
+            card.style.boxShadow = '0 8px 18px rgba(0,0,0,0.2)';
+            card.style.background = 'linear-gradient(135deg, #b2ebf2, #80deea)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            card.style.background = 'linear-gradient(135deg, #e0f7fa, #b2ebf2)';
+        });
+
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <i class="fa ${icons[title] || 'fa-file'}" style="font-size:1.5em; color:#007bff;"></i>
+                <span style="font-weight:600; color:#555; font-size:1em;">${title}</span>
+            </div>
+            <span style="font-weight:bold; font-size:1.3em; color:#222;">${count}</span>
+        `;
+        statsContainer.appendChild(card);
+    }
+});
+</script>
+{% endblock %}

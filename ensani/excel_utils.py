@@ -5,7 +5,8 @@ from django.http import HttpResponse
 from io import BytesIO
 from soldiers.models import Soldier
 from ensani_letter.models import NormalLetterModels,CheckoutLetterModels
-
+import xlwt
+import io
 
 def export_soldiers_to_excel(filter_kwargs=None, filename='export', sheet_name='سربازان', include_stats=True):
     if filter_kwargs is None:
@@ -157,9 +158,14 @@ def append_kafiat_row(rows, s, kafiat_type):
         "نوع کفایت": kafiat_type,
     })
 
-def export_kafiat_to_excel(filename="kafiat"):
+
+def get_kafiat_rows():
+    """
+    تولید داده‌های کفایتی به صورت لیست دیکشنری
+    """
     rows = []
 
+    # اضافه کردن داده‌ها
     for s in Soldier.objects.filter(has_been_accepted=True, Sufficiency_of_mobilization=True):
         append_kafiat_row(rows, s, "کفایت بسیج")
 
@@ -167,16 +173,18 @@ def export_kafiat_to_excel(filename="kafiat"):
         append_kafiat_row(rows, s, "کفایت دار خدمت قبلی")
 
     for l in NormalLetterModels.objects.filter(subject="معرفی به کمیسیون", soldire__the_medical_commission=True):
-        s = l.soldire
-        append_kafiat_row(rows, s, "معرفی به کمیسیون")
+        append_kafiat_row(rows, l.soldire, "معرفی به کمیسیون")
 
     for l in NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی", soldire__the_medical_commission=True):
-        s = l.soldire
-        append_kafiat_row(rows, s, "معرفی به کمیسیون شروع دوره آموزشی")
+        append_kafiat_row(rows, l.soldire, "معرفی به کمیسیون شروع دوره آموزشی")
     
     for l in CheckoutLetterModels.objects.filter(c_type="تجدید دوره"):
-        s = l.soldire
-        append_kafiat_row(rows, s, "تجدید دوره")
+        append_kafiat_row(rows, l.soldire, "تجدید دوره")
+
+    return rows
+
+def export_kafiat_to_excel(filename="kafiat"):
+    rows = get_kafiat_rows()
 
     df = pd.DataFrame(rows)
 
@@ -236,3 +244,70 @@ def export_kafiat_to_excel(filename="kafiat"):
     )
     response['Content-Disposition'] = f'attachment; filename="{filename}.xlsx"'
     return response
+
+
+
+def sakhtar_kafiat_to_excel_bytes():
+    """
+    تولید فایل اکسل xlsx در حافظه
+    """
+    rows = get_kafiat_rows()
+    df = pd.DataFrame(rows)
+    df["کد سازمانی"] = range(1, len(df) + 1)
+    df = df[["کد ملی", "کد سازمانی"]]
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="فهرست-فراگیران")
+        ws = writer.sheets["فهرست-فراگیران"]
+        ws.sheet_view.rightToLeft = True
+
+        # استایل ساده
+        vazir_font = Font(name="Vazirmatn", size=12)
+        thin_border = Border(
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin")
+        )
+        center_align = Alignment(horizontal="center", vertical="center")
+
+        for row in ws.iter_rows():
+            for cell in row:
+                cell.font = vazir_font
+                cell.border = thin_border
+                cell.alignment = center_align
+
+        for col in ws.columns:
+            max_length = max(len(str(cell.value)) if cell.value else 0 for cell in col)
+            ws.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+
+    output.seek(0)
+    return output
+
+
+def sakhtar_kafiat_to_excel_xls_bytes():
+    """
+    تولید فایل اکسل xls در حافظه
+    """
+    rows = get_kafiat_rows()
+    df = pd.DataFrame(rows)
+    df["کد سازمانی"] = range(1, len(df) + 1)
+    df = df[["کد ملی", "کد سازمانی"]]
+
+    output = io.BytesIO()
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet("فهرست-فراگیران")
+
+    # هدر
+    for col_idx, col_name in enumerate(df.columns):
+        ws.write(0, col_idx, col_name)
+
+    # داده‌ها
+    for row_idx, row in enumerate(df.itertuples(index=False), start=1):
+        for col_idx, value in enumerate(row):
+            ws.write(row_idx, col_idx, value)
+
+    wb.save(output)
+    output.seek(0)
+    return output

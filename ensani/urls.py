@@ -10,4 +10,5 @@ urlpatterns = [
    path("tatbikh/", views.download_tatbikh, name="download_tatbikh"),
    path("download_kafiat/", views.download_kafiat, name="download_kafiat"),
    path("data/", views.data_app, name="data_app"),
+   path("activity/logs", views.activity_logs, name="activity_logs"),
 ]

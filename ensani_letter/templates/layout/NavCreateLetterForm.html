@@ -19,7 +19,7 @@ h1 {
 .tab-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 5px;
     margin-bottom: 20px;
 }
 
@@ -27,7 +27,7 @@ h1 {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 14px;
+    padding: 8px 15px;
     text-decoration: none;
     border-radius: 8px 8px 0 0;
     background: #f7f9fc;
@@ -70,9 +70,31 @@ color: #28c2a0;
     color: #fff;
     transform: scale(1.1);
 }
+.box-tabs {
+    display:flex;
+    align-items:center;
+    gap:50px;
+    border-bottom:2px solid gray;
+    margin-bottom:10px;
+}
 </style>
-
-<h1>ایجاد نامه جدید</h1>
+<div class="box-tabs">
+    <div>
+<h1>فهرست</h1>
+<div class="tab-nav">
+    <a href="{% url 'AllNormalLetter' %}" class="{% if request.resolver_match.url_name == 'AllNormalLetter' %}active{% endif %}">
+        <i class="fa fa-credit-card"></i> نامه های عادی
+    </a>
+    <a href="{% url 'AllCheckoutLetter' %}" class="{% if request.resolver_match.url_name == 'AllCheckoutLetter' %}active{% endif %}">
+        <i class="fa fa-handshake-o"></i> تسویه حساب ها
+    </a>
+    <a href="{% url 'AllRawLetters' %}" class="{% if request.resolver_match.url_name == 'AllRawLetters' %}active{% endif %}">
+        <i class="fa fa-handshake-o"></i> نامه های خام
+    </a>
+</div>
+</div>
+<div>
+    <h1>ایجاد نامه جدید</h1>
 <div class="tab-nav">
     <a href="{% url 'CreateCheckoutLetter' %}" class="{% if request.resolver_match.url_name == 'CreateCheckoutLetter' %}active{% endif %}">
         <i class="fa fa-credit-card"></i> تسویه حساب
@@ -95,4 +117,10 @@ color: #28c2a0;
     <a href="{% url 'CreateMoarefiLetter' %}" class="{% if request.resolver_match.url_name == 'CreateMoarefiLetter' %}active{% endif %}">
         <i class="fa fa-handshake-o"></i> نامه معرفی
     </a>
+        <a href="{% url 'CreateRawLetter' %}" class="{% if request.resolver_match.url_name == 'CreateRawLetter' %}active{% endif %}">
+        <i class="fa fa-handshake-o"></i> نامه خام
+    </a>
+</div>
+</div>
+
 </div>

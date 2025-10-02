@@ -42,6 +42,10 @@ urlpatterns = [
          name='import_and_export_excel_maharat'),
     path('soldire/import-and-export/excel/sakhtar/sazi', import_and_export_multiple_excel_sakhtar_sazi,
          name='import_and_export_multiple_excel_sakhtar_sazi'),
+    
+    path('soldire/import-and-export/excel/sakhtar/sazi/xls', import_and_export_multiple_excel_sakhtar_sazi_xls,
+         name='import_and_export_multiple_excel_sakhtar_sazi_xls'),
+    
     path('get_grohan_by_gordan_for_search/', get_grohan_by_gordan_for_search, name='get_grohan_by_gordan_for_search'),
     path('soldire/export_to_excel_list_not_accepted',
          export_to_excel_list_not_accepted,

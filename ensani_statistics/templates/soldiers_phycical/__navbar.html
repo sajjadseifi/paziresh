@@ -1,0 +1,59 @@
+<style>
+.navbar-amar {
+    background-color: #1f2937;
+    color: white;
+    display: flex;
+    gap: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    justify-content: center;
+    margin:0 auto;
+    align-items: center;
+    font-weight: 500;
+}
+
+.navbar-amar a {
+    color: white;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar-amar a:hover {
+    background-color: #374151; /* hover gray */
+}
+
+.navbar-amar a.active {
+    background-color: #2563eb; /* blue active */
+    color: white;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .navbar-amar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+
+<nav class="navbar-amar">
+    <a href="{% url 'physical_stats' %}" 
+       class="{% if request.resolver_match.url_name == 'physical_stats' %}active{% endif %}">
+        آمار جسمانی
+    </a>
+    <a href="{% url 'physical_table' %}" 
+       class="{% if request.resolver_match.url_name == 'physical_table' %}active{% endif %}">
+        جدول جسمانی
+    </a>
+    <a href="{% url 'physical_height_weight_chart' %}" 
+       class="{% if request.resolver_match.url_name == 'physical_height_weight_chart' %}active{% endif %}">
+        نمودار قد و وزن
+    </a>
+    <a href="{% url 'physical_bmi_chart' %}" 
+       class="{% if request.resolver_match.url_name == 'physical_bmi_chart' %}active{% endif %}">
+        نمودار BMI
+    </a>
+</nav>
+<hr style="margin-top:0;">
