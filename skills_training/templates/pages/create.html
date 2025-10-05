@@ -1,0 +1,236 @@
+{% extends "../layout/base.html" %}
+{% load static %}
+
+{% block header %}
+<!-- Select2 CSS -->
+<link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<style>
+/* صفحه */
+.page-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #0d47a1;
+    font-family: Vazir, Tahoma, sans-serif;
+}
+
+
+/* فرم‌ها */
+.form-section {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.form-header h3 {
+   margin:0;
+   margin-top:0;
+   margin-bottom:0;
+   padding:0;
+   font-weight:bold;
+}
+.skill-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+.skill-row input, .skill-row select {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    flex: 1;
+    font-family: Vazir, Tahoma, sans-serif;
+    transition: border-color 0.2s;
+}
+.skill-row input:focus, .skill-row select:focus { border-color: #1565c0; outline: none; }
+.row-number {
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #1565c0;
+    flex-shrink: 0;
+}
+
+.btn-remove {
+    flex-shrink: 0;
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: Vazir, Tahoma, sans-serif;
+    display: flex; align-items: center; gap: 5px;
+}
+
+.btn-submit { background-color: #1565c0; color: #fff; width:100%;  text-align:center; }
+.btn-submit:hover { background-color: #0d47a1; }
+
+.btn-add { background-color: #00acc1; color: #fff;border-radius:5px; text-align:center;  }
+.btn-add:hover { background-color: #007c91; }
+
+.btn-remove { background-color: #e53935; color: #fff; padding: 5px 10px; }
+.btn-remove:hover { background-color: #b71c1c; }
+
+.message { margin-bottom: 15px; padding: 12px 15px; border-radius: 8px; font-weight: bold; font-family: Vazir, Tahoma, sans-serif; }
+.message.success { background-color: #c8e6c9; color: #256029; }
+.message.error { background-color: #ffcdd2; color: #b71c1c; }
+
+
+
+.form-section input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* ظاهر select2 شبیه input */
+.select2-container--default .select2-selection--single {
+    height: 38px; /* ارتفاع مشابه input */
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: Vazir, Tahoma, sans-serif;
+    line-height: 1.5;
+    background-color: #fff;
+    transition: border-color 0.2s;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #1565c0;
+    outline: none;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px; /* نزدیک به ارتفاع input */
+    right: 10px;
+}
+
+</style>
+
+{% if messages %}
+    {% for msg in messages %}
+        <div class="message {{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+{% endif %}
+
+<div style="margin:20px 0  0;" class="row">
+
+    <!-- فرم ثبت دستی -->
+    <div class="col-md-7">
+        <div class="form-section">
+           <form method="POST" action="{% url 'skills:create_manual' %}">
+               <div class="form-header">
+                   <h3 style="flex:1;">ثبت دستی مهارت‌ها</h3>
+                   <div style="margin:0 10px  0;">
+                      <button type="submit" class="btn-submit"><i class="fa fa-check"></i> ثبت مهارت‌ها</button>
+                   </div>
+                   <button type="button" class="btn-add" onclick="addRow()"><i class="fa fa-plus"></i> افزودن ردیف</button>
+               </div>
+                {% csrf_token %}
+                <div id="skills-container">
+                    <div class="skill-row">
+                       <span class="row-number">1</span>
+                       <select class="category-select" name="category[]" required>
+                           {% for cat in categories %}
+                              <option value="{{ cat }}">{{ cat }}</option>
+                           {% endfor %}
+                       </select>
+                        <input type="text" name="title[]" placeholder="عنوان مهارت" required>
+                        <input type="text" name="code[]" placeholder="کد مهارت">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- فرم Excel -->
+    <div class="col-md-5">
+        <div class="form-section">
+            <div class="form-header">
+               <h3 style="flex:1;">ثبت با فایل Excel</h3>
+               <a href="{% url 'skills:download_sample_excel' %}" class="btn btn-add" download>
+                  <i class="fa fa-download"></i> دانلود فایل نمونه
+               </a>
+            </div>
+            <form method="POST" action="{% url 'skills:create_excel' %}" enctype="multipart/form-data" style="margin-top: 15px;">
+                {% csrf_token %}
+                <label>انتخاب فایل Excel</label>
+                <input type="file" name="skills_excel" accept=".xlsx,.xls">
+                <button style="margin:10px 0 0;" type="submit" class="btn-submit"><i class="fa fa-upload"></i> بارگذاری و ثبت</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
+<script>
+function initSelect2() {
+    $('.category-select').select2({
+        tags: true,
+        placeholder: "انتخاب یا وارد کردن دسته‌بندی",
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initSelect2();
+});
+function updateRowNumbers() {
+    const rows = document.querySelectorAll('#skills-container .skill-row');
+    rows.forEach((row, index) => {
+        const num = row.querySelector('.row-number');
+        if(num) num.textContent = index + 1;
+    });
+}
+// افزودن ردیف جدید
+function addRow() {
+    const container = document.getElementById('skills-container');
+    const row = document.createElement('div');
+    row.classList.add('skill-row');
+    row.innerHTML = `
+        <span class="row-number"></span>
+        <button type="button" class="btn-remove" onclick="removeRow(this)"><i class="fa fa-trash"></i> حذف</button>
+        <select name="category[]" class="category-select" required>
+            {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="title[]" placeholder="عنوان مهارت" required>
+        <input type="text" name="code[]" placeholder="کد مهارت">
+    `;
+    container.appendChild(row);
+    initSelect2();
+    updateRowNumbers();
+}
+
+// حذف ردیف (اولین هرگز پاک نمی‌شود)
+function removeRow(button) {
+    const container = document.getElementById('skills-container');
+    if(container.children.length > 1) {
+        button.parentNode.remove();
+    } else {
+        alert("اولین ردیف نمی‌تواند حذف شود.");
+    }
+}
+document.addEventListener('DOMContentLoaded', updateRowNumbers);
+
+</script>
+{% endblock %}

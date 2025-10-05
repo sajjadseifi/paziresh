@@ -35,6 +35,7 @@ urlpatterns = [
     path('backup/', include('ensani_backup.urls')),
     path('help/', include('help.urls')),
     path('download/', include("ensani.urls")),
+    path('skills/', include('skills_training.urls', namespace="skills")),
 
     re_path(r'^header_partial_view',
             header_partial_view,

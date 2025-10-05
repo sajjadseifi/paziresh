@@ -1,0 +1,20 @@
+{% extends "shared/_PanelMain.html" %}
+
+{% block header %}
+    {# اینجا می‌تونی فایل‌های css یا meta خاص این بخش رو اضافه کنی #}
+{% endblock %}
+
+{% block main %}
+   <div class="skills-training-layout">
+      <!-- include navbar -->
+      {% include "./navbar.html" %}
+
+      <div class="skills-training-body mt-4">
+         {% block content %}{% endblock %}
+      </div>
+   </div>
+{% endblock %}
+
+{% block footer %}
+    {# جا برای اسکریپت‌های مخصوص هر صفحه #}
+{% endblock %}

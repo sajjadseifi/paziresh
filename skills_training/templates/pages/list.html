@@ -1,0 +1,855 @@
+{% extends "../layout/base.html" %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+
+<style>
+/* ===== Toolbar ===== */
+.toolbar {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.toolbar-stats { font-size: 14px; }
+.toolbar-actions { display: flex; gap: 8px; }
+.counter { font-weight: bold; color: #1565c0; }
+
+/* ===== Table ===== */
+.skills-table {
+    width: 100%;
+    border-collapse: collapse;
+    direction: rtl;
+}
+
+.skills-table th, .skills-table td {
+    border: 1px solid #ddd;
+    text-align: center;
+}
+.table-wrapper {
+    max-height: 65vh;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+.skills-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #0d47a1;
+    color: #fff;
+    z-index: 2;
+}
+
+.table-input {
+    margin:0;
+    width:100%;
+    height:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    padding:2px 12px;
+    box-sizing:border-box;
+    transition:0.3s;
+}
+.table-input:focus { background:#e1f5fe; font-weight:bold; }
+.table-input.changed { background: #fff3cd !important; }
+.table-input.input-duplicate { background: #e53935 !important; color:#fff; }
+
+.skills-table .data-row:nth-child(even) { background-color: #f2f2f2; }
+.skills-table .data-row:hover { background-color: #c8e1ff; }
+
+/* ===== Input icons ===== */
+.input-wrapper { position: relative; }
+.input-wrapper input.table-input { padding-right: 25px; }
+.input-wrapper .edit-icon,
+.input-wrapper .clear-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: 0.3s;
+    right: 5px;
+}
+.input-wrapper .edit-icon { color: #0d47a1; }
+.input-wrapper .changed +  .edit-icon { opacity:1; }
+.input-wrapper .clear-icon { color: #fff;opacity:0; }
+.input-wrapper .input-duplicate + .edit-icon {opacity:0;}
+.input-wrapper .input-duplicate ~ .clear-icon {opacity:1;}
+.input-wrapper .edit-icon:hover,
+.input-wrapper .clear-icon:hover { opacity: 1; }
+
+/* ===== Buttons ===== */
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 5px; transition: 0.2s; margin: 0 2px; }
+.btn i { font-size: 14px; }
+.btn-view { background-color: #1565c0; color:#fff; }
+.btn-view:hover { background-color: #0d47a1; }
+.btn-edit { background-color: #ffc107; color:#000; }
+.btn-edit:hover { background-color: #e6b800; }
+.btn-delete { background-color: #e53935; color:#fff; }
+.btn-delete:hover { background-color: #b71c1c; }
+.btn-edit-category {background-color: #ff9800; color: #000;}
+.btn-edit-category:hover {background-color: #fb8c00;}
+.btn-download { background-color: #28a745; color: #fff;}
+.btn-download:hover {background-color: #218838;}
+
+/* ===== Category Row ===== */
+.category-row { background: #cfd8dc; font-weight: bold; }
+.category-row td { text-align: center; padding-left: 10px; }
+
+/* ===== Alert Box ===== */
+.alert-box { position: fixed; top: 70px; right: 20px; z-index: 1050; min-width: 250px; }
+.alert { padding: 10px 20px; border-radius: 5px; margin-bottom: 5px; color: #fff; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; }
+.alert-success { background-color: #28a745; } 
+.alert-warning { background-color: #ffc107; color: #000; }
+.alert-error   { background-color: #dc3545; }
+</style>
+<style>
+    /* استایل فرم ثبت Excel */
+.form-section {
+    background-color: #1f2937; /* پس‌زمینه تیره */
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: #f3f4f6; /* رنگ متن روشن */
+    margin: 10px 0;
+
+}
+table .deleted td, table .deleted td input {
+    color:red;
+        text-decoration: line-through; /* خط زدن متن */
+
+}
+.form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 10px;
+}
+
+.form-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.form-header .btn-add {
+    background-color: #2563eb;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.form-header .btn-add:hover {
+    background-color: #1d4ed8;
+}
+
+form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+form input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #4b5563;
+    background-color: #111827;
+    color: #f3f4f6;
+    margin-bottom: 12px;
+}
+
+form input[type="file"]::file-selector-button {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    padding:  12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+form input[type="file"]::file-selector-button:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content:center;
+    background-color: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+        width:100%;
+    box-sizing:border-box;
+}
+
+.btn-submit i {
+    margin-right: 6px;
+}
+
+.btn-submit:hover {
+    background-color: #059669;
+}
+
+</style>
+<div id="alertContainer" class="alert-box"></div>
+
+<form method="POST" id="mainForm" action="{% url 'skills:actions' %}">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-stats">
+                <span class="counter">کل دسته‌ها: {{ total_categories }}</span> |
+                <span class="counter">کل آیتم‌ها: {{ total_items }}</span> |
+                <span id="new" class="counter">جدید: 0</span> |
+                <span id="del" class="counter">حذف : 0</span> |
+                <span class="counter">انتخاب: <span id="selectedCount">0</span></span> |
+                <span class="counter">تغییرات: <span id="changedCount">0</span></span> 
+                </div>
+                <div class="toolbar-actions">
+                    <a class="btn btn-download" href="{% url 'skills:export_skills_excel' %}">
+                        <i class="fa fa-download"></i> دانلود اکسل مهارت ها
+                    </a>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="toolbar-actions">
+                    <button type="button"  class="btn btn-view" id="applyBtn" disabled>
+                        <i class="fa fa-check"></i> اعمال نهایی
+                    </button>
+                    <button type="button" class="btn btn-edit-category" id="editCategoryBtn" disabled>
+                        <i class="fa fa-folder"></i> ویرایش دسته
+                    </button>
+                    <button type="button" class="btn btn-edit" id="editCodeBtn" disabled>
+                        <i class="fa fa-barcode"></i> ویرایش کد
+                    </button>
+                    <button type="button" class="btn btn-delete" id="deleteBtn" disabled>
+                        <i class="fa fa-trash"></i> حذف موارد
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">لغو عملیات</button>
+                </div>
+                <div  class="toolbar-stats">
+                <button type="" class="btn btn-success" id="addBtn">
+                    مهارت جدید <i class="fa fa-plus"></i> 
+                    </button>
+                </div>
+            </div>
+        </div>
+            <!-- فرم Excel -->
+        <div class="col-md-4">
+            <div class="form-section">
+                <div class="form-header">
+                <h3 style="flex:1;">ثبت با فایل Excel</h3>
+                <a href="{% url 'skills:download_sample_excel' %}" class="btn btn-add" download>
+                    <i class="fa fa-download"></i> دانلود فایل نمونه
+                </a>
+                </div>
+                <button type="button" class="btn-submit" id="openExcelModalBtn" >
+                    <i class="fa fa-upload"></i> بارگذاری و ثبت فایل Excel
+                </button>
+            </div>
+        </div>
+    
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table class="skills-table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll" style="width:20px;height:20px;" /></th>
+                    <th>ردیف</th>
+                    <th>دسته</th>
+                    <th>مهارت</th>
+                    <th>کد مهارت</th>
+                    <th>تعداد سربازان</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in skills_in_category %}
+                    <tr class="category-row" data-category="{{ group.category|safe_slug }}">
+                        <td><input type="checkbox" class="category-check" data-category="{{ group.category|safe_slug }}" /></td>
+                        <td colspan="4">{{ group.category }} - تعداد آیتم‌ها: {{ group.counts }}</td>
+                        <td>انتخاب شده: <span class="selectedCountCategory" id="selectedCount-{{ group.category|safe_slug }}">0</span></td>
+                    </tr>
+                    {% for skill in group.items %}
+                        <tr class="data-row category-{{ group.category|safe_slug }}">
+                            <td><input type="checkbox" value="{{ skill.id }}" class="row-check category-{{ group.category|safe_slug }}" data-category="{{ group.category|safe_slug }}" /></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td><div class="input-wrapper"><input class="table-input" name="field_{{ skill.id }}_category" value="{{ skill.category }}" /><i class="fa fa-pencil edit-icon"></i></div></td>
+                            <td><div class="input-wrapper"><input class="table-input" name="field_{{ skill.id }}_title" value="{{ skill.title }}" /><i class="fa fa-pencil edit-icon"></i><i class="fa fa-times clear-icon" title="پاک کردن"></i></div></td>
+                            <td><div class="input-wrapper"><input class="table-input" name="field_{{ skill.id }}_code" value="{{ skill.code }}" /><i class="fa fa-pencil edit-icon"></i></div></td>
+                            <td>{{ skill.primary_soldiers.count|add:skill.secondary_soldiers.count }}</td>
+                        </tr>
+                    {% endfor %}
+                {% empty %}
+                    <tr><td colspan="6">هیچ مهارتی ثبت نشده است.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<!-- --------------------- مودال بارگذاری Excel --------------------- -->
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="direction: rtl; text-align: right;">
+      
+      <!-- هدر مودال -->
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title"><i class="fa fa-upload"></i> بارگذاری فایل Excel</h5>
+      </div>
+
+      <!-- بدنه مودال -->
+      <div class="modal-body">
+        
+        <form id="excelUploadForm" method="POST" action="{% url 'skills:create_excel' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for="skillsExcelInput">انتخاب فایل Excel:</label>
+          <input type="file" class="form-control" id="skillsExcelInput" name="skills_excel" accept=".xlsx,.xls" required>
+        </form>
+      </div>
+
+      <!-- فوتر مودال -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelExcelUploadBtn">لغو</button>
+        <button type="button" class="btn btn-success" id="confirmUploadExcelBtn"><i class="fa fa-upload"></i> بارگذاری و ثبت</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- --------------------- مودال حذف موارد --------------------- -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="direction: rtl; text-align: right;">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fa fa-trash"></i> تایید حذف</h5>
+      </div>
+      <div class="modal-body">
+        <p id="deleteModalText"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">حذف موارد</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- --------------------- مودال ویرایش دسته --------------------- -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="direction: rtl; text-align: right;">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title"><i class="fa fa-folder-open"></i> ویرایش دسته</h5>
+      </div>
+      <div class="modal-body">
+        <label>دسته جدید:</label>
+        <input type="text" id="newCategoryInput" class="form-control" placeholder="نام دسته...">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+        <button type="button" class="btn btn-warning" id="confirmEditCategoryBtn">اعمال تغییرات دسته</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- --------------------- مودال ویرایش کد --------------------- -->
+<div class="modal fade" id="editCodeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="direction: rtl; text-align: right;">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title"><i class="fa fa-code"></i> ویرایش کد</h5>
+      </div>
+      <div class="modal-body">
+        <label>کد جدید:</label>
+        <input type="text" id="newCodeInput" class="form-control" placeholder="کد جدید...">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+        <button type="button" class="btn btn-info" id="confirmEditCodeBtn">اعمال تغییرات کد</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- --------------------- مودال اعمال نهایی --------------------- -->
+<div class="modal fade" id="applyChangesModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="direction: rtl; text-align: right;">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fa fa-check"></i> اعمال نهایی تغییرات</h5>
+      </div>
+      <div class="modal-body">
+        <p id="applyChangesText"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+        <button  action="apply_changes" type="submit" class="btn btn-primary" id="confirmApplyBtn">اعمال تغییرات</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+<script>
+    // --------------------- متغیرهای اصلی ---------------------
+    const tableBody = document.querySelector("tbody");
+    const selectAll = document.getElementById("selectAll");
+    const changedCountEl = document.getElementById("changedCount");
+    const selectedCountEl = document.getElementById("selectedCount");
+    const applyBtn = document.getElementById("applyBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const editCategoryBtn = document.getElementById("editCategoryBtn");
+    const editCodeBtn = document.getElementById("editCodeBtn");
+    let newRowCounter = 0;
+
+    // --------------------- شمارنده‌ها ---------------------
+    function updateSelectedCount() {
+        const count = document.querySelectorAll(".row-check:checked").length;
+        selectedCountEl.textContent = count;
+        deleteBtn.disabled = count === 0;
+        editCategoryBtn.disabled = count === 0;
+        editCodeBtn.disabled = count === 0;
+    }
+    function updateDeletedCount() {
+        const deletedCount = $('tr.deleted').length;
+        $('#del').text(`حذف : ${deletedCount}`);
+    }
+    function updateChangedCount() {
+        const changed = $('.table-input.changed').length;
+        const newRows = $('.new-row').length;
+        const deleted = $('.deleted').length;
+        const hasDuplicate = $('.input-duplicate').length > 0;
+
+        changedCountEl.textContent = changed;
+        const isDisabled = !(changed + newRows + deleted > 0) && hasDuplicate;
+        applyBtn.disabled = isDisabled;
+    }
+
+
+    // --------------------- Alert ---------------------
+    function showAlert(message, type='success', duration=4000){
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `<span>${message}</span><i class="fa fa-times" onclick="this.parentElement.remove()"></i>`;
+        container.appendChild(alert);
+        setTimeout(()=> alert.remove(), duration);
+    }
+
+    // --------------------- Event delegation برای ردیف‌ها ---------------------
+    tableBody.addEventListener("change", e => {
+        if(e.target.classList.contains("row-check")){
+            const row = e.target.closest("tr");
+            const cat = e.target.dataset.category;
+            const countSpan = document.getElementById("selectedCount-" + cat);
+            const checkedCount = document.querySelectorAll(`.row-check[data-category="${cat}"]:checked`).length;
+            countSpan.textContent = checkedCount;
+
+            // چک کردن سرگروه
+            const categoryCheck = document.querySelector(`.category-check[data-category="${cat}"]`);
+            if(categoryCheck){
+                const total = document.querySelectorAll(`.row-check[data-category="${cat}"]`).length;
+                categoryCheck.checked = (checkedCount === total);
+            }
+
+            updateSelectedCount();
+        }
+    });
+
+    // --------------------- select all ---------------------
+    if(selectAll){
+        selectAll.addEventListener("change", e => {
+            const checked = e.target.checked;
+            document.querySelectorAll(".row-check").forEach(cb => cb.checked = checked);
+            document.querySelectorAll(".category-check").forEach(cb => cb.checked = checked);
+            document.querySelectorAll(".selectedCountCategory").forEach(span => {
+                const cat = span.id.replace("selectedCount-", "");
+                const count = document.querySelectorAll(`.row-check[data-category="${cat}"]`).length;
+                span.textContent = checked ? count : 0;
+            });
+            updateSelectedCount();
+        });
+    }
+
+    // --------------------- دسته‌ها ---------------------
+    document.querySelectorAll(".category-check").forEach(cb => {
+        cb.addEventListener("change", () => {
+            const cat = cb.dataset.category;
+            console.log({cb})
+            const rows = document.querySelectorAll(`.row-check[data-category="${cat}"]`);
+            rows.forEach(r => r.checked = cb.checked);
+
+            const countSpan = document.getElementById("selectedCount-" + cat);
+            countSpan.textContent = cb.checked ? rows.length : 0;
+
+            updateSelectedCount();
+        });
+    });
+
+    // --------------------- افزودن سطر جدید ---------------------
+    document.getElementById("addBtn").addEventListener("click", e => {
+        e.preventDefault();
+        newRowCounter++;
+
+        const defaultCategory = "";
+        const defaultSlug = "";
+
+        let existingCategoryRow = document.querySelector(`.category-row[data-category="${defaultSlug}"]`);
+        if(!existingCategoryRow){
+            const catRow = document.createElement("tr");
+            catRow.classList.add("category-row");
+            catRow.dataset.category = defaultSlug;
+            catRow.innerHTML = `
+                <td><input type="checkbox" class="category-check" data-category="${defaultSlug}" style="width:18px;height:18px;" /></td>
+                <td colspan="4">${defaultCategory} - تعداد آیتم‌ها: <span id="itemCount-${defaultSlug}">0</span></td>
+                <td>انتخاب شده: <span class="selectedCountCategory" id="selectedCount-${defaultSlug}">0</span></td>`;
+          tableBody.prepend(catRow);
+
+            existingCategoryRow = catRow;
+
+            // listener برای دسته جدید
+            catRow.querySelector(".category-check").addEventListener("change", () => {
+                const cat = catRow.dataset.category;
+                const rows = document.querySelectorAll(`.row-check[data-category="${cat}"]`);
+                rows.forEach(r => r.checked = catRow.querySelector(".category-check").checked);
+                const countSpan = document.getElementById("selectedCount-" + cat);
+                countSpan.textContent = catRow.querySelector(".category-check").checked ? rows.length : 0;
+                updateSelectedCount();
+            });
+        }
+
+        const newRow = document.createElement("tr");
+        newRow.classList.add("data-row", "new-row");
+        newRow.dataset.category = defaultSlug;
+        newRow.innerHTML = `
+            <td><input type="checkbox" name="selected" value="new_${newRowCounter}" class="row-check" data-category="${defaultSlug}" style="width:18px;height:18px;" /></td>
+            <td>+</td>
+            <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_category" value="${defaultCategory}" /><i class="fa fa-pencil edit-icon"></i></div></td>
+            <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_title" placeholder="عنوان مهارت..." /><i class="fa fa-pencil edit-icon"></i><i class="fa fa-times clear-icon"></i></div></td>
+            <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_code" placeholder="کد..." /><i class="fa fa-pencil edit-icon"></i></div></td>
+            <td>۰</td>
+        `;
+        existingCategoryRow.insertAdjacentElement("afterend", newRow);
+        attachInputListeners(newRow.querySelectorAll(".table-input"));
+
+        const itemCountEl = document.getElementById(`itemCount-${defaultSlug}`);
+        itemCountEl.textContent = document.querySelectorAll(`.data-row[data-category="${defaultSlug}"]`).length;
+
+        updateChangedCount();
+        showAlert("یک سطر جدید در دسته «بدون دسته» اضافه شد.","success");
+    });
+
+    // --------------------- مدیریت تغییر input ---------------------
+    function attachInputListeners(inputs){
+inputs.forEach(el => {
+    const $input = $(el); // ساخت نسخه jQuery از element
+    $input.data('original', $input.val());
+    $input.data('originalName', $input.attr('name'));
+
+    $input.on('input', function () {
+        const currentVal = $input.val();
+        const originalVal = $input.data('original');
+        const changed = currentVal !== originalVal;
+
+        // اگر تغییر کرده، name را برای backend تغییر بده
+        const oldName = $input.data('originalName');
+        if (changed) {
+            if (!oldName.startsWith('changed_')) {
+                $input.attr('name', `changed_${oldName}`);
+            }
+            $input.addClass('changed');
+        } else {
+            // اگر مقدار برگشت به حالت اولیه، نام را برگردان
+            $input.attr('name', oldName);
+            $input.removeClass('changed');
+        }
+
+        // اگر عنوان باشد، بررسی تکراری بودن
+        if ($input.attr('name').endsWith('_title')) {
+            validateTitles();
+        }
+
+        updateChangedCount();
+    });
+});
+
+    }
+
+    // --------------------- اعتبارسنجی عنوان تکراری ---------------------
+    function validateTitles(){
+        const seen = {};
+        document.querySelectorAll("input[name$='_title']").forEach(input => {
+            input.classList.remove("input-duplicate");
+            const val = input.value.trim();
+            if(val){
+                if(seen[val]){
+                    input.classList.add("input-duplicate");
+                    seen[val].classList.add("input-duplicate");
+                } else seen[val] = input;
+            }
+        });
+        updateChangedCount();
+    }
+
+    attachInputListeners(document.querySelectorAll(".table-input"));
+
+</script>
+
+<script>
+$(document).ready(function(){
+// --------------------- باز کردن مودال بارگذاری Excel ---------------------
+    $('#openExcelModalBtn').click(function(){
+        $('#uploadExcelModal').modal('show');
+    });
+
+    // --------------------- لغو مودال بارگذاری Excel ---------------------
+    $('#cancelExcelUploadBtn').click(function(){
+        $('#excelUploadForm')[0].reset(); // ریست کردن فرم
+        $('#uploadExcelModal').modal('hide');
+    });
+
+    // --------------------- تأیید بارگذاری Excel ---------------------
+    $('#confirmUploadExcelBtn').click(function(){
+        if(!$('#skillsExcelInput').val()){
+            alert('لطفاً یک فایل انتخاب کنید.');
+            return;
+        }
+        $('#excelUploadForm').submit();
+    });
+    // --------------------- لغو مودال بارگذاری Excel ---------------------
+    $('#cancelExcelUploadBtn').click(function(){
+        $('#excelUploadForm')[0].reset(); // ریست کردن فرم
+        $('#uploadExcelModal').modal('hide');
+    });
+
+    // --------------------- تأیید بارگذاری Excel ---------------------
+    $('#confirmUploadExcelBtn').click(function(){
+        if(!$('#skillsExcelInput').val()){
+            alert('لطفاً یک فایل انتخاب کنید.');
+            return;
+        }
+        $('#excelUploadForm').submit();
+    });
+
+    // --------------------- لغو همه مودال‌ها ---------------------
+    $('.modal-footer .btn-secondary').click(function(){
+        $(this).closest('.modal').modal('hide');
+    });
+
+    // --------------------- حذف موارد ---------------------
+    $('#deleteBtn').click(function(){
+        const selectedRows = $('.row-check:checked');
+        if(selectedRows.length === 0) return;
+
+        $('#deleteModalText').text(`شما قصد حذف ${selectedRows.length} مورد را دارید. آیا مطمئن هستید؟`);
+        $('#confirmDeleteModal').modal('show');
+
+        $('#confirmDeleteBtn').off('click').on('click', function(){
+            selectedRows.each(function(){
+                const $checkbox = $(this);
+                const $row = $checkbox.closest('tr');
+
+                $row.addClass('deleted');       // علامت حذف برای سطر
+                $checkbox.prop('checked', false); // غیرفعال‌کردن خود چک‌باکس
+            });
+
+            $('#confirmDeleteModal').modal('hide');
+            showAlert(`${selectedRows.length} مورد برای حذف علامت‌گذاری شد.`, 'warning');
+            updateSelectedCount();
+            updateDeletedCount();
+            updateChangedCount();
+        });
+
+    });
+
+    // --------------------- ویرایش دسته ---------------------
+    $('#editCategoryBtn').click(function(){
+        const selectedRows = $('.row-check:checked');
+        if(selectedRows.length === 0) return;
+
+        $('#newCategoryInput').val('');
+        $('#editCategoryModal').modal('show');
+
+        $('#confirmEditCategoryBtn').off('click').on('click', function(){
+            const newCat = $('#newCategoryInput').val().trim();
+            if(!newCat) return;
+            selectedRows.each(function(){
+                const input = $(this).closest('tr').find("input[name$='_category']");
+                input.val(newCat).addClass('changed');
+
+                // تغییر نام input برای شناسایی در backend
+                const oldName = input.attr('name');
+                if(!oldName.startsWith('changed_')) {
+                    input.attr('name', `changed_${oldName}`);
+                }
+            });
+            $('#editCategoryModal').modal('hide');
+            showAlert(`دسته ${selectedRows.length} مورد تغییر یافت.`, 'success');
+            updateChangedCount();
+        });
+    });
+
+    // --------------------- ویرایش کد ---------------------
+    $('#editCodeBtn').click(function(){
+        const selectedRows = $('.row-check:checked');
+        if(selectedRows.length === 0) return;
+
+        $('#newCodeInput').val('');
+        $('#editCodeModal').modal('show');
+
+        $('#confirmEditCodeBtn').off('click').on('click', function(){
+            const newCode = $('#newCodeInput').val().trim();
+            if(!newCode) return;
+            selectedRows.each(function(){
+                const input = $(this).closest('tr').find("input[name$='_code']");
+                input.val(newCode).addClass('changed');
+
+                // تغییر نام input برای شناسایی در backend
+                const oldName = input.attr('name');
+                if(!oldName.startsWith('changed_')) {
+                    input.attr('name', `changed_${oldName}`);
+                }
+            });
+            $('#editCodeModal').modal('hide');
+            showAlert(`کد ${selectedRows.length} مورد تغییر یافت.`, 'success');
+            updateChangedCount();
+        });
+    });
+
+$('#applyBtn').click(function() {
+    // جمع‌آوری داده‌ها
+    const changedInputs = $('.table-input.changed').filter(function() {
+        return !$(this).closest('tr').hasClass('new-row');
+    });
+    const deletedRows = $('.deleted');
+    const newRows = $('.new-row');
+
+    const totalChanges = changedInputs.length + deletedRows.length + newRows.length;
+    if (totalChanges === 0) {
+        showAlert('هیچ تغییری برای اعمال وجود ندارد.', 'info');
+        return;
+    }
+    console.log({changedInputs,newRows})
+    // نمایش مودال تأیید
+    $('#applyChangesText').text(`شما در حال اعمال نهایی ${totalChanges} تغییر هستید. مطمئن هستید؟`);
+    $('#applyChangesModal').modal('show');
+
+    // تأیید اعمال نهایی
+    $('#confirmApplyBtn').off('click').on('click', function() {
+        const form = $('#mainForm');
+
+        // برداشتن disabled از همه فیلدها
+        form.find(':input').prop('disabled', false);
+
+        // اضافه کردن تغییرات سطرهای موجود
+        changedInputs.each(function() {
+            const input = $(this);
+            const original = input.data('originalName') || input.attr('name');
+            if (original) {
+                const parts = original.split('_');
+                const fieldName = `changed_${parts[1]}_${parts[2]}`;
+                input.attr('name',fieldName)
+            }
+        });
+
+        // اضافه کردن سطرهای جدید
+        newRows.each(function() {
+            $(this).find('.table-input').each(function() {
+                const input = $(this);
+                const original = input.data('originalName') || input.attr('name');
+                if (original) {
+                    const parts = original.split('_');
+                    const fieldName = `new_${parts[1]}_${parts[2]}`;
+                    input.attr('name',fieldName)
+                    //form.append(`<input type="hidden" name="${fieldName}" value="${input.val()}">`);
+                }
+            });
+        });
+
+        // اضافه کردن IDهای حذف شده
+        deletedRows.each(function() {
+            const rowCheck = $(this).find('.row-check');
+            const id = rowCheck.val();
+            form.append(`<input type="hidden" name="deleted_ids" value="${id}">`);
+        });
+
+        // اضافه کردن action
+        form.append('<input type="hidden" name="action" value="apply_changes">');
+
+        // بررسی داده‌ها قبل از ارسال
+        const formData = new FormData(form[0]);
+        console.log('🟢 ارسال داده‌ها به سرور:', [...formData.entries()]);
+
+        // ارسال فرم
+        form.trigger('submit'); // ← trigger نه submit
+
+        // بستن مودال
+        $('#applyChangesModal').modal('hide');
+
+        // بروزرسانی شمارنده‌ها
+        showAlert(`اعمال نهایی ${totalChanges} تغییر انجام شد.`, 'success');
+        updateChangedCount();
+        updateSelectedCount();
+    });
+});
+
+// لغو همه عملیات حذف
+$('#cancelDeleteBtn').click(function(){
+    // بازگردانی سطرهای علامت‌گذاری شده برای حذف
+    const deletedRows = $('tr.deleted');
+    deletedRows.removeClass('deleted');
+    deletedRows.find('.row-check').prop('checked', false);
+
+    // بروزرسانی شمارنده‌ها
+    updateSelectedCount();
+    updateChangedCount();
+
+    // بروزرسانی شمارنده حذف
+    const delCount = $('tr.deleted').length;
+    $('#del').text(`حذف : ${delCount}`);
+
+    showAlert('عملیات ها لغو شد.', 'success');
+});
+
+
+
+});
+
+
+</script>
+
+{% endblock %}
+
+
+

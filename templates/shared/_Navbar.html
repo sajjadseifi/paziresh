@@ -42,7 +42,16 @@
                     </ul>
                 </li>
             {% endif %}
-
+            {% if request.user.is_staff == True %}
+                <li class="">
+                    <a href="{% url 'skills:index' %}">
+                        <i class="fa fa-user-plus"></i>
+                        <span>مهارت اموزی</span>
+                        <span class="pull-left-container">
+                    </span>
+                    </a>
+                </li>
+            {% endif %}
             <li class="treeview">
                 <a href="#"><i class="fa fa-user-plus"></i> <span>مدیریت سرباز</span>
                     <span class="pull-left-container">

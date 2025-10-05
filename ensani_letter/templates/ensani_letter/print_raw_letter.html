@@ -126,14 +126,14 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
                 <img width="50px" src="{% static 'img/rank/name.jpg' %}" alt="logo_name">
             </div>
             <div class="header-right">
-                    <div class="letter_number">شماره: 512/106/6/<span>{{ letter.number|default:"-" }}</span></div>
+                    <div class="letter_number">شماره: 512/106/6/<span>{{ letter.number }}</span></div>
                     <div class="letter_date">تاریخ: {{ letter.date|date:"Y/m/d" }}</div>
             </div>
         </div>
 
         <div class="content">
             <div class="shoare_sall">{{ ens.shoare_sall }}</div>
-            <div class="letter_to">به: {{ letter.destination|default:"-" }}</div>
+            <div class="letter_to">به: {{ letter.destination }}</div>
             <div class="letter_create_location">از: آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع انسانی سرباز</div>
             <div class='salam_aleikom'>سلام علیکم</div>
             <div class='subject'>موضوع : {{letter.title}}</div>

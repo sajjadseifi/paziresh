@@ -1,9 +1,8 @@
 from django.db import models
-
+from skills_training.models import SlillTraining
 # Create your models here.
 from battalions.models import battalion, battalion_group
 from django_jalali.db import models as jmodels
-
 
 class Soldier(models.Model):
     name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام')
@@ -111,7 +110,9 @@ class Soldier(models.Model):
     rank = models.CharField(max_length=100, blank=True, null=True, verbose_name='درجه محاسبه‌شده')  # درجه محاسبه‌شده
     yegan_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='اسم اصلی یگان')
     tajdid_dore_moarefi_shode = models.BooleanField(default=False, verbose_name='تجدید دوره معرفی شده؟')
-
+    skill_1 = models.ForeignKey(SlillTraining,null=True,blank=True,related_name="primary_soldiers",on_delete=models.SET_NULL,verbose_name="مهارت اول")
+    skill_2 = models.ForeignKey(SlillTraining,null=True,blank=True,related_name="secondary_soldiers",on_delete=models.SET_NULL,verbose_name="مهارت دوم")
+    
     class Meta:
         verbose_name = "سرباز"
         verbose_name_plural = "سرباز ها"

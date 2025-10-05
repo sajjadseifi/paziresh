@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django_render_partial',
     'ensani',
     'soldiers',
+    'skills_training',
     'battalions',
     'django_jalali',
     'accounts',

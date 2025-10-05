@@ -123,7 +123,7 @@ class RawLetter(models.Model):
     soldier_family = models.CharField(null=True, blank=True, max_length=100, verbose_name="نام خانوادگی سرباز")
     soldier_fathers_name = models.CharField(null=True, blank=True, max_length=100, verbose_name="نام پدر سرباز")
     soldier_national_code = models.CharField(null=True, blank=True, max_length=20, verbose_name="کد ملی سرباز")
-    soldier_acceptance_code = models.IntegerField(null=True, blank=True, unique=True, verbose_name="کد پذیرش سرباز")
+    soldier_acceptance_code = models.IntegerField(null=True, blank=True, verbose_name="کد پذیرش سرباز")
     soldier_date_of_dispatch = models.CharField(null=True, blank=True, max_length=100, verbose_name="تاریخ اعزام سرباز")
 
     # ========================

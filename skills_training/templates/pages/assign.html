@@ -1,0 +1,328 @@
+{% extends "../layout/base.html" %}
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+<style>
+/* ===== Container ===== */
+.container {
+    padding: 20px;
+    background-color: #f5f6fa;
+}
+
+/* ===== Card ===== */
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+}
+
+/* ===== Toolbar ===== */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.toolbar h2 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #1f3c88;
+}
+.toolbar button, .toolbar a {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.toolbar button { background-color: #28a745; color: #fff; transition: 0.3s; }
+.toolbar button:hover { background-color: #218838; }
+.toolbar a { background-color: #6c757d; color: #fff; transition: 0.3s; }
+.toolbar a:hover { background-color: #5a6268; }
+
+/* ===== Filters ===== */
+.filters {
+    margin-bottom: 12px;
+}
+.filters input, .filters select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    min-width: 140px;
+}
+.filters select { width: 170px; }
+.btn-filter {
+    background-color: #1f3c88;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 12px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+.btn-filter:hover { background-color: #142766; }
+
+/* ===== Table ===== */
+.soldier-table {
+    width: 100%;
+    border-collapse: collapse;
+    direction: rtl;
+    margin-bottom: 12px;
+}
+.soldier-table th, .soldier-table td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 6px 8px;
+}
+.soldier-table th {
+    background-color: #1f3c88;
+    color: #fff;
+    cursor: pointer;
+    
+}
+.soldier-table tr:nth-child(even) { background-color: #f9f9f9; }
+.soldier-table tr:hover { background-color: #d0e2ff; }
+.soldier-table select {
+    width: 100%;
+    padding: 3px 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    
+}
+
+/* ===== Pagination ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 12px 0;
+}
+.pagination a {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #1f3c88;
+    color: #1f3c88;
+    text-decoration: none;
+    
+}
+.pagination a:hover { background-color: #1f3c88; color: #fff; }
+.pagination .current {
+    font-weight: bold;
+    background-color: #1f3c88;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    
+}
+</style>
+<style>
+.download-links a {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 15px;
+    border-radius: 6px;
+    color: #fff !important;
+    text-decoration: none;
+    font-size: 13px;
+    transition: background 0.3s;
+}
+.download-links a i {
+    margin-left: 5px;
+}
+.download-links a.full { background: #4F81BD; }   /* آبی */
+.download-links a.codes { background: #5cb85c; } /* سبز */
+.download-links a.titles { background: #5bc0de; }/* آبی روشن */
+.download-links a.all { background: #f0ad4e; }   /* نارنجی */
+.download-links a:hover { opacity: 0.85; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+<div class="card">
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <h2>تخصیص مهارت به سربازان</h2>
+            <div class="download-links">
+               <button type="submit" form="soldierForm">
+                  <i class="fa fa-floppy-o"></i> ثبت تغییرات
+               </button>
+               <a href="{% url 'skills:export_assign_excel' 'full' %}" class="full"><i class="fa fa-download"></i> مهارت سربازان</a>
+               <a href="{% url 'skills:export_assign_excel' 'codes' %}" class="codes"><i class="fa fa-download"></i> (کد) سربازان مهارت‌ها</a>
+               <a href="{% url 'skills:export_assign_excel' 'titles' %}" class="titles"><i class="fa fa-download"></i> (عنوان) سربازان مهارت‌ها</a>
+               <a href="{% url 'skills:export_assign_excel' 'all' %}" class="all"><i class="fa fa-download"></i> مهارت همه سربازان</a>
+            </div>
+    </div>
+
+    <form method="GET" class="filters row" action="{% url 'skills:assign' %}">
+         <div class="col-md-3">
+            <label for="Gordan">جستجو</label>
+            <div>
+               <input style="width:100%;" type="text" name="search" placeholder="کد ملی، نام یا نام خانوادگی" value="{{ request.GET.search }}">
+            </div>
+         </div>
+        <div class="col-md-2">
+            <label for="Gordan">گردان</label>
+            <select class="form-control select2" id="Gordan" name="Gordan">
+               <option value="">همه</option>
+               {% for g in gordans %}
+                  <option value="{{ g.name }}" {% if request.GET.gordan == g.name %}selected{% endif %}>{{ g.name }}</option>
+               {% endfor %}
+            </select>
+         </div>
+         <div class="col-md-2">
+                  <label for="battaliongroup">گروهان</label>
+                  <select class="form-control " id="battaliongroup" name="battaliongroup">
+                     <option value="">همه</option>
+                  </select>
+         </div>
+         <div class="col-md-2">
+            <label for="Gordan"></label>
+            <div>
+           <button type="submit" class="btn-filter"><i class="fa fa-filter"></i> اعمال فیلتر</button>
+            </div>
+         </div>
+             <!-- Pagination Top -->
+    <div class="pagination col-md-3">
+        {% if soldiers.has_previous %}
+            <a href="?{% for key, val in request.GET.items %}{% if key != 'page' %}{{ key }}={{ val }}&{% endif %}{% endfor %}page={{ soldiers.previous_page_number }}">
+                <i class="fa fa-chevron-right"></i> قبل
+            </a>
+        {% endif %}
+        {% for page_num in soldiers.paginator.page_range %}
+            {% if page_num >= soldiers.number|add:-2 and page_num <= soldiers.number|add:2 %}
+                {% if page_num == soldiers.number %}
+                    <span class="current">{{ page_num }}</span>
+                {% else %}
+                    <a href="?{% for key, val in request.GET.items %}{% if key != 'page' %}{{ key }}={{ val }}&{% endif %}{% endfor %}page={{ page_num }}">{{ page_num }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% if soldiers.has_next %}
+            <a href="?{% for key, val in request.GET.items %}{% if key != 'page' %}{{ key }}={{ val }}&{% endif %}{% endfor %}page={{ soldiers.next_page_number }}">
+                بعد <i class="fa fa-chevron-left"></i>
+            </a>
+        {% endif %}
+    </div>
+    </form>
+
+
+</div>
+
+<!-- Table Form -->
+<form method="POST" id="soldierForm" action="{% url 'skills:assign_create_manual' %}">
+    {% csrf_token %}
+    <table class="soldier-table">
+        <thead>
+            <tr>
+                <th>ردیف</th>
+                <th data-sort="code_paziresh">کد پذیرش</th>
+                <th data-sort="Gordan">گردان/گروهان</th>
+                <th>کد سازمانی</th>
+                <th>کد ملی</th>
+                <th data-sort="name">نام و نام خانوادگی</th>
+                <th>مهارت اول</th>
+                <th>مهارت دوم</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for soldier in soldiers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ soldier.code_paziresh }}</td>
+                <td>{{ soldier.t_Gordan }}-{{ soldier.t_battalion_group.name }}</td>
+                <td>{{ soldier.code_gorhan_nahai }}</td>
+                <td>{{ soldier.National_Code }}</td>
+                <td>{{ soldier.name }} {{ soldier.family }}</td>
+                <td>
+                  <select name="skill_1_{{ soldier.id }}" class="select2-textable">
+                     <option value="" {% if not soldier.skill_1_id %}selected{% endif %}>انتخاب مهارت</option>
+                     {% for skill in skills %}
+                     <option value="{{ skill.title }}" {% if soldier.skill_1_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
+                     {% endfor %}
+                  </select>
+               </td>
+               <td>
+                  <select name="skill_2_{{ soldier.id }}" class="select2-textable">
+                     <option value="" {% if not soldier.skill_2_id %}selected{% endif %}>انتخاب مهارت</option>
+                     {% for skill in skills %}
+                     <option value="{{ skill.title }}" {% if soldier.skill_2_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
+                     {% endfor %}
+                  </select>
+               </td>
+
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">هیچ سربازی یافت نشد</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</form>
+
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+$(document).ready(function() {
+    // Select2 قابل تایپ
+    $('.select2-textable').select2({
+        tags: true,
+        placeholder: 'انتخاب یا تایپ مهارت جدید',
+        width: '100%',
+    });
+
+    // Sort ساده front-end
+    $('th[data-sort]').click(function() {
+        var table = $(this).parents('table').eq(0);
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+        this.asc = !this.asc;
+        if (!this.asc) rows = rows.reverse();
+        for (var i = 0; i < rows.length; i++) table.append(rows[i]);
+    });
+    function comparer(index) {
+        return function(a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index);
+            return valA.localeCompare(valB);
+        }
+    }
+    function getCellValue(row, index) { return $(row).children('td').eq(index).text(); }
+});
+</script>
+    <script>
+        document.getElementById('Gordan').addEventListener('change', function () {
+            const gordanName = this.value; // گرفتن مقدار انتخاب‌شده
+            const battalionGroup = document.getElementById('battaliongroup');
+
+            // پاک کردن گزینه‌های فعلی
+            battalionGroup.innerHTML = '<option value="">همه</option>';
+
+            if (gordanName) {
+                // ارسال درخواست Ajax
+                fetch(`{% url 'get_grohan_by_gordan_for_search' %}?gordan_name=${gordanName}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // اضافه کردن گزینه‌ها به سلکت‌باکس دوم
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.name;
+                            option.textContent = item.name;
+                            battalionGroup.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
+{% endblock %}

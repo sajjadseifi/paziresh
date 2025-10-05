@@ -669,7 +669,8 @@ def PrintCheckoutCommissionLetter(request, *args, **kwargs):
     checkout_commission_letter.status = "تجدید دوره کمیسیون"
     log_helper.log_letter_print(checkout_commission_letter)
     log_helper.log_letter_status_change(checkout_commission_letter,prev_status,checkout_commission_letter.status)
-
+    soldier= checkout_commission_letter.soldire
+    print(soldier)
     cx = {'checkout_commission_letter': checkout_commission_letter, 'sutter': sutter, 'en': en, 'check_out': check_out}
     return render(request, 'ensani_letter/print_checkout_commission_letter.html', cx)
 
@@ -1049,7 +1050,7 @@ def create_raw_letter(request):
             data['status'] = 'ایجاد شده'
             # ذخیره در مدل
             letter = RawLetter.objects.create(**data)
-            log_helper.log_letter_create(letter)
+            # log_helper.log_letter_create(letter)
 
             return redirect("AllRawLetters")
     else:
@@ -1094,8 +1095,8 @@ def print_raw_letter(request, pk):
         prev_status = letter.status
         letter.status = 'درحال چاپ و بررسی'
         letter.save()
-        log_helper.log_letter_print(letter)
-        log_helper.log_letter_status_change(letter.save(),prev_status,letter.status)
+    #  log_helper.log_letter_print(letter)
+    #  log_helper.log_letter_status_change(letter.save(),prev_status,letter.status)
 
     # می‌توانی از قالب HTML برای چاپ استفاده کنی
     return render(request, "ensani_letter/print_raw_letter.html", {"letter": letter,'ens':ens})
