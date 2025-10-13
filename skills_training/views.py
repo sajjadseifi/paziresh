@@ -13,49 +13,82 @@ from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 import urllib.parse
 import jdatetime
 
+from django.db.models import Count, Q
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
 template_pages = 'pages'
 
+@login_required
 def index(request):
-    # تعداد کل مهارت‌ها
+    # ✅ تعداد کل مهارت‌ها
     total_skills = SlillTraining.objects.count()
+    total_soldiers = Soldier.objects.count() or 1  # جلوگیری از تقسیم بر صفر
 
-    # تعداد دسته‌های منحصر به فرد
-    total_categories = SlillTraining.objects.values('category').distinct().count()
+    # ✅ تعداد دسته‌های منحصربه‌فرد (بدون خالی‌ها)
+    total_categories = (
+        SlillTraining.objects
+        .exclude(category__isnull=True)
+        .exclude(category__exact='')
+        .values('category')
+        .distinct()
+        .count()
+    )
 
-    # تعداد مهارت‌هایی که کد ندارند
-    skills_without_code = SlillTraining.objects.filter(Q(code__isnull=True) | Q(code__exact='')).count()
+    # ✅ تعداد مهارت‌هایی که کد ندارند
+    skills_without_code = SlillTraining.objects.filter(
+        Q(code__isnull=True) | Q(code__exact='')
+    ).count()
 
-    # تعداد سربازان با حداقل یک مهارت
-    soldiers_with_skills = Soldier.objects.filter(Q(skill_1__isnull=False) | Q(skill_2__isnull=False)).count()
+    # ✅ تعداد سربازانی که حداقل یکی از دو مهارت را دارند
+    soldiers_with_skills = Soldier.objects.filter(
+        Q(skill_1__isnull=False) | Q(skill_2__isnull=False)
+    ).distinct().count()
 
-    # 5 مهارت پر استفاده (براساس تعداد سربازانی که دارند)
-    # ابتدا annotate تعداد سربازان برای هر مهارت
-    skills_usage = SlillTraining.objects.annotate(
-        usage_count=Count('primary_soldiers') + Count('secondary_soldiers')
-    ).order_by('-usage_count')[:5]
 
-        # فهرست دسته‌ها: category, skill_counts, soldiers_count
-    categories_info = []
-    categories = SlillTraining.objects.values_list('category', flat=True).distinct()
-    for cat in categories:
-        skills_in_cat = SlillTraining.objects.filter(category=cat)
-        skill_count = skills_in_cat.count()
-        # تعداد سربازانی که حداقل یکی از مهارت‌های این دسته را دارند
-        soldiers_count = Soldier.objects.filter(
-            Q(skill_1__in=skills_in_cat) | Q(skill_2__in=skills_in_cat)
-        ).distinct().count()
-        categories_info.append({
-            "category": cat,
-            "skill_count": skill_count,
-            "soldiers_count": soldiers_count
-        })
+    # ✅ ۵ مهارت پر استفاده با درصد استفاده از کل سربازان
+    skills_usage = (
+        SlillTraining.objects
+        .annotate(
+            usage_count=Count('primary_soldiers', distinct=True) + Count('secondary_soldiers', distinct=True)
+        )
+        .annotate(
+            usage_percent=(100.0 * (
+                Count('primary_soldiers', distinct=True) + Count('secondary_soldiers', distinct=True)
+            ) / total_soldiers)
+        )
+        .order_by('-usage_count')[:6]
+    )
+
+    # ✅ محاسبه آمار دسته‌ها (تعداد مهارت و سربازان مرتبط)
+    # برای جلوگیری از N+1 Query از annotate و Subquery استفاده می‌کنیم
+    categories_qs = (
+        SlillTraining.objects
+        .exclude(category__isnull=True)
+        .exclude(category__exact='')
+        .values('category')
+        .annotate(
+            skill_count=Count('id', distinct=True),
+            soldiers_count=Count('primary_soldiers', distinct=True) + Count('secondary_soldiers', distinct=True)
+        )
+        .order_by('category')
+    )
+
+    # تبدیل به لیست ساده‌تر برای ارسال به قالب
+    categories_info = list(categories_qs)
+
+    # ✅ ارسال تمام داده‌ها به تمپلیت داشبورد
     return render(request, f"{template_pages}/index.html", {
         "total_skills": total_skills,
         "total_categories": total_categories,
         "skills_without_code": skills_without_code,
         "soldiers_with_skills": soldiers_with_skills,
         "top_skills": skills_usage,
+        "categories_info": categories_info,
     })
+
+    
+    
 def skill_list(request):
     # همه مهارت‌ها
     skills = SlillTraining.objects.all().order_by('category')
@@ -91,6 +124,7 @@ def skill_detail(request, pk):
     skill = get_object_or_404(SlillTraining, pk=pk)
     return render(request, f"{template_pages}/detail.html", {"skill": skill})
 
+
 def create_manual(request):
     if request.method == "POST":
         data = request.POST
@@ -107,28 +141,84 @@ def create_manual(request):
            
     return redirect("skills:create")
 
+# views.py
+import uuid
+import time
+from django.core.cache import cache
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.http import StreamingHttpResponse
+import openpyxl
+from .models import SlillTraining
+from django.db import transaction
+
+from django.http import JsonResponse, StreamingHttpResponse
+from django.db import transaction
+import uuid
+import time
+from django.core.cache import cache
+import openpyxl
+from .models import SlillTraining
+
 def create_excel(request):
+    """
+    آپلود و ثبت یا بروزرسانی مهارت‌ها از فایل Excel.
+    از شناسه یکتا برای هر آپلود استفاده می‌شود تا SSE درست کار کند.
+    """
     if request.method == "POST" and request.FILES.get("skills_excel"):
+        upload_id = request.POST.get("upload_id")  # از کلاینت بگیر
+        if not upload_id:
+            return JsonResponse({"error": "upload_id نیاز است"}, status=400)
         excel_file = request.FILES["skills_excel"]
         wb = openpyxl.load_workbook(excel_file)
         sheet = wb.active
+        total_rows = sheet.max_row - 1
 
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            category, title, code = row
+        cache.set(f"excel_progress_{upload_id}", 0)
 
-            # اگر عنوان موجود بود، بروزرسانی کن، در غیر این صورت ایجاد شود
-            SlillTraining.objects.update_or_create(
-                title=title,
-                defaults={
-                    'category': category,
-                    'code': code
-                }
-            )
+        # استفاده از تراکنش برای جلوگیری از lock طولانی
+        with transaction.atomic():
+            for idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=1):
+                category, title, code = row
+                SlillTraining.objects.update_or_create(
+                    title=title,
+                    defaults={'category': category, 'code': code}
+                )
 
-        messages.success(request, "مهارت‌ها از فایل Excel ثبت یا بروزرسانی شدند.")
+                # بروزرسانی درصد پیشرفت
+                progress = int((idx / total_rows) * 100)
+                cache.set(f"excel_progress_{upload_id}", progress)
+                print(f"excel_progress_{upload_id}",progress)
+                time.sleep(0.05)  # فقط برای شبیه‌سازی (در تولید حذف شود)
 
-    return redirect("skills:list")
+        # تکمیل progress
+        cache.set(f"excel_progress_{upload_id}", 100)
 
+        # پاسخ JSON به کلاینت
+        return JsonResponse({"success": True, "upload_id": upload_id, "message": "مهارت‌ها با موفقیت ثبت یا بروزرسانی شدند."})
+
+    return JsonResponse({"success": False, "message": "هیچ فایلی ارسال نشده است."}, status=400)
+
+
+def create_excel_stream(request):
+    """
+    SSE برای ارسال درصد پیشرفت آپلود به کلاینت.
+    باید upload_id از query string دریافت شود.
+    """
+    upload_id = request.GET.get("upload_id")
+    if not upload_id:
+        return StreamingHttpResponse("data: 100\n\n", content_type="text/event-stream")
+
+    def event_stream():
+        while True:
+            progress = cache.get(f"excel_progress_{upload_id}", 0)
+            print(f"event_stream_{upload_id}",progress)
+            yield f"data: {progress}\n\n"
+            if progress >= 100:
+                break
+            time.sleep(0.5)
+
+    return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
 
 def download_sample_excel(request):
     wb = openpyxl.Workbook()
@@ -295,36 +385,47 @@ from django.contrib.auth.decorators import login_required
 @transaction.atomic
 def assign_create_manual(request):
     if request.method == "POST":
-        soldiers = Soldier.objects.filter(willing_to_learn=True)
+        # استخراج ID سربازها از کلیدهای فرم
+        soldier_ids = set()
+        for key in request.POST.keys():
+            if key.startswith("skill_1_") or key.startswith("skill_2_"):
+                try:
+                    soldier_id = int(key.split("_")[-1])
+                    soldier_ids.add(soldier_id)
+                except ValueError:
+                    continue
 
+        # گرفتن فقط سربازانی که در فرم آمده‌اند
+        soldiers = Soldier.objects.filter(id__in=soldier_ids)
+
+        def get_or_create_skill(title):
+            if not title:
+                return None
+            skill, _ = SlillTraining.objects.get_or_create(
+                title=title,
+                defaults={"category": "", "code": ""}
+            )
+            return skill
+
+        # ثبت مهارت‌ها برای هر سرباز
         for soldier in soldiers:
-            # گرفتن مقدار مهارت اول و دوم از فرم
-            skill_1_value = request.POST.get(f"skill_1_{soldier.id}")
-            skill_2_value = request.POST.get(f"skill_2_{soldier.id}")
+            skill_1_value = request.POST.get(f"skill_1_{soldier.id}", "").strip()
+            skill_2_value = request.POST.get(f"skill_2_{soldier.id}", "").strip()
 
-            # تابع برای گرفتن یا ساختن مهارت
-            def get_or_create_skill(title):
-                if not title:
-                    return None
-                skill = SlillTraining.objects.filter(title=title).first()
-                if not skill:
-                    skill = SlillTraining.objects.create(
-                        title=title,
-                        category="",
-                        code=""
-                    )
-                return skill
-
-            # چک کردن و ذخیره برای مهارت ۱
             soldier.skill_1 = get_or_create_skill(skill_1_value)
-
-            # چک کردن و ذخیره برای مهارت ۲
             soldier.skill_2 = get_or_create_skill(skill_2_value)
-            # ذخیره تغییرات سرباز
             soldier.save()
 
         messages.success(request, "مهارت‌ها با موفقیت ثبت شدند.")
-    return redirect("skills:assign")  # آدرس صفحه لیست اصلی
+
+        # 🟢 برگشت به همان صفحه (با query string)
+        next_url = request.META.get("HTTP_REFERER", None)
+        if next_url:
+            return redirect(next_url)
+        return redirect("skills:assign")
+
+    # در حالت GET
+    return redirect("skills:assign")
 
 def assign_soldier_slills_manual():
    return redirect("skills:assign")
@@ -584,3 +685,124 @@ def skills_actions(request):
     messages.success(request, "، ".join(msg_parts))
     return redirect("skills:list")
 
+import jdatetime
+from .forms import HazardSettingsForm
+from .models import HazardSettings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.views import View
+
+class CreateOrUpdateHazardSettings(LoginRequiredMixin, View):
+    def get(self, request):
+        hz = HazardSettings.objects.last()
+        form = HazardSettingsForm()
+
+        persian_months = [
+            "فروردین", "اردیبهشت", "خرداد", "تیر",
+            "مرداد", "شهریور", "مهر", "آبان",
+            "آذر", "دی", "بهمن", "اسفند"
+        ]
+
+        if hz is not None:
+            # تبدیل تاریخ‌های میلادی به شمسی
+            certificate_date_sh = jdatetime.date.fromgregorian(date=hz.certificate_date).strftime("%Y/%m/%d")
+            start_date_sh = jdatetime.date.fromgregorian(date=hz.start_date).strftime("%Y/%m/%d")
+            end_date_sh = jdatetime.date.fromgregorian(date=hz.end_date).strftime("%Y/%m/%d")
+
+            form.initial.update({
+                'certificate_date': certificate_date_sh,
+                'letter_number': hz.letter_number,
+                'year': hz.year,
+                'month_name': hz.month_name,
+                'first_aid_hours': hz.first_aid_hours,
+                'hazard_preparedness_hours': hz.hazard_preparedness_hours,
+                'start_date': start_date_sh,
+                'end_date': end_date_sh,
+            })
+        else:
+            # تاریخ شمسی امروز
+            now = jdatetime.date.today()
+            start_of_month = jdatetime.date(now.year, now.month, 1)
+            end_of_period = start_of_month + jdatetime.timedelta(days=4)
+
+            form.initial.update({
+                'certificate_date': now.strftime("%Y/%m/%d"),
+                'year': now.year,
+                'month_name': persian_months[now.month - 1],
+                'first_aid_hours': 22,
+                'hazard_preparedness_hours': 8,
+                'start_date': start_of_month.strftime("%Y/%m/%d"),
+                'end_date': end_of_period.strftime("%Y/%m/%d"),
+            })
+
+        context = {'form': form, 'hazard': hz}
+        return render(request, f"{template_pages}/certificate_hazard.html", context)
+
+    def post(self, request):
+        hz = HazardSettings.objects.last()
+        form = HazardSettingsForm(request.POST or None)
+
+        if not form.is_valid():
+            return render(request, f"{template_pages}/certificate_hazard.html", {'form': form, 'hazard': hz})
+
+        # دریافت داده‌ها و ذخیره در مدل
+        data = form.cleaned_data
+        if hz is None:
+            hz = HazardSettings()
+
+        for key, value in data.items():
+            setattr(hz, key, value)
+        hz.save()
+
+        return redirect('skills:certificates_hazard')
+
+from ensaniapp_settings.models import EnsaniSettings
+import jdatetime
+from django.shortcuts import render
+
+def certificates_hazard_print(request):
+    # دریافت پارامتر مرتب‌سازی از query string
+    order_by = request.GET.get('order_by', 'acceptance_code')
+
+    # تنظیم فیلدهای مرتب‌سازی بر اساس نوع انتخاب
+    if order_by == 'structure':
+        order_fields = ['t_Gordan__name', 't_battalion_group__name','code_gorhan_nahai']
+    else:
+        order_fields = ['acceptance_code']
+
+    # واکشی سربازان با ترتیب مشخص
+    soldiers = (
+        Soldier.objects
+        .filter(in_coures=True, willing_to_learn=True)
+        .order_by(*order_fields)
+    )
+
+    hazard = HazardSettings.objects.first()
+    ens = EnsaniSettings.objects.all()
+
+    # تبدیل تاریخ‌های Hazard به شمسی
+    def to_shamsi(date_obj):
+        if date_obj:
+            return jdatetime.date.fromgregorian(date=date_obj).strftime("%Y/%m/%d")
+        return "-"
+
+    hazard_shamsi = None
+    if hazard:
+        hazard_shamsi = {
+            "certificate_date": to_shamsi(hazard.certificate_date),
+            "letter_number": hazard.letter_number,
+            "year": hazard.year,
+            "month_name": hazard.month_name,
+            "first_aid_hours": hazard.first_aid_hours,
+            "hazard_preparedness_hours": hazard.hazard_preparedness_hours,
+            "start_date": to_shamsi(hazard.start_date),
+            "end_date": to_shamsi(hazard.end_date),
+        }
+
+    context = {
+        'hazard': hazard_shamsi,
+        'ens': ens,
+        'soldiers': soldiers,
+        'order_by':order_by,
+    }
+    return render(request, f"{template_pages}/certificates_hazard_print.html", context)

@@ -100,8 +100,7 @@ class Soldier(models.Model):
     battalion_sample = models.BooleanField(default=False, verbose_name='نمونه گردان')  # نمونه گردان (2 نمره مازاد)
     basij_efficiency = models.CharField(max_length=120, blank=True, null=True,
                                         verbose_name='کفایت بسیج')  # کفایت بسیج (1 نمره)
-    top_three = models.CharField(max_length=100, blank=True, null=True,
-                                 verbose_name='سه نفر برتر')  # سه نفر برتر (2 نمره)
+    top_three = models.CharField(max_length=100, blank=True, null=True, verbose_name='سه نفر برتر')  # سه نفر برتر (2 نمره)
     quran_memorization = models.IntegerField(default=0, verbose_name='حافظ قرآن')  # حافظ قرآن (جزء) (3 نمره)
     nahj_memorization = models.BooleanField(default=False, verbose_name='حافظ نهج البلاغه')  # حافظ نهج البلاغه (1 نمره)
     sajjadiya_memorization = models.BooleanField(default=False,
@@ -120,3 +119,4 @@ class Soldier(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.family} - {self.National_Code}"
+

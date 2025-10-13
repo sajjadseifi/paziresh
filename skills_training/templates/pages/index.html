@@ -1,108 +1,271 @@
 {% extends "../layout/base.html" %}
 
 {% block content %}
-<div class="skills-index-container">
-
-    <h1 class="page-title">مدیریت مهارت‌آموزی</h1>
-    <p class="page-desc">در این صفحه می‌توانید آمار و مهارت‌ها را مشاهده و مدیریت کنید.</p>
-
-    <!-- کارت‌های آمار -->
-    <div class="cards-container">
-        <div class="card">
-            <h3>تعداد کل مهارت‌ها</h3>
-            <p class="card-number">{{ total_skills }}</p>
-        </div>
-        <div class="card">
-            <h3>تعداد دسته‌بندی‌ها</h3>
-            <p class="card-number">{{ total_categories }}</p>
-        </div>
-        <div class="card">
-            <h3>مهارت بدون کد</h3>
-            <p class="card-number">{{ skills_without_code }}</p>
-        </div>
-        <div class="card">
-            <h3>سربازان دارای مهارت</h3>
-            <p class="card-number">{{ soldiers_with_skills }}</p>
-        </div>
-    </div>
-
-    <!-- 5 مهارت پر استفاده -->
-    <div class="top-skills">
-        <h2>۵ مهارت پر استفاده</h2>
-        <ul>
-            {% for skill in top_skills %}
-            <li>{{ skill.skill_title }} ({{ skill.usage_count }} سرباز)</li>
-            {% empty %}
-            <li>هیچ مهارتی ثبت نشده است</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-</div>
 
 <style>
-.skills-index-container {
-    font-family: Vazir, Tahoma, sans-serif;
+.skills-dashboard {
+    font-family: "Vazir", Tahoma, sans-serif;
     direction: rtl;
-    padding: 20px;
+    padding: 30px;
 }
 
 .page-title {
-    font-size: 28px;
+    font-size: 30px;
     font-weight: bold;
-    margin-bottom: 10px;
+    color: #0d47a1;
+    margin-bottom: 20px;
 }
 
 .page-desc {
-    color: #555;
-    margin-bottom: 25px;
+    color: #666;
+    margin-bottom: 30px;
 }
 
-/* کارت‌ها */
-.cards-container {
-    display: flex;
-    flex-wrap: wrap;
+/* کارت‌های آمار */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
 
-.card {
-    background-color: #0d47a1;
+.stat-card {
     color: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    flex: 1 1 200px;
+    padding: 25px;
+    border-radius: 16px;
     text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.card-number {
-    font-size: 24px;
     font-weight: bold;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.stat-number {
+    font-size: 28px;
     margin-top: 10px;
 }
 
-/* ۵ مهارت پر استفاده */
-.top-skills h2 {
-    font-size: 22px;
+/* گرادینت‌ها */
+.gradient-blue { background: linear-gradient(135deg, #2196f3, #0d47a1); }
+.gradient-green { background: linear-gradient(135deg, #43a047, #1b5e20); }
+.gradient-orange { background: linear-gradient(135deg, #ff9800, #ef6c00); }
+.gradient-purple { background: linear-gradient(135deg, #9c27b0, #4a148c); }
+
+/* بخش‌های جانبی */
+.info-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.info-box {
+    background-color: #fff;
+    border-radius: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    flex: 1 1 400px;
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.info-box:hover {
+    transform: translateY(-5px);
+}
+
+.box-header {
+    display: flex;
+    align-items: center;
     margin-bottom: 10px;
 }
 
-.top-skills ul {
-    list-style: none;
-    padding: 0;
+.box-header .icon {
+    font-size: 26px;
+    margin-left: 10px;
 }
 
-.top-skills li {
-    background-color: #f2f2f2;
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    border-radius: 8px;
+.download-box {
+    border-right: 6px solid #0d47a1;
 }
+
+.warning-box {
+    border-right: 6px solid #ff5722;
+}
+
+.download-btn {
+    background-color: #0d47a1;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.download-btn:hover {
+    background-color: #1565c0;
+}
+
+/* مهارت‌های پر استفاده */
+.top-skills-section {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.top-skills-section h2 {
+    margin:0 0 20px;
+    color: #0d47a1;
+}
+
+.skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.skill-item {
+    background: linear-gradient(90deg, #f5f7fa, #e4ebf7);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+.skill-rank {
+    background-color: #0d47a1;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    font-size: 16px;
+}
+.skill-info {
+    width:100%;
+    display:flex;
+}
+.skill-info h4 {
+    margin: 0;
+    color: #333;
+    font-weight: bold;
+
+}
+
+.skill-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+.skill-header{
+    flex:2;
+}
+
+
+.progress {
+    flex: 1;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+    margin:2px 6px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #42a5f5, #1e88e5);
+    border-radius: 10px 0 0 10px;
+    transition: width 0.5s ease-in-out;
+}
+
 </style>
+<div class="skills-dashboard">
+    <!-- کارت‌های آمار -->
+    <div class="stats-grid">
+        <div class="stat-card gradient-blue">
+            <h3>تعداد کل مهارت‌ها</h3>
+            <p class="stat-number">{{ total_skills }}</p>
+        </div>
+        <div class="stat-card gradient-green">
+            <h3>تعداد دسته‌بندی‌ها</h3>
+            <p class="stat-number">{{ total_categories }}</p>
+        </div>
+        <div class="stat-card gradient-orange">
+            <h3>مهارت‌های بدون کد</h3>
+            <p class="stat-number">{{ skills_without_code }}</p>
+        </div>
+        <div class="stat-card gradient-purple">
+            <h3>سربازان دارای مهارت</h3>
+            <p class="stat-number">{{ soldiers_with_skills }}</p>
+        </div>
+    </div>
+
+    <!-- بخش‌های جانبی -->
+    <div class="info-sections">
+        <!-- باکس دانلود -->
+        <div class="info-box download-box">
+            <div class="box-header">
+                <span class="icon">⬇️</span>
+                <h2>دانلود داده‌ها</h2>
+            </div>
+            <p>می‌توانید فایل Excel شامل لیست مهارت‌ها و آمار سربازان را دریافت کنید.</p>
+            <button class="download-btn">دانلود فایل اکسل</button>
+        </div>
+
+        <!-- باکس مخاطرات -->
+        <div class="info-box warning-box">
+            <div class="box-header">
+                <span class="icon">⚠️</span>
+                <h2>اطلاعات مخاطرات</h2>
+            </div>
+            <p>تعدادی از مهارت‌ها فاقد کد یا دسته‌بندی معتبر هستند. لطفاً داده‌ها را بررسی کنید.</p>
+            <ul>
+                <li><strong>{{ skills_without_code }}</strong> مهارت بدون کد</li>
+                <li><strong>{{ total_skills|add:"-5" }}</strong> مهارت بررسی نشده</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ۵ مهارت پر استفاده -->
+    <div class="top-skills-section">
+        <h2>{{top_skills.count}} مهارت پر استفاده</h2>
+         <div class="skills-list">
+            {% for skill in top_skills %}
+            <div class="skill-item">
+                <div class="skill-info">
+                    <div class="skill-header">
+                        <h4>{{ skill.title }}</h4>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ skill.usage_percent }}%;"></div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0 0;">
+                    <span class="skill-desc">{{ skill.usage_count }} سرباز دارای این مهارت</span>
+                    <span class="skill-percent">{{ skill.usage_percent|floatformat:1 }}%</span>
+                </div>
+            </div>
+            {% empty %}
+            <p>هیچ مهارتی ثبت نشده است.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 {% endblock %}

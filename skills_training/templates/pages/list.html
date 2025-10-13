@@ -261,17 +261,31 @@ form input[type="file"]::file-selector-button:hover {
             <!-- فرم Excel -->
         <div class="col-md-4">
             <div class="form-section">
-                <div class="form-header">
-                <h3 style="flex:1;">ثبت با فایل Excel</h3>
-                <a href="{% url 'skills:download_sample_excel' %}" class="btn btn-add" download>
-                    <i class="fa fa-download"></i> دانلود فایل نمونه
-                </a>
+                <div class="form-header" style="display:flex; align-items:center; justify-content:space-between;">
+                    <h3 style="flex:1;">ثبت با فایل Excel</h3>
+                    <a href="{% url 'skills:download_sample_excel' %}" class="btn btn-add" download>
+                        <i class="fa fa-download"></i> دانلود فایل نمونه
+                    </a>
                 </div>
-                <button type="button" class="btn-submit" id="openExcelModalBtn" >
+
+                <!-- Progress Bar -->
+                <div style="border-radius:5px;margin-bottom:4px;background-color:#565d68;justify-content:end;display:none;" id="excelProgressContainer" class="progress" >
+                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width:0%; background-color:#5cb85c;">
+                        %0
+                    </div>
+                </div>
+
+                <!-- دکمه‌ها -->
+                <button type="button" class="btn-submit" id="openExcelModalBtn">
                     <i class="fa fa-upload"></i> بارگذاری و ثبت فایل Excel
                 </button>
+                <button style='width:100%;justify-content:center;display:none;' type="button" class="btn btn-danger" id="cancelExcelUploadBtn" >
+                    لغو عملیات
+                </button>
+
             </div>
         </div>
+
     
     </div>
 
@@ -326,16 +340,19 @@ form input[type="file"]::file-selector-button:hover {
       <!-- بدنه مودال -->
       <div class="modal-body">
         
-        <form id="excelUploadForm" method="POST" action="{% url 'skills:create_excel' %}" enctype="multipart/form-data">
+        <form id="excelUploadForm" enctype="multipart/form-data">
           {% csrf_token %}
           <label for="skillsExcelInput">انتخاب فایل Excel:</label>
           <input type="file" class="form-control" id="skillsExcelInput" name="skills_excel" accept=".xlsx,.xls" required>
         </form>
+        <div class="progress mt-3" style="height: 20px; display: none;" id="uploadProgressContainer">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%" id="uploadProgressBar">0%</div>
+        </div>
       </div>
 
       <!-- فوتر مودال -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="cancelExcelUploadBtn">لغو</button>
+        <button  type="button" class="btn btn-secondary" id="cancelExcelUploadBtn">لغو</button>
         <button type="button" class="btn btn-success" id="confirmUploadExcelBtn"><i class="fa fa-upload"></i> بارگذاری و ثبت</button>
       </div>
 
@@ -638,15 +655,7 @@ $(document).ready(function(){
         $('#excelUploadForm')[0].reset(); // ریست کردن فرم
         $('#uploadExcelModal').modal('hide');
     });
-
-    // --------------------- تأیید بارگذاری Excel ---------------------
-    $('#confirmUploadExcelBtn').click(function(){
-        if(!$('#skillsExcelInput').val()){
-            alert('لطفاً یک فایل انتخاب کنید.');
-            return;
-        }
-        $('#excelUploadForm').submit();
-    });
+  
     // --------------------- لغو مودال بارگذاری Excel ---------------------
     $('#cancelExcelUploadBtn').click(function(){
         $('#excelUploadForm')[0].reset(); // ریست کردن فرم
@@ -654,13 +663,85 @@ $(document).ready(function(){
     });
 
     // --------------------- تأیید بارگذاری Excel ---------------------
-    $('#confirmUploadExcelBtn').click(function(){
-        if(!$('#skillsExcelInput').val()){
-            alert('لطفاً یک فایل انتخاب کنید.');
-            return;
+    // لغو عملیات
+$('#cancelExcelUploadBtn').click(function() {
+    if (eventSource) {
+        eventSource.close();
+    }
+    resetExcelUpload();
+});
+
+function resetExcelUpload() {
+    $('#excelProgressContainer').hide();
+    $('#uploadProgressBar').css('width', '0%').text('0%');
+    $('#openExcelModalBtn').show();
+    $('#cancelExcelUploadBtn').hide();
+    $('#skillsExcelInput').val('');
+}
+$('#confirmUploadExcelBtn').click(function(event){
+    event.preventDefault();
+    const fileInput = $('#skillsExcelInput')[0];
+    if (!fileInput.files.length) {
+        alert('لطفاً یک فایل انتخاب کنید.');
+        return;
+    }
+
+
+    const form = $('#excelUploadForm')[0];
+    const formData = new FormData(form);
+
+    const uploadId = crypto.randomUUID(); // ایجاد شناسه یکتا
+    formData.append('upload_id', uploadId); // ارسال به سرور اگر لازم باشد
+    
+    $('#excelUploadForm')[0].reset(); // ریست کردن فرم
+    $('#uploadExcelModal').modal('hide');
+    
+    // نمایش progress و دکمه لغو
+    $('#excelProgressContainer').show();
+    $('#uploadProgressBar').css('width', '0%').text('0%');
+    $('#openExcelModalBtn').hide();
+    $('#cancelExcelUploadBtn').show().prop('disabled', false);
+
+    // شروع SSE
+    const eventSource = new EventSource("{% url 'skills:create_excel_stream' %}?upload_id=" + uploadId);
+
+    eventSource.onmessage = function(e) {
+        const percent = e.data;
+        $('#uploadProgressBar').css('width', percent + '%').text(percent + '%');
+
+        if (percent >= 100) {
+            $('#uploadProgressBar').text('تکمیل شد ✅');
+            $('#openExcelModalBtn').show();
+            $('#cancelExcelUploadBtn').hide();
+            eventSource.close();
+
+            // بعد از 1 ثانیه فرم و progress را ریست کن
+            setTimeout(() => {
+                $('#excelProgressContainer').hide();
+                $('#uploadProgressBar').css('width', '0%').text('0%');
+                $('#skillsExcelInput').val('');
+                // ریدایرکت به لیست
+                window.location.href = "{% url 'skills:list' %}";
+            }, 1000);
         }
-        $('#excelUploadForm').submit();
+    };
+    // ارسال فایل
+    $.ajax({
+        url: "{% url 'skills:create_excel' %}",
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            window.location.href = "{% url 'skills:list' %}";
+        },
+        error: function() {
+            alert('❌ خطا در ارسال فایل');
+            $('#confirmUploadExcelBtn').prop('disabled', false).text('بارگذاری و ثبت');
+        }
     });
+
+});
 
     // --------------------- لغو همه مودال‌ها ---------------------
     $('.modal-footer .btn-secondary').click(function(){

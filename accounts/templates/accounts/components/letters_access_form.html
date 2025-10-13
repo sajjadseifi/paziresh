@@ -1,0 +1,20 @@
+{% load access_filters %}
+
+<div class="loading-placeholder flex flex-col items-center justify-center py-8">
+    <!-- چرخنده -->
+    <div class="w-16 h-16 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+    <!-- متن -->
+    <h2 class="text-lg font-semibold text-center">در حال آماده‌سازی...</h2>
+    <p class="text-gray-500 text-center mt-2">لطفاً صبر کنید</p>
+</div>
+<style>
+/* اگر Tailwind ندارید، می‌توانید با CSS ساده شبیه‌سازی کنید */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

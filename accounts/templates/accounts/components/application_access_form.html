@@ -1,0 +1,199 @@
+{% load access_filters %}
+
+<style>
+/* پایه همه پنل‌ها */
+.panel-header {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.25rem 0.25rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* واحدها */
+.panel-header-units {
+    background-color: #e9f7ef; /* سبز روشن */
+}
+
+/* برنامه‌ها */
+.panel-header-apps {
+    background-color: #f0f4ff; /* آبی روشن */
+}
+
+/* عنوان پنل */
+.panel-title {
+    display: inline-block;
+}
+
+/* دکمه انتخاب همه */
+.select-all-btn {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    transition: all 0.2s;
+}
+
+.select-all-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #999;
+}
+
+.select-all-btn input {
+    margin-right: 0.5rem;
+}
+
+.select-all-btn .label-text {
+    font-weight: 600;
+    color: #0d6efd; /* رنگ آبی Bootstrap */
+}
+
+.select-all-btn .icon {
+    margin-left: 0.25rem;
+    color: green;
+    font-weight: bold;
+}
+
+
+/* چک‌باکس‌های لیست */
+.checkbox-btn {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    transition: all 0.2s;
+}
+
+.checkbox-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.checkbox-btn input {
+    margin-right: 0.5rem;
+}
+
+.checkbox-btn .icon {
+    margin-left: 0.25rem;
+    color: green;
+    font-weight: bold;
+}
+
+/* فرم header و دکمه ذخیره */
+.form-header h3 {
+    margin-bottom: 0.25rem;
+}
+
+.form-header p {
+    margin-bottom: 1rem;
+    color: #6c757d;
+}
+
+.form-actions {
+    margin-bottom: 1rem;
+}
+
+.save-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.save-btn:hover {
+    background-color: #0b5ed7;
+}
+</style>
+
+<form id="applicationAccessForm" method="post" action="{% url 'application_access_form' %}?user_id={{ user.id }}">
+    {% csrf_token %}
+
+    <!-- Header -->
+    <div class="form-header">
+        <h3>⚙️ مدیریت دسترسی‌ها</h3>
+        <p>واحدها و برنامه‌هایی که کاربر به آن‌ها دسترسی دارد را مشخص کنید.</p>
+    </div>
+
+    <!-- Save Button -->
+    <div class="form-actions">
+        <button type="submit" class="save-btn">💾 ذخیره دسترسی‌ها</button>
+    </div>
+
+    <!-- بخش واحدها -->
+    <div class="panel-box">
+        <div class="panel-header panel-header-units">
+            <span class="panel-title">🏛️ واحدها</span>
+            <label class="select-all-btn">
+                <input type="checkbox" id="selectAllUnits">
+                <span class="label-text">همه</span>
+            </label>
+        </div>
+        <div class="panel-body grid-2">
+            {% for key, value in departments_values %}
+            <label class="checkbox-btn">
+                <input type="checkbox" name="departments_{{ key }}" value="{{ key }}" {% if user_access|check_department_access:key %}checked{% endif %}>
+                {{ value }}
+                <span class="icon">✔</span>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- بخش برنامه‌ها -->
+    <div class="panel-box mt-3">
+        <div class="panel-header panel-header-apps">
+            <span class="panel-title">🧩 برنامه‌ها</span>
+            <label class="select-all-btn">
+                <input type="checkbox" id="selectAllApps" >
+                <span class="label-text">همه</span>
+            </label>
+        </div>
+        <div class="panel-body grid-2">
+            {% for key, value in application_values %}
+            <label class="checkbox-btn">
+                <input type="checkbox" name="applications_{{ key }}" value="{{ key }}" {% if user_access|check_application_access:key %}checked{% endif %}>
+                {{ value }}
+                <span class="icon">✔</span>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const setupSelectAll = (selectAllId, checkboxNamePrefix) => {
+        const selectAll = document.getElementById(selectAllId);
+        const checkboxes = document.querySelectorAll(`input[type="checkbox"][name^="${checkboxNamePrefix}_"]`);
+
+        const updateSelectAll = () => {
+            selectAll.checked = Array.from(checkboxes).every(c => c.checked);
+        };
+
+        // بررسی اولیه هنگام لود
+        updateSelectAll();
+
+        // وقتی select-all تغییر کرد، همه تغییر کنند
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // وقتی یکی از چک‌باکس‌ها تغییر کرد، select-all به‌روزرسانی شود
+        checkboxes.forEach(cb => cb.addEventListener('change', updateSelectAll));
+    };
+
+    setupSelectAll('selectAllUnits', 'departments');
+    setupSelectAll('selectAllApps', 'applications');
+});
+</script>

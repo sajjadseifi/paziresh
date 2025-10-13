@@ -17,6 +17,9 @@ urlpatterns = [
     path("download-sample/", views.download_sample_excel, name="download_sample_excel"),
     path("create/manual/", views.create_manual, name="create_manual"),
     path("create/excel/", views.create_excel, name="create_excel"),
+    path("create/excel/stream", views.create_excel_stream, name="create_excel_stream"),
     path("export/skills/excel/", views.export_skills_excel, name="export_skills_excel"),
     path("export/assign/excel//<str:mode>/", views.assign_soldier_skills_excel, name="export_assign_excel"),
+    path("certificates/hazard", views.CreateOrUpdateHazardSettings.as_view(), name="certificates_hazard"),
+    path("certificates/hazard/print", views.certificates_hazard_print, name="certificates_hazard_print"),
 ]

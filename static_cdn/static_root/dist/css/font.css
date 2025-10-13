@@ -21,7 +21,6 @@
     font-stretch: normal;
     /*font-style: normal;*/
 }
-{% load static %}
 @font-face {
     font-family: 'IranNastaliq';
     src: url('/static/dist/fonts/IranNastaliq.eot');
@@ -33,3 +32,9 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'B Koodak';
+    src: url('../../../static/dist/fonts/B Koodak Bold_0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

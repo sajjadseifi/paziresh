@@ -1,0 +1,67 @@
+{% load access_filters %}
+
+<form id="soldiersAccessForm" method="post" action="{% url 'soldiers_access_form' %}?user_id={{ user.id }}">
+    {% csrf_token %}
+
+    <div class="form-header">
+        <h3>دسترسی به سربازان</h3>
+        <p>در این بخش می‌توانید واحدهایی که کاربر به آن‌ها دسترسی دارد را تعیین کنید.</p>
+    </div>
+    <!-- دکمه ذخیره -->
+    <div class="form-actions">
+        <button type="submit">💾 ذخیره دسترسی‌ها</button>
+    </div>
+
+    <div class="layers-container">
+
+        {% for g in gordans %}
+        <div class="layer-box">
+            <div class="layer-title">🪖 
+                 گردان {{ g.name }}
+            </div>
+            <div class="panel-box grid-2">
+                    <label class="checkbox-btn select-all">
+                        همه گروهان‌های گردان {{ g.name }}
+                        <input type="checkbox" class="select-all-checkbox">
+                        <span class="icon">✔</span>
+                    </label>
+                    {% for gr in grohans %}
+                        {% if gr.gordan_id == g.id %}
+                        <label class="checkbox-btn gordan">
+                            گروهان {{ gr.name }}
+                            <input type="checkbox" name="grohan_{{ gr.id }}" {% if user_access|check_gorohan_access:gr.id %}checked{% endif %}>
+                            <span class="icon">✔</span>
+                        </label>
+                        {% endif %}
+                    {% endfor %}
+            </div>
+         </div>
+         {% endfor %}
+      </div>
+</form>
+
+<script>
+document.querySelectorAll('.panel-box').forEach(panel => {
+    const selectAllCheckbox = panel.querySelector('.select-all-checkbox');
+    const grohanCheckboxes = panel.querySelectorAll('input[type="checkbox"]:not(.select-all-checkbox)');
+
+    // تابع برای بروزرسانی وضعیت select-all
+    const updateSelectAll = () => {
+        const allChecked = Array.from(grohanCheckboxes).every(c => c.checked);
+        selectAllCheckbox.checked = allChecked;
+    }
+
+    // بررسی وضعیت هنگام لود صفحه
+    updateSelectAll();
+
+    // وقتی select-all تغییر کرد، همه گروهان‌ها تغییر کنند
+    selectAllCheckbox.addEventListener('change', function() {
+        grohanCheckboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    // وقتی هر گروهان تغییر کرد، بررسی کنیم همه زده شده‌اند یا نه
+    grohanCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateSelectAll);
+    });
+});
+</script>

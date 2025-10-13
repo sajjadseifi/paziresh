@@ -783,8 +783,7 @@ def export_to_excel_list_sarbaz_be_sorat_gorohi(request):
 def PrintPosheNokhodi(request):
     in_course_soldire = Soldier.objects.filter(in_coures=True, willing_to_learn=True).order_by('t_Gordan__name',
                                                                                                't_battalion_group__name',
-
-                                                                                               'code_gorhan_nahai')
+                                                                                               'code_gorhan_nahai')   
     cx = {'soldires': in_course_soldire}
     return render(request, 'ensani_soldires_management/print_poshe_nokhodi.html', cx)
 
@@ -1602,6 +1601,94 @@ def calculate_score():
         soldier.save()
 
 
+def calculate_score_for_soldiers(soldiers):
+    """Calculate scores for all eligible soldiers."""
+
+    # Score mapping constants
+    DISCIPLINE_SCORES = {13: 0.5, 14: 0.5, 15: 1, 16: 1, 17: 1.5, 18: 1.5, 19: 2, 20: 2}
+    BATTALION_ACTIVITY_SCORES = {16: 0.5, 17: 1, 18: 1.5, 19: 2, 20: 2.5}
+    BATTALION_SAMPLE_SCORE = 2
+    BASIJ_EFFICIENCY_SCORES = {'30 روزه': 0.5, '45 روزه': 1}
+    IDEOLOGICAL_SCORES = {18: 0.4, 19: 0.7, 20: 1}
+    TOP_THREE_SCORES = {'نفر اول': 2, 'نفر دوم': 1.5, 'نفر سوم': 1}
+
+    def get_shooting_score(score):
+        """Calculate shooting score based on ranges."""
+        if 80 <= score < 85:
+            return 0.4
+        elif 85 <= score < 90:
+            return 0.7
+        elif 90 <= score < 95:
+            return 1.5
+        elif 95 <= score <= 100:
+            return 2
+        return 0
+
+    def get_award_score(count, scores):
+        """Calculate award score based on count and score mapping."""
+        if count <= 0:
+            return 0
+        elif count > 3:
+            return max(scores.values())
+        return scores.get(count, 0)
+
+    AWARD_SCORES = {
+        'global': {1: 0.3, 2: 0.4},
+        'national': {1: 0.2, 2: 0.3},
+        'provincial': {1: 0.1, 2: 0.2}
+    }
+
+    ARTICLE_SCORES = {
+        'global': {1: 0.2, 2: 0.3},
+        'publications': {1: 0.2, 2: 0.3}
+    }
+
+    for soldier in soldiers:
+        total = 0
+
+        # Battalion scores
+        total += DISCIPLINE_SCORES.get(int(soldier.discipline_score), 0)
+        total += BATTALION_ACTIVITY_SCORES.get(int(soldier.battalion_activity), 0)
+        total += BATTALION_SAMPLE_SCORE if soldier.battalion_sample else 0
+
+        # Basij scores
+        total += float(soldier.basij_experience) * 0.0142857  # Active Basij experience
+        total += float(soldier.council_experience) * 0.01  # Council experience
+        total += BASIJ_EFFICIENCY_SCORES.get(str(soldier.basij_efficiency), 0)
+
+        # Ideological and training scores
+        total += IDEOLOGICAL_SCORES.get(int(soldier.ideological_score), 0)
+        total += get_shooting_score(int(soldier.shooting_score))
+        total += TOP_THREE_SCORES.get(soldier.top_three, 0)
+
+        # Personal achievements
+        total += soldier.quran_memorization * 0.1  # Quran memorization
+        total += 1 if soldier.nahj_memorization else 0  # Nahj memorization
+        total += 1 if soldier.sajjadiya_memorization else 0  # Sajjadiya memorization
+
+        # Awards and publications
+        total += get_award_score(soldier.global_awards, AWARD_SCORES['global'])
+        total += get_award_score(soldier.national_awards, AWARD_SCORES['national'])
+        total += get_award_score(soldier.provincial_awards, AWARD_SCORES['provincial'])
+        total += get_award_score(soldier.global_articles, ARTICLE_SCORES['global'])
+        total += get_award_score(soldier.publications, ARTICLE_SCORES['publications'])
+
+        # Cap total score at 20
+        total = min(total, 20)
+
+        # Determine rank
+        if soldier.Amriye or soldier.physical_condition != 'سالم':
+            rank = get_military_rank(soldier.Grade, 0)
+        else:
+            rank = get_military_rank(soldier.Grade, total)
+
+        # Update soldier
+        soldier.rank = rank
+        soldier.total_score = total
+        soldier.save()
+
+
+
 class import_rank_from_exel(LoginRequiredMixin, View):
     def get(self, request):
         form = FormUpdateRank()
@@ -2020,3 +2107,99 @@ def export_to_excel_list_goili(request):
     # تنظیم sheet به حالت راست به چپ
     worksheet.sheet_view.rightToLeft = True
     return response
+
+
+from django.shortcuts import render,redirect
+from django.core.paginator import Paginator
+from django.urls import reverse
+
+def send_rank_score_page(request):
+    # همه سربازان مرتب بر اساس گردان و گروهان
+    in_course_soldiers = Soldier.objects.filter(
+        in_coures=True, 
+        willing_to_learn=True
+    ).order_by(
+         't_Gordan__name',
+         't_battalion_group__name',
+         'code_gorhan_nahai'
+    )
+    # تبدیل مقادیر بولین به True/False برای اطمینان
+    for soldier in in_course_soldiers:
+        soldier.battalion_sample = bool(soldier.battalion_sample)
+        soldier.nahj_memorization = bool(soldier.nahj_memorization)
+        soldier.sajjadiya_memorization = bool(soldier.sajjadiya_memorization)
+
+    
+    # صفحه‌بندی هر صفحه ۲۰ سرباز
+    paginator = Paginator(in_course_soldiers, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj, 
+    }
+    return render(request, 'rank/send_rank_score_page.html', context)
+
+def send_rank_score_update(request):
+    input_fields_float = [
+        'discipline_score',
+        'basij_experience',
+        'council_experience',
+        'ideological_score',
+        'shooting_score',
+        'battalion_activity'
+    ]
+    input_fields_int = [
+        'provincial_awards',
+        'national_awards',
+        'global_awards',
+        'global_articles',
+        'publications',
+        'quran_memorization'
+    ]
+    checkbox_fields = [
+        'battalion_sample',
+        'nahj_memorization',
+        'sajjadiya_memorization'
+    ]
+
+    if request.method == "POST":
+        soldier_ids = {
+            int(key.rsplit('_', 1)[-1])
+            for key in request.POST.keys()
+            if '_' in key and key.rsplit('_', 1)[-1].isdigit()
+        }
+
+        soldiers = Soldier.objects.filter(id__in=soldier_ids)
+
+        for soldier in soldiers:
+            sid = soldier.id
+
+            # ✅ چک‌باکس‌ها
+            for field in checkbox_fields:
+                soldier_value = f"{field}_{sid}" in request.POST
+                setattr(soldier, field, soldier_value)
+
+            # ✅ فیلدهای عددی (اعشاری)
+            for field in input_fields_float:
+                key = f"{field}_{sid}"
+                val = request.POST.get(key)
+                setattr(soldier, field, float(val) if val not in [None, ""] else 0.0)
+
+            # ✅ فیلدهای عددی (صحیح)
+            for field in input_fields_int:
+                key = f"{field}_{sid}"
+                val = request.POST.get(key)
+                setattr(soldier, field, int(val) if val not in [None, ""] else 0)
+
+            # ✅ فیلد انتخابی سه نفر برتر
+            soldier.top_three = request.POST.get(f"top_three_{sid}") or ''
+            soldier.basij_efficiency = request.POST.get(f"basij_efficiency_{sid}") or ''
+
+            soldier.save()
+
+        calculate_score_for_soldiers(soldiers)
+        referer = request.META.get('HTTP_REFERER', reverse('send_rank_score_page'))
+        return redirect(referer)
+
+    return redirect('send_rank_score_page')

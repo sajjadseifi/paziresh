@@ -4,10 +4,8 @@
 {% block header %}
 <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
 <style>
-/* ===== Container ===== */
 .container {
-    padding: 20px;
-    background-color: #f5f6fa;
+    margin-top:20px;
 }
 
 /* ===== Card ===== */
@@ -26,10 +24,12 @@
     align-items: center;
     margin-bottom: 12px;
 }
-.toolbar h2 {
-    font-size: 1.3rem;
+.toolbar h1 {
+    font-size: 2rem;
     font-weight: bold;
     color: #1f3c88;
+    padding:0;
+    margin:0;
 }
 .toolbar button, .toolbar a {
     padding: 6px 14px;
@@ -152,7 +152,7 @@
 <div class="card">
     <!-- Toolbar -->
     <div class="toolbar">
-        <h2>تخصیص مهارت به سربازان</h2>
+            <h1>تخصیص مهارت به سربازان</h1>
             <div class="download-links">
                <button type="submit" form="soldierForm">
                   <i class="fa fa-floppy-o"></i> ثبت تغییرات

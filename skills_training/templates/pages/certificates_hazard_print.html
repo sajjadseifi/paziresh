@@ -1,0 +1,403 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <title>چاپ گواهی‌ها</title>
+    <style>
+      @font-face {
+        font-family: 'IranNastaliq';
+        src: url('/static/dist/fonts/IranNastaliq.eot');
+        src: url('/static/dist/fonts/IranNastaliq.eot?#iefix') format('embedded-opentype'),
+             url('/static/dist/fonts/IranNastaliq.woff2') format('woff2'),
+             url('/static/dist/fonts/IranNastaliq.woff') format('woff'),
+             url('/static/dist/fonts/IranNastaliq.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: 'B Koodak';
+        src: url('/static/dist/fonts/B Koodak Bold_0.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body {
+        font-family: "IranNastaliq";
+        direction: rtl;
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+        display:flex;
+      }
+
+      .b-koodak {
+        font-family: 'B Koodak';
+        margin: 0 8px;
+        color:red;
+        font-size:18px;
+      }
+      
+      .certificate-header .b-koodak {
+        font-size:16px;
+      }
+      .certificate-footer  .b-koodak {
+        font-size:26px;
+      }
+
+      .page {
+        width: 210mm;
+        height: 297mm !important;
+        margin: 3mm;
+        padding: 10mm;
+        box-sizing: border-box;
+        background: #fff;
+        overflow: hidden;
+        position: relative;
+        page-break-after: always;
+        border: 1px dotted #aaa;
+        border-radius: 4px;
+      }
+
+      .certificate {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .certificate-section {
+        flex: 1;
+        border-radius: 20px;
+        border: 2px dashed #000;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+      }
+      .certificate .space {
+        padding: 10px;
+      }
+      .certificate-content {
+        flex: 1;
+        padding: 20px;
+        font-size: 16px;
+        text-align:justify;
+      }
+
+      .certificate-footer {
+        display: flex;
+        align-items: center;
+        padding: 20px 20px;
+        gap: 20px;
+      }
+
+      .certificate-footer .space {
+        flex: 1;
+      }
+
+      @media print {
+        .page {
+          box-shadow: none;
+          margin: 0;
+          padding: 10mm;
+          width: 100%;
+          page-break-after: always;
+          border: 1px dashed transparent;
+        }
+        .b-koodak {
+          color:black;
+        }
+        .manage {
+          display:none;
+        }
+      }
+
+      .certificate-signiture {
+        text-align: center;
+        display: flex;
+        align-items: center;
+      }
+
+      .signiture-box {
+        flex: 1;
+        position: relative;
+        font-size: 16px;
+      }
+
+      .signiture {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-40%, -35%);
+        width: 70%;
+      }
+
+      .certificate-header {
+        display: flex;
+        align-items: center;
+      }
+
+      .certificate-header .sepah-logo,
+      .certificate-header .letter {
+        flex: 1;
+      }
+
+      .certificate-header .letter {
+        display: flex;
+        justify-content: end;
+        flex-direction: column;
+        align-items: end;
+      }
+      .manage {
+        flex:1;
+        position:relative;
+      }
+      .sidebar {
+        position:absolute;
+      }
+            /* ====== تنظیمات سمت چپ ====== */
+      .sidebar {
+        background: #ffffff;
+        border-right: 2px solid #ddd;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 15px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .sidebar h2 {
+        font-family: 'B Koodak';
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .sidebar .info {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-family: 'B Koodak';
+        font-size: 15px;
+        color: #444;
+      }
+
+      .sidebar .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #007bff;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: 'B Koodak';
+        font-size: 16px;
+        text-decoration: none;
+        transition: 0.3s ease;
+      }
+
+      .sidebar .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+
+     .sidebar .btn.btn-green {
+        background: #28a745;
+      }
+
+    .sidebar  .btn.btn-orange {
+        background: #fd7e14;
+      }
+
+    .sidebar  .btn.btn-gray {
+        background: #6c757d;
+      }
+      .sepah-logo  {
+        position:relative;
+      }
+      .niro-zamini {
+        position:absolute;
+        top:65%;
+        right:6px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="preview">
+      {% for soldier in soldiers %}
+        <div class="print page">
+          <div class="certificate">
+            <section class="base-certificate certificate-section">
+              <header class="certificate-header">
+                <div class="sepah-logo">
+                  <div> 
+                    <img width="60px" src="{% static 'img/Sepah.png' %}" alt="نیروی زمینی" />
+                  </div>
+                  <div class="niro-zamini">نیروی زمینی</div>
+                </div>
+                <div class="allah-logo">
+                  <img width="60px" src="{% static 'img/allah-placeholder.png' %}" alt="الله" />
+                </div>
+                <div class="letter">
+                  <span>شماره نامه: <span class="b-koodak">{{ hazard.letter_number }}</span></span>
+                  <span>تاریخ نامه: <span class="b-koodak">{{ hazard.certificate_date }}</span></span>
+                </div>
+              </header>
+
+              <main class="certificate-content">
+                گواهی می‌شود: آقای <span class="b-koodak">{{ soldier.name }}</span>
+                <span class="b-koodak">{{ soldier.family }}</span>  
+                فرزند <span class="b-koodak">{{ soldier.fathers_name }}</span>،
+                به شماره ملی <span class="b-koodak">{{ soldier.National_Code }}</span>،
+                متولد <span class="b-koodak">{{ soldier.Date_of_birth }}</span>،
+                با پایه خدمتی <span class="b-koodak">{{ soldier.Date_of_dispatch }}</span>؛  
+                در <span class="b-koodak">{{ hazard.month_name }}</span> سال 
+                <span class="b-koodak">{{ hazard.year }}</span>  
+                در استان مازندران، شهرستان 
+                بابل،  
+                در آموزشگاه رزم مقدّماتی المهدی (عجل‌الله تعالی فرجه‌الشریف) نیروی زمینی سپاه؛  
+                آموزش و آزمون مهارت‌های ۴گانه عمومی  
+                (مهارت‌های زندگی، سواد رسانه‌ای و فضای مجازی، مباحث حقوقی و آشنایی با سواد مالی، اشتغال و کارآفرینی)  
+                را با موفقیت به پایان رسانده است.
+              </main>
+              <footer class="certificate-signiture">
+                <div class="signiture-box">
+                  <div>سرهنگ پاسدار رضا سروی</div>
+                  <div>مسئول نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
+                  <img class="signiture" src="{% static 'img/farmandeh_niro_ensani.png' %}" alt="امضا" />
+                </div>
+                <div class="signiture-box">
+                  <div>سرهنگ پاسدار علی متولی طاهر</div>
+                  <div>فرمانده آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
+                  <img class="signiture" src="{% static 'img/farmandeh.png' %}" alt="امضا" />
+                </div>
+              </footer>
+            </section>
+
+            <div class="space"></div>
+
+            <section class="certificate-hazard certificate-section">
+              <header class="certificate-header">
+                <div class="sepah-logo">
+                 <div>
+                    <img width="60px" src="{% static 'img/Sepah.png' %}" alt="نیروی زمینی" />
+                  </div>
+                  <div class="niro-zamini">نیروی زمینی</div>
+                </div>
+                <div class="allah-logo">
+                  <img width="60px" src="{% static 'img/allah-placeholder.png' %}" alt="الله" />
+                </div>
+                <div class="letter">
+                  <span>شماره نامه: <span class="b-koodak">{{ hazard.letter_number }}</span></span>
+                  <span>تاریخ نامه: <span class="b-koodak">{{ hazard.certificate_date }}</span></span>
+                </div>
+              </header>
+
+              <main class="certificate-content">
+                گواهی می‌شود: آقای <span class="b-koodak">{{ soldier.name }}</span>
+                <span class="b-koodak">{{ soldier.family }}</span>  
+                فرزند <span class="b-koodak">{{ soldier.fathers_name }}</span>،
+                به شماره ملی <span class="b-koodak">{{ soldier.National_Code }}</span>،
+                دوره آموزش کمک‌های اولیه به مدت 
+                <span class="b-koodak">{{ hazard.first_aid_hours }}</span> ساعت  
+                و آمادگی در برابر مخاطرات به مدت 
+                <span class="b-koodak">{{ hazard.hazard_preparedness_hours }}</span> ساعت  
+                از تاریخ <span class="b-koodak">{{ hazard.start_date }}</span> تا تاریخ 
+                <span class="b-koodak">{{ hazard.end_date }}</span>  
+                در استان <span class="b-koodak">{{ soldier.province_name }}</span>، شهرستان 
+                <span class="b-koodak">{{ soldier.city_name }}</span>،  
+                در آموزشگاه رزم مقدّماتی المهدی (عجل‌الله تعالی فرجه‌الشریف) نیروی زمینی سپاه  
+                با موفقیت به پایان رسانده است.
+              </main>
+
+              <footer class="certificate-signiture">
+                <div class="signiture-box">
+                  <div>سرهنگ پاسدار رضا سروی</div>
+                  <div>مسئول نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
+                  <img class="signiture" src="{% static 'img/farmandeh_niro_ensani.png' %}" alt="امضا" />
+                </div>
+                <div class="signiture-box">
+                  <div>سرهنگ پاسدار علی متولی طاهر</div>
+                  <div>فرمانده آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
+                  <img class="signiture" src="{% static 'img/farmandeh.png' %}" alt="امضا" />
+                </div>
+              </footer>
+            </section>
+
+            <footer class="certificate-footer">
+              <span>کد پذیرش: <span class="b-koodak">{{ soldier.acceptance_code }}</span></span>
+              <div class="space"></div>
+              <span>گردان: <span class="b-koodak">{{ soldier.Gordan.name }}</span></span>
+              <span>گروهان: <span class="b-koodak">{{ soldier.battalion_group.name }}</span></span>
+              <span>کد سازمانی: <span class="b-koodak">{{ soldier.code_gorhan_nahai }}</span></span>
+            </footer>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="manage">
+         <aside class="sidebar">
+          <h2 style="margin-bottom: 10px;">
+  مرتب‌سازی: 
+  <span class="b-koodak">
+    {% if order_by == 'acceptance_code' %}
+      کد پذیرش
+    {% elif order_by == 'structure' %}
+      گردانی
+    {% else %}
+      {{ order_by }}
+    {% endif %}
+  </span>
+</h2>
+<div class="settings-box info" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 5px;">
+  <div>
+    شماره نامه: <span class="b-koodak">{{ hazard.letter_number }}</span>
+  </div>
+  <div>
+    تاریخ صدور: <span class="b-koodak">{{ hazard.certificate_date }}</span>
+  </div>
+  <div>
+    ماه اجرا: <span class="b-koodak">{{ hazard.month_name }}</span>
+  </div>
+  <div>
+    سال اجرا: <span class="b-koodak">{{ hazard.year }}</span>
+  </div>
+  <div>
+    ساعت کمک‌های اولیه: <span class="b-koodak">{{ hazard.first_aid_hours }}</span>
+  </div>
+  <div>
+    ساعت آمادگی در برابر مخاطرات: <span class="b-koodak">{{ hazard.hazard_preparedness_hours }}</span>
+  </div>
+  <div>
+    شروع دوره: <span class="b-koodak">{{ hazard.start_date }}</span>
+  </div>
+  <div>
+    پایان دوره: <span class="b-koodak">{{ hazard.end_date }}</span>
+  </div>
+</div>
+
+
+          <a href="{% url 'skills:certificates_hazard' %}" class="btn btn-orange">✏️ ویرایش تنظیمات</a>
+
+          <a href="{% url 'skills:certificates_hazard_print' %}?order_by=structure" class="btn btn-green">
+            📁 چاپ گردانی
+          </a>
+
+          <a href="{% url 'skills:certificates_hazard_print' %}?order_by=acceptance_code" class="btn btn-gray">
+            🧾 چاپ پذیرش
+          </a>
+
+          <button onclick="window.print()" class="btn">🖨 چاپ نهایی</button>
+        </aside>
+    </div>
+  </body>
+</html>

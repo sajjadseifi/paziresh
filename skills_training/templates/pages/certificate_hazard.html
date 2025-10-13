@@ -1,0 +1,243 @@
+{% extends "../layout/base.html" %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<style>
+  /* ساختار کلی صفحه */
+  .page-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    margin: 40px auto;
+    max-width: 1400px;
+  }
+
+  /* کارت فرم */
+  .form-card {
+    flex: 0 0 480px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+  }
+
+  .form-card h4 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #2f4f4f;
+  }
+
+  /* گرید فرم ۲ ستونه */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px 20px;
+  }
+
+  .form-grid .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom:0;
+  }
+
+  .form-grid label {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* استایل اینپوت‌ها */
+  .form-grid input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: 0.3s;
+  }
+
+  .form-grid input:focus {
+    outline: none;
+    border-color: #1a8917;
+    box-shadow: 0 0 5px rgba(26, 137, 23, 0.3);
+  }
+
+  .btn-save {
+    background-color: #1a8917;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: 0.3s ease;
+  }
+
+  .btn-save:hover {
+    background-color: #146c12;
+  }
+
+  /* پیش‌نمایش گواهی */
+  .certificate-preview {
+    flex: 1;
+    background: #fdfdfd;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 20px 40px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    overflow: auto;
+  }
+
+  .certificate-preview h2 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333;
+  }
+
+  .certificate-field {
+    font-size: 1.05rem;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 15px;
+    border-bottom: 1px dashed #ddd;
+  }
+
+  .certificate-field span {
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+
+
+ 
+</style>
+<style>
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    margin: 6px 4px;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .print-btn:hover {
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .btn-acceptance {
+    background-color: #007bff; /* آبی */
+  }
+
+  .btn-acceptance:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-structure {
+    background-color: #28a745; /* سبز */
+  }
+
+  .btn-structure:hover {
+    background-color: #1f7a34;
+  }
+
+  .print-btn i {
+    font-size: 18px;
+  }
+</style>
+<div class="page-container">
+  <!-- بخش فرم -->
+  <div class="form-card">
+    <h4>⚙️ تنظیمات گواهی مخاطرات</h4>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-grid">
+        {% for field in form %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="text-danger small">{{ field.errors }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn-save">💾 ذخیره تنظیمات</button>
+    </form>
+  </div>
+
+<!-- بخش پیش‌نمایش A4 افقی -->
+<div class="certificate-preview" id="certificate">
+  <h2>📜 گواهی مخاطرات</h2>
+
+  <div class="certificate-field">
+    <span>تاریخ گواهی:</span> 
+    {% if hazard.certificate_date %}
+      {{ hazard.certificate_date|gregorian_to_jalali }}
+    {% else %}
+      -
+    {% endif %}
+  </div>
+
+  <div class="certificate-field">
+    <span>شماره نامه:</span> {{ hazard.letter_number|default:"-" }}
+  </div>
+
+  <div class="certificate-field">
+    <span>سال:</span> {{ hazard.year|default:"-" }}
+  </div>
+
+  <div class="certificate-field">
+    <span>ماه:</span> {{ hazard.month_name|default:"-" }}
+  </div>
+
+  <div class="certificate-field">
+    <span>ساعت کمک‌های اولیه:</span> {{ hazard.first_aid_hours|default:"22" }}
+  </div>
+
+  <div class="certificate-field">
+    <span>ساعت آمادگی در برابر مخاطرات:</span> {{ hazard.hazard_preparedness_hours|default:"8" }}
+  </div>
+
+  <div class="certificate-field">
+    <span>تاریخ شروع دوره:</span> 
+    {% if hazard.start_date %}
+      {{ hazard.start_date|gregorian_to_jalali }}
+    {% else %}
+      -
+    {% endif %}
+  </div>
+
+  <div class="certificate-field">
+    <span>تاریخ پایان دوره:</span> 
+    {% if hazard.end_date %}
+      {{ hazard.end_date|gregorian_to_jalali }}
+    {% else %}
+      -
+    {% endif %}
+  </div>
+
+<a href="{% url 'skills:certificates_hazard_print' %}?order_by=acceptance_code" class="print-btn btn-acceptance">
+  🖨 چاپ گواهی (کد پذیرش)
+</a>
+
+<a href="{% url 'skills:certificates_hazard_print' %}?order_by=structure" class="print-btn btn-structure">
+  📁 چاپ گواهی (گردانی)
+</a>
+</div>
+
+</div>
+
+
+{% endblock %}

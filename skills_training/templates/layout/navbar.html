@@ -1,3 +1,4 @@
+{% load static %}
 <style>
 .skills-navbar {
     display: flex;
@@ -43,10 +44,14 @@
     color: #000;
     font-weight: bold;
 }
+
 </style>
 
 <nav class="skills-navbar">
     <div class="logo">
+        <span class="eslogo">
+            <img width="32px" src="{% static 'img/support/eslogo.png' %}" alt="لوگو">
+        </span>
         <a href="{% url 'skills:index' %}" class="nav-logo">مهارت‌آموزی</a>
     </div>
 
@@ -54,6 +59,7 @@
         <li><a href="{% url 'skills:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">داشبورد</a></li>
         <li><a href="{% url 'skills:assign' %}" class="{% if request.resolver_match.url_name == 'assign' %}active{% endif %}">مهارت سربازان</a></li>
         <li><a href="{% url 'skills:list' %}" class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}">مهارت‌ها</a></li>
+        <li><a href="{% url 'skills:certificates_hazard' %}" class="{% if request.resolver_match.url_name == 'certificates_hazard' %}active{% endif %}">مخاطرات</a></li>
         {% comment %} <li><a href="{% url 'skills:create' %}" class="{% if request.resolver_match.url_name == 'create' %}active{% endif %}">ثبت مهارت جدید</a></li> {% endcomment %}
     </ul>
 </nav>

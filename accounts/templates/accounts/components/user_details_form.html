@@ -1,0 +1,54 @@
+{% load static%}
+<form  id="userDetailsForm" class="access-form" method="post" action="{% url 'user_details_form' %}?user_id={{ user.id }}">
+    {% csrf_token %}
+    <!-- ردیف اول: نام و نام خانوادگی -->
+    <div class="form-row">
+        <div class="form-group">
+            <label>
+                <input type="text" name="first_name" value="{{ user.first_name }}" required>
+                <span>نام</span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="text" name="last_name" value="{{ user.last_name }}" required>
+                <span>نام خانوادگی</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- ردیف دوم: نام کاربری و ایمیل -->
+    <div class="form-row">
+        <div class="form-group">
+           <label>
+               <input type="text" name="username" value="{{ user.username }}" required>
+               <span>نام کاربری</span>
+          </label>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="email" name="email" value="{{ user.email }}">
+                <span>ایمیل</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- چک‌باکس ها به شکل دکمه حرفه‌ای -->
+    <div class="form-row checkboxes-row">
+        <label class="checkbox-btn">
+            <input type="checkbox" name="is_active" {% if user.is_active %}checked{% endif %}>
+            فعال
+            <span class="icon">✔️</span>
+        </label>
+        <label class="checkbox-btn">
+            <input type="checkbox" name="is_staff" {% if user.is_staff %}checked{% endif %}>
+            ادمین
+            <span class="icon">✔️</span>
+        </label>
+    </div>
+
+    <!-- دکمه ذخیره -->
+    <div class="form-actions">
+        <button type="submit">ذخیره اطلاعات</button>
+    </div>
+</form>
