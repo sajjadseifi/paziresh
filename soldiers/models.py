@@ -111,7 +111,7 @@ class Soldier(models.Model):
     tajdid_dore_moarefi_shode = models.BooleanField(default=False, verbose_name='تجدید دوره معرفی شده؟')
     skill_1 = models.ForeignKey(SlillTraining,null=True,blank=True,related_name="primary_soldiers",on_delete=models.SET_NULL,verbose_name="مهارت اول")
     skill_2 = models.ForeignKey(SlillTraining,null=True,blank=True,related_name="secondary_soldiers",on_delete=models.SET_NULL,verbose_name="مهارت دوم")
-    
+    problems_data = models.JSONField(default=dict, blank=True)
     class Meta:
         verbose_name = "سرباز"
         verbose_name_plural = "سرباز ها"

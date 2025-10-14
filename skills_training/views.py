@@ -16,10 +16,59 @@ import jdatetime
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from accounts.decorators import permissions_required
+
+# views.py
+import uuid
+import time
+from django.core.cache import cache
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.http import StreamingHttpResponse
+import openpyxl
+from .models import SlillTraining
+from django.db import transaction
+
+from django.http import JsonResponse, StreamingHttpResponse
+from django.db import transaction
+import uuid
+import time
+from django.core.cache import cache
+import openpyxl
+from .models import SlillTraining
+from django.core.paginator import Paginator
+from django.core.paginator import Paginator
+from django.shortcuts import render
+from battalions.models import battalion, battalion_group
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+
+import openpyxl
+from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
+from django.http import HttpResponse
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from .models import SlillTraining  # نام مدل طبق پروژه شما
+from django.db import transaction
+import jdatetime
+from .forms import HazardSettingsForm
+from .models import HazardSettings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.views import View
 
 template_pages = 'pages'
 
 @login_required
+@permissions_required(
+    main_permission='dep.niru_ensani',
+    fallback_permission='dep.gorohan',
+    fallback_url='skills:assign',
+    redirect_url='account_access_403'
+)
 def index(request):
     # ✅ تعداد کل مهارت‌ها
     total_skills = SlillTraining.objects.count()
@@ -141,24 +190,6 @@ def create_manual(request):
            
     return redirect("skills:create")
 
-# views.py
-import uuid
-import time
-from django.core.cache import cache
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.http import StreamingHttpResponse
-import openpyxl
-from .models import SlillTraining
-from django.db import transaction
-
-from django.http import JsonResponse, StreamingHttpResponse
-from django.db import transaction
-import uuid
-import time
-from django.core.cache import cache
-import openpyxl
-from .models import SlillTraining
 
 def create_excel(request):
     """
@@ -302,15 +333,20 @@ def export_skills_excel(request):
     wb.save(response)
     return response
 
-from django.core.paginator import Paginator
 
+from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import render
-from battalions.models import battalion, battalion_group
+from soldiers.models import Soldier, SlillTraining
+from ensani_soldires_management.access import get_user_battalion_groups,get_user_battalions,get_user_soldiers
 
 def assign_view(request):
-    # شروع با queryset همه سربازان داوطلب
-    all_soldiers = Soldier.objects.filter(willing_to_learn=True).order_by('code_gorhan_nahai')
+    """
+    نمایش سربازان با امکان فیلتر بر اساس جستجو، گردان، گروهان، مهارت و کد پذیرش.
+    نمایش تنها سربازانی که کاربر به آن‌ها دسترسی دارد.
+    """
+    # ===== سربازان با دسترسی کاربر =====
+    all_soldiers = get_user_soldiers(request.user).filter(willing_to_learn=True).order_by('code_gorhan_nahai')
 
     # ===== دریافت فیلترها از GET =====
     search = request.GET.get('search', '').strip()
@@ -322,26 +358,39 @@ def assign_view(request):
 
     soldiers = all_soldiers
 
+    # ===== فیلتر جستجو =====
     if search:
         soldiers = soldiers.filter(
             Q(National_Code__icontains=search) |
             Q(name__icontains=search) |
             Q(family__icontains=search)
         )
+
+    # ===== فیلتر گردان بر اساس ID =====
     if gordan:
-        soldiers = soldiers.filter(t_Gordan__name__icontains=gordan)
+        try:
+            gordan_id = int(gordan)
+            soldiers = soldiers.filter(t_Gordan__id=gordan_id)
+        except ValueError:
+            pass
 
+    # ===== فیلتر گروهان بر اساس ID =====
     if battaliongroup:
-        if gordan is not None:
-            soldiers = soldiers.filter(t_battalion_group__name__icontains=battaliongroup)
+        try:
+            battaliongroup_id = int(battaliongroup)
+            soldiers = soldiers.filter(t_battalion_group__id=battaliongroup_id)
+        except ValueError:
+            pass
 
+    # ===== فیلتر مهارت‌ها =====
     if skill_1:
         soldiers = soldiers.filter(skill_1__id=skill_1)
     if skill_2:
         soldiers = soldiers.filter(skill_2__id=skill_2)
+
+    # ===== فیلتر کد پذیرش =====
     if code_paziresh:
         soldiers = soldiers.filter(code_paziresh__icontains=code_paziresh)
-
 
     # ===== Pagination =====
     page_number = request.GET.get('page', 1)
@@ -355,13 +404,18 @@ def assign_view(request):
     skills = SlillTraining.objects.all().order_by("category", "title")
     categories = SlillTraining.objects.values_list("category", flat=True).distinct()
 
-    # گردان‌ها و گروهان‌ها
-    gordans = battalion.objects.all()
-    gorohans = battalion_group.objects.all()
+    # ===== گردان‌ها و گروهان‌ها با توجه به دسترسی کاربر =====
+    gordans = get_user_battalions(request.user)
+    gorohans = get_user_battalion_groups(request.user)
 
-     # بررسی تغییر تعداد (مثل op_result)
+    # ===== بررسی تغییر تعداد برای op_result =====
     op_result = soldiers.count() != all_soldiers.count()
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        query_params.pop('page')
+    query_string = query_params.urlencode()
 
+    # ===== Context =====
     context = {
         'soldiers': soldiers_page,
         'skills': skills,
@@ -372,14 +426,9 @@ def assign_view(request):
         'gorohans': gorohans,
         'request': request,  # برای حفظ مقادیر فرم
         'op_result': op_result,
+        'query_params': query_string
     }
-    return render(request,  f"{template_pages}/assign.html", context)
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db import transaction
-from django.contrib.auth.decorators import login_required
-
+    return render(request, f"{template_pages}/assign.html", context)
 
 @login_required
 @transaction.atomic
@@ -430,10 +479,6 @@ def assign_create_manual(request):
 def assign_soldier_slills_manual():
    return redirect("skills:assign")
 
-
-import openpyxl
-from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
-from django.http import HttpResponse
 
 def assign_soldier_skills_excel(request, mode):
     wb = openpyxl.Workbook()
@@ -604,11 +649,6 @@ def skills_actions_(request):
     return redirect("skills:list")
 
 
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib import messages
-from .models import SlillTraining  # نام مدل طبق پروژه شما
-from django.db import transaction
-
 def skills_actions(request):
     """اعمال تمام تغییرات مهارت‌ها (حذف، ویرایش، افزودن) در یک مرحله"""
     if request.method != "POST":
@@ -685,12 +725,6 @@ def skills_actions(request):
     messages.success(request, "، ".join(msg_parts))
     return redirect("skills:list")
 
-import jdatetime
-from .forms import HazardSettingsForm
-from .models import HazardSettings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.views import View
 
 class CreateOrUpdateHazardSettings(LoginRequiredMixin, View):
     def get(self, request):

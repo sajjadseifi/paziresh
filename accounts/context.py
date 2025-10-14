@@ -1,4 +1,4 @@
-from .models import UserAccess, AccessName, ApplicationValues
+from .models import UserAccess, AccessName, ApplicationValues,DepartmentValues
 
 def user_access_context(request):
     """
@@ -6,27 +6,56 @@ def user_access_context(request):
     وضعیت دسترسی کاربر به بخش‌های مختلف برنامه (ApplicationValues)
     را در تمام صفحات به‌صورت lowercase فراهم می‌کند.
     خروجی نمونه:
-    is_accesses = {
+    permissions = {
         'farmandehi': True/False,
         'niru_ensani': True/False,
         ...
     }
     """
-    is_accesses = {}
+    permissions = {
+        'app':{},
+        'dep':{},
+    }
 
     # مقداردهی اولیه (همه False)
     for app in ApplicationValues:
-        is_accesses[app.name.lower()] = False
+        permissions['app'][app.name.lower()] = False
+
+    # مقداردهی اولیه (همه False)
+    for dep in DepartmentValues:
+        permissions['dep'][dep.name.lower()] = False
 
     # اگر کاربر لاگین کرده باشد
     if request.user.is_authenticated:
-        user_accesses = request.user.accesses.filter(access_name=AccessName.APPLICATIONS.name)
+        app_accesses = request.user.accesses.filter(access_name=AccessName.APPLICATIONS.name)
+        dep_accesses = request.user.accesses.filter(access_name=AccessName.DEPARTMENTS.name)
 
-        for access in user_accesses:
+        # حلقه برای enum ApplicationValues
+        for app in ApplicationValues:
+            key_access = app.name.lower()
+            is_access = False
+
             if request.user.is_staff:
-               is_accesses[access.access_value.lower()] = True
-               continue
-            is_access = access.access_value.lower() in [app.name.lower() for app in ApplicationValues]
-            is_accesses[access.access_value.lower()] = is_access
+                is_access = True
+            else:
+                # بررسی اینکه آیا کاربر به این app دسترسی دارد
+                is_access = app_accesses.filter(access_value__iexact=app.name).exists()
 
-    return {'is_accesses': is_accesses}
+            permissions['app'][key_access] = is_access
+            print(f"permissions['app'][{key_access}] = {is_access}")
+
+        # حلقه برای enum DepartmentValues
+        for dep in DepartmentValues:
+            key_access = dep.name.lower()
+            is_access = False
+
+            if request.user.is_staff:
+                is_access = True
+            else:
+                # بررسی اینکه آیا کاربر به این dep دسترسی دارد
+                is_access = dep_accesses.filter(access_value__iexact=dep.name).exists()
+
+            permissions['dep'][key_access] = is_access
+            print(f"permissions['dep'][{key_access}] = {is_access}")
+
+    return {'permissions': permissions}

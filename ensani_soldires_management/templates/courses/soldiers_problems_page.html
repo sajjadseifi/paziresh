@@ -1,0 +1,202 @@
+{% extends './_layout_soldiers_scores.html' %}
+
+{% block scores_content %}
+<style>
+   /* ===== Container ===== */
+   .container { margin-top: 20px; }
+
+   /* ===== Card ===== */
+   .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
+   }
+
+   /* ===== Toolbar ===== */
+   .toolbar h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #1f3c88;
+      margin-bottom: 15px;
+   }
+
+   /* ===== Filters ===== */
+   .filters .form-control {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+   }
+   .btn-filter {
+      background-color: #1f3c88;
+      color: #fff;
+      border-radius: 5px;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
+   }
+   .btn-filter:hover { background-color: #142766; }
+
+   /* ===== Table ===== */
+   .soldier-table {
+      width: 100%;
+      border-collapse: collapse;
+      direction: rtl;
+   }
+   .soldier-table th, .soldier-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+   }
+   .soldier-table th {
+      background-color: #1f3c88;
+      color: #fff;
+   }
+   .soldier-table tr:nth-child(even) { background-color: #f9f9f9; }
+   .soldier-table tr:hover { background-color: #d0e2ff; }
+   .soldier-table td input[type="text"] {
+      width: 100%;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+   }
+
+   /* ستون توضیحات بزرگتر */
+   .soldier-table td:last-child input {
+      min-width: 150px;
+   }
+
+   /* ===== Pagination ===== */
+   .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 15px;
+   }
+   .pagination a, .pagination span.current {
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid #1f3c88;
+      text-decoration: none;
+      color: #1f3c88;
+   }
+   .pagination a:hover { background-color: #1f3c88; color: #fff; }
+   .pagination span.current { background-color: #1f3c88; color: #fff; font-weight: bold; }
+   /* ===== Checkboxes ===== */
+.problem-checkbox {
+    width: 48px;      /* بزرگتر از حالت پیش‌فرض */
+    height: 48px;
+    cursor: pointer;
+    vertical-align: middle;
+    margin: 0 auto;   /* وسط چین در جدول */
+}
+
+/* اگر بخواهی می‌توانی label را هم کمی فاصله بدهی */
+.soldier-table td label {
+    font-size: 13px;
+    cursor: pointer;
+}
+</style>
+<div class="">
+
+    <div class="card">
+        <div class="toolbar">
+            <h1>مشکلات سربازان</h1>
+        </div>
+        <!-- فرم فیلتر -->
+        <form method="GET" class="filters row" style="margin-bottom:20px;">
+            <div class="col-md-3">
+                <label>جستجو</label>
+                {{ filter_form.search }}
+            </div>
+            <div class="col-md-3">
+                <label>گردان</label>
+                {{ filter_form.battalion_filter }}
+            </div>
+            <div class="col-md-3">
+                <label>گروهان</label>
+                {{ filter_form.group_filter }}
+            </div>
+            <div class="col-md-3" style="margin-top:23px;">
+                <button type="submit" class="btn-filter"><i class="fa fa-filter"></i> اعمال فیلتر</button>
+            </div>
+           
+        </form>
+  <!-- Pagination -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?{{ query_params }}&page={{ page_obj.previous_page_number }}">قبلی</a>
+            {% endif %}
+
+            {% for page_num in page_obj.paginator.page_range %}
+                {% if page_num >= page_obj.number|add:-2 and page_num <= page_obj.number|add:2 %}
+                    {% if page_num == page_obj.number %}
+                        <span class="current">{{ page_num }}</span>
+                    {% else %}
+                        <a href="?{{ query_params }}&page={{ page_num }}">{{ page_num }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?{{ query_params }}&page={{ page_obj.next_page_number }}">بعدی</a>
+            {% endif %}
+        </div>
+        <!-- فرم مشکلات -->
+        <form method="POST" action="{% url 'soldiers_problems_update' %}">
+            {% csrf_token %}
+            {{ formset.management_form }} 
+             <div class="text-right" style="margin:15px 0;">
+               <button type="submit" class="btn btn-success">ثبت تغییرات</button>
+               <a href="{% url 'soldiers_problems_export_excel' %}" class="btn btn-primary" style="margin-left:10px;">
+                  <i class="fa fa-download"></i> دانلود اکسل
+               </a>
+            </div>
+     <div class="table-responsive">
+    <table class="soldier-table">
+        <thead>
+            <tr>
+                <th>سرباز و محل</th>
+                {% for label in problem_fields %}
+                    <th style="white-space:normal; text-align:center;">{{ label }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+             {% for form, soldier in form_soldier_pairs %}
+                <tr>
+                    <td style="min-width:240px; vertical-align:top; padding:8px; background:#f8f9fa; border-radius:6px;">
+                        <div style="font-weight:bold; font-size:14px; color:#1f3c88;">
+                            {{ soldier.name }} {{ soldier.family }}
+                        </div>
+                           <div style="background:#ffc107; padding:2px 6px; border-radius:12px;">کد ملی: {{ soldier.National_Code }}</div>
+                        <div style="font-size:18px; font-weight:bold; color:#333;">
+                            {{ soldier.t_Gordan }} - {{ soldier.t_battalion_group.name }} - {{ soldier.code_gorhan_nahai }}
+                        </div>
+                    </td>
+                    {% for field in form %}
+                        {% if field.name in PROBLEM_FIELDS %}
+                           <td class="text-center">{{ field }}</td>
+                        {% else %}
+                           <td style="display:none;">{{ field }}</td>
+                        {% endif %}
+                     {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+        </form>
+
+      
+
+    </div>
+
+</div>
+
+{% endblock %}

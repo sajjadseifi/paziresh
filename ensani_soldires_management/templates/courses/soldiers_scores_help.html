@@ -1,0 +1,113 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load static %}
+
+{% block scores_content %}
+<style>
+/* کارت اصلی */
+.help-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e0e0e0;
+    padding: 25px 30px;
+    max-width: 900px;
+    margin: 0 auto;
+    direction: rtl;
+}
+
+/* عنوان اصلی */
+.help-title {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* زیرعنوان */
+.help-subtitle {
+    text-align: center;
+    color: #555;
+    font-size: 1em;
+    margin-bottom: 25px;
+}
+
+/* بخش‌ها */
+.help-section {
+    margin-bottom: 25px;
+}
+
+.help-section h5 {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.help-section ul {
+    padding-right: 20px;
+    list-style-type: circle;
+}
+
+.help-section li {
+    color: #555;
+    line-height: 1.8em;
+    margin-bottom: 5px;
+}
+
+/* پیام آماده‌سازی */
+.preparing-box {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(0, 123, 255, 0.05);
+    border-radius: 10px;
+    border: 1px dashed #007bff;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.icon-info {
+    font-size: 40px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+</style>
+
+<div class="help-card">
+    <h2 class="help-title">راهنمای سیستم نمرات سربازان</h2>
+    <p class="help-subtitle">در این صفحه با نحوه مشاهده، ثبت و مدیریت نمرات سربازان آشنا خواهید شد.</p>
+
+    <div class="help-section">
+        <h5><i class="fa fa-list-ul text-primary"></i> بخش‌های مختلف سامانه</h5>
+        <ul>
+            <li><strong>نمرات سربازان:</strong> مشاهده و ثبت نمرات انضباطی، عقیدتی، و آموزشی برای هر سرباز.</li>
+            <li><strong>سربازان برتر در دوره:</strong> انتخاب سه سرباز برتر کل نیرو بر اساس امتیازات کلی.</li>
+            <li><strong>سربازان نمونه در گردان:</strong> انتخاب نفرات نمونه هر گردان به‌صورت جداگانه.</li>
+        </ul>
+    </div>
+
+    <div class="help-section">
+        <h5><i class="fa fa-check-circle text-success"></i> نحوه ثبت نمره</h5>
+        <ul>
+            <li>برای هر سرباز، نمرات انضباط، فعالیت گردان، عقیدتی و تیراندازی را می‌توانید ثبت یا ویرایش کنید.</li>
+            <li>در انتهای فرم، دکمه <strong>«ثبت نمرات»</strong> را بزنید تا تغییرات ذخیره شوند.</li>
+            <li>در صورت نیاز به فیلتر سربازان، از بخش بالای صفحه برای انتخاب گردان یا گروهان استفاده کنید.</li>
+        </ul>
+    </div>
+
+    <div class="help-section">
+        <h5><i class="fa fa-exclamation-triangle text-warning"></i> نکات مهم</h5>
+        <ul>
+            <li>ورود نمرات خارج از بازه مجاز (مثلاً بالاتر از ۲۰ یا مقادیر منفی) پذیرفته نمی‌شود.</li>
+            <li>در صورت مشاهده خطا در داده‌ها، با مسئول سیستم تماس بگیرید.</li>
+            <li>فقط کاربرانی که دسترسی مناسب دارند می‌توانند نمرات را ثبت یا ویرایش کنند.</li>
+        </ul>
+    </div>
+
+    <div class="preparing-box mt-4">
+        <i class="fa fa-cogs icon-info"></i>
+        <p>در حال توسعه و به‌روزرسانی بخش‌های جدید راهنما...</p>
+        <small>این صفحه به‌زودی با آموزش تصویری تکمیل خواهد شد.</small>
+    </div>
+</div>
+{% endblock %}

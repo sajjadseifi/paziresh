@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'ensani_soldires_management',
     'ensani_backup',
     'help',
+    'core'
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.PermissionsMiddleware',
 ]
 
 ROOT_URLCONF = 'ensaniapp.urls'

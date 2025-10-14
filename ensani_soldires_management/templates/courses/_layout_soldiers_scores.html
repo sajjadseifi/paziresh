@@ -1,0 +1,123 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+{% load access_filters %}
+
+{% block header %}
+   <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+   <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
+   <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
+   <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+   <script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+<style>
+    /* 🎨 استایل تب‌ها */
+    .nav-tabs {
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .nav-tabs .nav-link {
+        color: #555;
+        font-weight: 500;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: all 0.25s ease;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #007bff;
+        border-bottom: 3px solid rgba(0, 123, 255, 0.3);
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background-color: #f8f9fa;
+        border-bottom: 3px solid #0d6efd;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-weight: 600;
+        box-shadow: 0 -2px 6px rgba(13, 110, 253, 0.1);
+    }
+
+    .tab-content {
+        padding: 2rem;
+    }
+</style>
+
+<div class="mt-4">
+
+    <!-- بخش تب‌ها -->
+    <ul class="nav nav-tabs mb-4 justify-content-center" dir="rtl">
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_help_page' %}active{% endif %}"
+               href="{% url 'soldiers_scores_help_page' %}">
+                <i class="fa fa-graduation-cap"></i>
+                راهنما
+            </a>
+        </li>
+
+        {% if permissions.dep.gorohan %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_tatbigh_page' %}active{% endif %}"
+               href="{% url 'soldiers_tatbigh_page' %}">
+                <i class="fa fa-users"></i>
+                تطبیق گردان گروهانی
+            </a>
+        </li>
+        {% endif %}
+
+        {% if permissions.app.rank_scores %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
+               href="{% url 'soldiers_scores_page' %}">
+               <i class="fa fa-bar-chart"></i>
+               نمرات سربازان
+            </a>
+        </li>
+        {% endif %}
+
+        {% if permissions.dep.amoozesh %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
+               href="{% url 'top_soldiers_course_page' %}">
+               <i class="fa fa-trophy"></i>
+               سربازان برتر در دوره
+            </a>
+        </li>
+        {% endif %}
+
+        {% if permissions.dep.gorohan %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
+               href="{% url 'top_soldiers_gordan_page' %}">
+               <i class="fa fa-star"></i>
+               سربازان نمونه در گردان
+            </a>
+        </li>
+        {% endif %}
+
+        {% if permissions.dep.gorohan %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
+               href="{% url 'soldiers_problems_page' %}">
+               <i class="fa fa-exclamation-triangle"></i>
+               مشکلات سربازان
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <!-- محتوای هر تب -->
+    <div class="tab-content">
+        {% block scores_content %}
+        {% endblock %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,494 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load static %}
+
+{% block scores_content %}
+
+<style>
+/* کارت فیلتر */
+.filter-card {
+    padding: 20px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(200,200,200,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* فرم فیلتر */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content:center;
+}
+
+.filter-form select,
+.filter-form button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    background-color: #fff;
+    font-size: 14px;
+}
+
+/* Pagination و دکمه ثبت نمرات کنار هم */
+.pagination-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* فرم submit کنار pagination */
+.submit-form button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submit-form button:hover {
+    background-color: #218838;
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 600px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .submit-form {
+        align-self: flex-start;
+    }
+}
+/* ===== Pagination ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 12px 0;
+}
+.pagination a {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #1f3c88;
+    color: #1f3c88;
+    text-decoration: none;
+    
+}
+.pagination a:hover { background-color: #1f3c88; color: #fff; }
+.pagination .current {
+    font-weight: bold;
+    background-color: #1f3c88;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    
+}
+
+.pagination span.dots {
+    border: none;
+    background: none;
+    color: #333;
+}
+.pagination .disabled {
+    color: #aaa;
+    border-color: #aaa;
+    pointer-events: none;
+}
+/* کارت سرباز */
+.panel {
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.panel-heading {
+    background-color: #f5f5f5;
+    font-size: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 15px;
+}
+
+/* فرم فشرده */
+.form-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0;
+    justify-content:start;
+    align-items:start;
+}
+
+.compact-form-group {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+    overflow: hidden;
+}
+
+.compact-form-group span {
+    background-color: #f0f0f0;
+    text-align: right;
+    margin:0;
+    display:block;
+    box-sizing:border-box;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2px 6px;
+    font-weight:bold;
+}
+
+.compact-form-group input {
+    width: 66px;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-weight: bold;
+    font-size:20px;
+    height:36px;
+}
+
+/* چک‌باکس‌ها دکمه‌ای کنار input */
+.toggle-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(200,200,200,0.5);
+    cursor: pointer;
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(6px);
+    user-select: none;
+    margin-left: 4px;
+}
+
+.toggle-btn.active {
+    background-color: #4CAF50;
+    color: #fff;
+    border-color: #4CAF50;
+}
+
+
+.toggle-btn {
+    position: relative;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    font-weight: bold;
+}
+
+.check-icon {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-left: 8px;
+    display: inline-block;
+    text-align: center;
+    line-height: 14px;
+    transition: all 0.2s;
+}
+
+/* حالت فعال */
+.toggle-btn.active .check-icon {
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
+.toggle-btn.active .check-icon::after {
+    content: '✔';
+    display: block;
+}
+
+.soldier-box {
+    display:flex;
+}
+.soldier-details {
+    flex:2;
+    border-radius:0 6px 6px 0;
+    display:flex;
+    gap:4px;
+    
+}
+.soldier-values {
+    flex:1;
+    padding:4px 10px;
+    display:flex;
+    
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.badge-score { background: #2196f3; }
+.badge-rank { background: #ff9800; }
+.form-inputs-container {
+    flex:14;
+    padding:4px 10px;
+}
+.panel-body {
+    padding:0px 0px;
+}
+input[type="checkbox"].hidden-checkbox {
+    display: none;
+}
+</style>
+
+<div class="">
+    <div class="filter-card">
+        <!-- فرم فیلتر -->
+        <form method="get" class="filter-form">
+               <!-- فیلتر گردان -->
+               <select name="battalion_filter">
+                  <option value="">همه گردان ها</option>
+                  {% for battalion in battalions %}
+                     <option value="{{ battalion.id }}"
+                           {% if request.GET.battalion_filter == battalion.id|stringformat:"s" %}selected{% endif %}>
+                           {{ battalion.name }}
+                     </option>
+                  {% endfor %}
+               </select>
+
+            <!-- فیلتر گروهان -->
+            <select name="group_filter">
+               <option value="">همه گروهان ها</option>
+               {% for group in groups %}
+                  {% if not request.GET.battalion_filter or group.gordan.id|stringformat:"s" == request.GET.battalion_filter %}
+                        <option value="{{ group.id }}"
+                           {% if request.GET.group_filter == group.id|stringformat:"s" %}selected{% endif %}>
+                           {{ group.name }} ({{ group.gordan.name }})
+                        </option>
+                  {% endif %}
+               {% endfor %}
+            </select>
+
+
+            <button type="submit">فیلتر</button>
+        </form>
+
+<div class="pagination">
+    {# قبلی و اول #}
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if query_params %}&{{ query_params }}{% endif %}">&laquo; اول</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">&lsaquo; قبلی</a>
+    {% else %}
+        <span class="disabled">&laquo; اول</span>
+        <span class="disabled">&lsaquo; قبلی</span>
+    {% endif %}
+
+    {# ±2 صفحه اطراف صفحه فعلی #}
+    {% for num in page_obj.paginator.page_range %}
+        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            {% if page_obj.number == num %}
+                <span class="current">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}{% if query_params %}&{{ query_params }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    {# فاصله و صفحات اول و آخر #}
+    {% for num in page_obj.paginator.page_range %}
+        {% if num == 1 or num == page_obj.paginator.num_pages %}
+            {% if num < page_obj.number|add:-2 or num > page_obj.number|add:2 %}
+                <a href="?page={{ num }}{% if query_params %}&{{ query_params }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% elif num == page_obj.number|add:-3 or num == page_obj.number|add:3 %}
+            <span class="dots">...</span>
+        {% endif %}
+    {% endfor %}
+
+    {# بعدی و آخر #}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">بعدی &rsaquo;</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if query_params %}&{{ query_params }}{% endif %}">آخر &raquo;</a>
+    {% else %}
+        <span class="disabled">بعدی &rsaquo;</span>
+        <span class="disabled">آخر &raquo;</span>
+    {% endif %}
+</div>
+
+    </div>
+
+    <form method="post" action="{% url 'send_rank_score_update' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">ثبت نمرات</button>
+
+        {% for soldier in page_obj %}
+        <div class="panel">
+            <div class="panel-body soldier-box">
+                <div class="soldier-details panel-heading">
+                    <div><strong>{{ soldier.t_Gordan }}</strong> {{ soldier.t_battalion_group.name }}</div>
+                    <div><strong>کد سازمانی:</strong> {{ soldier.code_gorhan_nahai }}</div>
+                    <div style="width:100%;"><strong>کد ملی:</strong> {{ soldier.National_Code }}</div>
+
+
+                </div>
+                <div class="soldier-details panel-heading">
+                    <div style="width:100%; text-align:center;">{{ soldier.name }} {{ soldier.family }}</div>
+                    <div><strong>تحصیلات:</strong> {{ soldier.Grade }}</div>
+                    <div><strong>وضعیت:</strong> {{ soldier.physical_condition }}</div>
+                    {% if permissions.dep.niru_ensani %}
+                        <span style="width:100%;" class="badge badge-score">امتیاز: {{ soldier.total_score }}</span>
+                        <span style="width:100%;" class="badge badge-rank">درجه: {{ soldier.rank }}</span>
+                    {% endif %}
+                </div>
+                
+
+                <div class="form-inputs-container">
+                    <div class="form-inputs">
+
+                        {% if permissions.dep.gorohan %}
+                        <!-- 🟢 برنامه نیرو انسانی -->
+                        <div class="compact-form-group"><span>انضباط</span>
+                            <input type="number" step="0.1" min="0" max="20"
+                                name="discipline_score_{{ soldier.id }}"
+                                value="{{ soldier.discipline_score|default_if_none:'' }}">
+                        </div>
+
+                              <div class="compact-form-group"><span>فعالیت گردان</span>
+                              <input type="number" step="0.1" min="0" max="20" name="battalion_activity_{{ soldier.id }}" value="{{ soldier.battalion_activity|default_if_none:'' }}">
+                              </div>
+                        <div class="compact-form-group"><span>سابقه بسیج (ماه)</span>
+                            <input type="number"  min="0" step="1"
+                                name="basij_experience_{{ soldier.id }}"
+                                value="{{ soldier.basij_experience|default_if_none:'' }}">
+                        </div>
+                        <div class="compact-form-group">
+                            <span>کفایت بسیج</span>
+                            <select name="basij_efficiency_{{ soldier.id }}">
+                                <option value="">-- ندارد --</option>
+                                <option value="30 روزه" {% if soldier.basij_efficiency == "30 روزه" %}selected{% endif %}>30 روزه</option>
+                                <option value="45 روزه" {% if soldier.basij_efficiency == "45 روزه" %}selected{% endif %}>45 روزه</option>
+                            </select>
+                        </div>
+
+                        <div class="compact-form-group"><span>شورای پایگاه (ماه)</span>
+                            <input type="number"  min="0" step="1"
+                                name="council_experience_{{ soldier.id }}"
+                                value="{{ soldier.council_experience|default_if_none:'' }}">
+                        </div>
+                        <div class="compact-form-group"><span>مقام استانی</span>
+                            <input type="number" min="0" step="1"
+                                name="provincial_awards_{{ soldier.id }}"
+                                value="{{ soldier.provincial_awards|default_if_none:'' }}">
+                        </div>
+                               <div class="compact-form-group"><span>مقام کشوری</span>
+                               <input type="number" min="0" step="1" name="national_awards_{{ soldier.id }}" value="{{ soldier.national_awards|default_if_none:'' }}">
+                              </div>
+
+                              <div class="compact-form-group"><span>مقام جهانی</span>
+                              <input type="number" min="0" step="1" name="global_awards_{{ soldier.id }}" value="{{ soldier.global_awards|default_if_none:'' }}">
+                              </div>
+
+                              <div class="compact-form-group"><span>مقالات جهانی</span>
+                              <input type="number" min="0" step="1" name="global_articles_{{ soldier.id }}" value="{{ soldier.global_articles|default_if_none:'' }}">
+                              </div>
+
+                              <div class="compact-form-group"><span>نشریات</span>
+                              <input type="number" min="0" step="1" name="publications_{{ soldier.id }}" value="{{ soldier.publications|default_if_none:'' }}">
+                              </div>
+
+                        {% endif %}
+
+                        {% if permissions.dep.aqidati %}
+                        <!-- 🟣 برنامه عقیدتی -->
+                        <div class="compact-form-group"><span>نمره عقیدتی</span>
+                            <input type="number" step="0.1" min="0" max="20"
+                                name="ideological_score_{{ soldier.id }}"
+                                value="{{ soldier.ideological_score|default_if_none:'' }}">
+                        </div>
+
+                        <div class="compact-form-group"><span>حافظ جز قرآن (جز)</span>
+                            <input type="number" min="0" max="30"
+                                name="quran_memorization_{{ soldier.id }}"
+                                value="{{ soldier.quran_memorization|default_if_none:'' }}">
+                        </div>
+
+                        <div>
+                            <span class="toggle-btn" data-input="nahj_memorization_{{ soldier.id }}">
+                                <i class="check-icon"></i> حافظ نهج البلاغه
+                            </span>
+                            <input type="checkbox" class="hidden-checkbox"
+                                name="nahj_memorization_{{ soldier.id }}"
+                                id="nahj_memorization_{{ soldier.id }}"
+                                {% if soldier.nahj_memorization %}checked{% endif %}>
+                        </div>
+
+                        <div>
+                            <span class="toggle-btn" data-input="sajjadiya_memorization_{{ soldier.id }}">
+                                <i class="check-icon"></i> حافظ صحیفه سجادیه
+                            </span>
+                            <input type="checkbox" class="hidden-checkbox"
+                                name="sajjadiya_memorization_{{ soldier.id }}"
+                                id="sajjadiya_memorization_{{ soldier.id }}"
+                                {% if soldier.sajjadiya_memorization %}checked{% endif %}>
+                        </div>
+                        {% endif %}
+
+                        {% if permissions.dep.amoozesh %}
+                        <!-- 🟠 برنامه آموزش -->
+                        <div class="compact-form-group"><span>میدان تیر</span>
+                            <input type="number" step="0.1" min="0" max="20"
+                                name="shooting_score_{{ soldier.id }}"
+                                value="{{ soldier.shooting_score|default_if_none:'' }}">
+                        </div>
+
+                        {% endif %}
+
+ 
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+</div>
+
+<script>
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+    const inputId = btn.dataset.input;
+    const input = document.getElementById(inputId);
+
+    // تنظیم حالت اولیه toggle-btn مطابق با checkbox
+    btn.classList.toggle('active', input.checked);
+
+    // رویداد کلیک برای تغییر وضعیت
+    btn.addEventListener('click', () => {
+        input.checked = !input.checked;
+        
+        console.log("input.checked",input.checked)
+        btn.classList.toggle('active', input.checked);
+    });
+});
+</script>
+
+
+{% endblock %}

@@ -316,3 +316,7 @@ def application_access_form(request):
 
     # اگر GET بود، فقط redirect به صفحه حساب
     return redirect(f"{reverse('account_access')}?user_id={user.id}&tab={current_tab}")
+
+
+def account_access_403(request):
+    return render(request, 'errors/access_403_page.html')

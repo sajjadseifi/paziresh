@@ -6,6 +6,7 @@ class ApplicationValues(Enum):
     RANK_SCORES = "نمره درجات"
     SOLDIER_PROBLEMS = "مشکلات سربازان"
     SKILL_MANAGEMENT = "مدیریت مهارت آموزی"
+    COURSE = "مدیریت سرباز اموزشی"
     @classmethod
     def choices(cls):
         return [(tag.name, tag.value) for tag in cls]
@@ -38,7 +39,6 @@ class AccessName(Enum):
     def choices(cls):
         """برمی‌گرداند تا بتوان در مدل استفاده کرد."""
         return [(tag.name, tag.value) for tag in cls]
-
 
 class UserAccess(models.Model):
     user = models.ForeignKey(

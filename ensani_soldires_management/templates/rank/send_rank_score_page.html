@@ -336,19 +336,24 @@ input[type="checkbox"].hidden-checkbox {
                     <div><strong>{{ soldier.t_Gordan }}</strong> {{ soldier.t_battalion_group.name }}</div>
                     <div><strong>کد سازمانی:</strong> {{ soldier.code_gorhan_nahai }}</div>
                     <div style="width:100%;"><strong>کد ملی:</strong> {{ soldier.National_Code }}</div>
-                    <div><strong>تحصیلات:</strong> {{ soldier.Grade }}</div>
+
+
+                </div>
+                <div class="soldier-details panel-heading">
                     <div style="width:100%; text-align:center;">{{ soldier.name }} {{ soldier.family }}</div>
-                    {% if is_accesses.niru_ensani %}
+                    <div><strong>تحصیلات:</strong> {{ soldier.Grade }}</div>
+                    <div><strong>وضعیت:</strong> {{ soldier.physical_condition }}</div>
+                    {% if permissions.dep.niru_ensani %}
                         <span style="width:100%;" class="badge badge-score">امتیاز: {{ soldier.total_score }}</span>
                         <span style="width:100%;" class="badge badge-rank">درجه: {{ soldier.rank }}</span>
                     {% endif %}
-
                 </div>
+                
 
                 <div class="form-inputs-container">
                     <div class="form-inputs">
 
-                        {% if is_accesses.gorohan %}
+                        {% if permissions.dep.gorohan %}
                         <!-- 🟢 برنامه نیرو انسانی -->
                         <div class="compact-form-group"><span>انضباط</span>
                             <input type="number" step="0.1" min="0" max="20"
@@ -382,7 +387,7 @@ input[type="checkbox"].hidden-checkbox {
                         </div>
                         {% endif %}
 
-                        {% if is_accesses.aqidati %}
+                        {% if permissions.dep.aqidati %}
                         <!-- 🟣 برنامه عقیدتی -->
                         <div class="compact-form-group"><span>نمره عقیدتی</span>
                             <input type="number" step="0.1" min="0" max="20"
@@ -417,7 +422,7 @@ input[type="checkbox"].hidden-checkbox {
                         </div>
                         {% endif %}
 
-                        {% if is_accesses.amoozesh %}
+                        {% if permissions.dep.amoozesh %}
                         <!-- 🟠 برنامه آموزش -->
                         <div class="compact-form-group"><span>میدان تیر</span>
                             <input type="number" step="0.1" min="0" max="20"
@@ -436,18 +441,7 @@ input[type="checkbox"].hidden-checkbox {
                         </div>
                         {% endif %}
 
-                        {% if is_accesses.gordan %}
-                        <!-- 🔵 برنامه گردان -->
-                        <div>
-                            <span class="toggle-btn" data-input="battalion_sample_{{ soldier.id }}">
-                                <i class="check-icon"></i> نمونه گردان
-                            </span>
-                            <input type="checkbox" class="hidden-checkbox"
-                                name="battalion_sample_{{ soldier.id }}"
-                                id="battalion_sample_{{ soldier.id }}"
-                                {% if soldier.battalion_sample %}checked{% endif %}>
-                        </div>
-                        {% endif %}
+ 
                     </div>
                 </div>
             </div>

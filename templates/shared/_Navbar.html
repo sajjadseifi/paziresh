@@ -77,7 +77,7 @@
                     {% endif %}
                 </ul>
             </li>
-            {% if request.user.is_staff == True %}
+            {% if permissions.app.skill_management  %}
                 <li class="">
                     <a href="{% url 'skills:index' %}">
                         <i class="fa fa-user-plus"></i>
@@ -88,12 +88,20 @@
                 </li>
             {% endif %}
             {% if request.user.is_staff == True %}
-            <li >
+            <li>
                     <a href="{% url 'data_app' %}">
                     <i class="fa fa-database"></i>
                     <span>بانک اطلاعات</span>
                 </a>
             </li>
+            {% endif %}
+            {% if permissions.app.course == True %}
+                <li>
+                    <a href="{% url 'soldiers_scores_help_page' %}">
+                        <i class="fa fa-graduation-cap"></i>
+                        <span>آموزش</span>
+                    </a>
+                </li>
             {% endif %}
 
             {% if request.user.is_staff == True %}
@@ -104,7 +112,6 @@
               </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'send_rank_score_page' %}">ارسال نمره</a></li>
                         <li><a href="{% url 'import_rank_from_exel' %}">محاسبه درجات سربازان</a></li>
                         <li><a href="{% url 'rank_group_print' %}">حکم درجه گروهی عددپذیرش</a></li>
                         <li><a href="{% url 'rank_group_print_gordani' %}">حکم درجه گروهی گردانی</a></li>

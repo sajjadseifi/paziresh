@@ -53,4 +53,16 @@ urlpatterns = [
     # score
     path('soldire/rank/score', send_rank_score_page, name='send_rank_score_page'),
     path('soldire/rank/update', send_rank_score_update, name='send_rank_score_update'),
+    # 
+    path('courses/problems', soldiers_problems_page, name='soldiers_problems_page'),
+    path('courses/scores/', soldiers_scores_page, name='soldiers_scores_page'),
+    path('courses/problems/update', soldiers_problems_update, name='soldiers_problems_update'),
+    path('courses/scores/problems/export/excel', soldiers_problems_export_excel, name='soldiers_problems_export_excel'),
+    path('courses/help/', soldiers_scores_help_page, name='soldiers_scores_help_page'),
+    path('courses/scores/top-course/', top_soldiers_course_page, name='top_soldiers_course_page'),
+    path('courses/scores/top-gordan/', top_soldiers_gordan_page, name='top_soldiers_gordan_page'),
+    path('courses/tatbigh/', soldiers_tatbigh_page, name='soldiers_tatbigh_page'),
+    path('courses/tatbigh/:', soldiers_tatbigh_page, name='soldiers_tatbigh_page'),
+    path('api/soldier/national', get_soldier_by_national_code, name='api_get_soldier_by_national_code'),
 ]
+

@@ -11,5 +11,5 @@ urlpatterns = [
     path('account/form/user/change-password', user_change_password_form, name='user_change_password_form'),
     path('account/form/access/soldiers', soldiers_access_form, name='soldiers_access_form'),
     path('account/form/access/application', application_access_form, name='application_access_form'),
-
+    path('account/access/403', account_access_403, name='account_access_403'),
 ]

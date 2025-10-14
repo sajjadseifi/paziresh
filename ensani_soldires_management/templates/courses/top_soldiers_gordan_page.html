@@ -1,0 +1,178 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load static %}
+{% load access_filters %}
+
+{% block scores_content %}
+<style>
+/* کارت اصلی */
+.card-custom {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* هدر کارت */
+.card-header-custom {
+    font-size: 1.25em;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(90deg, #4e73df, #1cc88a);
+    border-radius: 10px 10px 0 0;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+}
+.card-header-custom i {
+    margin-right: 10px;
+}
+
+/* جدول */
+.table-custom th {
+    background-color: #f1f3f5;
+    color: #333;
+    text-align: center;
+}
+.table-custom td {
+    vertical-align: middle;
+}
+
+/* دکمه ثبت */
+.btn-custom {
+    background-color: #1cc88a;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 25px;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+.btn-custom:hover {
+    background-color: #17a673;
+}
+
+/* select2 */
+.select2-container {
+    width: 100% !important;
+}
+.select2-container--default .select2-selection--single {
+    height: auto !important;
+    min-height: 40px;
+    white-space: normal;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    white-space: normal !important;
+    line-height: 1.4em;
+}
+
+/* dropdown option wrap */
+.select2-results__option {
+    white-space: normal !important;
+    line-height: 1.4em;
+    min-height: 40px;
+    padding: 5px 10px;
+}
+
+/* responsive */
+@media (max-width: 767px) {
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+</style>
+
+<div class="">
+    <form method="post">
+        {% csrf_token %}
+        <div class="text-right" style="margin-bottom:10px;">
+            <button type="submit" class="btn btn-custom">
+                <i class="fa fa-check"></i> ثبت نفرات نمونه گردان
+            </button>
+        </div>
+
+        <div class="row">
+            {% for table in gordan_tables %}
+            <div class="col-md-6 mb-4">
+                <div class="card-custom">
+                    <div class="card-header-custom">
+                        <i class="fa fa-star"></i> نمونه گردان {{ table.gordan.name }}
+                    </div>
+
+                    <table class="table table-bordered table-custom mt-3">
+                        <thead>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>انتخاب سرباز نمونه</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in "123"|make_list %}
+                            <tr>
+                              <td>{{ i }}</td>
+                              <td>
+                                 <select name="gordan_{{ table.gordan.id }}_soldier_{{ i }}" class="form-control select2">
+                                       <option value="">-- انتخاب کنید --</option>
+                                       {% for soldier in table.soldiers %}
+                                       <option value="{{ soldier.id }}"    
+                                       {% if table.top_dict|ditem:i == soldier.id %}selected{% endif %}
+                                       >
+                                          {{ soldier.name }} {{ soldier.family }}
+                                          {% if soldier.National_Code %}- کدملی: {{ soldier.National_Code }}{% endif %}
+                                          {% if soldier.t_Gordan %}- {{ soldier.t_Gordan.name }}{% endif %}
+                                          {% if soldier.t_battalion_group %} ({{ soldier.t_battalion_group.name }}){% endif %}
+                                          - امتیاز: {{ soldier.total_score }}  
+                                          - درجه: {{ soldier.rank }}
+                                       </option>
+                                       {% endfor %}
+                                 </select>
+                              </td>
+                           </tr>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </form>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 2. فعال‌سازی select2
+    $('.select2').select2({
+        placeholder: "یک سرباز انتخاب کنید",
+        width: '100%',
+        allowClear: true
+    });
+
+    // 4. جلوگیری از انتخاب تکراری
+    $('.select2').on('change', function() {
+        let selectedValues = [];
+        $('.select2').each(function() {
+            const val = $(this).val();
+            if (val) {
+                if (selectedValues.includes(val)) {
+                    alert('این سرباز قبلاً انتخاب شده است!');
+                    $(this).val('').trigger('change');
+                } else {
+                    selectedValues.push(val);
+                }
+            }
+        });
+    });
+});
+
+
+</script>
+
+
+{% endblock %}

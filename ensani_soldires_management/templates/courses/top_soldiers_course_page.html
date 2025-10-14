@@ -1,0 +1,181 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load access_filters %}
+
+{% block scores_content %}
+   <style>
+      .card-custom {
+         background: #fff;
+         border-radius: 12px;
+         box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+         padding: 25px;
+         margin-bottom: 20px;
+         border: 1px solid #e0e0e0;
+      }
+      .card-header-custom {
+         font-size: 1.5em;
+         font-weight: bold;
+         color: #333;
+         border-bottom: 1px solid #eee;
+         padding-bottom: 12px;
+         margin-bottom: 20px;
+         display: flex;
+         align-items: center;
+      }
+      .card-header-custom i {
+         margin-right: 10px;
+         color: #007bff;
+      }
+      .card-section {
+         margin-bottom: 20px;
+      }
+      .card-section h5 {
+         font-weight: bold;
+         margin-bottom: 10px;
+         font-size: 1.1em;
+      }
+      .card-section p, .card-section li {
+         font-size: 1em; /* کمی بزرگ‌تر شد */
+      }
+      .table-custom th {
+         background-color: #007bff;
+         color: #fff;
+         text-align: center;
+      }
+      .table-custom td {
+         text-align: center;
+         vertical-align: middle;
+      }
+
+      .btn-custom {
+         background-color: #007bff;
+         color: #fff;
+         border-radius: 5px;
+         padding: 10px 25px;
+         font-weight: bold;
+      }
+      .rank-icon {
+         margin-right: 8px;
+         font-size: 1.2em;
+      }
+      .rank-label {
+         font-weight: bold;
+      }
+      .alert-custom {
+         background-color: #e9f5ff;
+         color: #007bff;
+         border-radius: 5px;
+         border: 1px solid #b8e0ff;
+         padding: 15px;
+         margin-bottom: 25px;
+      }
+   </style>
+
+   <div class="container">
+      <div class="card-custom">
+         <div class="card-header-custom">
+               <i class="fa fa-star"></i> سربازان برتر دوره
+         </div>
+
+         <p class="text-muted mb-4" style="font-size:1em;">در این صفحه می‌توانید سه سرباز برتر دوره را انتخاب و ثبت کنید.</p>
+
+         <!-- راهنما و توضیحات تکمیلی -->
+         <div class="card-section alert-custom mt-4">
+               <i class="fa fa-info-circle"></i> راهنما:
+               <ul>
+                  <li>برای هر رتبه یک سرباز انتخاب کنید.</li>
+                  <li>در صورتی که سربازی در این دوره شرکت نکرده باشد یا انتخاب نشود، فیلد را خالی بگذارید.</li>
+                  <li>این انتخاب‌ها بر اساس دسترسی شما به گردان و گروهان‌ها محدود شده‌اند.</li>
+               </ul>
+
+               <i class="fa fa-question-circle mt-2"></i> توضیحات تکمیلی:
+               <p class="text-muted small mt-2" style="font-size:1em;">
+                  لیست سربازان موجود بر اساس دسترسی شما به گردان‌ها و گروهان‌ها فیلتر شده است.  
+                  در صورت نیاز به بروزرسانی داده‌های دوره، لطفاً با مسئول سیستم هماهنگ کنید.
+               </p>
+         </div>
+
+         <form method="post">
+               {% csrf_token %}
+               <table class="table table-bordered table-custom">
+                  <thead>
+                     <tr>
+                           <th>ردیف</th>
+                           <th>رتبه</th>
+                           <th>انتخاب سرباز</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for item in top_ranks %}
+                     <tr style="background-color: {{ item.color }}33;">
+                           <td>{{ forloop.counter }}</td>
+                           <td>
+                              <i class="fa {{ item.icon }} rank-icon"></i>
+                              <span class="rank-label">{{ item.label }}</span>
+                           </td>
+                           <td>
+                              <select name="soldier_{{ item.rank }}" class="form-control select2">
+                                 <option value="">انتخاب کنید</option>
+                                 {% for soldier in soldiers %}
+                                 <option value="{{ soldier.id }}" {% if item.soldier and item.soldier.id == soldier.id %}selected{% endif %}>
+                                    {{ soldier.name }} {{ soldier.family }}
+                                    {% if soldier.National_Code %}- کدملی: {{ soldier.National_Code }}{% endif %}
+                                    {% if soldier.t_Gordan %}- {{ soldier.t_Gordan.name }}{% endif %}
+                                    {% if soldier.t_battalion_group %} ({{ soldier.t_battalion_group.name }}){% endif %}
+                                    - امتیاز: {{ soldier.total_score }}  
+                                    - درجه: {{ soldier.rank }}
+                                 </option>
+                                 {% endfor %}
+                              </select>
+
+                           </td>
+                     </tr>
+                     {% endfor %}
+                  </tbody>
+               </table>
+
+               <div class="text-right">
+                  <button type="submit" class="btn btn-custom">
+                     <i class="fa fa-check"></i> ثبت نفرات برتر
+                  </button>
+               </div>
+         </form>
+
+      </div>
+   </div>
+
+   <script>
+      $(document).ready(function() {
+         $('.select2').select2({
+            placeholder: "یک سرباز انتخاب کنید",
+            width: '100%',
+            allowClear: true
+         });
+
+         // مقداردهی اولیه نفرات
+         const topDict = {{ top_dict|safe }};
+         Object.keys(topDict).forEach(rank => {
+            const sel = document.querySelector(`select[name='soldier_${rank}']`);
+            if (sel) {
+                  sel.value = topDict[rank];
+                  $(sel).trigger('change');
+            }
+         });
+
+         // جلوگیری از انتخاب تکراری
+         $('.select2').on('change', function() {
+            let selectedValues = [];
+            $('.select2').each(function() {
+                  const val = $(this).val();
+                  if (val) {
+                     if (selectedValues.includes(val)) {
+                        alert('این سرباز قبلاً انتخاب شده است!');
+                        $(this).val('').trigger('change');
+                     } else {
+                        selectedValues.push(val);
+                     }
+                  }
+            });
+         });
+      });
+   </script>
+{% endblock %}

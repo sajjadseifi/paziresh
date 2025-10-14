@@ -2112,6 +2112,11 @@ def export_to_excel_list_goili(request):
 from django.shortcuts import render,redirect
 from django.core.paginator import Paginator
 from django.urls import reverse
+from .access import get_user_battalions, get_user_battalion_groups,get_user_soldiers
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from .forms import TopSoldiersForm
+from .access import get_user_soldiers
 
 def send_rank_score_page(request):
     # همه سربازان مرتب بر اساس گردان و گروهان
@@ -2134,11 +2139,19 @@ def send_rank_score_page(request):
     paginator = Paginator(in_course_soldiers, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
+   
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        query_params.pop('page')
+    query_string = query_params.urlencode()  # 👈 خیلی مهم
+    
     context = {
         'page_obj': page_obj, 
+        'query_params': query_string,
     }
+    
     return render(request, 'rank/send_rank_score_page.html', context)
+
 
 def send_rank_score_update(request):
     input_fields_float = [
@@ -2192,14 +2205,468 @@ def send_rank_score_update(request):
                 val = request.POST.get(key)
                 setattr(soldier, field, int(val) if val not in [None, ""] else 0)
 
-            # ✅ فیلد انتخابی سه نفر برتر
-            soldier.top_three = request.POST.get(f"top_three_{sid}") or ''
             soldier.basij_efficiency = request.POST.get(f"basij_efficiency_{sid}") or ''
 
             soldier.save()
 
         calculate_score_for_soldiers(soldiers)
-        referer = request.META.get('HTTP_REFERER', reverse('send_rank_score_page'))
+        referer = request.META.get('HTTP_REFERER', reverse('soldiers_scores_page'))
         return redirect(referer)
 
-    return redirect('send_rank_score_page')
+    return redirect('soldiers_scores_page')
+
+
+def soldiers_scores_page(request):
+    user = request.user
+    # 🔹 دریافت همه سربازان مجاز بر اساس دسترسی کاربر
+    in_course_soldiers = get_user_soldiers(user).filter(
+        in_coures=True,
+        willing_to_learn=True
+    )
+    # 🔹 فیلتر گردان و گروهان از request.GET
+    battalion_filter = request.GET.get('battalion_filter')
+    group_filter = request.GET.get('group_filter')
+
+    if battalion_filter:
+        in_course_soldiers = in_course_soldiers.filter(t_Gordan_id=battalion_filter)
+    if group_filter:
+        in_course_soldiers = in_course_soldiers.filter(t_battalion_group_id=group_filter)
+    # 🔹 مرتب سازی
+    in_course_soldiers = in_course_soldiers.order_by(
+        't_Gordan__name',
+        't_battalion_group__name',
+        'code_gorhan_nahai'
+    )
+
+    # 🔹 تبدیل مقادیر بولین به True/False
+    for soldier in in_course_soldiers:
+        soldier.battalion_sample = bool(soldier.battalion_sample)
+        soldier.nahj_memorization = bool(soldier.nahj_memorization)
+        soldier.sajjadiya_memorization = bool(soldier.sajjadiya_memorization)
+
+    # 🔹 صفحه‌بندی (۱۰ سرباز در هر صفحه)
+    paginator = Paginator(in_course_soldiers, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # 🔹 گردان‌ها و گروهان‌های مجاز برای نمایش در فیلتر
+    battalions_allowed = get_user_battalions(user)
+    battalion_groups_allowed = get_user_battalion_groups(user)
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        query_params.pop('page')
+    query_string = query_params.urlencode()  # 👈 خیلی مهم
+    
+    context = {
+        'page_obj': page_obj,
+        'battalions': battalions_allowed,
+        'groups': battalion_groups_allowed,
+        'query_params':query_string
+    }
+
+    return render(request, 'courses/soldiers_scores_page.html', context)
+
+
+
+def top_soldiers_course_page(request):
+    user = request.user
+
+    # همه سربازان مجاز برای کاربر
+    soldiers = get_user_soldiers(user).filter(in_coures=True, willing_to_learn=True)
+
+    # تعریف رتبه‌ها و آیکون‌ها
+    top_ranks = [
+        {'rank': '1', 'label': 'نفر اول', 'icon': 'fa-crown', 'color': '#FFD700'},
+        {'rank': '2', 'label': 'نفر دوم', 'icon': 'fa-medal', 'color': '#C0C0C0'},
+        {'rank': '3', 'label': 'نفر سوم', 'icon': 'fa-medal', 'color': '#CD7F32'},
+    ]
+
+    if request.method == 'POST':
+        form = TopSoldiersForm(request.user, request.POST)
+        if form.is_valid():
+            # همه سربازانی که قبلاً top_three داشتند
+            old_top_soldiers = list(Soldier.objects.filter(top_three__isnull=False))
+
+            # پاک کردن top_three در دیتابیس
+            Soldier.objects.filter(top_three__isnull=False).update(top_three=None)
+
+            # پاک کردن top_three در حافظه برای محاسبه درست امتیاز
+            for s in old_top_soldiers:
+                s.top_three = None
+
+            # محاسبه امتیاز سربازان قدیمی
+            calculate_score_for_soldiers(old_top_soldiers)
+
+            # ثبت نفرات جدید
+            selected_ids = set()
+            new_top_soldiers = []
+            for rank in top_ranks:
+                soldier_id = form.cleaned_data.get(f'soldier_{rank["rank"]}')
+                if soldier_id:
+                    if soldier_id in selected_ids:
+                        continue  # جلوگیری از انتخاب یک نفر در چند رتبه
+                    selected_ids.add(soldier_id)
+                    soldier = soldiers.get(id=soldier_id)
+                    soldier.top_three = rank['label']
+                    soldier.save()
+                    new_top_soldiers.append(soldier)
+
+            calculate_score_for_soldiers(new_top_soldiers)
+
+            return redirect('top_soldiers_course_page')
+    else:
+        form = TopSoldiersForm(request.user)
+
+    # بارگذاری مجدد سربازان مجاز برای نمایش در قالب
+    soldiers = get_user_soldiers(user).filter(in_coures=True, willing_to_learn=True)
+
+    # نفرات فعلی برتر برای prefill select ها
+    top_dict = {}
+    for s in soldiers.filter(top_three__isnull=False):
+        if s.top_three == 'نفر اول':
+            top_dict['1'] = s.id
+        elif s.top_three == 'نفر دوم':
+            top_dict['2'] = s.id
+        elif s.top_three == 'نفر سوم':
+            top_dict['3'] = s.id
+
+    context = {
+        'soldiers': soldiers,
+        'form': form,
+        'top_dict': top_dict,
+        'top_ranks': top_ranks,
+    }
+
+    return render(request, 'courses/top_soldiers_course_page.html', context)
+
+def top_soldiers_gordan_page(request):
+    user = request.user
+    user_gordans = get_user_battalions(user)  # گردان‌های مجاز
+
+    if request.method == 'POST':
+
+        for gordan in user_gordans:
+            soldiers = get_user_soldiers(user).filter(t_Gordan=gordan, in_coures=True, willing_to_learn=True)
+            
+            # سربازان قبلی نمونه گردان این گردان
+            old_sample_soldiers = list(soldiers.filter(battalion_sample=True))
+            for s in old_sample_soldiers:
+                s.battalion_sample = False  # پاک کردن
+            
+            calculate_score_for_soldiers(old_sample_soldiers )
+            # ثبت سه نفر انتخابی
+            new_sample_soldiers = []
+            for i in range(1, 4):
+                soldier_id = request.POST.get(f'gordan_{gordan.id}_soldier_{i}')
+                if soldier_id:
+                    soldier = soldiers.get(id=soldier_id)
+                    soldier.battalion_sample = True
+                    soldier.save()
+                    new_sample_soldiers.append(soldier)
+
+            calculate_score_for_soldiers(new_sample_soldiers)
+
+    gordan_tables = []
+    for gordan in user_gordans:
+        soldiers_qs = get_user_soldiers(user).filter(
+            t_Gordan=gordan, in_coures=True, willing_to_learn=True
+        )
+
+        top_soldiers_ids = set(soldiers_qs.filter(battalion_sample=True).values_list('id', flat=True)[:3])
+
+        soldiers = list(soldiers_qs)
+        for soldier in soldiers:
+            soldier.selected = soldier.id in top_soldiers_ids  
+        
+        top_soldiers_qs = soldiers_qs.filter(battalion_sample=True)[:3]
+        top_dict = {str(idx+1): s.id for idx, s in enumerate(top_soldiers_qs)}
+
+        gordan_tables.append({
+            'gordan': {'id': gordan.id, 'name': gordan.name},
+            'soldiers': soldiers,
+            'top_dict':top_dict
+        })
+
+
+    return render(request, 'courses/top_soldiers_gordan_page.html', {'gordan_tables': gordan_tables})
+
+def soldiers_scores_help_page(request):
+    return render(request, 'courses/soldiers_scores_help.html')
+
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.forms import formset_factory
+from .forms import SoldierFilterForm, SoldierProblemForm, PROBLEM_FIELDS, PROBLEM_LABELS
+
+def soldiers_problems_page(request):
+    user = request.user
+
+    # گردان‌ها و گروهان‌ها برای فیلتر
+    battalions_allowed = get_user_battalions(user)
+    battalion_groups_allowed = get_user_battalion_groups(user)
+
+    # فرم فیلتر
+    filter_form = SoldierFilterForm(request.GET or None, battalions=battalions_allowed, groups=battalion_groups_allowed)
+
+    # سربازان مجاز و در دوره جاری
+    soldiers_qs = get_user_soldiers(user).filter(
+        in_coures=True, 
+        willing_to_learn=True
+    ).order_by(
+        't_Gordan__name',
+        't_battalion_group__name',
+        'code_gorhan_nahai'
+    )   
+
+    # اعمال فیلترها
+    if filter_form.is_valid():
+        search = filter_form.cleaned_data.get('search')
+        battalion_filter = filter_form.cleaned_data.get('battalion_filter')
+        group_filter = filter_form.cleaned_data.get('group_filter')
+
+        if search:
+            soldiers_qs = soldiers_qs.filter(
+                Q(name__icontains=search) | Q(family__icontains=search) | Q(National_Code__icontains=search)
+            )
+        if battalion_filter:
+            soldiers_qs = soldiers_qs.filter(t_Gordan_id=battalion_filter)
+        if group_filter:
+            soldiers_qs = soldiers_qs.filter(t_battalion_group_id=group_filter)
+
+    # Pagination
+    paginator = Paginator(soldiers_qs, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        query_params.pop('page')
+    query_string = query_params.urlencode()  # 👈 خیلی مهم
+    
+    # فرم مشکلات با formset
+    SoldierProblemFormSet = formset_factory(SoldierProblemForm, extra=0)
+
+
+    initial_data = []
+    for s in page_obj:
+        # مقدار اولیه از فیلد JSON problems_data
+        problems_dict = s.problems_data or {}  # اگر None بود، dict خالی
+        data = {
+            'soldier_id': s.id,
+            'description': problems_dict.get('description', '')
+        }
+        for field in PROBLEM_FIELDS:
+            data[field] = problems_dict.get(field, False)  # مقدار هر checkbox از JSON یا False
+        initial_data.append(data)
+
+    formset = SoldierProblemFormSet(initial=initial_data)
+
+    form_soldier_pairs = list(zip(formset.forms, page_obj))
+
+    context = {
+        'filter_form': filter_form,
+        'formset': formset,
+        'page_obj': page_obj,
+        'form_soldier_pairs': form_soldier_pairs,  # اضافه شد
+        'query_params': query_string,
+        'problem_fields': [PROBLEM_LABELS[f] for f in PROBLEM_FIELDS],
+        'PROBLEM_FIELDS': PROBLEM_FIELDS,
+    }
+
+    return render(request, 'courses/soldiers_problems_page.html', context)
+
+
+from django.forms import formset_factory
+from django.shortcuts import redirect, render
+from .forms import SoldierProblemForm, SoldierFilterForm, PROBLEM_LABELS
+import openpyxl
+from django.http import HttpResponse
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+
+def soldiers_problems_update(request):
+    SoldierProblemFormSet = formset_factory(SoldierProblemForm, extra=0)
+
+    if request.method == 'POST':
+        formset = SoldierProblemFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                soldier_id = form.cleaned_data['soldier_id']
+                soldier = Soldier.objects.get(id=soldier_id)
+
+                # ساخت دیکشنری از checkboxها
+                problems_dict = {field: form.cleaned_data.get(field, False) for field in PROBLEM_FIELDS}
+
+                # ذخیره در فیلد JSON
+                soldier.problems_data = problems_dict
+                soldier.problems_data['description'] = form.cleaned_data.get('description', '')
+                
+                soldier.save()
+        else:
+            print("فرم‌ها معتبر نیستند!")
+            print(formset.errors)
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+import openpyxl
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from openpyxl.utils import get_column_letter
+from django.http import HttpResponse
+
+def soldiers_problems_export_excel(request):
+    user = request.user
+
+    # ایجاد workbook و worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "مشکلات سربازان"
+
+    # هدرها
+    headers = [
+        "نام و نام خانوادگی", "کد ملی", "گردان", "گروهان", "کد سازمانی"
+    ]
+    from .forms import PROBLEM_FIELDS, PROBLEM_LABELS
+    for field in PROBLEM_FIELDS:
+        headers.append(PROBLEM_LABELS.get(field, field))
+    headers.append("توضیحات")
+
+    ws.append(headers)
+
+    # تنظیم فونت و تراز هدر
+    for col_idx, col_cells in enumerate(ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=len(headers)), start=1):
+        for cell in col_cells:
+            cell.font = Font(bold=True, name="Vazirmatn", size=12)
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            cell.fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
+            cell.border = Border(
+                left=Side(style='thin'),
+                right=Side(style='thin'),
+                top=Side(style='thin'),
+                bottom=Side(style='thin')
+            )
+
+    # سربازان
+    soldiers = get_user_soldiers(user).filter(
+        in_coures=True,
+        willing_to_learn=True
+    ).order_by(
+        't_Gordan__name',
+        't_battalion_group__name',
+        'code_gorhan_nahai'
+    )
+
+    # اضافه کردن داده‌ها
+    for s in soldiers:
+        row = [
+            f"{s.name} {s.family}",
+            s.National_Code,
+            s.t_Gordan.name if s.t_Gordan else '',
+            s.t_battalion_group.name if s.t_battalion_group else '',
+            s.code_gorhan_nahai,
+        ]
+        for field in PROBLEM_FIELDS:
+            value = s.problems_data.get(field, False) if s.problems_data else False
+            row.append("✓" if value else "")
+        description = s.problems_data.get("description", "") if s.problems_data else ""
+        row.append(description)
+        ws.append(row)
+
+    # استایل بدنه و راست‌چین
+    for row_cells in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        for cell in row_cells:
+            cell.font = Font(name="Vazirmatn", size=11)
+            cell.alignment = Alignment(horizontal="center", vertical="center")  # reading_order=2 -> RTL
+            cell.border = Border(
+                left=Side(style='thin'),
+                right=Side(style='thin'),
+                top=Side(style='thin'),
+                bottom=Side(style='thin')
+            )
+
+    # تنظیم خودکار عرض ستون‌ها بر اساس محتوا
+    for i, column_cells in enumerate(ws.columns, start=1):
+        max_length = 0
+        column_letter = get_column_letter(i)
+        for cell in column_cells:
+            if cell.value:
+                cell_length = len(str(cell.value))
+                if cell_length > max_length:
+                    max_length = cell_length
+        ws.column_dimensions[column_letter].width = max_length + 4  # کمی فاصله اضافه برای خوانایی
+
+    # راست‌چین کردن کل شیت
+    ws.sheet_view.rightToLeft = True
+
+    # پاسخ HTTP
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=soldiers_problems.xlsx'
+    wb.save(response)
+    return response
+
+@login_required
+def soldiers_tatbigh_page(request):
+    # گرفتن گردان‌ها و گروهان‌هایی که کاربر اجازه مشاهده دارد
+    battalions_allowed = get_user_battalions(request.user)
+    groups_allowed = get_user_battalion_groups(request.user).select_related('gordan')  # select_related برای دسترسی به gordan.name
+
+
+    # گرفتن گردان انتخاب شده از GET یا پیش‌فرض
+    selected_battalion = request.GET.get('battalion')
+    if not selected_battalion and battalions_allowed.exists():
+        selected_battalion = str(battalions_allowed.first().id)
+
+    # گرفتن گروهان انتخاب شده از GET
+    selected_group = request.GET.get('group')
+
+    if groups_allowed.exists():
+        # بررسی اینکه گروهان انتخاب شده مربوط به گردان انتخاب شده هست یا نه
+        valid_group = groups_allowed.filter(id=int(selected_group), gordan_id=int(selected_battalion)).first() if selected_group else None
+
+        if valid_group:
+            # اگر گروهان انتخاب شده معتبر بود، همان را نگه دار
+            selected_group = str(valid_group.id)
+        else:
+            # اگر گروهان انتخاب شده معتبر نبود، اولین گروهان مربوط به گردان انتخابی
+            first_group_in_battalion = groups_allowed.filter(gordan_id=int(selected_battalion)).first()
+            if first_group_in_battalion:
+                selected_group = str(first_group_in_battalion.id)
+            else:
+                # اگر گردان هیچ گروهان نداشت، اولین گروهان موجود در کل گروهان‌ها
+                selected_group = str(groups_allowed.first().id)
+
+    soldiers = Soldier.objects.all()
+
+    print()
+    context = {
+        'battalions': battalions_allowed,
+        'groups': groups_allowed,
+        'selected_battalion': str(selected_battalion),
+        'selected_group': str(selected_group),
+        'soldiers': soldiers
+    }
+    return render(request, 'courses/soldiers_tatbigh_page.html', context)
+
+from django.views.decorators.http import require_GET
+
+@login_required
+@require_GET
+def get_soldier_by_national_code(request):
+    code = request.GET.get('code')
+    if not code:
+        return JsonResponse({"error": "کد ملی ارسال نشده است."}, status=400)
+
+    try:
+        soldier = Soldier.objects.get(National_Code=code)
+        data = {
+            "id": soldier.id,
+            "code_melli": soldier.National_Code,
+            "first_name": soldier.name or "—",
+            "last_name": soldier.family or "—",
+            "current_battalion": soldier.Gordan.name if soldier.Gordan else "—",
+            "current_group": soldier.battalion_group.name if soldier.battalion_group else "—",
+            "org_code": soldier.code_paziresh or "—"
+        }
+        return JsonResponse(data)
+    except Soldier.DoesNotExist:
+        return JsonResponse({"error": "سربازی با این کد ملی یافت نشد."}, status=404)

@@ -173,47 +173,76 @@
          </div>
         <div class="col-md-2">
             <label for="Gordan">گردان</label>
-            <select class="form-control select2" id="Gordan" name="Gordan">
-               <option value="">همه</option>
-               {% for g in gordans %}
-                  <option value="{{ g.name }}" {% if request.GET.gordan == g.name %}selected{% endif %}>{{ g.name }}</option>
-               {% endfor %}
+            <select name="gordan" id="Gordan" class="form-control select2">
+                <option value="">همه گردان‌ها</option>
+                {% for g in gordans %}
+                    <option value="{{ g.id }}"
+                        {% if request.GET.gordan|default:'' == g.id|stringformat:"s" %}selected{% endif %}>
+                        {{ g.name }}
+                    </option>
+                {% endfor %}
             </select>
          </div>
          <div class="col-md-2">
                   <label for="battaliongroup">گروهان</label>
-                  <select class="form-control " id="battaliongroup" name="battaliongroup">
-                     <option value="">همه</option>
-                  </select>
+                  <select name="battaliongroup" id="battaliongroup" class="form-control">
+                <option value="">همه گروهان‌ها</option>
+                {% for bg in gorohans %}
+                    {% if not request.GET.gordan or bg.gordan.id|stringformat:"s" == request.GET.gordan %}
+                        <option value="{{ bg.id }}"
+                            {% if request.GET.battaliongroup|default:'' == bg.id|stringformat:"s" %}selected{% endif %}>
+                            {{ bg.name }} ({{ bg.gordan.name }})
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
          </div>
          <div class="col-md-2">
             <label for="Gordan"></label>
             <div>
-           <button type="submit" class="btn-filter"><i class="fa fa-filter"></i> اعمال فیلتر</button>
+             <button type="submit" class="btn-filter"><i class="fa fa-filter"></i> اعمال فیلتر</button>
             </div>
          </div>
-             <!-- Pagination Top -->
-    <div class="pagination col-md-3">
-        {% if soldiers.has_previous %}
-            <a href="?{% for key, val in request.GET.items %}{% if key != 'page' %}{{ key }}={{ val }}&{% endif %}{% endfor %}page={{ soldiers.previous_page_number }}">
-                <i class="fa fa-chevron-right"></i> قبل
-            </a>
+         <div class="col-md-12">
+
+<div class="pagination">
+    {% if soldiers.has_previous %}
+        <a href="?{{ query_params }}&page={{ soldiers.previous_page_number }}">قبلی</a>
+    {% endif %}
+
+    {# نمایش ±2 صفحه اطراف صفحه فعلی #}
+    {% for page_num in soldiers.paginator.page_range %}
+        {% if page_num >= soldiers.number|add:-2 and page_num <= soldiers.number|add:2 %}
+            {% if page_num == soldiers.number %}
+                <span class="current">{{ page_num }}</span>
+            {% else %}
+                <a href="?{{ query_params }}&page={{ page_num }}">{{ page_num }}</a>
+            {% endif %}
         {% endif %}
-        {% for page_num in soldiers.paginator.page_range %}
-            {% if page_num >= soldiers.number|add:-2 and page_num <= soldiers.number|add:2 %}
-                {% if page_num == soldiers.number %}
-                    <span class="current">{{ page_num }}</span>
-                {% else %}
-                    <a href="?{% for key, val in request.GET.items %}{% if key != 'page' %}{{ key }}={{ val }}&{% endif %}{% endfor %}page={{ page_num }}">{{ page_num }}</a>
-                {% endif %}
+    {% endfor %}
+
+    {# بررسی فاصله تا دو صفحه آخر #}
+    {% with last_two=soldiers.paginator.page_range|slice:"-2:" %}
+        {% if last_two.0 > soldiers.number|add:2 %}
+            <span>...</span>
+        {% endif %}
+        {% for last_page in last_two %}
+            {% if last_page > soldiers.number|add:2 %}
+                <a href="?{{ query_params }}&page={{ last_page }}">{{ last_page }}</a>
             {% endif %}
         {% endfor %}
-        {% if soldiers.has_next %}
-            <a href="?{% for key, val in request.GET.items %}{% if key != 'page' %}{{ key }}={{ val }}&{% endif %}{% endfor %}page={{ soldiers.next_page_number }}">
-                بعد <i class="fa fa-chevron-left"></i>
-            </a>
-        {% endif %}
-    </div>
+    {% endwith %}
+
+    {% if soldiers.has_next %}
+        <a href="?{{ query_params }}&page={{ soldiers.next_page_number }}">بعدی</a>
+    {% endif %}
+</div>
+
+            </div>
+
+
+
+
     </form>
 
 
@@ -300,29 +329,5 @@ $(document).ready(function() {
     function getCellValue(row, index) { return $(row).children('td').eq(index).text(); }
 });
 </script>
-    <script>
-        document.getElementById('Gordan').addEventListener('change', function () {
-            const gordanName = this.value; // گرفتن مقدار انتخاب‌شده
-            const battalionGroup = document.getElementById('battaliongroup');
 
-            // پاک کردن گزینه‌های فعلی
-            battalionGroup.innerHTML = '<option value="">همه</option>';
-
-            if (gordanName) {
-                // ارسال درخواست Ajax
-                fetch(`{% url 'get_grohan_by_gordan_for_search' %}?gordan_name=${gordanName}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // اضافه کردن گزینه‌ها به سلکت‌باکس دوم
-                        data.forEach(item => {
-                            const option = document.createElement('option');
-                            option.value = item.name;
-                            option.textContent = item.name;
-                            battalionGroup.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-        });
-    </script>
 {% endblock %}
