@@ -2805,7 +2805,6 @@ def interferences_replaceor(request,collections):
     
     for item in collections:
         valid_labels = normalize_list_values_with_unkown(item['list'])
-        item['valid_labels'] = valid_labels
         
         known_values = []
         for label in valid_labels:
@@ -2826,6 +2825,7 @@ def interferences_replaceor(request,collections):
         if item.get('remove_values'):
             unknown_values = unknown_values.exclude(value__in=item['remove_values'])
 
+        item['valid_labels'] = normalize_list_values(item['list'])
         item['known_values'] = known_values
         item['unknown_values'] = unknown_values
         item['known_values_counts'] =  sum([x['counts'] for x in list(known_values)])
@@ -2957,7 +2957,7 @@ def interferences_vaziat_jasmani(request):
     """
         # دسته‌بندی سربازان بر اساس وضعیت جسمانی
     condition_map = {code: label for code, label in physical_condition_list}
-    condition_values = [label for code, label in physical_condition_list]
+    condition_values = normalize_list_values([label for code, label in physical_condition_list])
     if request.method == "POST":
         data = request.POST
         changes = []
@@ -2973,7 +2973,7 @@ def interferences_vaziat_jasmani(request):
         # فیلتر فقط تغییرات واقعی
         real_changes = [c for c in changes if c["new"] and c["new"] != c["old"]]
         # فقط مواردی که مقدار جدید معتبر است
-        valid_changes = [c for c in real_changes if c["new"] in normalize_list_values(condition_values)]
+        valid_changes = [c for c in real_changes if c["new"] in condition_values]
 
         # ✅ حالا آپدیت رکوردهای مربوطه
         updated_count = 0
@@ -2991,15 +2991,16 @@ def interferences_vaziat_jasmani(request):
     # فهرست کدهای معتبر وضعیت جسمانی
     valid_codes = [label for code, label in physical_condition_list]
     # سربازانی که وضعیت‌شان معتبر نیست
-    unknown_soldiers = Soldier.objects.exclude(physical_condition__in=valid_codes)
-    # یا فقط گرفتن مقادیر نامعتبر برای نمایش
-    known_physical_conditions = (
-        Soldier.objects
-        .filter(physical_condition__in=valid_codes)
-        .values('physical_condition')
-        .annotate(counts=Count('id'))
+    unknown_soldiers = (
+            Soldier.objects
+            .exclude(physical_condition__in=valid_codes)
+            | Soldier.objects.filter(physical_condition='نامشخص')
     )
-
+    # یا فقط گرفتن مقادیر نامعتبر برای نمایش
+    known_physical_conditions = []
+    for code, label in physical_condition_list:
+        count = Soldier.objects.filter(physical_condition=label).count()
+        known_physical_conditions.append({'physical_condition': label,'counts': count })
     # سربازان با وضعیت نامشخص یا نامعتبر
     unknown_physical_conditions = (
         Soldier.objects
