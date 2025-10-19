@@ -87,7 +87,7 @@
                             {{ form.Relative_to_inclusive.label }}
                             {{ form.Relative_to_inclusive }}
                         </div>
-                        <div class="col-xs-6">
+                        <div id="focus-container" class="col-xs-6">
                             {{ form.Relative_to_inclusive_number.label }}
                             {{ form.Relative_to_inclusive_number }}
                         </div>
@@ -244,4 +244,9 @@
             $('.select2').select2();
         });
     </script>
+    <script>
+    window.onload = function() {
+        document.querySelector("#focus-container input").focus();
+    };
+</script>
 {% endblock %}

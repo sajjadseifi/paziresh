@@ -163,3 +163,48 @@ class SoldierProblemForm(forms.Form):
             'placeholder': 'توضیحات مشکلات سرباز را اینجا وارد کنید'
         })
     )
+from django import forms
+from soldiers.models import Soldier
+from soldiers.constants import physical_condition_list, Type_of_disease_list
+from django import forms
+from soldiers.models import Soldier
+from soldiers.constants import physical_condition_list, Type_of_disease_list
+
+class TestSalamatRavanForm(forms.Form):
+    soldier = forms.ModelChoiceField(
+        queryset=Soldier.objects.all(),
+        widget=forms.Select(attrs={'id':'soldier-select','class': 'form-control select2'}),
+        label='انتخاب سرباز'
+    )
+    physical_condition_test = forms.ChoiceField(
+        choices=physical_condition_list,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='تست سلامت روان'
+    )
+    physical_condition_description_test = forms.CharField(
+        widget=forms.Textarea(
+            attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'توضیحات تست سلامت روان'}
+        ),
+        label='توضیحات تست سلامت روان',
+        required=False
+    )
+
+    Type_of_disease_test = forms.ChoiceField(
+        choices=Type_of_disease_list,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control select2',
+                'style': 'width: 100%;',
+                'data-tags': 'true',  # این اجازه تایپ و اضافه کردن گزینه جدید را می‌دهد
+                'data-placeholder': 'انتخاب یا وارد کردن نوع بیماری'
+            }
+        ),
+        label='نوع بیماری',
+        required=False
+    )
+    # تاریخ آزمون (اختیاری، پیش‌فرض امروز)
+    physical_condition_date_test = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label='تاریخ آزمون',
+        required=False
+    )

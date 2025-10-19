@@ -1,0 +1,525 @@
+{% load static %}
+{% load jalali_filters %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover">
+<title>ثبت سریع سرباز</title>
+<link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+
+<style>
+    
+      @font-face {
+        font-family: 'B Koodak';
+        src: url('/static/dist/fonts/B Koodak Bold_0.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+html, body {
+    font-family: 'B Koodak';
+    margin:0; padding:0; height:100%; overflow:hidden;
+    background:#f7f7f7; color:#000;
+    overscroll-behavior: none;
+      padding-bottom: env(safe-area-inset-bottom);
+
+}
+.container {
+    display:flex;
+    padding:5px; box-sizing:border-box; height:100%; gap:5px;
+}
+.main-box-form { 
+    flex:1; background:#fff; height:100%;  box-sizing:border-box; overflow:auto; border-radius:12px;
+    padding:0 4px;
+}
+.main-box-app { flex:1; background:#fff; height:100%;  box-sizing:border-box; overflow:auto; border-radius:12px; }
+.capture-box {  height:100%;position:relative;  }
+.capture-box .capture-actions{ 
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    padding:4px;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#video, #captured-photo {
+    border-radius:12px;
+    background:#000; 
+    display:block; 
+    object-fit:cover;
+}
+.video-submit, .submit-btn {
+    padding:10px; font-size:16px; font-weight:bold;  cursor:pointer;
+    border:none; border-radius:8px; background:#007bff; color:#fff; transition:0.2s;
+}
+.video-submit:hover, .submit-btn:hover { background:#0056b3; }
+.select2-container { width:100% !important; margin-top:5px; }
+.card-item { 
+    display:flex; justify-content:space-between; 
+    padding:4px 6px; 
+    border-radius:8px; 
+    border:1px solid #ddd;
+     margin-bottom:2px;
+     gap:5px; 
+    cursor:pointer; transition:0.2s; 
+    font-size:10px;
+    align-items:center;
+}
+.card-item:hover { background:#eef3ff; border-color:#4b7bec; }
+.card-item.active { background:#4b7bec; color:#fff; border-color:#2a5db0; }
+.card-item-title { flex:1;  }
+#switch-camera {
+    position:absolute;
+    top:10px;
+    left:10px;
+    padding:10px;
+    border-radius:6px;
+    background:white;
+    border:none;
+}
+.btn  {
+    width:100%;
+    margin-bottom:6px;
+}
+/* چند خطی کردن متن داخل Select2 */
+.select2-container .select2-selection__rendered {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.4;
+    padding: 6px 10px;
+    min-height: 38px;
+}
+
+/* چند خطی کردن گزینه‌های داخل dropdown */
+.select2-results__option {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.4;
+}
+
+/* بهبود ارتفاع برای گزینه‌های چندخطی */
+.select2-container--default .select2-selection--single {
+    height: auto !important;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+/* فاصله بین خطوط برای خوانایی بیشتر */
+.select2-dropdown {
+    white-space: normal;
+    word-wrap: break-word;
+}
+.select2-container .select2-selection__rendered {
+    min-height: 36px;
+}
+/* بج‌ها */
+.badge {
+  display: block;
+  padding: 1px 2px;
+  border-radius: 4px;
+  color: #fff;
+  text-align:center;
+  margin-bottom:2px;
+}
+.badge-blue {
+  background-color: #0bf4dd;
+  color:#023530;
+}
+.badge-gray {
+  background-color: #999;
+}
+.technical-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    max-height: 80vh;
+    padding: 4px;
+}
+
+.technical-item {
+    background: #f8faff;
+    border: 1px solid #ccd7ff;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 10px;
+    font-weight: 500;
+    transition: 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.technical-item:hover {
+    background: #e9f0ff;
+    border-color: #4b7bec;
+}
+
+.technical-item.active {
+    background: #4b7bec;
+    color: #fff;
+    border-color: #2a5db0;
+    box-shadow: 0 2px 8px rgba(75,123,236,0.3);
+}
+.card-item-image {
+display:flex;
+align-items:center;
+justify-content:center;
+}
+.app-nav {
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:10px;
+}
+.app-nav button ,.app-nav a {
+    flex:1;
+    padding:4px;
+    margin-bottom:0;
+    text-decoration:none;
+}
+</style>
+</head>
+<body>
+{% include 'components/toast.html' %}
+
+<div class="container">
+
+    <!-- ستون فرم -->
+    <div class="main-box-form">
+        
+        <form method="post" enctype="multipart/form-data" id="assign-soldier-form" class="mt-2" >
+            {% csrf_token %}
+            <input type="hidden" name="technical_vocational_id" id="technical_vocational_id" value="{{technical_vocational_id}}">
+            <select name="soldire_id" class="form-control select2" required>
+                <option value="">انتخاب سرباز</option>
+                {% for soldier in soldiers %}
+                    <option value="{{ soldier.id }}">{{ soldier.name }} {{ soldier.family }} - کدملی : {{ soldier.National_Code }}</option>
+                {% endfor %}
+            </select>
+            <div style="padding:4px 0 0;text-align:center;" id="technical_vocational_label"></div>
+            <input type="hidden" name="avatar" id="captured-image">
+            <input type="file" name="file" id="captured-image-file" style="display:none;">
+            <button type="submit" class="btn submit-btn mt-2">ذخیره در آزمون</button>
+        </form>
+        {% for soldier in last_registered_soldiers %}
+        <div class="card-item soldier-item"
+            data-soldier-id="{{ soldier.id }}" 
+            data-exam-id="{{ soldier.technical_exam.id }}" 
+            data-exam-name="{{ soldier.technical_exam.name }}"
+            {% if soldier.avatar %}
+            data-avatar-url="{{ soldier.avatar.url }}"
+            {% endif %}
+        >
+            <span class="card-item-image">
+                 {% if soldier.avatar %}
+                    <img src="{{ soldier.avatar.url }}" alt="" style="width:24px; height:24px; border-radius:2px; object-fit:cover;">
+                {% else %}
+                    <div style="display:inline-block;width:24px; height:24px; border-radius:2px; background-color:#ccc; font-size:10px; color:#555;">
+                    </div>
+                {% endif %}
+            </span>
+            <span class="card-item-title">
+                <div>{{ soldier.name }}</div>
+                <div>{{ soldier.family }}</div>
+            </span>
+            <span class="card-item-subtitle">
+                <div>
+                    {% if soldier.technical_exam %}
+                    <span class="badge badge-blue">{{ soldier.technical_exam.name }}</span>
+                    {% else %}--{% endif %}
+                </div>
+                <div>
+                    {% if soldier.technical_exam_submit_datetime %}{{ soldier.technical_exam_submit_datetime|jalali_datetime }}{% else %}----/--/--{% endif %}
+                </div>
+            </span>
+        </div>
+        {% empty %}
+        <p>هیچ سربازی ثبت نشده</p>
+        {% endfor %}
+    </div>
+
+
+    <!-- ستون فهرست کاربران -->
+    <div class="main-box-app">
+        <div class="app-nav">
+            <a href="#" onclick="window.location.reload()" type="button" class="badge badge-gray">رفرش صفحه</a>
+            <a class="badge badge-blue" href="{% url 'skills:technical_vocational' %}">بازگشت</a>
+        </div>
+
+        <div class="technical-list">
+            {% for field in technical_vocationals %}
+            <div class="card-item technical-item {% if selected_field and field.id == selected_field.id %}active{% endif %}" data-id="{{ field.id }}">
+                <div class="card-item-title">{{ field.name }}</div>
+                <div class="card-item-subtitle">[{{ field.code }}]</div>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+    <!-- ستون وبکم -->
+    <div class="capture-box">
+        <video id="video" autoplay playsinline muted></video>
+        <img id="captured-photo" style="display:none; max-height:100%; border-radius:12px;">
+        <div class="capture-actions">
+            <button id="capture-btn" class="btn video-submit">📸 عکس بگیر</button>
+        </div>
+        <button id="switch-camera" >🔁</button>
+    </div>
+
+</div>
+
+<script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
+<script>
+$(document).ready(function () { $('.select2').select2(); });
+
+let currentFacing = "environment"; // دوربین پیش‌فرض: پشتی
+const video = document.getElementById('video');
+const capturedPhoto = document.getElementById('captured-photo');
+const captureBtn = document.getElementById('capture-btn');
+const switchBtn = document.getElementById('switch-camera');
+const label = document.getElementById('technical_vocational_label');
+const selectField = document.getElementById('technical_vocational_id');
+const avatarInput = document.getElementById('captured-image');
+const capturedImageFileInput = document.getElementById('captured-image-file');
+const form = document.getElementById('assign-soldier-form');
+
+let stream;
+
+// ========================
+// مدیریت رشته انتخابی
+// ========================
+
+// گرفتن id پیش‌فرض از query string یا سرور
+const urlParams = new URLSearchParams(window.location.search);
+const queryId = urlParams.get('technical_vocational_id');
+const serverId = "{{ selected_field.id|default:'' }}";
+const defaultId = queryId || serverId;
+
+// به‌روزرسانی hidden input و label و query string
+function updateSelected(id, name) {
+    selectField.value = id || '';
+    label.textContent = name ? `رشته انتخاب شده: ${name}` : '';
+
+    // کارت‌ها همگام شوند
+    document.querySelectorAll('.technical-item').forEach(i => {
+        i.classList.toggle('active', i.dataset.id === id);
+    });
+
+    // بروزرسانی query string بدون رفرش
+    const url = new URL(window.location.href);
+    if(id) url.searchParams.set('technical_vocational_id', id);
+    else url.searchParams.delete('technical_vocational_id');
+    window.history.replaceState({}, '', url.href);
+}
+
+const activeCard = document.querySelector('.technical-item.active');
+if(activeCard) {
+    const activeId = activeCard.dataset.id;
+    const activeName = activeCard.querySelector('.card-item-title').textContent;
+    updateSelected(activeId, activeName);
+}
+
+// کلیک روی کارت‌ها
+document.querySelectorAll('.technical-item').forEach(item => {
+    const itemId = item.dataset.id;
+    const itemName = item.querySelector('.card-item-title').textContent;
+    item.addEventListener('click', () => updateSelected(itemId, itemName));
+});
+
+
+
+// ========================
+// مدیریت وبکم و عکس
+// ========================
+
+async function startCamera() {
+    if(stream) stream.getTracks().forEach(t => t.stop());
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: currentFacing } } });
+        video.srcObject = stream;
+    } catch(err) {
+        alert("خطا در دسترسی به وبکم: " + err.message);
+    }
+}
+
+// سوئیچ دوربین
+switchBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    currentFacing = currentFacing === "user" ? "environment" : "user";
+    startCamera();
+});
+
+// عکس گرفتن و جایگزینی ویدیو
+function createImage() {
+    if(video.style.display !== "none") {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const dataURL = canvas.toDataURL('image/png');
+        document.getElementById('captured-image').value = dataURL;
+        capturedPhoto.src = dataURL;
+        capturedPhoto.style.display = "block";
+        video.style.display = "none";
+        captureBtn.textContent = "🔄 گرفتن عکس مجدد";
+    } else {
+        capturedPhoto.style.display = "none";
+        video.style.display = "block";
+        captureBtn.textContent = "📸 عکس بگیر";
+    }
+}
+
+// کلیک روی ویدیو یا دکمه
+video.addEventListener('click', (event) => { event.stopPropagation(); createImage(); });
+captureBtn.addEventListener('click', (event) => { event.stopPropagation(); createImage(); });
+
+// ========================
+// تنظیم اندازه ویدیو و عکس
+// ========================
+function resizeVideo() {
+    const box = document.querySelector('.capture-box');
+    const size = box.clientHeight;
+    box.style.width = size + "px";
+    video.style.width = size + "px";
+    video.style.height = size + "px";
+    capturedPhoto.style.width = "100%";
+    capturedPhoto.style.height = "100%";
+}
+
+// فراخوانی اولیه و هنگام تغییر اندازه صفحه
+resizeVideo();
+window.addEventListener('resize', resizeVideo);
+
+// شروع وبکم
+startCamera();
+
+
+
+// ========================
+// مدیریت ارسال فرم
+// ========================
+form.addEventListener('submit', function(e) {
+    // جلوگیری از ارسال فرم قبل از آماده شدن Blob
+    e.preventDefault();
+    // بررسی انتخاب سرباز
+    if(!form.soldire_id.value) {
+        e.preventDefault();
+        alert("لطفاً یک سرباز انتخاب کنید.");
+        return;
+    }
+
+    // بررسی انتخاب رشته
+    if(!form.technical_vocational_id.value) {
+        e.preventDefault();
+        alert("لطفاً یک رشته انتخاب کنید.");
+        return;
+    }
+
+
+    // اگر ویدیو هنوز نمایش داده می‌شود و هیچ عکس گرفته نشده
+    if(video.style.display !== "none") {
+        const ok = confirm("هیچ عکسی گرفته نشده است. ادامه می‌دهید؟");
+        if(!ok) {
+            e.preventDefault();
+            return;
+        }
+    }
+
+    // اگر عکس گرفته شده روی capturedPhoto هست
+    if(capturedPhoto.style.display !== "none") {
+        // تبدیل تصویر به Blob
+        const canvas = document.createElement('canvas');
+        canvas.width = capturedPhoto.naturalWidth;
+        canvas.height = capturedPhoto.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(capturedPhoto, 0, 0);
+
+        canvas.toBlob(function(blob) {
+            // ساخت فایل از Blob
+            const file = new File([blob], "avatar.png", { type: "image/png" });
+
+            // ساخت DataTransfer برای اضافه کردن به فرم
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            capturedImageFileInput.files = dt.files;
+            // حالا فرم ارسال می‌شود
+            form.submit();
+            // حذف input بعد از ارسال (با کمی تاخیر)
+            setTimeout(() => {
+                form.removeChild(avatarInput);
+            }, 100);
+        }, "image/png");
+
+
+        return;
+    }
+    // فرم بدون AJAX ارسال می‌شود (submit معمولی)
+});
+document.querySelectorAll('.soldier-item').forEach(card => {
+    card.addEventListener('click', () => {
+        const soldierId = card.dataset.soldierId;
+        const examId = card.dataset.examId;
+        const examName = card.dataset.examName;
+        const avatarUrl = card.dataset.avatarUrl;
+
+        // 1. بروزرسانی رشته و label
+        document.getElementById('technical_vocational_id').value = examId;
+        document.getElementById('technical_vocational_label').textContent = `رشته انتخاب شده: ${examName}`;
+
+        // کارت‌های رشته را همگام‌سازی کن
+        document.querySelectorAll('.technical-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.id === examId);
+        });
+
+        // 2. انتخاب سرباز در select
+        const selectSoldier = document.querySelector('select[name="soldire_id"]');
+        selectSoldier.value = soldierId;
+        $(selectSoldier).trigger('change');
+
+        // 3. بروزرسانی hidden input عکس و نمایش کنوس
+        const avatarInput = document.getElementById('captured-image');
+        const capturedPhoto = document.getElementById('captured-photo');
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('capture-btn');
+
+        if(avatarUrl) {
+            // ساخت canvas و لود عکس
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL('image/png');
+                avatarInput.value = dataURL;
+
+                capturedPhoto.src = dataURL;
+                capturedPhoto.style.display = "block";
+                video.style.display = "none";
+                captureBtn.textContent = "🔄 گرفتن عکس مجدد";
+            }
+            img.src = avatarUrl;
+        } else {
+            // اگر عکس نداشت، ویدیو را نشان بده
+            capturedPhoto.style.display = "none";
+            video.style.display = "block";
+            avatarInput.value = '';
+            captureBtn.textContent = "📸 عکس بگیر";
+        }
+
+        // 4. بروزرسانی query string بدون رفرش
+        const url = new URL(window.location.href);
+        url.searchParams.set('technical_vocational_id', examId);
+        window.history.replaceState({}, '', url.href);
+    });
+});
+
+
+</script>
+
+</body>
+</html>

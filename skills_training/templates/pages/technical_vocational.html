@@ -1,0 +1,474 @@
+{% extends "../layout/base.html" %}
+{% block content %}
+{% load jalali_filters %}
+
+<style>
+/* 🌐 ساختار کلی صفحه */
+.panel-container { padding: 10px; font-family: "Vazirmatn", sans-serif; }
+.panel-list {  background: #f7f7f7; border-radius: 12px; box-shadow: 0 0 6px rgba(0,0,0,0.1); padding: 10px 15px; max-height: 650px; overflow-y: auto; }
+.panel-list h3 { font-size: 16px;padding:0;margin:12px 0; text-align: center; }
+.list-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; margin-bottom: 4px; transition: all 0.2s; cursor: pointer; gap:4px; }
+.list-item:hover, .list-item.active { background: #eef3ff; border-color: #4b7bec; }
+.list-item-title { font-weight: 500; font-size: 14px;flex:1; }
+.list-item-subtitle { font-size: 12px; color: #777; padding:0 10px; }
+.btn { padding: 6px 8px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; margin-left: 3px; }
+.btn-create { background-color: #4b7bec; color: #fff; }
+.btn-create:hover { background-color: #3867d6; }
+.btn-update { background-color: #ff9f43; color: #fff; }
+.btn-update:hover { background-color: #e68a00; }
+.btn-delete { background-color: #ee5253; color: #fff; }
+.btn-delete:hover { background-color: #c0392b; }
+.technical_vocational_create { margin:5px auto; width:100%; }
+/* 🧾 جدول سربازان */
+.panel-content {  margin-bottom:10px;;background: #fff; border-radius: 12px; box-shadow: 0 0 8px rgba(0,0,0,0.1); padding: 10px 20px;  }
+.panel-header { 
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 10px; 
+}
+.panel-header h3 {
+    text-align: center; font-size: 2rem;
+    font-weight: 600; color: #1f2937; 
+    background: linear-gradient(90deg, #4f46e5, #3b82f6);
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    padding: 10px 0;
+    border-radius: 8px; 
+    margin:0;padding:0;
+}
+.data-table { width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; }
+.data-table thead { background-color: #4b7bec; color: #fff; }
+.data-table thead tr:hover { background-color: #4b7bec; color: #fff; font-size: 14px;}
+.data-table th, .data-table td { border: 1px solid #ddd; padding: 2px; text-align: center; font-size: 12px; }
+.data-table tr:nth-child(even) { background-color: #f9f9f9; }
+.data-table tr:hover { background-color: #eef3ff; }
+
+
+.assign-soldier-form {
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* حالت فعال (نمایش مودال) */
+.modal.show {
+  display: block;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  position: relative;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+/* انیمیشن باز شدن */
+.modal.show .modal-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #000;
+}
+
+.modal h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.modal input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.modal button {
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.modal button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.panel-top { display:flex; align-items:center; justify-content:space-between; }
+</style>
+<style>
+.custom-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 20px;
+    direction: rtl;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.page-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: #333;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.page-btn:hover {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.page-btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    font-weight: bold;
+    cursor: default;
+}
+
+.page-btn.disabled {
+    border-color: #ddd;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.dots {
+    padding: 6px 10px;
+    color: #999;
+    font-size: 14px;
+}
+.fancy-link {
+    display: block; /* لینک به صورت بلاک */
+    padding: 10px 20px;
+    background-color: #1e40af; /* آبی */
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+    text-align: right; /* متن در ابتدا */
+}
+
+.fancy-link:hover {
+    background-color: #1e3a8a; /* آبی تیره تر */
+}
+
+.fancy-link .icon {
+    float: left; /* آیکون در انتها */
+    font-size: 1.2em;
+}
+</style>
+
+<div class="panel-container row">
+    <!-- 🎓 فهرست رشته‌ها -->
+    <div class="col-md-5">
+        <div class="panel-list">
+            <div class="panel-top">
+                <h3>رشته‌های فنی و حرفه‌ای</h3>
+                <button class="btn btn-excel btn-success"><i class="fas fa-file-excel"></i>📄 اکسل رشته ها</button>
+            </div>
+
+            <form class="list-form" method="post" onsubmit="return false;">
+                {% csrf_token %}
+                <!-- همه رشته‌ها -->
+                <label class="list-item {% if not selected_field %}active{% endif %}" onclick="selectCard('')">
+                    <input type="radio" name="technical_vocational_id" value="" {% if not selected_field %}checked{% endif %} >
+                    <span class="list-item-title">همه</span>
+                    <span class="list-item-counts">{{ counts_in_all }} نفر</span>
+                    <span class="list-item-subtitle">[تمامی رشته‌ها]</span>
+                    <div>
+                        <button type="button" class="btn btn-create" onclick="openModal('create',id=null, name='', code='', event)">رشته جدید➕</button>
+                    </div>
+                </label>
+
+                {% for field in technical_vocationals %}
+                <label class="list-item {% if selected_field and field.id == selected_field.id %}active{% endif %}" onclick="selectCard('{{ field.id }}')">
+                    <input type="radio" name="technical_vocational_id" value="{{ field.id }}" {% if selected_field and field.id == selected_field.id %}checked{% endif %} >
+                    <span class="list-item-title">{{ field.name }}</span>
+                    <span class="list-item-counts">{{ field.soldier_count }} نفر</span>
+                    <span class="list-item-subtitle">[کد : {{ field.code }} ]</span>
+                    <div>
+                        <button type="button" class="btn btn-update" onclick="openModal('update', {{ field.id }}, '{{ field.name }}', '{{ field.code }}', event)">✏️</button>
+                        <button type="button" class="btn btn-delete" onclick="openModal('delete', {{ field.id }}, '', '', event)">🗑️</button>
+                    </div>
+                </label>
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="row">
+            <div class=" col-md-6">
+                        <div class="panel-content">
+                        <div class="panel-header">
+                            <h3>ثبت نام آزمون</h3>
+                        </div>
+            <form method="post" enctype="multipart/form-data" id="assign-soldier-form" class="assign-soldier-form" action="{% url 'skills:technical_vocational_add_soldier' %}" >
+                {% csrf_token %}
+                <div>
+                    <select name="soldire_id" class="form-control select2" >
+                    <option value="">انتخاب سرباز</option>
+                    {% for soldier in all_soldiers %}
+                        <option value="{{ soldier.id }}">
+                            {{ soldier.name }} {{ soldier.family }} - کدملی : {{ soldier.National_Code }} فرزند {{soldier.fathers_name}}
+                        </option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div>
+                    <select name="technical_vocational_id" class="form-control select2" >
+                    <option value="">انتخاب آزمون</option>
+                    {% for field in technical_vocationals %}
+                        <option {% if selected_field and field.id == selected_field.id %}selected{% endif %} value="{{ field.id }}">
+                            {{ field.name }} ({{ field.code }})
+                        </option>
+                    {% endfor %}
+                </select>
+                </div>
+                        
+            <div>
+                <!-- فیلد آپلود فایل اختیاری -->
+                <label for="soldier-avatar">آپلود عکس سرباز (اختیاری)</label>
+                <input type="file" name="avatar" id="soldier-avatar" accept="image/*" class="form-control">
+            </div>
+                <button style="width:100%;"  type="submit" class="btn btn-success">ثبت</button>
+            </form>
+        </div>
+            </div>
+            <div class=" col-md-6">
+                <div class="panel-content ">
+                    <a href="{% url 'skills:technical_vocational_eazy_register' %}" class="fancy-link">
+                    ثبت نام با عکس فوری
+                    <span class="icon">📸</span>
+                    </a>
+                </div>
+                <div class="panel-content">
+                    فرم بارگذاری اکسل
+                </div>
+            </div>
+            <div class="col-md-12">
+                            <!-- 🧾 جدول سربازان -->
+        <div class="panel-content ">
+                <div class="panel-header">
+                    <h3>
+                        فهرست سربازان در آزمون {% if selected_field %}{{ selected_field.name }}{% else %}همه{% endif %}
+                    </h3>
+                    <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <!-- لینک اکسل -->
+                        <a href="{% url 'skills:technical_vocational_export_excel' %}?technical_vocational_id={{ selected_field.id|default:'' }}" 
+                        class="btn btn-sm btn-success" target="_blank">
+                            دانلود اکسل
+                        </a>
+
+                        <!-- لینک ZIP با تصاویر -->
+                        <a href="{% url 'skills:technical_vocational_export_zip' %}?technical_vocational_id={{ selected_field.id|default:'' }}" 
+                        class="btn btn-sm btn-primary" target="_blank">
+                            دانلود ZIP با تصاویر
+                        </a>
+                    </div>
+                </div>
+
+                <div style="margin:10px 0;display:flex;align-items:center;justify-content:space-between;">
+                    <span>تعداد در صفحه 20</span>
+                    {% include "components/pagination.html" with page_obj=soldiers %}
+                </div>
+          
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>تصویر</th>
+                        <th>سرباز</th>
+                        <th>کد ملی</th>
+                        <th>آزمون</th>
+                        <th>تاریخ ثبت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for soldier in soldiers %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if soldier.avatar %}
+                                <img src="{{ soldier.avatar.url }}" alt="{{ soldier }}" style="width:32px; height:32px; border-radius:6px; object-fit:cover;">
+                            {% else %}
+                             <div style="display:inline-block;width:32px; height:32px; border-radius:6px; background-color:#ccc; font-size:10px; color:#555;">
+                                بدون عکس
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ soldier.name }} {{ soldier.family }}</td>
+                        <td>{{ soldier.National_Code }}</td>
+                        <td>{{ soldier.technical_exam }}</td>
+                        <td dir="rtl">{{ soldier.technical_exam_submit_datetime|jalali_datetime  }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align:center;">هیچ سربازی در این آزمون ثبت نشده است.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- مودال ایجاد/ویرایش/حذف -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h3 id="modal-title"></h3>
+        <form id="modal-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="field_id" id="modal-field-id">
+            <input type="text" name="name" id="modal-name" placeholder="نام رشته" required>
+            <input type="text" name="code" id="modal-code" placeholder="کد رشته" required>
+            <button type="submit" class="btn btn-create" id="modal-submit">ثبت</button>
+        </form>
+        <form id="modal-delete-form" method="post" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="field_id" id="modal-delete-id">
+            <button type="submit" class="btn btn-delete">حذف رشته</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+function selectCard(fieldId) {
+    // گرفتن query فعلی (مثلاً page=2)
+    const currentParams = new URLSearchParams(window.location.search);
+    // تنظیم رشته جدید
+    if (fieldId) {
+        currentParams.set('technical_vocational_id', fieldId);
+    } else {
+        currentParams.delete('technical_vocational_id');
+    }
+    // وقتی رشته عوض شد، همیشه از صفحه ۱ شروع کن
+    currentParams.set('page',1);
+    // بارگذاری مجدد صفحه با query جدید
+    window.location.href = window.location.pathname + '?' + currentParams.toString();
+}
+
+// باز کردن مودال
+function openModal(type, id=null, name='', code='', event=null) {
+    if(event)
+    {
+        event.preventDefault();
+        event.stopPropagation(); // جلوگیری از submit فرم
+    } 
+    const modal = document.getElementById('modal');
+    modal.classList.add('show');
+    const modalTitle = document.getElementById('modal-title');
+    const modalForm = document.getElementById('modal-form');
+    const modalDeleteForm = document.getElementById('modal-delete-form');
+    const modalFieldId = document.getElementById('modal-field-id');
+    const modalName = document.getElementById('modal-name');
+    const modalCode = document.getElementById('modal-code');
+    const modalSubmit = document.getElementById('modal-submit');
+
+    if(type === 'create') {
+        modalTitle.textContent = 'ایجاد رشته جدید';
+        modalForm.style.display = 'block';
+        modalDeleteForm.style.display = 'none';
+        modalName.value = '';
+        modalCode.value = '';
+        modalForm.action = "{% url 'skills:technical_vocational_create' %}";
+        modalSubmit.textContent = '➕ ایجاد';
+    } else if(type === 'update') {
+        modalTitle.textContent = 'ویرایش رشته';
+        modalForm.style.display = 'block';
+        modalDeleteForm.style.display = 'none';
+        modalName.value = name;
+        modalCode.value = code;
+        modalFieldId.value = id;
+        modalForm.action = `/skills/technical-vocational/${id}/update/`;
+        modalSubmit.textContent = '✏️ ویرایش';
+    } else if(type === 'delete') {
+        modalTitle.textContent = 'حذف رشته';
+        modalForm.style.display = 'none';
+        modalDeleteForm.style.display = 'block';
+        document.getElementById('modal-delete-id').value = id;
+        modalDeleteForm.action = `/skills/technical-vocational/${id}/delete/`;
+    }
+}
+
+
+// بستن مودال با انیمیشن
+function closeModal() {
+  const modal = document.getElementById('modal');
+  modal.classList.remove('show');
+  setTimeout(() => { modal.style.display = 'none'; }, 300); // منتظر بماند تا انیمیشن تمام شود
+}
+
+// کلیک بیرون از مودال = بستن
+window.onclick = function(event) {
+  const modal = document.getElementById('modal');
+  if (event.target === modal) {
+    closeModal();
+  }
+};
+</script>
+ <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+</script>
+{% endblock %}

@@ -115,7 +115,7 @@ def account_access(request):
         return redirect(f'?user_id={user_id}&tab={tab}')
 
     # همه کاربران
-    users = User.objects.all().order_by('-is_staff','username')
+    users = User.objects.all().order_by('-is_staff','first_name','last_name')
 
     # گردان‌ها و گروهان‌ها
     gordans = battalion.objects.all()
@@ -155,18 +155,22 @@ def user_details_form(request):
 
     if request.method == 'POST':
         user = User.objects.get(id=user_id)
-        
-        form = UserDetailsForm(request.POST, instance=user, request_user=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f"اطلاعات کاربر {user.username} با موفقیت بروزرسانی شد ✅")
-            return redirect(f"{reverse('account_access')}?user_id={user.id}&tab={current_tab}")
-        else:
-            # اگر فرم خطا داشت، می‌توانیم پیام خطا را نشان دهیم
-            for field, errors in form.errors.items():
-                for error in errors:
-                    print(field,error)
-                    messages.error(request, f"{field}: {error}")
+        action = request.POST.get('action')
+        if action == 'remove':
+            user.delete()
+            messages.success(request, "کاربر با موفقیت حذف شد.")
+        elif action == 'save':
+            form = UserDetailsForm(request.POST, instance=user, request_user=request.user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f"اطلاعات کاربر {user.username} با موفقیت بروزرسانی شد ✅")
+                return redirect(f"{reverse('account_access')}?user_id={user.id}&tab={current_tab}")
+            else:
+                # اگر فرم خطا داشت، می‌توانیم پیام خطا را نشان دهیم
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        print(field,error)
+                        messages.error(request, f"{field}: {error}")
     
     return redirect(f"{reverse('account_access')}?user_id={user_id}&tab={current_tab}")
 

@@ -62,7 +62,9 @@ urlpatterns = [
     path('courses/scores/top-course/', top_soldiers_course_page, name='top_soldiers_course_page'),
     path('courses/scores/top-gordan/', top_soldiers_gordan_page, name='top_soldiers_gordan_page'),
     path('courses/tatbigh/', soldiers_tatbigh_page, name='soldiers_tatbigh_page'),
-    path('courses/tatbigh/:', soldiers_tatbigh_page, name='soldiers_tatbigh_page'),
+    path('courses/test-salamat-rawan/', test_salamat_rawan, name='test_salamat_rawan'),
+    path('courses/test-salamat-ravan/action/<str:action>/soldier/<int:soldier_id>/',test_salamat_ravan_actions, name='test_salamat_ravan_actions'),
+    path('courses/test-salamat-ravan/action/soldiers',test_salamat_ravan_actions, name='test_salamat_ravan_actions_soldiers'),
     path('api/soldier/national', get_soldier_by_national_code, name='api_get_soldier_by_national_code'),
 ]
 

@@ -12,6 +12,7 @@ urlpatterns = [
     path('sarbaz/update/', UpdatePazireshPage.as_view(), name='updatePazireshpage'),
     path('sarbaz/all/', MainViewSoldires.as_view(), name='MainViewSoldires'),
     path('sarbaz/add_to_list_exel/', exel_add_to_db.as_view(), name='exel'),
+    
     path('sarbaz/update_numbers/', exel_update_number.as_view(), name='exel_update_number'),
     path('export-excel/list_elame_hozor', export_to_excel_list_elame_hozor, name='export_to_excel_list_elame_hozor'),
     path('sarbaz/sater/group/', sater_group_print, name='sater_group_print'),

@@ -63,20 +63,68 @@
     table.table tbody td {
         vertical-align: middle;
     }
+    .container {
+        width:100%;
+        box-sizing:border-box;
+    }
+    #form-g .form-group {
+        display:flex;
+        align-items:center;
+        margin-bottom:5px;
+    }
+    #form-g .form-group {
+        font-family:'Vazirmatn';
+    }
+    #form-g .form-group label { flex:2;}
+    #form-g .form-group input,#form-g .form-group select {flex:3;}
 </style>
 {% endblock %}
 
 {% block main %}
 
     <div class="box">
-        <div class="container mt-5">
-            <h2 class="text-center">جستجوی پیشرفته سرباز</h2>
-            <form method="GET" action="{% url 'soldier_search' %}">
+        <div class="container ">
+
+            <h2 style="margin-bottom:20px;" class="text-center">جستجوی پیشرفته سرباز</h2>
+            <form id="form-g" method="GET" action="{% url 'soldier_search' %}">
                 <div class="row">
-                    <div class="form-group">
-                        <label for="acceptance_code">عدد پذیرش</label>
-                        <input type="text" class="form-control" id="acceptance_code" name="acceptance_code"
-                               placeholder="عدد پذیرش">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="acceptance_code">عدد پذیرش</label>
+                            <input type="text" class="form-control" id="acceptance_code" name="acceptance_code"
+                                placeholder="عدد پذیرش">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="admission-status">وضعیت پذیرش</label>
+                            <select class="form-control" id="admission-status" name="admission_status">
+                                <option value="all">همه</option>
+                                <option value="accepted" selected>پذیرش شده</option>
+                                <option value="not_accepted">پذیرش نشده</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="sort-by">مرتب‌سازی</label>
+                            <select class="form-control" id="sort-by" name="sort_by">
+                                <option value="final_group_code" selected>کد نهایی گروهانی</option>
+                                <option value="acceptance_code">کد پذیرش</option>
+                                <option value="group_code">کد گروهانی</option>
+                                <option value="full_name">نام و نام خانوادگی</option>
+                                <option value="tallest">بلندترین قد</option>
+                                <option value="shortest">کوتاه‌ترین قد</option>
+                                <option value="birth_date">تاریخ تولد</option>
+                            </select>
+                        </div>
+                    </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="national_code">کد ملی</label>
+                            <input type="text" class="form-control" id="national_code" name="national_code"
+                                   placeholder="کد ملی">
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
@@ -91,13 +139,7 @@
                                    placeholder="نام خانوادگی">
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="national_code">کد ملی</label>
-                            <input type="text" class="form-control" id="national_code" name="national_code"
-                                   placeholder="کد ملی">
-                        </div>
-                    </div>
+                  
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="physical_condition">وضعیت جسمانی</label>
@@ -197,6 +239,7 @@
                             </select>
                         </div>
                     </div>
+                    
                     <div class="col-md-6">
                     </div>
 
@@ -211,7 +254,7 @@
 
         <!-- نمایش نتایج جستجو -->
         {% if results %}
-            <h3 class="text-center">نتایج جستجو</h3>
+            <h3 style="margin-top:0;" class="text-center">نتایج جستجو</h3>
             {% if op_result %}
                 <h3 class="text-center">تعداد <span style="color:red;"> {{ results.count }}</span> مورد یافت شد!</h3>
             {% endif %}

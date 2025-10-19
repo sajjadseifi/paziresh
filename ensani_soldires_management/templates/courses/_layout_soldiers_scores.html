@@ -111,6 +111,15 @@
             </a>
         </li>
         {% endif %}
+        {% if permissions.dep.behdari %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'test_salamat_rawan' %}active{% endif %}"
+                href="{% url 'test_salamat_rawan' %}">
+                    <i class="fa fa-heartbeat"></i>
+                    تست سلامت روان
+                </a>
+            </li>
+        {% endif %}
     </ul>
 
     <!-- محتوای هر تب -->

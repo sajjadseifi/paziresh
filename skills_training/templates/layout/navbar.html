@@ -27,6 +27,18 @@
     gap: 20px;
 }
 
+/* حالت گوشی: دو تا دو تا کنار هم */
+@media (max-width: 1000px) {
+    .skills-navbar .nav-links {
+        flex-direction: row; /* افقی ولی با wrap */
+        justify-content: end;
+        align-content: end;
+        gap: 4px;
+        flex-wrap: wrap; /* اجازه می‌دهد لینک‌ها به خط بعد بروند */
+    }
+
+
+}
 .skills-navbar .nav-links li a {
     color: #fff;
     text-decoration: none;
@@ -60,6 +72,7 @@
     <ul class="nav-links">
         {%if permissions.dep.niru_ensani %}
             <li><a href="{% url 'skills:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">داشبورد</a></li>
+            <li><a href="{% url 'skills:technical_vocational' %}" class="{% if request.resolver_match.url_name == 'technical_vocational' %}active{% endif %}">فنی و حرفه ای</a></li>
             <li><a href="{% url 'skills:list' %}" class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}">مهارت‌ها</a></li>
             <li><a href="{% url 'skills:certificates_hazard' %}" class="{% if request.resolver_match.url_name == 'certificates_hazard' %}active{% endif %}">مخاطرات</a></li>
         {% endif %}

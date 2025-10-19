@@ -1,0 +1,103 @@
+{% comment %}
+Reusable pagination component
+Usage:
+{% include "includes/pagination.html" with page_obj=soldiers extra_params="technical_vocational_id=5" %}
+{% endcomment %}
+
+{% if page_obj.paginator.num_pages > 1 %}
+<style>
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    direction: rtl;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #d0d7de;
+    background: #fff;
+    color: #333;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pagination-btn:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+}
+
+.pagination-btn.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.pagination-btn.disabled {
+    background-color: #f5f5f5;
+    border-color: #e0e0e0;
+    color: #aaa;
+    pointer-events: none;
+}
+
+.pagination-dots {
+    color: #999;
+    padding: 0 6px;
+    font-size: 15px;
+}
+
+
+</style>
+
+<div class="pagination-container">
+    {% if page_obj.has_previous %}
+        <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page=1" class="pagination-btn first">&laquo; اولین</a>
+        <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page={{ page_obj.previous_page_number }}" class="pagination-btn prev">‹ قبلی</a>
+    {% else %}
+        <span class="pagination-btn disabled">&laquo; اولین</span>
+        <span class="pagination-btn disabled">‹ قبلی</span>
+    {% endif %}
+
+    {% for i in page_obj.paginator.page_range %}
+        {% if i == page_obj.number %}
+            <span class="pagination-btn active">{{ i }}</span>
+        {% elif i >= page_obj.number|add:'-2' and i <= page_obj.number|add:'2' %}
+            <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page={{ i }}" class="pagination-btn">{{ i }}</a>
+        {% elif i == 1 %}
+            <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page=1" class="pagination-btn">1</a>
+            {% if page_obj.number > 4 %}
+                <span class="pagination-dots">...</span>
+            {% endif %}
+        {% elif i == page_obj.paginator.num_pages %}
+            {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                <span class="pagination-dots">...</span>
+            {% endif %}
+            <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="pagination-btn">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page={{ page_obj.next_page_number }}" class="pagination-btn next">بعدی ›</a>
+        <a href="?{% if extra_params %}{{ extra_params }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="pagination-btn last">آخرین &raquo;</a>
+    {% else %}
+        <span class="pagination-btn disabled">بعدی ›</span>
+        <span class="pagination-btn disabled">آخرین &raquo;</span>
+    {% endif %}
+</div>
+{% endif %}

@@ -22,4 +22,12 @@ urlpatterns = [
     path('physical/table/', physical_table_view, name='physical_table'),
     path('physical/height_weight_chart/', height_weight_chart_view, name='physical_height_weight_chart'),
     path('physical/bmi_chart/', bmi_chart_view, name='physical_bmi_chart'),
+    # 
+    path('interferences/',          interferences_index, name='interferences_index'),
+    path('interferences/enduction-info/',          interferences_enduction_info, name='interferences_enduction_info'),
+    path('interferences/yegan-khedmati/',   interferences_yegan_khedmati, name='interferences_yegan_khedmati'),
+    path('interferences/vaziat-jasmani/',   interferences_vaziat_jasmani, name='interferences_vaziat_jasmani'),
+    path('interferences/yegan-tatbigh/',   interferences_yegan_tatbigh, name='interferences_yegan_tatbigh'),
+    path('interferences/base-information/',   interferences_base_information, name='interferences_base_information'),
+    path('interferences/city-province/',   interferences_city_and_province, name='interferences_city_and_province'),
 ]

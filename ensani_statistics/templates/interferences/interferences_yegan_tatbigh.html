@@ -1,0 +1,270 @@
+{% extends 'interferences/_layout_interferences.html' %}
+
+{% block interferences_content %}
+<style>
+    /* 🎨 استایل دلپذیر برای جدول و ردیف‌ها */
+    .table-row-hover:hover {
+        background: linear-gradient(90deg, #f0f4ff, #e0ebff);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    /* Badge سفارشی */
+    .badge {
+        margin: 2px 2px 2px 0;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 0.35rem;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    /* رنگ‌ها برای هر وضعیت */
+    .bg-info { background-color: #17a2b8; color: #fff; }           /* درحال آموزش */
+    .bg-success { background-color: #28a745; color: #fff; }        /* کفایت بسیج */
+    .bg-primary { background-color: #007bff; color: #fff; }        /* تجدید دوره کمیسیون */
+    .bg-warning { background-color: #ffc107; color: #212529; }     /* کمیسیون پزشکی شروع دوره */
+    .bg-secondary { background-color: #6c757d; color: #fff; }      /* تجدید دوره */
+    .bg-dark { background-color: #343a40; color: #fff; }           /* خدمت قبلی */
+    .bg-danger { background-color: #dc3545; color: #fff; }         /* پذیرش نشده یا تطبیق نشده */
+
+    /* استایل شخصی برای چک‌باکس */
+    .styled-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+    .operation-card {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    background: linear-gradient(135deg, #f9f9f9, #e0f0ff);
+    border-left: 5px solid #4e73df;
+    transition: all 0.3s ease;
+    padding:20px;
+    margin:10px 0;
+    gap:4px;
+}
+.operation-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.operation-btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.operation-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+</style>
+
+
+<h3 class="text-center mb-4">سربازان بدون یگان تطبیق داده شده</h3>
+<p class="text-center text-muted mb-4">
+    تعداد کل: {{ count }}
+</p>
+
+<form method="post" >
+    {% csrf_token %}
+
+  <!-- 🎨 بخش عملیات بالا جدول -->
+<div class="operation-card mb-3 shadow-sm p-3 rounded d-flex justify-content-between align-items-center flex-wrap">
+   <div class="operation-info">
+        انتخاب سربازان برای اعمال عملیات
+    </div>
+    <div>
+       <button id="apply-selected" disabled type="submit" class="btn btn-success operation-btn">
+            <i class="fa fa-check-circle"></i> تطبیق انتخاب شده‌ها
+        </button>
+    </div> 
+    <div style="flex:1"></div> 
+   <div class="btn-group mb-2 mb-md-0">
+        
+        <button type="button" class="btn btn-warning operation-btn" id="select-all">
+            <i class="fa fa-check-square"></i> انتخاب همه
+        </button>
+        <button type="button" class="btn btn-primary operation-btn" id="select-with-unit">
+            <i class="fa fa-users"></i> انتخاب دارندگان یگان
+        </button>
+        <button type="button" class="btn btn-danger operation-btn" id="select-without-unit">
+            <i class="fa fa-users"></i> انتخاب یگان خالی
+        </button>
+    </div>
+
+</div>
+
+    <!-- 🎨 کارت جدول -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center align-middle mb-0">
+                    <thead style="background: linear-gradient(90deg, #4e73df, #224abe); color: #fff;">
+                        <tr>
+                            <th>
+                                 <span class="form-check-all">
+                                    <input id="check-all-input" class="form-check-input styled-checkbox" type="checkbox" >
+                                </span>
+                              انتخاب
+
+                            </th>
+                            <th>شماره</th>
+                            <th>کد ملی</th>
+                            <th>نام</th>
+                            <th>نام خانوادگی</th>
+                            <th>وضعیت</th>
+                            <th>یگان</th>
+                            <th>نوع یگان</th>
+                            <th>وضعیت تطبیق</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for soldier in soldier_not_tatbigh %}
+                        <tr class="table-row-hover"
+                        data-has-unit-type="{{ soldier.unit_type|yesno:'true,false' }}" 
+                        data-soldier-id="{{soldier.id}}"
+                        >
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input styled-checkbox" type="checkbox" name="selected_soldiers" value="{{ soldier.id }}">
+                                </div>
+                            </td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ soldier.National_Code }}</td>
+                            <td>{{ soldier.name }}</td>
+                            <td>{{ soldier.family }}</td>
+                            <td class="text-start">
+                                {% if soldier.has_been_accepted and soldier.willing_to_learn %}
+                                    <span class="badge bg-info text-dark"><i class="fa fa-book"></i> درحال آموزش</span>
+                                {% endif %}
+                                {% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
+                                    <span class="badge bg-success"><i class="fa fa-check"></i> کفایت بسیج</span>
+                                {% endif %}
+                                {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
+                                    <span class="badge bg-primary"><i class="fa fa-heartbeat"></i> تجدید دوره کمیسیون</span>
+                                {% endif %}
+                                {% if soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
+                                    <span class="badge bg-warning text-dark"><i class="fa fa-clock"></i> کمیسیون پزشکی شروع دوره</span>
+                                {% endif %}
+                                {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
+                                    <span class="badge bg-secondary"><i class="fa fa-history"></i> تجدید دوره</span>
+                                {% endif %}
+                                {% if soldier.has_been_accepted and soldier.Previous_service_record is True %}
+                                    <span class="badge bg-dark"><i class="fa fa-shield-alt"></i> خدمت قبلی</span>
+                                {% endif %}
+                                {% if soldier.has_been_accepted is False %}
+                                    <span class="badge bg-danger"><i class="fa fa-times-circle"></i> پذیرش نشده</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ soldier.unit_name }}</td>
+                            <td>{{ soldier.unit_type }}</td>
+                            <td>
+                                {% if soldier.IsUnit  %}
+                                    <span class="badge bg-success"><i class="fa fa-check"></i> تطبیق شده</span>
+                                {% else %}
+                                    <span class="badge bg-danger"><i class="fa fa-times"></i> تطبیق نشده</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9">هیچ سربازی بدون یگان تطبیق داده شده وجود ندارد.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+   $(document).ready(function(){
+    $('#apply-selected').on('click', function(e){
+        e.preventDefault(); // جلوگیری از ارسال مستقیم فرم
+
+        // پیغام تایید
+        var confirmed = confirm("آیا مطمئن هستید که می‌خواهید انتخاب‌ها را تطبیق دهید؟");
+        if(confirmed){
+            // اگر کاربر تأیید کرد، فرم یا عملیات را ادامه بده
+            $(this).closest('form').submit(); // ارسال فرم
+        }
+    });
+});
+
+    document.addEventListener('DOMContentLoaded', function() {
+       const selectAllBtn = document.getElementById('select-all');
+      const applyBtn = document.getElementById('apply-selected');
+      const checkboxes = document.querySelectorAll('input[name="selected_soldiers"]');
+      const allChecked = document.getElementById('check-all-input');
+                  // تابع برای فعال/غیر فعال کردن دکمه
+         const toggleApplyButton = () => {
+            const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+            applyBtn.disabled = !anyChecked;
+         }
+        
+
+       const chekcedAll=(flag=false)=>{
+            checkboxes.forEach(checkbox => {
+               if (checkbox) checkbox.checked = flag;
+            });
+            allChecked.checked= flag;
+      }
+      const clearChekcedAll=()=>chekcedAll(false)
+
+      allChecked.addEventListener('click', function() {  
+
+          chekcedAll(allChecked.checked)
+       });
+       // انتخاب همه
+       selectAllBtn.addEventListener('click', function() {chekcedAll(true)});
+
+         // بررسی تغییر چک‌باکس‌ها
+         checkboxes.forEach(cb => cb.addEventListener('change', toggleApplyButton));
+
+        // انتخاب دارندگان یگان
+        const selectWithUnitBtn = document.getElementById('select-with-unit');
+        selectWithUnitBtn.addEventListener('click', function() {
+            document.querySelectorAll('input[name="selected_soldiers"]').forEach(cb => {
+                const tr = cb.closest('tr');
+                const isUnit = tr.querySelector('td:nth-child(9) span.badge.bg-success');
+                cb.checked = !!isUnit;
+            });
+            toggleApplyButton();
+
+        });
+
+        // کلیک روی ردیف انتخاب چک‌باکس
+         document.getElementById('select-with-unit').addEventListener('click', function() {
+            clearChekcedAll()
+            const rows = document.querySelectorAll('tr[data-has-unit-type="true"]');
+            rows.forEach(row => {
+               const checkbox = row.querySelector('input[name="selected_soldiers"]');
+               if (checkbox) checkbox.checked = true;
+            });
+            toggleApplyButton();
+
+         });
+                     // کلیک روی ردیف انتخاب چک‌باکس
+         document.getElementById('select-without-unit').addEventListener('click', function() {
+            clearChekcedAll()
+            const rows = document.querySelectorAll('tr[data-has-unit-type="false"]');
+            rows.forEach(row => {
+               const checkbox = row.querySelector('input[name="selected_soldiers"]');
+               if (checkbox) checkbox.checked = true;
+            });
+            toggleApplyButton();
+
+         });
+         
+             // اولین بررسی اولیه
+            toggleApplyButton();
+    });
+</script>
+{% endblock %}

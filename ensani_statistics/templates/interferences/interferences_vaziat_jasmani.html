@@ -1,0 +1,192 @@
+{% extends 'interferences/_layout_interferences.html' %}
+{% block interferences_content %}
+<style>
+   .custom-panel {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.custom-panel-header {
+  padding:  1rem;
+  font-weight: bold;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.custom-panel-body {
+  padding: 0.6rem 0.8rem;
+}
+
+.custom-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-list-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.custom-list-item:last-child {
+  border-bottom: none;
+}
+
+.custom-select {
+  flex: 1;
+  min-width: 180px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.select2-container--default .select2-selection--single {
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 36px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 36px;
+}
+
+.old-value {
+  flex: 1;
+  color: #555;
+  font-weight: 500;
+}
+#save-btn {
+  background-color: #28a745;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#save-btn:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+#save-btn i {
+  font-size: 1.1rem;
+}
+</style>
+
+
+<h4 class="mb-3">تداخل‌های وضعیت جسمانی</h4>
+<p class="text-muted">در این بخش تداخل‌های وضعیت جسمانی بررسی می‌شود.</p>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- ✅ وضعیت جسمانی معتبر -->
+    <div class="col-md-4">
+      <div class="custom-panel">
+        <div class="custom-panel-header bg-primary text-white text-center">
+          وضعیت جسمانی معتبر
+        </div>
+        <div class="custom-panel-body">
+          <ul class="custom-list">
+            {% for item in known_physical_conditions %}
+              <li class="custom-list-item">
+                <span>{{ item.physical_condition }}</span>
+                <span class="badge bg-secondary">{{ item.counts }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- ✅ فرم وضعیت جسمانی نامعتبر -->
+      <form method="post" id="update-physical-condition-form">
+        {% csrf_token %}
+        <div class="custom-panel">
+          <div class="custom-panel-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>وضعیت جسمانی نامعتبر</span>
+             <button type="submit" id="save-btn" class="btn btn-success btn-sm d-flex align-items-center gap-1 px-3">
+               <i class="bi bi-check-circle-fill me-1"></i> ذخیره تغییرات
+            </button>
+          </div>
+          <div class="custom-panel-body">
+            <ul class="custom-list">
+              {% for item in unknown_physical_conditions %}
+                <li class="custom-list-item">
+                  <input type="hidden" name="od_physical_condition_{{ forloop.counter }}" value="{{ item.physical_condition }}">
+                  <span class="old-value">{{ item.physical_condition }}</span>
+                  <span class="badge bg-secondary">{{ item.counts }}</span>
+                  <select name="new_physical_condition_{{ forloop.counter }}" class="custom-select select2">
+                    <option value="" selected>انتخاب وضعیت جدید</option>
+                    {% for known in known_physical_conditions %}
+                      <option value="{{ known.physical_condition }}">{{ known.physical_condition }}</option>
+                    {% endfor %}
+                  </select>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- ✅ جدول سربازان -->
+    <div class="col-md-8">
+      <div class="custom-panel">
+        <div class="custom-panel-header bg-info text-white">
+          سربازان
+        </div>
+        <div class="custom-panel-body table-responsive">
+          <table class="table table-bordered table-sm table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>کد سرباز</th>
+                <th>نام</th>
+                <th>نام خانوادگی</th>
+                <th>وضعیت جسمانی</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for soldier in unknown_soldiers %}
+                <tr class="table-danger">
+                  <td>{{ soldier.National_Code }}</td>
+                  <td>{{ soldier.name }}</td>
+                  <td>{{ soldier.family }}</td>
+                  <td>{{ soldier.physical_condition }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ فعال‌سازی Select2 -->
+<script>
+$(document).ready(function(){
+  $('.select2').select2({
+    placeholder: 'انتخاب وضعیت جدید',
+    allowClear: true,
+  });
+});
+  // تأیید قبل از ارسال فرم
+  $('#update-physical-condition-form').on('submit', function(e) {
+    const confirmed = confirm('آیا از ذخیره تغییرات اطمینان دارید؟');
+    if (!confirmed) {
+      e.preventDefault(); // جلوگیری از ارسال فرم
+    }
+  });
+</script>
+
+{% endblock %}

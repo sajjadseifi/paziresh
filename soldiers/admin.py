@@ -17,7 +17,7 @@ class SoldierAdmin(admin.ModelAdmin):
                        'physical_condition', 'Type_of_disease', 'health_insurance_card')
         }),
         ('اعزام و یگان', {
-            'fields': ('Date_of_dispatch', 'Gordan', 'battalion_group', 'unit_name', 'unit_type',
+            'fields': ('Date_of_dispatch', 'Gordan', 'battalion_group', 'yegan_name','unit_name', 'unit_type',
                        'unit_address', 'unit_province', 'IsUnit')
         }),
         ('اطلاعات پذیرش', {

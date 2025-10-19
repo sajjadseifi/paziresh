@@ -29,16 +29,13 @@
                         <li><a href="{% url 'sarbaz_codemeli' %}">پذیرش سرباز با کد ملی</a></li>
                         <li><a href="{% url 'CreatePaziresh' %}">پذیرش دستی</a></li>
                         <li><a href="{% url 'updatePazireshpage' %}">ویرایش پذیرشی</a></li>
+                        <li><a href="{% url 'MainViewSoldires' %}" class="btn-download"> لیست کامل سربازها</a></li>
                         <li><a href="{% url 'exel' %}">بارگذاری اکسل سامانه</a></li>
                         <li><a href="{% url 'exel_update_number' %}">بارگذاری اکسل شماره تماس</a></li>
                         <li><a href="{% url 'sater_group_print' %}">چاپ ساتر گروهی</a></li>
                         <li><a href="{% url 'moarefi_begordan_group_print' %}">چاپ معرفی به گردان گروهی</a></li>
-                        <li><a href="{% url 'update_db_from_exel_paziresh_hazer_bekhdmat' %}">بروزرسانی پذیرش
-                            شده
-                            حاضر</a>
-                        </li>
-                        <li><a href="{% url 'update_db_from_exel_paziresh_shode' %}">بروزرسانی پذیرش شده ها</a>
-                        </li>
+                        <li><a href="{% url 'update_db_from_exel_paziresh_hazer_bekhdmat' %}">بروزرسانی پذیرش شده حاضر</a></li>
+                        <li><a href="{% url 'update_db_from_exel_paziresh_shode' %}">بروزرسانی پذیرش شده ها</a></li>
                     </ul>
                 </li>
             {% endif %}
@@ -99,7 +96,7 @@
                 <li>
                     <a href="{% url 'soldiers_scores_help_page' %}">
                         <i class="fa fa-graduation-cap"></i>
-                        <span>آموزش</span>
+                        <span>گروه آموزشی</span>
                     </a>
                 </li>
             {% endif %}
@@ -165,6 +162,10 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
+                    {% if request.user.is_staff == True %}
+                        <li><a href="{% url 'interferences_index' %}">تداخل و بررسی</a></li>
+                    {% endif %}
+
                     <li><a href="{% url 'amar' %}">افراد حاضر به خدمت</a></li>
                     <li><a href="{% url 'gordanvgorhan' %}">آمار گردان و گروهان</a></li>
                     <li><a href="{% url 'amar_shoro_doreh' %}">آمار شروع دوره</a></li>

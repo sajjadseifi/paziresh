@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ثبت سریع سرباز</title>
+<link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+
+<style>
+html, body {
+    margin:0; padding:0; height:100%; overflow:hidden;
+    font-family: "Vazirmatn", sans-serif;
+    background:#f7f7f7;
+    color:#000;
+    overscroll-behavior: none; 
+}
+
+/* کانتینر اصلی: سه ستون */
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    box-sizing:border-box;
+    padding:10px;
+    gap:5px;
+}
+
+/* ستون‌ها */
+.left-column, .center-column, .right-column {
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.1);
+    padding:15px;
+    overflow-y:auto;
+    box-sizing:border-box;
+}
+
+/* اندازه ستون‌ها */
+.left-column { flex:1; min-width:200px; max-width:300px; max-height:100%; }
+.center-column { flex:2; min-width:300px; text-align:center; max-height:100%; }
+.right-column { flex:1; min-width:200px; max-width:300px; max-height:100%; display:none; }
+
+/* کارت‌های سرباز */
+.card-item {
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    background:#fff;
+    margin-bottom:8px;
+    font-size:12px;
+    transition:all 0.2s;
+    cursor:default;
+}
+.card-item:hover {
+    background:#eef3ff;
+    border-color:#4b7bec;
+}
+.card-item-title { flex:1; font-weight:500; }
+.card-item-subtitle { font-size:11px; color:#555; }
+.card-item.active { background:#4b7bec; border-color:#2a5db0; color:white; }
+.card-item.active .card-item-title,
+.card-item.active .card-item-subtitle { color:white; }
+
+/* ویدیو وبکم */
+#video, #captured-photo {
+    width:50%;
+    aspect-ratio:1/1;
+    border-radius:12px;
+    background:#000;
+    margin:10px auto;
+    display:block;
+}
+
+/* دکمه‌ها */
+button {
+    padding:10px 15px;
+    border-radius:8px;
+    border:none;
+    background-color:#007bff;
+    color:#fff;
+    font-size:15px;
+    cursor:pointer;
+    margin-top:10px;
+    width:100%;
+    transition:background 0.2s;
+}
+button:hover { background-color:#0056b3; }
+
+/* select رشته‌ها */
+select {
+    width:100%;
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    margin-top:10px;
+}
+
+
+</style>
+</head>
+<body>
+{% include 'components/toast.html' %}
+
+<div class="container">
+
+    <!-- ستون چپ: ۲۰ سرباز آخر -->
+    <div class="left-column">
+        <h5>۲۰ سرباز آخر</h5>
+        {% for soldier in last_registered_soldiers %}
+            <div class="card-item">
+                <span class="card-item-title">{{ soldier.name }} {{ soldier.family }}</span>
+                <span class="card-item-subtitle">
+                    {% if soldier.technical_exam %}{{ soldier.technical_exam.name }}{% else %}--{% endif %}
+                </span>
+            </div>
+        {% empty %}
+            <p>هیچ سربازی ثبت نشده</p>
+        {% endfor %}
+    </div>
+
+    <!-- ستون وسط: ویدیو و فرم -->
+    <div class="center-column">
+        <h5>تصویر برداری سرباز</h5>
+        <video id="video" autoplay playsinline muted></video>
+        <img id="captured-photo" style="display:none;">
+
+        <button id="capture-btn">📸 عکس بگیر</button>
+
+        <form method="post" enctype="multipart/form-data" id="assign-soldier-form" class="mt-3" action="{% url 'skills:technical_vocational_add_soldier' %}">
+            {% csrf_token %}
+            <select name="technical_vocational_id" required>
+                <option value="">انتخاب رشته</option>
+                {% for field in technical_vocationals %}
+                    <option {% if selected_field and field.id == selected_field.id %}selected{% endif %} value="{{ field.id }}">
+                        {{ field.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <select name="soldire_id" class="mt-2" required>
+                <option value="">انتخاب سرباز</option>
+                {% for soldier in soldiers %}
+                    <option value="{{ soldier.id }}">{{ soldier.name }} {{ soldier.family }} - کدملی: {{ soldier.National_Code }}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" name="avatar" id="captured-image">
+            <button type="submit">ثبت سرباز</button>
+        </form>
+    </div>
+
+</div>
+
+<script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+
+<script>
+function showToast(message, type="info") {
+    const toast = document.createElement("div");
+    toast.className = "toast toast-" + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.style.opacity=1, 100);
+    setTimeout(()=>{ toast.style.opacity=0; setTimeout(()=>toast.remove(),500); },3000);
+}
+
+// دسترسی به وبکم
+const video = document.getElementById('video');
+const captureBtn = document.getElementById('capture-btn');
+const capturedPhoto = document.getElementById('captured-photo');
+const hiddenInput = document.getElementById('captured-image');
+let stream;
+
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+    .then(s => { video.srcObject = s; stream = s; })
+    .catch(err => showToast("خطا در دسترسی به وبکم", "error"));
+} else {
+    showToast("این مرورگر از وبکم پشتیبانی نمی‌کند", "error");
+}
+
+// گرفتن عکس با rotate
+captureBtn.addEventListener('click', () => {
+    if(video.style.display !== "none") {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+        const dataURL = canvas.toDataURL("image/png");
+        hiddenInput.value = dataURL;
+
+        capturedPhoto.src = dataURL;
+        capturedPhoto.style.display = "block";
+        video.style.display = "none";
+
+        captureBtn.textContent = "🔄 گرفتن عکس مجدد";
+    } else {
+        capturedPhoto.style.display = "none";
+        video.style.display = "block";
+        captureBtn.textContent = "📸 عکس بگیر";
+    }
+});
+
+// چرخش ویدیو هنگام orientation موبایل
+function updateVideoRotation() {
+    const angle = window.orientation || 0;
+    video.style.transform = `rotate(${angle}deg)`;
+}
+window.addEventListener("orientationchange", updateVideoRotation);
+updateVideoRotation();
+
+</script>
+<script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
+
+<script> $(document).ready(function () { $('.select2').select2(); }); </script>
+</body>
+</html>

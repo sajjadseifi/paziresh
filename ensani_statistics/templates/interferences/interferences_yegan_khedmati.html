@@ -1,0 +1,357 @@
+{% extends 'interferences/_layout_interferences.html' %}
+{% load static %}
+{% block interferences_content %}
+
+<div dir="rtl">
+    <h3 class="text-center mb-4">🛡️ یگان خدمتی</h3>
+    <p class="text-center text-muted mb-5">
+        در این بخش، می‌توانید وضعیت یگان‌های خدمتی را بررسی و ویرایش کنید.
+    </p>
+   
+    <div class="row">
+        <!-- ستون یگان‌های دارای تداخل -->
+        <div class="col-md-6">
+            <div class="panel panel-danger">
+                <div data-color="danger" data-title="یگان‌های دارای تداخل" class="panel-heading">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    یگان‌های دارای تداخل ({{ interference_count }})
+                </div>
+                <div class="panel-body table-responsive">
+                    {% if interferences %}
+                    <table class="table table-bordered table-striped text-center align-middle">
+                        <thead>
+                            <tr>
+                                <th>نام یگان</th>
+                                <th>نوع یگان</th>
+                                <th>تعداد تکرار</th>
+                                <th>تطبیق نشده</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in interferences %}
+                            <tr data-unit-name="{{ item.unit_name }}" data-unit-type="{{ item.unit_type }}" data-isunit="{{ item.IsUnit|yesno:'true,false' }}">
+                                <td>{{ item.unit_name }}</td>
+                                <td>{{ item.unit_type }}</td>
+                                <td>{{ item.counts }}</td>
+                                <td>{{item.tatbigh_no_counts}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary edit-unit-btn"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editUnitModal"
+                                       data-unit-name="{{ item.unit_name }}"
+                                       data-unit-type="{{ item.unit_type }}"
+                                       data-isunit="{{ item.IsUnit }}">
+                                       <i class="fa fa-edit"></i> ویرایش
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="alert alert-success text-center">
+                        <i class="fa fa-check"></i> هیچ یگان دارای تداخلی یافت نشد.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ستون یگان‌های سالم -->
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <div data-color="success" data-title="یگان‌های سالم" class="panel-heading">
+                    <i class="fa fa-check-circle"></i>
+                    یگان‌های سالم ({{ healthy_count }})
+                </div>
+                <div class="panel-body table-responsive">
+                    {% if healthy_units %}
+                    <table class="table table-bordered table-striped text-center align-middle">
+                        <thead>
+                            <tr>
+                                <th>نام یگان</th>
+                                <th>نوع یگان</th>
+                                <th>تعداد</th>
+                                <th>تطبیق نشده</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in healthy_units %}
+                            <tr data-unit-name="{{ item.unit_name }}" data-unit-type="{{ item.unit_type }}" data-isunit="{{ item.IsUnit|yesno:'true,false' }}">
+                                <td>{{ item.unit_name }}</td>
+                                <td>{{ item.unit_type }}</td>
+                                <td>{{ item.counts }}</td>
+                                <td>{{item.tatbigh_no_counts}}</td>
+                                <td>
+                                 <button type="button" class="btn btn-sm btn-primary edit-unit-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editUnitModal"
+                                    data-unit-name="{{ item.unit_name }}"
+                                    data-unit-type="{{ item.unit_type }}"
+                                    data-isunit="{{ item.IsUnit }}">
+                                    <i class="fa fa-edit"></i> ویرایش
+                                 </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fa fa-info-circle"></i> هیچ یگان سالمی یافت نشد.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* مودال */
+.modal-content { 
+    border-radius: 0.6rem; 
+    background-color: #f9fafc;
+}
+.modal-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom: 1px solid #ccc;
+}
+.modal-header h4 {
+    margin:0; padding:0; font-weight:600;
+}
+.modal-footer {
+    border-top: 1px solid #ccc;
+    display:flex; justify-content:flex-start; gap:10px;
+}
+.close {
+    font-size:1.4rem; font-weight:bold; opacity:0.6;
+}
+.close:hover { opacity:1; }
+
+/* تب‌های تطبیق/عدم تطبیق */
+#unit-status-wrapper {
+    display:flex;
+    gap:5px;
+    margin-top:15px;
+}
+#unit-status-wrapper .tab-btn {
+    flex:1;
+    padding:8px 0;
+    border-radius:0.4rem;
+    text-align:center;
+    font-weight:500;
+    cursor:pointer;
+    user-select:none;
+    transition: all 0.2s ease;
+    background:#eee;
+    color:black;
+    opacity:1;
+}
+#unit-status-wrapper .tab-btn.active {
+    color:#fff;
+}
+#unit-status-wrapper .tab-btn.match.active {
+    background-color:#28a745; /* سبز */
+}
+#unit-status-wrapper .tab-btn.nomatch.active {
+    background-color:#e74c3c; /* قرمز */
+}
+#unit-status-wrapper .tab-btn.disabled {
+    background:#ddd;
+    color:#888;
+    cursor:not-allowed;
+    opacity:0.6;
+}
+.modal-header { display:flex; justify-content:space-between; } .modal .modal-header::after,.modal-header::before{ display:none; }
+/* فرم */
+.form-group label { font-weight:500; }
+input.form-control { border-radius:0.4rem; }
+
+.checkbox {
+   padding: 8px;
+   background:#c4f7f4;
+    display:flex; align-items:center; gap:8px; 
+    cursor:pointer;
+    flex-direction:row-reverse;
+   user-select:none;
+}
+/* چک‌باکس */
+.checkbox div {
+    flex:1;
+}
+.checkbox input[type="checkbox"] { width:18px; height:18px; }
+
+/* توضیح */
+.modal-body p.text-muted {  margin-bottom:10px; color:#555; }
+.select2-container {
+    width: 100% !important;
+    z-index: 9999; /* dropdown در بالای همه عناصر */
+}
+.select2-dropdown {
+    z-index: 99999 !important; /* جلوگیری از پنهان شدن پشت مودال */
+}
+
+</style>
+
+<div class="modal fade" id="editUnitModal" tabindex="-1" role="dialog" aria-labelledby="editUnitModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" id="edit-unit-form">
+        {% csrf_token %}
+        <div id="edit-modal-header" class="modal-header">
+          <h4 id="editUnitModalLabel">
+            <span>ویرایش</span>
+            <span id="modal-source">عنوان جدول</span>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <p class="text-muted">در این فرم می‌توانید نام و نوع یگان را ویرایش کنید. تیک "اعمال وضعیت روی سربازان" برای فعال کردن تب تطبیق روی سربازان را بزنید.</p>
+            {{ form.non_field_errors }}
+            {{ form.unit_name_orginal }}
+            {{ form.unit_type_orginal }}
+          
+          <div class="form-group">
+            {{ form.unit_name.label_tag }}
+            <select id="unit_name" name="unit_name" class="form-control select2-allow-new">
+               {% for name in unit_names %}
+                  <option value="{{ name }}">{{ name }}</option>
+               {% endfor %}
+            </select>
+            <small class="text-muted">می‌توانید نام جدیدی تایپ و اضافه کنید.</small>
+          </div>
+
+          <div class="form-group">
+            {{ form.unit_type.label_tag }}
+            {{ form.unit_type }}
+            <small class="text-muted">انتخاب فقط از لیست مجاز است.</small>
+          </div>
+
+          <label for="apply_to_soldiers" class="checkbox">
+            {{ form.apply_to_soldiers }}
+            <div>{{ form.apply_to_soldiers.label }}</div>
+          </label >
+            <div id="unit-status-wrapper">
+               {% for radio in form.unit_match %}
+               <label class="tab-btn">
+                  {{ radio.tag }}
+                  {{ radio.choice_label }}
+               </label>
+            {% endfor %}
+            </div>
+          {{ form.row_id }}
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">ذخیره تغییرات</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+   $('.edit-unit-btn').on('click', function(){
+      var tr = $(this).closest('tr');
+      var unitName = tr.data('unit-name');
+      var unitType = tr.data('unit-type');
+
+      $('#unit_name').val(unitName).trigger('change');
+      $('#unit_name_original').val(unitName); // مقدار اصلی را ذخیره می‌کنیم
+      
+      $('#unit_type').val(tr.data('unit-type')).trigger('change');
+      $('#unit_type_orginal').val(unitType); // مقدار اصلی را ذخیره می‌کنیم
+      
+      $('#row_id').val(tr.data('unit-id'));
+       
+
+      $('#editUnitModal').modal('show');
+   });
+       $('#unit_name').select2({
+         tags: true,
+         placeholder: 'نام یگان را انتخاب یا تایپ کنید',
+         allowClear: true,
+         width: '100%',
+           dropdownParent: $('#editUnitModal') 
+      });
+
+      // Select2 بدون امکان تایپ برای نوع یگان
+      $('#unit_type').select2({
+         placeholder: 'نوع یگان را انتخاب کنید',
+         allowClear: true,
+         width: '100%',
+           dropdownParent: $('#editUnitModal') 
+      });
+
+    // باز کردن مودال و انتقال اطلاعات سطر
+    $('.edit-unit-btn').on('click', function(){
+        var tr = $(this).closest('tr');
+        $('#unit_name').val(tr.data('unit-name')).trigger('change');
+        $('#unit_type').val(tr.data('unit-type')).trigger('change');
+        $('#row_id').val(tr.data('unit-id'));
+        $('#apply_to_soldiers').prop('checked', false);
+
+         var panelHeading = tr.closest('.panel').find('.panel-heading');
+
+         // گرفتن داده‌ها
+         var dataColor = panelHeading.data('color');  // 'danger' یا 'success'
+         var tableTitle = panelHeading.data('title'); // 'یگان‌های دارای تداخل'
+        $('#modal-source').text(tableTitle);
+
+        // تغییر رنگ هدر مودال بر اساس جدول
+        var header = $('#edit-modal-header');
+        if(dataColor === 'danger'){
+            header.css('background-color', '#f1948a'); // قرمز روشن
+        } else if(dataColor === 'success'){
+            header.css('background-color','#82e0aa'); // سبز
+        } else {
+            header.css('background-color','#a9c9ff'); // پیش‌فرض آبی
+        }
+        $('#editUnitModal').modal('show');
+    });
+    // وضعیت اولیه تب‌ها
+    function updateTabState(){
+        if($('#apply_to_soldiers').is(':checked')){
+            $('#unit-status-wrapper .tab-btn').removeClass('disabled');
+        } else {
+            $('#unit-status-wrapper .tab-btn').addClass('disabled').removeClass('active');
+            $('#unit-status-wrapper input').prop('checked', false);
+        }
+    }
+    updateTabState();
+
+    $('#apply_to_soldiers').on('change', function(){
+        updateTabState();
+    });
+
+      $('#unit-status-wrapper .tab-btn').on('click', function(){
+         if($(this).hasClass('disabled')) return;
+         $(this).addClass('active').siblings().removeClass('active');
+         $(this).find('input').prop('checked', true);
+      });
+         $('#unit-status-wrapper input[type="radio"]').each(function(){
+            var value = $(this).val();
+            if(value === 'match'){
+               $(this).closest('label').addClass('match');
+            } else if(value === 'no_match'){
+               $(this).closest('label').addClass('nomatch');
+            }
+         });
+      // مدیریت انتخاب و active
+      $('#unit-status-wrapper label').on('click', function(){
+         $(this).addClass('active').siblings().removeClass('active');
+         $(this).find('input').prop('checked', true);
+      });
+});
+</script>
+
+
+{% endblock %}

@@ -2720,3 +2720,433 @@ def bmi_chart_view(request):
         'scatter_data': scatter_data
     }
     return render(request, 'soldiers_phycical/bmi_chart.html', context)
+
+
+
+
+from django.shortcuts import render
+from ensani_soldires_management.constatns import *
+from django.db.models import Count, F
+from soldiers.constants import *
+
+def normalize_list(lst):
+    return [item for item in lst]
+
+def normalize_list_values(lst):
+    return [item[1] for item in lst if item[1] not in ('', 'نامشخص')]
+def normalize_list_values_with_unkown(lst):
+    return [item[1] for item in lst ]
+
+# 🟦 صفحه اصلی تداخل‌ها
+def interferences_index(request):
+    """
+    نمایش صفحه‌ی اصلی تداخل‌ها (لیست یا منوی انتخاب بخش‌ها)
+    """
+    # nrm حذف فیلد 0 یا نامشخص
+    nrm_educational_levels = normalize_list_values(educational_level_of_the_system_list)
+    nrm_Grade_precise_list = normalize_list_values(Grade_precise_list)
+    nrm_Grade_list = normalize_list_values(Grade_list)
+    nrm_physical_condition_list = normalize_list_values(physical_condition_list)
+    nrm_unit_types = normalize_list([(0,item[2]) for item in LIST_YEGAN_BEKARGIRANDE])
+    print(nrm_Grade_list)
+    vaziat_jasmani= Soldier.objects.exclude(physical_condition__in=nrm_physical_condition_list).count()
+    yegan_khedmati= Soldier.objects.exclude(unit_type__in=nrm_unit_types).count()
+    educational_level_of_the_system =Soldier.objects.exclude(educational_level_of_the_system__in=nrm_educational_levels).count()
+    Grade_precise =Soldier.objects.exclude(Grade_precise__in=nrm_Grade_precise_list).count()
+    Grade =Soldier.objects.exclude(Grade__in=nrm_Grade_list).count()
+
+    eduction_info = educational_level_of_the_system + Grade_precise +  Grade
+    counts = {
+        'madarek': 0,
+        'eduction_info':eduction_info,
+        'vaziat_jasmani': vaziat_jasmani,
+        'yegan_khedmati':yegan_khedmati, 
+    }
+    return render(request, 'interferences/interferences_index.html',{'counts':counts})
+
+
+def interferences_replaceor(request,collections):
+    if request.method == "POST":
+        data = request.POST
+        changes = []
+        action = data.get(f"action", "").strip()
+        collect = next((c for c in collections if c["action"] == action), None)
+
+        if collect:
+            title = collect['title']
+            db_key = collect['key_in_soldier']
+            valid_labels = normalize_list_values(collect['list'])
+            
+            # استخراج تغییرات از POST
+            for key, value in data.items():
+                if key.startswith(f"old_{action}_"):
+                    idx = key.split("_")[-1]
+                    old_value = value
+                    new_value = data.get(f"new_{action}_{idx}", "").strip()
+                    changes.append({"old": old_value, "new": new_value})
+            # فیلتر فقط تغییرات واقعی
+            real_changes = [c for c in changes if c["new"] and c["new"] != c["old"]]
+            # فقط مواردی که مقدار جدید معتبر است
+            valid_changes = [c for c in real_changes if c["new"] in valid_labels]
+
+            # ✅ حالا آپدیت رکوردهای مربوطه
+            updated_count = 0
+            for change in valid_changes:
+                old_val = change["old"]
+                new_val = change["new"]
+                affected = Soldier.objects.filter(**{f"{db_key}":old_val})
+                count = affected.update(**{f"{db_key}":new_val})
+                updated_count += count
+
+            messages.success(request, f"✅ تغییرات {title} با موفقیت ذخیره شد ({updated_count} مورد ویرایش شد).")
+        else:
+            messages.error(request, f"تغییرات {title} با خطا مواجه شد.")
+            
+    
+    for item in collections:
+        valid_labels = normalize_list_values_with_unkown(item['list'])
+        item['valid_labels'] = valid_labels
+        
+        known_values = []
+        for label in valid_labels:
+            count = Soldier.objects.filter(**{f"{item['key_in_soldier']}": label}).count()
+            known_values.append({
+                'value': label,
+                'counts': count
+            })
+        # مقادیر نامعتبر
+        unknown_values = (
+            Soldier.objects
+            .exclude(**{f"{item['key_in_soldier']}__in": valid_labels})
+            .values(value=F(item['key_in_soldier']))  # مقدار نامعتبر
+            .annotate(counts=Count('id'))
+            .order_by('-counts')
+        )
+        print(item.get('remove_values'))
+        if item.get('remove_values'):
+            unknown_values = unknown_values.exclude(value__in=item['remove_values'])
+
+        item['known_values'] = known_values
+        item['unknown_values'] = unknown_values
+        item['known_values_counts'] =  sum([x['counts'] for x in list(known_values)])
+        item['unknown_values_counts'] = sum([x['counts'] for x in list(unknown_values)])
+    return collections
+# 🟨 بخش پایه تحصیلی
+def interferences_enduction_info(request):
+    """
+    نمایش تداخل‌های مربوط به پایه تحصیلی سربازان
+    """
+    
+    # nrm حذف فیلد 0 یا نامشخص
+    nrm_educational_levels = normalize_list(educational_level_of_the_system_list)
+    nrm_Grade_precise_list = normalize_list(Grade_precise_list)
+    nrm_Grade_list = normalize_list(Grade_list)
+    collections = [
+        {
+            'title':'پایه تحصیلی سامانه',
+            'small_titlle':'پایه',
+            'name':'educational_level_of_the_system',
+            'action':'educational_level_of_the_system',
+            'list':nrm_educational_levels,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'key_in_soldier':'educational_level_of_the_system',
+            'color':'primary',
+            'remove_values':['نامشخص'],
+        },
+        {
+            'title':'پایه تحصیلی دقیق',
+            'small_titlle':'پایه',
+            'name':'Grade_precise',
+            'action':'Grade_precise',
+            'list':nrm_Grade_precise_list,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'known_values_counts':0,
+            'unknown_values_counts':0,
+            'key_in_soldier':'Grade_precise',
+            'color':'danger',
+            'remove_values':['نامشخص'],
+            
+        },
+        {
+            'title':'پایه تحصیلی',
+            'small_titlle':'پایه',
+            'name':'Grade',
+            'action':'Grade',
+            'list':nrm_Grade_list,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'known_values':[],
+            'key_in_soldier':'Grade',
+            'color':'success',
+            'remove_values':['نامشخص'],
+            
+        },
+    ]
+ 
+    collections = interferences_replaceor(request,collections)
+    context = {'collections': collections}
+
+    return render(request, 'interferences/interferences_enduction_info.html',context)
+
+
+def interferences_city_and_province(request):
+    nrm_province_name_list = normalize_list(province_name_list)
+    collections = [
+        {
+            'title':'استان محل سکونت',
+            'small_titlle':'استان',
+            'name':'province_name',
+            'action':'province_name',
+            'list':nrm_province_name_list,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'key_in_soldier':'province_name',
+            'color':'primary',
+        },
+    ]
+    collections = interferences_replaceor(request,collections)
+    context = {'collections': collections}
+
+    return render(request, 'interferences/interferences_city_and_province.html',context)
+    
+ 
+def interferences_base_information(request):
+    nrm_marital_status_list = normalize_list(marital_status_list)
+    nrm_Religion_list = normalize_list(Religion_list)
+    collections = [
+        {
+            'title':'دین و مذهب',
+            'small_titlle':'مذهب',
+            'name':'Religion',
+            'action':'Religion',
+            'list':nrm_Religion_list,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'key_in_soldier':'Religion',
+            'color':'primary',
+        },
+        {
+            'title':'تاهل',
+            'small_titlle':'تاهل',
+            'name':'marital_status',
+            'action':'marital_status',
+            'list':nrm_marital_status_list,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'key_in_soldier':'marital_status',
+            'color':'danger',
+        },
+    ] 
+    collections = interferences_replaceor(request,collections)
+    context = {'collections': collections}
+    
+    return render(request, 'interferences/interferences_city_and_province.html',context)
+    
+# 🟥 بخش وضعیت جسمانی
+def interferences_vaziat_jasmani(request):
+    """
+    نمایش تداخل‌های مربوط به وضعیت جسمانی سربازان
+    """
+        # دسته‌بندی سربازان بر اساس وضعیت جسمانی
+    condition_map = {code: label for code, label in physical_condition_list}
+    condition_values = [label for code, label in physical_condition_list]
+    if request.method == "POST":
+        data = request.POST
+        changes = []
+
+        # استخراج تغییرات از POST
+        for key, value in data.items():
+            if key.startswith("od_physical_condition_"):
+                idx = key.split("_")[-1]
+                old_value = value
+                new_value = data.get(f"new_physical_condition_{idx}", "").strip()
+                changes.append({"old": old_value, "new": new_value})
+
+        # فیلتر فقط تغییرات واقعی
+        real_changes = [c for c in changes if c["new"] and c["new"] != c["old"]]
+        # فقط مواردی که مقدار جدید معتبر است
+        valid_changes = [c for c in real_changes if c["new"] in normalize_list_values(condition_values)]
+
+        # ✅ حالا آپدیت رکوردهای مربوطه
+        updated_count = 0
+        for change in valid_changes:
+            old_val = change["old"]
+            new_val = change["new"]
+            # برو سراغ سربازانی که وضعیت فعلیشون old_val هست
+            affected = Soldier.objects.filter(physical_condition=old_val)
+            count = affected.update(physical_condition=new_val)
+            updated_count += count
+
+        messages.success(request, f"✅ تغییرات با موفقیت ذخیره شد ({updated_count} مورد ویرایش شد).")
+
+
+    # فهرست کدهای معتبر وضعیت جسمانی
+    valid_codes = [label for code, label in physical_condition_list]
+    # سربازانی که وضعیت‌شان معتبر نیست
+    unknown_soldiers = Soldier.objects.exclude(physical_condition__in=valid_codes)
+    # یا فقط گرفتن مقادیر نامعتبر برای نمایش
+    known_physical_conditions = (
+        Soldier.objects
+        .filter(physical_condition__in=valid_codes)
+        .values('physical_condition')
+        .annotate(counts=Count('id'))
+    )
+
+    # سربازان با وضعیت نامشخص یا نامعتبر
+    unknown_physical_conditions = (
+        Soldier.objects
+        .exclude(physical_condition__in=valid_codes)
+        .values('physical_condition')
+        .annotate(counts=Count('id'))
+    )
+    context = {
+        'physical_condition_list': physical_condition_list,
+        'condition_map': condition_map,
+        'unknown_soldiers': unknown_soldiers,
+        'known_physical_conditions': known_physical_conditions,
+        'unknown_physical_conditions': unknown_physical_conditions,
+        'condition_values':condition_values,
+    }
+
+    return render(request, 'interferences/interferences_vaziat_jasmani.html', context)
+
+from django.shortcuts import render
+from django.db.models import Q
+
+from .forms import EditUnitForm
+def interferences_yegan_khedmati(request):
+    """
+    نمایش تداخل‌های مربوط به یگان خدمتی سربازان
+    """
+    # ۱️⃣ ساخت لیست یگان‌های معتبر
+    valid_units = [{"unit_name": item[1], "unit_type": item[2]} for item in LIST_YEGAN_BEKARGIRANDE]
+    unit_types = sorted(set(v['unit_type'] for v in valid_units if v['unit_type']))
+    unit_names = list(Soldier.objects.values_list('unit_name', flat=True))
+    unit_names = sorted([name for name in unit_names if name is not None])
+    
+    if request.method == "POST":
+        form = EditUnitForm(request.POST, unit_names=unit_names, unit_types=unit_types)
+        if form.is_valid():
+            data = form.cleaned_data
+            unit_name_original = data.get("unit_name_orginal")
+            unit_type_original = data.get("unit_type_orginal")
+            unit_name = data.get("unit_name")
+            unit_type = data.get("unit_type")
+            apply_to_soldiers = data.get("apply_to_soldiers")
+            unit_match = data.get("unit_match")  
+            unit_match == "match"
+            # ساخت Q برای unit_name
+            if unit_name_original in [None, "None"]:
+                q_name = Q(unit_name__isnull=True)
+            else:
+                q_name = Q(unit_name=unit_name_original)
+
+            # ساخت Q برای unit_type
+            if unit_type_original in [None, "None"]:
+                q_type = Q(unit_type__isnull=True)
+            else:
+                q_type = Q(unit_type=unit_type_original)
+
+            # فیلتر سربازان
+            soldiers = Soldier.objects.filter(q_name & q_type)
+      
+            print(soldiers)
+            soldiers.update(unit_type=unit_type,unit_name=unit_name)
+            if apply_to_soldiers:
+                IsUnit= unit_match == "match"
+                soldiers.update(IsUnit=IsUnit)
+
+            messages.success(request, "تغییرات با موفقیت ذخیره شد!")
+        else:
+            messages.error(request, "فرم دارای خطا است، لطفاً بررسی کنید.")
+    else:
+        form = EditUnitForm(unit_names=unit_names, unit_types=unit_types)
+   # ۲️⃣ گرفتن همه رکوردهای سربازان
+    all_soldiers = list(Soldier.objects.all())
+    duplicates = dict()
+    duplicates_counts = dict()
+    
+    for sol in all_soldiers:
+        key = (sol.unit_name, sol.unit_type)
+        if key in duplicates:
+            duplicates[key] += 1
+        else:
+            duplicates[key] = 1 
+            
+        if not key in duplicates_counts:
+            duplicates_counts[key] = 0
+     
+        if sol.IsUnit == False:
+            duplicates_counts[key] += 1
+                    
+    duplicates_list = [
+        {
+            "unit_name": key[0],
+            "unit_type": key[1],
+            "tatbigh_no_counts":duplicates_counts[key],
+            "counts": counts
+        }
+        for key, counts in duplicates.items()
+    ] 
+    duplicates_list = sorted(duplicates_list, key=lambda x: x['tatbigh_no_counts'], reverse=True)
+
+    interferences = []
+    healthy_units = []
+
+    for dup in duplicates_list:
+        if any(v['unit_type'] == dup['unit_type'] for v in valid_units):
+            healthy_units.append(dup)
+        else:
+            interferences.append(dup)
+
+    # ۷️⃣ آماده‌سازی context برای template
+    context = {
+        'interferences': interferences,
+        'healthy_units': healthy_units,
+        'interference_count': len(interferences),
+        'healthy_count': len(healthy_units),
+        'main_units': LIST_YEGAN_BEKARGIRANDE,
+        'main_units_counts': len(LIST_YEGAN_BEKARGIRANDE),
+        "form": form,
+        "unit_types": list(set([v['unit_type'] for v in valid_units])),
+        "unit_names": list(set([d['unit_name'] for d in duplicates_list])),
+    }
+
+    return render(request, 'interferences/interferences_yegan_khedmati.html', context)
+
+
+from django.contrib import messages
+
+def interferences_yegan_tatbigh(request):
+    """
+    نمایش سربازانی که هنوز یگانشان تطبیق داده نشده (IsUnit=False)
+    """
+    # فیلتر سربازانی که تایید شده‌اند و در دوره هستند ولی IsUnit=False
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('selected_soldiers')
+        if selected_ids:
+            updated_count = Soldier.objects.filter(id__in=selected_ids).update(IsUnit=True)
+            messages.success(request, f"{updated_count} سرباز با موفقیت تطبیق داده شدند.")
+        else:
+            messages.warning(request, "هیچ سربازی انتخاب نشده است!")
+
+    soldier_not_tatbigh = Soldier.objects.filter(
+        has_been_accepted=True,
+        IsCheckout=False,
+        IsUnit=False
+    ).order_by('-unit_name')
+
+    context = {
+        'soldier_not_tatbigh': soldier_not_tatbigh,
+        'count': soldier_not_tatbigh.count()
+    }
+
+    return render(request, 'interferences/interferences_yegan_tatbigh.html', context)

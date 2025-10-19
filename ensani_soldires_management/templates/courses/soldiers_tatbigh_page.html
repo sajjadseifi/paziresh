@@ -8,19 +8,19 @@
         gap: 20px;
         margin-top: 30px;
     }
-    .tatbigh-left {
-        width: 28%;
+    .card {
         background: #f8f9fa;
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom:20px;
+    }
+    .tatbigh-left {
+        width: 28%;
+      
     }
     .tatbigh-right {
         width: 70%;
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .tatbigh-table {
         width: 100%;
@@ -127,77 +127,317 @@
     justify-content: center;
     border: 1px solid #4f46e5;
 }
+/* تب‌ها */
+.tabs-buttons-tatbig {
+    display: flex;
+    margin-bottom: 10px;
+}
+.tab-btn-tatbig {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    background: #e9ecef;
+    cursor: pointer;
+    font-weight: 500;
+}
+.tab-btn-tatbig.active {
+    background: #4b7bec;
+    color: #fff;
+}
+.tab-content-tatbig {
+    display: none;
+}
+.tab-content-tatbig.active {
+    display: block;
+}
 </style>
 
-<div class="">
-    <h3 class="text-center"><i class="fa fa-random"></i> تطبیق گردان و گروهان</h3>
+<style>
+    #soldier-match-form {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-family: 'Vazir', sans-serif;
+        flex-wrap: wrap;
+    }
 
-    <div class="tatbigh-container">
-        <!-- بخش توضیحات -->
-        <div class="tatbigh-left">
-                        <div class="filter-box text-right">
-                  <form method="get" id="battalion-form">
-                  <h3>انتخاب گردان</h3>
-                  <ul>
-                     {% for b in battalions %}
-                     <li>
-                           <input class="form-check-input" type="radio" name="battalion" id="battalion_{{ b.id }}" value="{{ b.id }}" {% if selected_battalion == b.id|stringformat:"s" %}checked{% endif %}>
-                           <label class="form-check-label" for="battalion_{{ b.id }}">گردان {{ b.name }}</label>
-                     </li>
-                     {% endfor %}
-                  </ul>
-                  <h3 >انتخاب گروهان‌</h3>
-                  <ul>
-                     {% for g in groups %}
-                           {% if g.gordan.id|stringformat:"s" == selected_battalion %}
-                              <li>
-                                 <input class="form-check-input" type="radio" name="group" id="group_{{ g.id }}" value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}checked{% endif %}>
-                                 <label class="form-check-label" for="group_{{ g.id }}">گروهان {{ g.name }}</label>
-                              </li>
-                           {% endif %}
-                     {% endfor %}
-                  </ul>
-               </form>
-            </div>
-            <h4><i class="fa fa-info-circle text-primary"></i> راهنما</h4>
-            <p>
-                در این صفحه می‌توانید تطبیق گردان و گروهان جدید سربازان را انجام دهید.
-                ابتدا گردان و گروهان مورد نظر را از فیلتر بالا انتخاب کنید.
-                سپس با وارد کردن <strong>کد ملی</strong>، اطلاعات سرباز به‌صورت خودکار بارگذاری می‌شود.
-            </p>
-            <p class="text-muted">
-                ⚠️ توجه: قبل از اعمال تغییرات، حتما گردان و گروهان انتخاب شده باشند.
-            </p>
-            <div id="error-box" class="error-box"></div>
+    #soldier-form {
+        flex: 2;
+        background-color: #333;
+        color:white;
+        border-radius: 10px;
+        padding: 15px;
+
+    }
+
+    #soldier-info {
+        flex: 1;
+        background-color: #333;
+        color:white;
+        border-radius: 10px;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap:4px 20px; /* فاصله بین ردیف‌ها و ستون‌ها */
+        align-items: center;
+    }
+
+    #soldier-info p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.4;
+        white-space: nowrap;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+    }
+
+    @media (max-width: 768px) {
+        #soldier-info {
+            grid-template-columns: 1fr; /* موبایل تک ستون */
+        }
+    }
+
+    .form-group-2 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .form-group-2 label {
+        flex: 2;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .form-group-2 input {
+        flex: 3;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+        text-align:center;
+        outline:none;
+        border:none;
+        color:#333;
+    }
+
+    .form-group-2 input:focus {
+        border-color: #4f46e5;
+    }
+
+    .form-group-2 button {
+        flex: 2;
+        background-color: #4f46e5;
+        border: none;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-group-2 button:hover {
+        background-color: #3730a3;
+    }
+        button:disabled {
+            background-color: #aaa; /* رنگ خاکستری */
+            cursor: not-allowed;    /* نشانگر غیرقابل کلیک */
+            opacity: 0.6;           /* کمی شفاف */
+        }
+
+    @media (max-width: 768px) {
+        #soldier-match-form {
+            flex-direction: column;
+        }
+        #soldier-form, #soldier-info {
+            flex: 1 1 100%;
+        }
+        .form-group-2 {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .form-group-2 label, .form-group-2 input, .form-group-2 button {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+        .form-group-2 button {
+            margin-top: 6px;
+        }
+    }
+   /* تیتر */
+    #soldier-form h4 {
+        font-weight: bold;
+        font-size: 16px;
+        border-bottom: 2px solid #4f46e5;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+    }
+</style>
+
+
+<div class="tatbigh-container">
+    <!-- بخش توضیحات -->
+    <div class="tatbigh-left">
+        <div class="card">
+                    <div id="error-box" class="error-box"></div>
+
+                        <h3 class="text-center"><i class="fa fa-random"></i> تطبیق گردان و گروهان</h3>
+
+                    <div class="filter-box text-right">
+                <form method="get" id="battalion-form">
+                <h3>انتخاب گردان</h3>
+                <ul>
+                    {% for b in battalions %}
+                    <li>
+                        <input class="form-check-input" type="radio" name="battalion" id="battalion_{{ b.id }}" value="{{ b.id }}" {% if selected_battalion == b.id|stringformat:"s" %}checked{% endif %}>
+                        <label class="form-check-label" for="battalion_{{ b.id }}">گردان {{ b.name }}</label>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <h3 >انتخاب گروهان‌</h3>
+                <ul>
+                    {% for g in groups %}
+                        {% if g.gordan.id|stringformat:"s" == selected_battalion %}
+                            <li>
+                                <input class="form-check-input" type="radio" name="group" id="group_{{ g.id }}" value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}checked{% endif %}>
+                                <label class="form-check-label" for="group_{{ g.id }}">گروهان {{ g.name }}</label>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </form>
         </div>
+        <h4><i class="fa fa-info-circle text-primary"></i> راهنما</h4>
+        <p>
+            در این صفحه می‌توانید تطبیق گردان و گروهان جدید سربازان را انجام دهید.
+            ابتدا گردان و گروهان مورد نظر را از فیلتر بالا انتخاب کنید.
+            سپس با وارد کردن <strong>کد ملی</strong>، اطلاعات سرباز به‌صورت خودکار بارگذاری می‌شود.
+        </p>
+        <p class="text-muted">
+            ⚠️ توجه: قبل از اعمال تغییرات، حتما گردان و گروهان انتخاب شده باشند.
+        </p>
+        </div>
+    </div>
 
-        <!-- بخش جدول -->
-        <div class="tatbigh-right">
+    <!-- بخش جدول -->
+    <div class="tatbigh-right">
+        <div class="">
 
+        <form method="POST" id="soldier-match-form">
+            {% csrf_token %}
+            <div id="soldier-form">
+               <h4>
+                    فرم ثبت کد سازمانی سرباز در 
+                     گردان:
+                    <span class="text-primary">
+                        {{ selected_battalion_name|default:"—" }}
+                    </span>
+                    گروهان:
+                    <span class="text-primary">
+                        {{ selected_group_name|default:"—" }}
+                    </span>
+                </h4>
+                        <!-- 👇 hidden inputs -->
+                <input type="hidden" id="soldier-id" name="soldier_id">
+                <input type="hidden" id="gordan-id" name="gordan_id">
+                <input type="hidden" id="grohan-id" name="grohan_id">
 
-            <!-- جدول تطبیق -->
-            <table class="tatbigh-table table table-bordered table-hover" id="tatbigh-table">
-                <thead>
-                    <tr>
-                        <th>کد ملی</th>
-                        <th>نام سرباز</th>
-                        <th>گروهان فعلی</th>
-                        <th>کد سازمانی فعلی</th>
-                        <th>گروهان جدید</th>
-                        <th>کد سازمانی جدید</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="input-row">
-                        <td><input type="text" id="national-code" class="table-input" placeholder="وارد کنید و Enter بزنید..."></td>
-                        <td>—</td>
-                        <td>—</td>
-                        <td>—</td>
-                        <td>-</td>
-                        <td><input type="text" class="table-input" placeholder="کد جدید"></td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="form-group-2">
+                    <label for="national-code">کد ملی سرباز</label>
+                    <input name="national-code" type="text" id="national-code" placeholder="کد ملی" required>
+                    <button id="fetch-soldier-btn" type="button">🔍 جستجو</button>
+                </div>
+
+                <div class="form-group-2">
+                    <label for="new-org-code">کد سازمانی جدید</label>
+                    <input name="new_org_code" type="text" id="new-org-code" placeholder="کد سازمانی جدید" required>
+                    <button id="form-submit-btn" type="submit" disabled>💾 ثبت تغییرات</button>
+                </div>
+            </div>
+
+            <div id="soldier-info" >
+                <p><span>کد ملی</span> <strong id="soldier-national-code"></strong></p>
+                <p><span>نام و نام خانوادگی</strong> <strong id="soldier-name"></strong></p>
+                <p><span>گردان قبلی</span> <strong id="soldier-current-battalion"></strong></p>
+                <p><span>گردان نهایی</span> <strong id="soldier-current-t-battalion"></strong></p>
+                <p><span>گروهان قبلی</span> <strong id="soldier-current-group"></strong></p>
+                <p><span>گروهان نهایی</span> <strong id="soldier-current-t-group"></strong></p>
+                <p><span>کد سازمانی قبلی</span> <strong id="soldier-current-code_gorhan"></strong></p>
+                <p><span>کد سازمانی نهایی</span> <strong id="soldier-current-code_gorhan_nahai"></strong></p>
+            </div>
+        </form>
+        </div>
+        <div class="card">
+
+            <div class="tabs-buttons-tatbig">
+                <button class="tab-btn-tatbig active" data-tab="after-tab">فهرست بعد از تطبیق</button>
+                <button class="tab-btn-tatbig " data-tab="before-tab"> فهرست قبل از تطبیق </button>
+            </div>
+            <div class="tab-content-tatbig" id="before-tab">
+                <table class="tatbigh-table table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>کد ملی</th>
+                            <th>نام سرباز</th>
+                            <th>گروهان </th>
+                            <th>کد سازمانی</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in soldiers_in_battalion_group %}
+                        <tr>
+                            <td>{{ s.National_Code }}</td>
+                            <td>{{ s.name }} {{ s.family }}</td>
+                            <td>
+                                {% if s.Gordan %}{{ s.Gordan.name }}{% else %}-{% endif %} ، 
+                                {% if s.battalion_group %}{{ s.battalion_group.name }}{% else %}-{% endif %}
+                            </td>
+                            <td>{{ s.code_gorhan|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-content-tatbig active"  id="after-tab">
+                <h4 class="mt-3"></h4>
+
+                <!-- جدول تطبیق -->
+                <table class="tatbigh-table table table-bordered table-hover" id="tatbigh-table">
+                    <thead>
+                        <tr>
+                            <th>کد ملی</th>
+                            <th>نام سرباز</th>
+                            <th>گروهان قبلی</th>
+                            <th>کد سازمانی قبلی</th>
+                            <th>گروهان تطبیق شده</th>
+                            <th>کد سازمانی تطبیق شده</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in soldiers_in_t_battalion_group %}
+                        <tr>
+                            <td>{{ s.National_Code }}</td>
+                            <td>{{ s.name }} {{ s.family }}</td>
+                            <td>
+                                {% if s.Gordan %}{{ s.Gordan.name }}{% else %}-{% endif %} ، 
+                                {% if s.battalion_group %}{{ s.battalion_group.name }}{% else %}-{% endif %}
+                            </td>
+                            <td>{{ s.code_gorhan|default:"-" }}</td>
+                            <td>
+                                {% if s.t_Gordan %}{{ s.t_Gordan.name }}{% else %}-{% endif %} ، 
+                                {% if s.t_battalion_group %}{{ s.t_battalion_group.name }}{% else %}-{% endif %}
+                            </td>
+                            <td>{{ s.code_gorhan_nahai|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -247,7 +487,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('national-code');
     const tableBody = document.querySelector('#tatbigh-table tbody');
     const errorBox = document.getElementById('error-box');
+    const fetchBtn = document.getElementById('fetch-soldier-btn');
+    const soldierInfo = document.getElementById('soldier-info');
+    const gordanInput = document.getElementById("gordan-id");
+    const grohanInput = document.getElementById("grohan-id");
+    const selected = getSelectedBattalionAndGroup();
+    const submitBtn = document.getElementById('form-submit-btn');
+    const newOrgInput = document.getElementById('new-org-code');
+    const soldierIdInput = document.getElementById('soldier-id');
 
+    function updateSubmitButtonState() {
+        // دکمه فعال اگر سرباز انتخاب شده و کد سازمانی جدید پر شده باشد
+        submitBtn.disabled = !(soldierIdInput.value && newOrgInput.value.trim());
+    }
+    // هنگام تغییر در فیلد کد سازمانی جدید
+    newOrgInput.addEventListener('input', updateSubmitButtonState);
+
+    if (selected) {
+        gordanInput.value = selected.battalion;
+        grohanInput.value = selected.group;
+    }
+    
+        // تب‌ها
+    const tabBtns = document.querySelectorAll('.tab-btn-tatbig');
+    const tabContents = document.querySelectorAll('.tab-content-tatbig');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            tabContents.forEach(tc => tc.classList.toggle('active', tc.id === target));
+        });
+    });
     // تابع نمایش خطا
     function showError(message) {
         errorBox.style.display = 'block';
@@ -255,51 +526,53 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => errorBox.style.display = 'none', 4000);
     }
 
-    // هندل اینتر در فیلد کد ملی
-    input.addEventListener('keypress', async function(e) {
+
+    async function fetchSoldier() {
+        const code = input.value.trim();
+        if (!code) {
+            showError("کد ملی را وارد کنید.");
+            return;
+        }
+
+        const selection = getSelectedBattalionAndGroup();
+        if (!selection) return;
+
+        const apiUrl = "{% url 'api_get_soldier_by_national_code' %}";
+
+        try {
+            const res = await fetch(`${apiUrl}?code=${encodeURIComponent(code)}`);
+            const data = await res.json();
+
+            if (res.ok && data) {
+                // نمایش اطلاعات در فرم
+                document.getElementById('soldier-national-code').textContent = data.National_Code || '-';
+                document.getElementById('soldier-name').textContent = data.name + ' ' + data.family;
+                document.getElementById('soldier-current-battalion').textContent = data.Gordan || '-';
+                document.getElementById('soldier-current-t-battalion').textContent = data.t_Gordan || '-';
+                document.getElementById('soldier-current-group').textContent = data.battalion_group || '-';
+                document.getElementById('soldier-current-t-group').textContent = data.t_battalion_group || '-';
+                document.getElementById('soldier-current-code_gorhan').textContent = data.code_gorhan || '-';
+                document.getElementById('soldier-current-code_gorhan_nahai').textContent = data.code_gorhan_nahai || '-';
+                document.getElementById('soldier-id').value = data.id 
+                updateSubmitButtonState();
+            } else {
+                showError(data.error || "سربازی با این کد ملی یافت نشد.");
+                document.getElementById('form-submit-btn').disabled = true; // در صورت خطا دوباره غیر فعال شود
+
+            }
+        } catch (err) {
+            console.error(err);
+            showError("خطا در ارتباط با سرور.");
+        }
+    }
+    // دکمه جستجو
+    fetchBtn.addEventListener('click', fetchSoldier);
+
+    // اینتر در فیلد کد ملی
+    input.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const code = input.value.trim();
-            if (!code) {
-                showError("کد ملی را وارد کنید.");
-                return;
-            }
-
-            const selection = getSelectedBattalionAndGroup();
-
-            const apiUrl = "{% url 'api_get_soldier_by_national_code' %}";
-
-            try {
-                const res = await fetch(`${apiUrl}?code=${encodeURIComponent(code)}`);
-                const data = await res.json();
-                console.log(data)
-
-                if (res.ok && data) {
-                    const s = data;
-
-                    // ساخت ردیف جدید برای نمایش
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                        <td>${s.code_melli}</td>
-                        <td>${s.first_name} ${s.last_name}</td>
-                        <td>گردان ${s.current_battalion} ، گروهان ${s.current_group}</td>
-                        <td>${s.org_code}</td>
-                        <td>${selection.dataTitle}</td>
-                        <td><input type="text" class="table-input" placeholder="کد جدید"></td>
-                    `;
-
-                    // اضافه کردن ردیف بالا
-                    tableBody.insertBefore(newRow, tableBody.firstChild);
-
-                    // پاک کردن ورودی کد ملی
-                    input.value = '';
-                } else {
-                    showError(data.error || "سربازی با این کد ملی یافت نشد.");
-                }
-            } catch (err) {
-                console.error(err);
-                showError("خطا در ارتباط با سرور.");
-            }
+            fetchSoldier();
         }
     });
 });

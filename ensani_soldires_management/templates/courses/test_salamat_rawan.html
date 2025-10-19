@@ -1,0 +1,515 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load jalali_filters %}
+{% block scores_content %}
+<style>
+   html,body > * {
+      font-family:'Vazirmatn'
+   }
+   .soldier-card {
+      background: #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 8px;
+      padding:  5px 20px;
+      margin-bottom: 5px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: all 0.25s ease;
+      font-size: 13px;
+      box-sizing:border-box;
+   }
+   .label {
+      padding:6px 12px;
+      font-size:12px;
+   }
+
+   .info-section {
+      margin-bottom: 3px;
+      line-height: 1.6;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+   }
+   .info-section strong {
+      color: #333;
+   }
+   .text-muted {
+      font-size: 12px;
+   }
+   .soldier-footer {
+      font-size: 12px;
+      color: #555;
+   }
+   .soldier-footer i {
+      margin-left: 4px;
+   }
+   .card-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap; /* برای ریسپانسیو */
+   }
+
+   .card-buttons .btn {
+      flex: 1; /* همه دکمه‌ها اندازه یکسان داشته باشند */
+      font-size: 12px;
+      padding: 4px 6px;
+      border-radius: 5px;
+      transition: all 0.2s ease-in-out;
+      text-align: center;
+   }
+
+   .card-buttons .btn i {
+      margin-right: 3px;
+   }
+
+   /* افکت هاور */
+   .card-buttons .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+   }
+
+   /* رنگ‌ها کمی شفاف‌تر برای سبک‌تر شدن */
+   .card-buttons .btn-primary { background-color: #428bca; border-color: #357ebd; }
+   .card-buttons .btn-danger { background-color: #d9534f; border-color: #d43f3a; }
+   .card-buttons .btn-success { background-color: #5cb85c; border-color: #4cae4c; }
+   .card-buttons .btn-warning { background-color: #f0ad4e; border-color: #eea236; color: #fff; }
+
+   .inspection-status {
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 12px;
+      color: #fff;
+   }
+   .inspection-yes { background-color: #28a745; }
+   .inspection-no { background-color: #dc3545; }
+   .inspection-pending { background-color: #ffc107; color: #212529; }
+   .soldier-card-top {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+   }
+   .form-group {
+      margin-bottom:5px;
+   }
+</style>
+<style>
+   /* کارت اصلی */
+   .main-card {
+      background: #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+   }
+
+   /* ردیف هدر */
+   .header-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+   }
+
+   /* عنوان */
+   .title h2 {
+      margin: 0;
+      font-weight: 600;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+   }
+   .title i {
+      color: #007bff;
+   }
+
+   /* فرم جستجو */
+   .search-filter {
+      display: flex;
+      margin:20px 0;
+   }
+   .search-form {
+      flex:1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+   }
+   .search-form input[type="text"] {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      flex: 1;
+      min-width: 150px;
+   }
+
+   /* دکمه جستجو */
+   .search-form button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+   }
+   .search-form button i {
+      margin-right: 3px;
+   }
+
+   /* دکمه‌های فیلتر */
+   .filter-buttons {
+      flex:1;
+      display: flex;
+      justify-content:end;
+      flex-wrap: wrap;
+      gap: 5px;
+      
+   }
+   .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      font-size: 12px;
+      background: #f9f9f9;
+      transition: all 0.2s ease;
+   }
+   .filter-btn.active {
+      background: #007bff;
+      color: #fff;
+      border-color: #007bff;
+   }
+   .filter-btn input {
+      display: none;
+   }
+   #page-action-form {
+      display:block;
+      
+   }
+    #page-action-form   .action-btn {
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        min-width:25%;
+    }
+
+   #page-action-form .action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .btn-warning:hover {
+        background: linear-gradient(90deg, #f7c873, #f0ad4e);
+    }
+
+    .btn-success {
+        background: linear-gradient(90deg, #5cb85c, #72d572);
+        border: none;
+        color: #fff;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(90deg, #72d572, #5cb85c);
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #d9534f, #e57b77);
+        border: none;
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #e57b77, #d9534f);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(90deg, #6c757d, #8a8f94);
+        border: none;
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(90deg, #8a8f94, #6c757d);
+    }
+    .form-group {
+      margin-bottom:0;
+    }
+    #action-select {
+      border:none;
+      background:#cecece;
+      border-radius:5px;
+      padding:4px 10px;
+      height:40px;
+      
+    }
+</style>
+
+<div class="mt-4">
+    <div class="row">
+        <!-- فرم ثبت تست سلامت روان -->
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><i class="fa fa-edit"></i> ثبت تست سلامت روان</h4>
+                </div>
+                <div class="panel-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ form.soldier.label_tag }}
+                            {{ form.soldier }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.physical_condition_test.label_tag }}
+                            {{ form.physical_condition_test }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.Type_of_disease_test.label_tag }}
+                            {{ form.Type_of_disease_test }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.physical_condition_description_test.label_tag }}
+                            {{ form.physical_condition_description_test }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.physical_condition_date_test.label_tag }}
+                            {{ form.physical_condition_date_test }}
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">
+                            <i class="fa fa-save"></i> ثبت
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+               <div class="main-card">
+                  <div class="header-row">
+                     <!-- عنوان -->
+                     <div class="title">
+                           <h2>
+                              <i class="fa fa-heartbeat text-primary"></i> تست سلامت روان سربازان
+                           </h2>
+                     </div>
+                                      {% if permissions.dep.niru_ensani %}
+                     <div class="card-actions-dropdown" style=" display:flex; align-items:center; gap:5px;font-weight:bold;">
+                        <form method="POST" id="page-action-form" action="{% url 'test_salamat_ravan_actions_soldiers' %}" style="display:flex; gap:5px;">
+                           {% csrf_token %}
+                           <div class="form-group">
+                              <select id="action-select" class="form-control " style="min-width:180px;">
+                                 <option value=""  selected>انتخاب عملیات...</option>
+                                 <option value="processing_all" data-confirm='آیا از ثبت وضعیت "درحال بررسی همه" اطمینان دارید؟'>درحال بررسی همه</option>
+                                 <option value="confirmall" data-confirm='با تایید کردن تست، وضعیت جسمانی فرد به تست سلامت و روان تغییر خواهد کرد'>تایید همه</option>
+                                 <option value="unconfirmall" data-confirm='آیا از رد کردن وضعیت اطمینان دارید؟'>عدم تایید همه</option>
+                                 <option value="processing_page" data-confirm='آیا از ثبت وضعیت "درحال بررسی این صفحه" اطمینان دارید؟'>درحال بررسی این صفحه</option>
+                                 <option value="confirmall_in_page" data-confirm='آیا از تایید وضعیت این صفحه اطمینان دارید؟'>تایید این صفحه</option>
+                                 <option value="unconfirmall_in_page" data-confirm='آیا از رد وضعیت این صفحه اطمینان دارید؟'>عدم تایید این صفحه</option>
+                           </select>
+                           </div>
+                           <button type="button" class="filter-btn active btn-sm" onclick="submitDropdownAction()">اجرای عملیات</button>
+                        </form>
+                     </div>
+
+                     <script>
+                     function submitDropdownAction() {
+                        const select = document.getElementById('action-select');
+                        const action = select.value;
+                        if (!action) {
+                           alert('لطفاً یک عملیات انتخاب کنید.');
+                           return;
+                        }
+
+                        const selectedOption = select.options[select.selectedIndex];
+                        const confirmText = selectedOption.dataset.confirm || 'آیا از انجام این عملیات اطمینان دارید؟';
+                        if (!confirm(confirmText)) return;
+
+                        const form = document.getElementById('page-action-form');
+
+                        // حذف input های قبلی action
+                        form.querySelectorAll('input[name="action"]').forEach(i => i.remove());
+
+                        // اضافه کردن action به فرم
+                        const actionInput = document.createElement('input');
+                        actionInput.type = 'hidden';
+                        actionInput.name = 'action';
+                        actionInput.value = action;
+                        form.appendChild(actionInput);
+
+                        // اضافه کردن همه آیدی‌های سربازان در صفحه
+                        const ids = Array.from(document.querySelectorAll('.soldier-card')).map(card => card.dataset.soldierId);
+                        ids.forEach(id => {
+                           const inp = document.createElement('input');
+                           inp.type = 'hidden';
+                           inp.name = 'soldier_ids';
+                           inp.value = id;
+                           form.appendChild(inp);
+                        });
+
+                        form.submit();
+                     }
+                     </script>
+                  {% endif %}
+                     
+                  </div>
+
+                  <!-- فرم جستجو و فیلتر -->
+                  <div class="search-filter">
+                        <form method="GET" class="search-form">
+                           <input type="text" name="q" placeholder="جستجوی سرباز..." value="{{ request.GET.q }}">
+                           <button type="submit"><i class="fa fa-search"></i></button>
+                           <div class="filter-buttons">
+                              {% for f in inspection_filters %}
+                                    <label class="filter-btn {% if inspection_filter == f.key %}active{% endif %}">
+                                       <input type="radio" name="inspection_filter" value="{{ f.key }}" {% if inspection_filter == f.key %}checked{% endif %} onchange="this.form.submit()">
+                                       {{ f.label }} ({{ f.count }})
+                                    </label>
+                              {% endfor %}
+                           </div>
+                        </form>
+
+
+
+                  </div>
+                     {% include 'components/pagination.html' %}
+ 
+               </div>
+                <div class="row soldier-cards">
+                    {% for soldier in soldiers %}
+                    <div class="col-md-12 col-sm-12">
+                        <div class="soldier-card" data-soldier-id="{{soldier.id}}">
+                           <div class="soldier-card-top">
+                              {% if soldier.physical_condition_Inspection_test == True %}
+                              <div class="inspection-status inspection-yes">تایید شده در کارگزینی</div>
+                              {% elif soldier.physical_condition_Inspection_test == False %}
+                                 <div class="inspection-status inspection-no">عدم تایید درخواست</div>
+                              {% else %}
+                                 <div class="inspection-status inspection-pending">در انتظار بررسی کارگزینی</div>
+                              {% endif %}
+                                 <div class="card-buttons">
+                                    {% if soldier.physical_condition_Inspection_test != True and  soldier.physical_condition_Inspection_test != False or permissions.dep.niru_ensani %}
+                                       <a class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i> ویرایش</a>
+                                       <a href="{% url 'test_salamat_ravan_actions' 'delete' soldier.id  %}" class="btn btn-danger btn-xs" onclick="return confirm('آیا از حذف تست اطمینان دارید؟');"><i class="fa fa-trash"></i> حذف</a>
+                                    {%endif%}
+                                    {% if permissions.dep.niru_ensani %}
+                                    <a href="{% url 'test_salamat_ravan_actions' 'processing' soldier.id  %}" class="btn btn-warning btn-xs" onclick="return confirm('آیا از درحال بررسی وضعیت اطمینان دارید؟');"><i class="fa fa-hourglass-half"></i> درحال بررسی</a>
+                                       <a href="{% url 'test_salamat_ravan_actions' 'confirm' soldier.id  %}" class="btn btn-success btn-xs" onclick="return confirm('با تایید کردن تست بیمار وضعیت جسمانی فرد به تست سلامت و روان تغییر خواهد کرد');" ><i class="fa fa-check"></i> تایید</a>
+                                       <a href="{% url 'test_salamat_ravan_actions' 'unconfirm' soldier.id  %}" class="btn btn-danger btn-xs" onclick="return confirm('آیا از رد کردن وضعیت اطمینان دارید؟');"><i class="fa fa-times"></i> عدم تایید</a>
+                                    {% endif %}
+                                 </div>
+                           </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="info-section name-block">
+                                       <strong>{{ soldier.name }} {{ soldier.family }} </strong>
+                                       <span class="label label-default text-muted small">کدملی : {{ soldier.National_Code }}</span>
+                                    </div>
+                                    <div class="info-section">
+                                        <strong>وضعیت جسمانی فعلی:</strong>
+                                        {% if soldier.physical_condition %}
+                                            <span class="label label-primary">{{ soldier.physical_condition }}</span>
+                                        {% else %}
+                                            <span class="label label-default">نامشخص</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="info-section">
+                                        <strong>وضعیت اولیه:</strong>
+                                        {% if soldier.physical_condition_prev_test %}
+                                            <span class="label label-info">{{ soldier.physical_condition_prev_test }}</span>
+                                        {% else %}
+                                            <span class="label label-default">نامشخص</span>
+                                        {% endif %}
+                                    </div>
+
+                                    
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="info-section">
+                                       <strong>تست سلامت روان:</strong>
+                                       {% if soldier.physical_condition_test %}
+                                          {% if soldier.physical_condition_test == "سالم" %}
+                                                <span class="label label-success">{{ soldier.physical_condition_test }}</span>
+                                          {% elif soldier.physical_condition_test == "معاف از رزم" %}
+                                                <span class="label label-warning">{{ soldier.physical_condition_test }}</span>
+                                          {% elif soldier.physical_condition_test == "گروه ب" %}
+                                                <span class="label label-danger">{{ soldier.physical_condition_test }}</span>
+                                          {% elif soldier.physical_condition_test == "معاف+گروه ب" %}
+                                                <span class="label label-danger">{{ soldier.physical_condition_test }}</span>
+                                          {% else %}
+                                                <span class="label label-default">{{ soldier.physical_condition_test }}</span>
+                                          {% endif %}
+                                       {% else %}
+                                          <span class="label label-default">ثبت نشده</span>
+                                       {% endif %}
+                                    </div>
+
+                                    <div class="info-section">
+                                        <strong>نوع بیماری:</strong>
+                                        {% if soldier.Type_of_disease_test %}
+                                            <span class="label label-default">{{ soldier.Type_of_disease_test }}</span>
+                                        {% else %}
+                                            <span class="label label-warning">ثبت نشده</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="info-section">
+                                       <strong>توضیحات:</strong>
+                                        <p class="text-muted small">{{ soldier.physical_condition_description_test|default:"-" }}</p>
+                                    </div>
+                                </div>
+                                 <div class="col-sm-4">
+                                   
+                                       <div class="soldier-footer">
+                                          <div class="info-section">
+                                             <strong><i class="fa fa-calendar-check-o text-info"></i> تاریخ تست:</strong>
+                                             {{ soldier.physical_condition_date_test|jalali_date|default:"-" }}
+                                          </div>
+                                          <div class="info-section">
+                                             <strong><i class="fa fa-clock-o text-info"></i> تاریخ و زمان ثبت:</strong>
+                                             {{ soldier.physical_condition_date_created|jalali_datetime|default:"-" }}
+                                          </div>
+                                          <div class="info-section">
+                                             {%if soldier.physical_condition_date_Inspection_test %}
+                                                <strong><i class="fa fa-clock-o text-info"></i> زمان بررسی:</strong>
+                                                {{ soldier.physical_condition_date_Inspection_test|jalali_datetime|default:"-" }}
+                                             {% endif %}
+                                          </div>
+                                       </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-md-12 text-center text-muted">
+                        <i class="fa fa-exclamation-circle"></i> هیچ داده‌ای ثبت نشده است.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+</div>
+
+<!-- فعال‌سازی Select2 -->
+<script>
+    $(document).ready(function() {
+        $('#soldier-select').select2({
+            placeholder: "انتخاب سرباز",
+            allowClear: true,
+            width: '100%',
+            dir: "rtl"
+        });
+
+        $('#id_Type_of_disease_test').select2({
+            placeholder: "انتخاب یا وارد کردن نوع بیماری",
+            tags: true,
+            allowClear: true,
+            width: '100%',
+            dir: "rtl"
+        });
+    });
+</script>
+{% endblock %}

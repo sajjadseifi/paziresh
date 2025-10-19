@@ -1,0 +1,150 @@
+{% extends 'interferences/_layout_interferences.html' %}
+{% load static %}
+{% block interferences_content %}
+
+<style>
+    /* ساختار کلی داشبورد */
+    .dashboard-container {
+        margin: 0 auto;
+    }
+
+    .dashboard-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .info-card {
+        color: white;
+        padding: 30px 20px;
+        border-radius: 15px;
+        transition: all 0.4s ease;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card i {
+        font-size: 2.8rem;
+        margin-bottom: 15px;
+    }
+
+    .info-card h4 {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .info-card p {
+        color: rgba(255,255,255,0.9);
+    }
+
+    .info-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+    }
+
+    /* گرادیانت‌های زیبا برای هر کارت */
+    .card-madarek {
+        background: linear-gradient(135deg, #007bff, #00c6ff);
+    }
+
+    .card-paye-tahsili {
+        background: linear-gradient(135deg, #28a745, #7bdcb5);
+    }
+
+    .card-vaziat-jasmani {
+        background: linear-gradient(135deg, #dc3545, #ff758c);
+    }
+
+    .card-yegan-khedmati {
+        background: linear-gradient(135deg, #ffc107, #ff9a00);
+        color: #fff;
+    }
+
+    /* بخش راهنما */
+    .help-section {
+        margin-top: 30px;
+        background: #f9f9f9;
+        border-radius: 12px;
+        padding: 30px;
+        border: 1px solid #e2e2e2;
+    }
+
+    .help-section h4 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .help-item {
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .help-item i {
+        color: #337ab7;
+        margin-left: 8px;
+    }
+
+    .text-muted {
+        color: rgba(255,255,255,0.9);
+    }
+</style>
+
+<div class="dashboard-container text-center">
+    <h3 class="dashboard-title">📊 داشبورد تداخل‌ها</h3>
+    <p class=" mb-5">
+        در این بخش، می‌توانید وضعیت تداخل‌های موجود در بخش‌های مختلف را مشاهده کنید.
+    </p>
+
+    <div class="row text-center">
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="info-card card-paye-tahsili">
+                <i class="fa fa-graduation-cap"></i>
+                <h4>اطلاعات تحصیلی</h4>
+                <p>تداخل‌های تحصیلی</p>
+                <h3 class="fw-bold">{{ counts.eduction_info|default:"0" }}</h3>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="info-card card-vaziat-jasmani">
+                <i class="fa fa-heartbeat"></i>
+                <h4>وضعیت جسمانی</h4>
+                <p>تداخل‌های سلامت</p>
+                <h3 class="fw-bold">{{ counts.vaziat_jasmani|default:"0" }}</h3>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3 mb-4">
+            <div class="info-card card-yegan-khedmati">
+                <i class="fa fa-shield"></i>
+                <h4>یگان خدمتی</h4>
+                <p>تداخل‌های یگانی</p>
+                <h3 class="fw-bold">{{ counts.yegan_khedmati|default:"0" }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش راهنما -->
+    <div class="help-section text-right">
+        <h4><i class="fa fa-question-circle"></i> راهنمای بخش تداخل‌ها</h4>
+        <div class="help-item">
+            <i class="fa fa-info-circle"></i> <strong>مدارک:</strong> بررسی و رفع تکرار یا ناهماهنگی مدارک پرسنل.
+        </div>
+        <div class="help-item">
+            <i class="fa fa-university"></i> <strong>پایه تحصیلی:</strong> کنترل صحت داده‌های مربوط به تحصیلات.
+        </div>
+        <div class="help-item">
+            <i class="fa fa-heartbeat"></i> <strong>وضعیت جسمانی:</strong> بررسی ناسازگاری‌ها و مشکلات داده‌ای در سلامت پرسنل.
+        </div>
+        <div class="help-item">
+            <i class="fa fa-shield"></i> <strong>یگان خدمتی:</strong> کنترل تخصیص درست پرسنل به یگان‌های خدمتی.
+        </div>
+        <div class="help-item">
+            <i class="fa fa-lightbulb-o"></i> <strong>نکته:</strong> روی هر کارت کلیک کنید تا جزئیات دقیق تداخل‌ها را ببینید.
+        </div>
+    </div>
+</div>
+
+{% endblock %}

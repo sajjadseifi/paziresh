@@ -28,271 +28,7 @@ import xlwt
 
 logger = logging.getLogger(__name__)
 from django.http import HttpResponseServerError
-
-# Constants
-RANK_MAPPING = {
-    "سرباز": "1",
-    "سرباز دوم": "2",
-    "سرباز یکم": "3",
-    "رزمیار": "4",
-    "رزم‌آور سوم": "5",
-    "رزم‌آور دوم": "6",
-    "رزم‌آور یکم": "7",
-    "رزمدار دوم": "8",
-    "رزمدار یکم": "9",
-    "ستوان سوم": "10",
-    "ستوان دوم": "11",
-    "ستوان یکم": "12",
-}
-
-LIST_YEGAN_BEKARGIRANDE = [
-    (1, 'تیپ نینوا', 'سپاه و رده های اقماری', 'گلستان', 'گرگان- جاده شصت کلاته- پادگان شهید مصطفی خمینی'),
-    (2, 'سپاه نینوا - گلستان', 'سپاه و رده های اقماری', 'گلستان', 'گلستان-گرگان-فلکه بسیج'),
-    (3, 'سپاه قدس - گیلان', 'سپاه و رده های اقماری', 'گیلان', 'رشت- یخ سازی - شهدای گمنام - سپاه قدس گیلان'),
-    (4, 'قرارگاه بازسازی خاتم الانبیاء (ص)', 'نقسا', 'تهران',
-     'تهران-اتوبان افسریه-انتهای هجرت(مرکز شهید پازوکی) قرارگاه مهندسی و بازسازی خاتم الانبیا'),
-    (5, 'سازمان جنگال سپاه', 'سپاه و رده های اقماری', 'تهران',
-     'بلوار هجرت-روبروی پادگان 02 ارتش-خ شهید تجاره-سه راه تختی'),
-    (6, 'نمایندگی ولی فقیه درسپاه', 'حوزه نمایندگی', 'تهران',
-     'بزرگراه بسیج-جنب شهرک کلاهدوز-خ وحدت - پادگان شهید میثمی'),
-    (7, 'دانشگاه افسری و تربیت پاسداری امام حسین (ع)', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-اتوبان شهید بابائی-ابتدای جاده لواسان'),
-    (8, 'مرکز عملیات نیروی انسانی سپاه', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-اتوبان بسیج-سه راه تختی-بلوار هجرت-درب شهید فیاض بخش'),
-    (9, 'نامشخص', 'نامشخص', '***', '******'),
-    (10, 'معاونت مهندسی و پدافند غیر عامل', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-اتوبان بسیج-سه راه تختی-بلوار هجرت -درب فیاض'),
-    (11, 'فرماندهی حفاظت و امنیت سپاه', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-میدان پاستور-روبروی ساختمان حفاظت ولی امر-ساختمان انصار'),
-    (12, ' کوثر ولایت', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-اتوبان بسیج-بلوار هجرت(شهدای سرباز)-میدان شهید مطهری-انتهای خیابان شهید آتوت-مقر شهید مطهری'),
-    (13, 'سازمان بسیج مستضعفین', 'سازمان بسیج', 'تهران',
-     'تهران-اتوبان بسیج-روبروی خ شهید محلاتی(آهنگ)-مدیریت نیروی انسانی'),
-    (14, 'دانشگاه جامع امام حسین (ع)', 'سپاه و رده های اقماری', 'تهران', 'تهران -انتهای اتوبان شهید بابائی'),
-    (15, 'معاونت نیروی انسانی نیروی هوافضا', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-جنب پارک چیتگر-خیابان کوهک-ستاد نیروی هوایی سپاه'),
-    (16, 'گروه پدافندهوایی 10 محرم نزسا', 'نزسا', 'سمنان', 'سمنان-شاهرود-کیلومتر 10 جاده شاهرود-مجن'),
-    (17, 'سپاه قائم آل محمد (عج) - سمنان', 'سپاه و رده های اقماری', 'سمنان', 'سمنان-میدان جهاد-جاده کمربندی'),
-    (18, 'سپاه کربلا - مازندران', 'سپاه و رده های اقماری', 'مازندران', 'ساری-میدان خزر-سپاه کربلا'),
-    (19, 'آموزشگاه المهدی (عج) نزسا', 'نزسا', 'مازندران', 'بابل-بندپی غربی-خوشرودپی'),
-    (20, 'قرارگاه عملیاتی ثاراله', 'سپاه و رده های اقماری', 'تهران',
-     'خیابان ولیعصر-بزرگراه نیایش-چهارراه سئول-جنب ورزشگاه انقلاب'),
-    (21, 'معاونت بهداری رزمی نیروی زمینی سپاه', 'نزسا', 'تهران',
-     'تهران-بزرگراه بسیج-سه راه تختی-بلوار هجرت- ستاد نیروی زمینی سپاه'),
-    (22, 'بنیاد تعاون', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-بزرگراه نیایش-ابتدای خیابان سئول شمالی-جنب فدراسیون هندبال'),
-    (23, 'لشکر 16 قدس', 'سپاه و رده های اقماری', 'گیلان', '******'),
-    (24, 'معاونت فن آوری اطلاعات و ارتباطات', 'سپاه و رده های اقماری', 'تهران',
-     'تهران- بزرگراه بسیج سه راه تختی بلوار هجرت-بعد از دژبان کل سپاه معاونت فاوا کل سپاه پادگان بقیه الله'),
-    (25, 'تیپ نیروی مخصوص میرزا کوچک خان نزسا', 'نزسا', 'گیلان', 'گیلان-لنگرود-تیپ تکاور میرزا'),
-    (26, 'فرماندهی پشتیبانی و اجرائیات حوزه مرکزی', 'سپاه و رده های اقماری', 'تهران',
-     'تهران -سه را تختی-بلوار هجرت درب اصلی روبروی پدافند هوایی'),
-    (27, 'معاونت آماد و پشتیبانی سپاه', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-کیلومتر 9 جاده قدیم کرج -بعد از سه راه شهریار-پادگان حضرت ابوالفضل(ع)'),
-    (28, 'سپاه سیدالشهداء (ع) - استان تهران', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-شهر ری-میدان نماز-خیابان امام حسین(ع)-ستاد فرماندهی سپاه سیدالشهدا(ع)'),
-    (29, 'معاونت مهندسی نیروی زمینی سپاه', 'نزسا', 'تهران', 'بلوار هجرت-میدان شهید باکری-معاونت مهندسی نزسا'),
-    (30, 'آمادگاه مهماتی شهید هاشمی نژاد', 'نزسا', 'سمنان', 'دامغان-جاده اصفهان(معلمان جندق) کیلومتر 40-سمت راست'),
-    (31, 'سپاه امام حسن مجتبی(ع) - استان البرز', 'سپاه و رده های اقماری', 'البرز',
-     'کرج-میدان سپاه-پادگان شرع پسند-سپاه امام حسن مجتبی(ع)'),
-    (32, 'گروه 45 مهندسی جواد الائمه نزسا', 'نزسا', 'گلستان', 'گرگان-روستای جعفرآباد'),
-    (33, 'تیپ نیروی مخصوص 110 سلمان فارسی نزسا', 'نزسا', 'سیستان و بلوچستان',
-     'کمربندی شهید کلانتری - انتهای بلوار سرداران شهید'),
-    (34, 'قرارگاه منطقه ای قدس (جنوبشرق) نزسا', 'نزسا', 'سیستان و بلوچستان', 'زاهدان - میدان آزادی - قرارگاه قدس'),
-    (35, 'ستاد کل نیروهای مسلح', 'ستاد کل نیروهای مسلح', 'تهران', 'تهران-میدان سبلان-نبش میدان-پادگان شهید نظران'),
-    (36, 'سپاه جوادالائمه (ع) - خراسان شمالی', 'سپاه و رده های اقماری', 'خراسان شمالی',
-     'خراسان شمالی-بجنورد-بلوار پیامبر اعظم(ص)-جنب پزشکی قانونی-ستاد سپاه حضرت جوادالائمه(ع)'),
-    (37, 'تیپ حضرت جواد(ع)', 'سپاه و رده های اقماری', 'خراسان شمالی',
-     'بجنورد-کیلومتر 17 کمربندی گستان شهر-روستای لنگر-پادگان شهید نوری'),
-    (38, 'یگان زرهی 60 عمار نزسا', 'نزسا', 'گلستان',
-     'گنبد کاووس-جاده کمربندی مشهد گنبد-شهرک بهارستان-پادگان شهید اسودی'),
-    (39, 'گروه 46 مهندسی امام هادی(ع) نزسا', 'نزسا', '******', '******'),
-    (40, 'تیپ نیروی ویژه صابرین نزسا', 'نزسا', 'تهران',
-     'تهران - اتوبان افسریه - 3راه تختی - میدان مطهری - تیپ نیروی ویژه صابرین'),
-    (41, 'آموزشگاه شهید هاشمی نژاد شیروان نزسا', 'نزسا', 'خراسان شمالی', 'شیروان-روستای دامغان'),
-    (42, 'سپاه امام رضا (ع) - خراسان رضوی', 'سپاه و رده های اقماری', 'خراسان رضوی', 'مشهد-انتهای بلوار وکیل آباد'),
-    (43, 'قرارگاه عملیاتی منطقه ای غدیر نزسا', 'نزسا', 'مازندران', 'مازندران-ساری-میدان امام'),
-    (44, 'سپاه انصارالمهدی (عج) - زنجان', 'سپاه و رده های اقماری', 'زنجان', 'زنجان-سه راه امجدیه-سپاه انصارالمهدی(عج)'),
-    (45, 'ندسا-بیمارستان32 تختخوابی شهید محمدیها لنگه', 'ندسا', 'هرمزگان', 'استان هرمزگان-بندر لنگه-بعد از گمرک'),
-    (46, 'گروه توپخانه 61 محرم نزسا', 'نزسا', 'خراسان رضوی', 'خراسان رضوی-تربت حیدریه-کیلومتر 10 جاده تربت حیدریه'),
-    (47, 'لشکر 5 نصر', 'سپاه و رده های اقماری', 'خراسان رضوی',
-     'مشهد- ابتدای جاده قدیم نیشابور- جنب شهرک ابوذر- لشگر  5نصر'),
-    (48, 'مرکز 203 جوادالائمه (ع) نزسا', 'نزسا', '******', '******'),
-    (49, 'مرکز جنگال فاطر نزسا', 'نزسا', 'تهران', '******'),
-    (50, 'قرارگاه منطقه ای ثامن الائمه (ع) (شمالشرق) نزسا', 'نزسا', 'خراسان رضوی', '******'),
-    (51, 'فرماندهی دژبان کل سپاه', 'سپاه و رده های اقماری', 'تهران', 'تهران-بلوار هجرت-فرماندهی دژبان کل سپاه'),
-    (52, 'گروه 47 مهندسی سلمان نزسا', 'نزسا', 'خراسان رضوی',
-     'خراسان رضوی-سبزوار-کیلومتر 5 جاده قدیم-پادگان شهید فرومندی'),
-    (53, 'مرکز بهداری رزمی شمال شرق نزسا', 'نزسا', '******', '******'),
-    (54, 'مرکز فناوری ارتباطات واطلاعات ثامن الائمه (ع) نزسا', 'نزسا', 'تهران', '******'),
-    (55, 'نمایندگی ولی فقیه در نیروی زمینی سپاه', 'حوزه نمایندگی', 'تهران',
-     'تهران-اتوبان بسیج -سه راه تختی-بلوار هجرت-پادگان صفوی'),
-    (56, ' آمادگاه مهمات شهید باهنر نزسا', 'نزسا', '******', '******'),
-    (57, 'مرکز خدمات رفاهی و کارکنان نیروی زمینی سپاه ', 'نزسا', 'تهران',
-     'تهران-اتوبان بسیج-سه راه تختی-بلوار هجرت-میدان مطهری'),
-    (58, 'تیپ زرهی 21 امام رضا (ع) نزسا', 'نزسا', 'خراسان رضوی', '******'),
-    (59, 'سپاه سلمان - سیستان و بلوچستان', 'سپاه و رده های اقماری', 'سیستان و بلوچستان',
-     'زاهدان - جاده کمربندی شهید کلانتری نرسیده به ترمینال انقلاب'),
-    (60, 'سپاه علی ابن ابیطالب (ع) - قم', 'سپاه و رده های اقماری', 'قم', 'قم- فلکه 72تن پادگان امام صادق)ع'),
-    (61, 'مرکز بهداری جنوب شرق نزسا', 'نزسا', '******', '******'),
-    (62, 'سپاه شهدا - آذربایجان غربی', 'سپاه و رده های اقماری', 'آذربایجان غربی',
-     'ارومیه خ شهید بهشتی چهارراه دانشکده پشت پمپ بنزین سپاه شهدا'),
-    (63, 'آمادگاه ابوذر سبزوار', 'سپاه و رده های اقماری', 'خراسان رضوی', 'میدان شریعتی-میدان خلیج فارس-بلوار ابوذر'),
-    (64, 'مرکز عملیات نیروی انسانی نیروی زمینی سپاه ', 'نزسا', 'تهران',
-     'تهران-اتوبان بسیج-سه راه تختی-انتهای بلوار هجرت-میدان شهید مطهری-معاونت نیروی انسانی نزسا'),
-    (65, 'آمادگاه مهمات مقداد نزسا', 'نزسا', 'خراسان رضوی', 'خراسان رضوی - نیشابور - 45کیلومتری جاده نیشابور'),
-    (66, 'سپاه الغدیر - یزد', 'سپاه و رده های اقماری', 'یزد', 'یزد -بلوار جانباز سپاه الغدیر استان یزد'),
-    (67, 'مرکز خدمات کارکنان سپاه', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-بزرگراه نیایش-ابتدای خیابان سئول شمالی-جنب فدراسیون هندبال'),
-    (68, 'ندسا - دانشگاه امام خامنه ای', 'ندسا', 'مازندران', '3 راه حسن رود- زیباکنار'),
-    (69, 'آموزشگاه شهید باکری نزسا', 'نزسا', 'خوزستان', '******'),
-    (70, 'سپاه ولیعصر (عج) - خوزستان', 'سپاه و رده های اقماری', 'خوزستان',
-     'خوزستان-اهواز-چهارشیر-نبش بیمارستان ابوذر-سپاه حضرت ولیعصر)عج(استان'),
-    (71, 'تیپ مکانیزه 20 رمضان نزسا', 'نزسا', 'تهران', 'اتوبان تهران قم - جنب شهرک سینمایی - پادگان شهید نوری'),
-    (72, 'فرماندهی قرارگاه مرکزی امام حسین ع', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-اتوبان بسیج-سه راه تختی-بلوار هجرت- درب فیاض'),
-    (73, 'فرماندهی پشتیبانی و اجرائیات حوزه مرکزی ستاد فرماندهی کل سپاه - قرارگاه فرهنگی بقیه الله الاعظم عج',
-     'سپاه و رده های اقماری', 'تهران',
-     'تهران-خیابان شریعتی-بالاتر از حسینیه ارشاد-روبروی بیمارستان مفید-کوچه بهشت آسا-پلاک 1/6'),
-    (74, 'سپاه حضرت عباس (ع) - اردبیل', 'سپاه و رده های اقماری', 'اردبیل', 'اردبیل میدان بسیج'),
-    (75, 'گروه پهباد نزسا', 'نزسا', 'تهران',
-     'تهران-پهپاد-بعد از سه راه شهریار-خیابان سپاه اسلام-پادگان صاحب الزمان(عج)'),
-    (76, 'آموزشگاه شهید مدرس نزسا', 'نزسا', 'البرز', 'کیلومتر 20 تهران کرج-جنب شهرک خاتم-آموزشگاه مدرس'),
-    (77, 'فرماندهی هوانیروز نزسا', 'نزسا', 'تهران',
-     'سه راه تختی-بلوار هجرت-جنب معاونت بهداری رزمی نزسا-فرماندهی هوانیروز'),
-    (78, 'فرماندهی هوانیروز سپاه (گروه بالگردی فتح) نزسا', 'نزسا', 'البرز', 'کرج-مشکین دشت-به سمت روستای خوشنام'),
-    (79, 'سپاه صاحب الامر (عج) - قزوین', 'سپاه و رده های اقماری', 'قزوین', 'قزوین - ابتدای کوثر- مقابل مجتمع میلاد'),
-    (80, 'نامعلوم', 'نامعلوم', '***', '******'),
-    (81, 'آموزشگاه شهید قاضی طباطبائی نزسا', 'نزسا', 'آذربایجان شرقی', 'تبریز-کیلومتر 25 جاده آذرشهر'),
-    (82, 'سپاه حضرت محمد رسول اله (ص) - تهران بزرگ', 'سپاه و رده های اقماری', 'تهران', 'میدان سپاه-پادگان ولیعصر(عج)'),
-    (83, 'موقعیت امام هادی (ع)', 'سپاه و رده های اقماری', 'تهران',
-     'تهران-بزرگراه بسیج-بزرگراه شهید دوران-جنب مقبره شهدا-نیروی دریایی سابق'),
-    (84, 'قرارگاه سازندگی خاتم الانبیاء (ص)', 'نقسا', 'تهران', 'شهرک غرب -بلوار ایوانک-ضلع شمالی-چهارراه فلامک'),
-    (85, 'ندسا-بیمارستان صاحب الزمان (عج) و مرکز بهداری جنوب ', 'ندسا', 'هرمزگان',
-     'استان هرمزگان-بندرعباس-سه راه هتل هما'),
-    (86, 'سپاه بیت المقدس - کردستان', 'سپاه و رده های اقماری', 'کردستان',
-     'کردستان-شهرستان سنندج-خ امام خمینی(ره)-میدان ارتش'),
-    (87, 'فرماندهی آمادگاه نگهداری مهمات مصطفی خمینی ( قم )', 'سپاه و رده های اقماری', 'قم',
-     'دریافت آدرس از اداره سرباز'),
-    (88, 'ندسا- مجتمع بهداشتی درمانی سیدالشهداء(ع) چابهار', 'ندسا', 'سیستان و بلوچستان',
-     'استان سیستان و بلوچستان-چابهار-جنب منطقه ویژه اقتصادی'),
-    (89, 'سازمان تحقیقات وخودکفایی نیروی زمینی سپاه ', 'نزسا', 'تهران',
-     'تهران-سه راه تختی - بعد از میدان شهید باکری-سازمان تحقیقات و خودکفایی'),
-    (90, 'قرارگاه منطقه ای صاحب الزمان  (عج)  نزسا', 'نزسا', 'تهران',
-     'تهران-سه راه تختی-انتهای بلوار هجرت-میدان شهید باکری-جنب ستاد نیروی زمینی سپاه-روبروی معاونت بهداری'),
-    (91, 'ستاد نیروی زمینی سپاه - پادگان شهید صفوی ', 'نزسا', 'تهران',
-     'تهران-سه راه تختی-انتهای بلوار هجرت-میدان شهید باکری-پادگان شهید صفوی'),
-    (92, 'آموزشگاه درجه داری سیدالشهدا (ع) نزسا', 'نزسا', 'آذربایجان شرقی', 'تبریز-آذرشهر-جاده ارومیه'),
-    (93, 'ندسا- بیمارستان شهید سلیمانی', 'ندسا', 'بوشهر', 'استان بوشهر-عسلویه-چاه مبارک'),
-    (94, 'مرکز آموزش عالی هوانوردی نزسا', 'نزسا', 'البرز', 'کرج-مشکین دشت به سمت خوشنام-سر شهرک ناز-مرکز آموزش'),
-    (95, 'آموزشگاه مالک اشتر نزسا', 'نزسا', 'آذربایجان غربی', 'ارومیه-جاده دریا-آموزشگاه مالک اشتر'),
-    (96, 'ندسا-بیمارستان امام رضا(ع) چالوس', 'ندسا', 'مازندران', 'مازندران-چالوس-جنب مخابرات'),
-    (97, 'دانشگاه علوم پزشکی بقیه الله الاعظم (عج)', 'سپاه و رده های اقماری', 'تهران',
-     'تهران- میدان ونک ابتدای خیابان ملاصدرا'),
-    (98, 'ندسا - معاونت نیروی انسانی', 'ندسا', 'بندرعباس',
-     'بندرعباس-جنب اسکله شهید باهنر-ستاد نیروی دریایی سپاه-معاونت نیروی انسانی ندسا'),
-    (99, 'معاونت فاوا نیروی زمینی سپاه', 'نزسا', 'تهران',
-     'بلوار هجرت - انتهای خیابان آتوت - جنب تیپ نیروی ویژه صابرین'),
-    (100, 'سپاه ولی امر', 'سپاه و رده های اقماری', 'تهران', 'تهران-خ کارگر جنوبی-میدن پاستور-مقر شهیدان مداح'),
-    (101, 'دفتر معاونت نیروی انسانی سپاه', 'سپاه و رده های اقماری', 'تهران',
-     'سه راه تختی-بلوار هجرت -بعد از میدان فتح المبین- موقعیت شهید زین الدین'),
-    (102, 'ندسا - پایگاه دریائی شمال ', 'ندسا', 'مازندران', 'بابلسر- جنب شهرک دریا کنار - روبروی مجتمع پرشیا'),
-    (103, 'ندسا-بیمارستان قائم(عج) و مرکز بهداری شمال خلیج فارس', 'ندسا', 'بوشهر',
-     'استان بوشهر بوشهر میدان امام خیابان بی سیم جنب سپاه امام صادق )ع('),
-    (104, 'ندسا - منطقه دوم ', 'ندسا', 'بوشهر', 'بوشهر- سهراهی امامزاده پادگان نوح نبی)ع-(منطقه دوم ندسا'),
-    (105, 'معاونت اطلاعات نیروی زمینی سپاه ', 'نزسا', 'تهران',
-     'تهران سه راه تختی-انتهای بلوار هجرت.میدان شهید باکری - پادگان شهید صفوی -معاونت اطلاعات'),
-    (106, 'معاونت آماد و پشتیبانی ندسا', 'ندسا', '******', '******'),
-    (107, 'سپاه انصارالرضا (ع) - خراسان جنوبی', 'سپاه و رده های اقماری', 'خراسان جنوبی',
-     'استان خراسان جنوبی-بیرجند-بلوار پیامبر اعظم )ص-(میدان سپاه ستاد سپاه استان'),
-    (108, 'سپاه صاحب الزمان (عج) - اصفهان', 'سپاه و رده های اقماری', 'اصفهان',
-     'اصفهان- سه راه حکیم نظامی خیابان شهدای صفه'),
-    (109, 'ندسا-بیمارستان32 تختخوابی شهید عمویی ماهشهر', 'ندسا', 'خوزستان', 'استان خوزستان - شهرستان بندرماهشهر-فاز2'),
-    (110, 'مرکز آموزش تخصصی جنوب شرق نزسا', 'نزسا', 'سیستان و بلوچستان', 'زاهدان-کیلومتر  5جاده زاهدان بم'),
-    (111, 'ندسا - سازمان تحقیقات و خودکفایی', 'ندسا', 'تهران',
-     'تهران-اتوبان شهیدعباس دوران روبروی میدان تره بارپیروزی'),
-    (112, 'ندسا - منطقه سوم ', 'ندسا', 'خوزستان', 'ماهشهر-پادگان دریایی امام حسین)ع'),
-    (113, 'ندسا - منطقه چهارم دریایی ثارالله', 'ندسا', '******', '******'),
-    (114, 'پایگاه شهید کاظمی(ارومیه)-نزسا', 'نزسا', '******', '******'),
-    (115, 'سپاه عاشورا - آذربایجان شرقی', 'سپاه و رده های اقماری', '******', '******'),
-    (116, 'بیمارستان  شهید صدوقی نزسا', 'نزسا', '******', '******'),
-    (117, 'ستاد سپاه قائم آل محمد (عج) - سمنان', 'سپاه و رده های اقماری', '******', '******'),
-    (118, 'مرکز جنگال فلق نزسا', 'نزسا', '******', '******'),
-    (119, 'مرکز 23 نبوت نزسا', 'نزسا', '******', '******'),
-    (120, 'مرکز پشتيباني عمومي و تخصصي (جنوب شرق)', 'نزسا', '******', '******'),
-    (121, 'دانشگاه علوم پزشکي بقيه‌ا... ‌الاعظم (عج)', 'سپاه و رده های اقماری', 'تهران',
-     'تهران- میدان ونک ابتدای خیابان ملاصدرا'),
-    (122, 'پايگاه پهپاد نبي اکرم (ص) نزسا', 'نزسا', '******', '******'),
-    (123, 'فرماندهي قرارگاه پشتيباني ستاد کل سپاه', 'سپاه و رده های اقماری', '******', '******'),
-    (124, 'فرماندهي هوانيروز - پايگاه بالگردي رزمي جنوب‌شرق نزسا', 'نزسا', '******', '******'),
-    (125, 'قرارگاه فرهنگي اجتماعي شهيد برونسي', 'سپاه و رده های اقماری', '******', '******'),
-    (126, 'فرماندهي سايبرالکترونيک سپاه', 'سپاه و رده های اقماری', '******', '******'),
-    (127, ' قرارگاه فرهنگي بقيه ا... الاعظم عج', 'سپاه و رده های اقماری', '******', '******'),
-    (128, 'گروه 43 مهندسي امام علي(ع) نزسا', 'نزسا', '******', '******'),
-    (129, 'فرماندهي حفاظت، امنيت سپاه', 'سپاه و رده های اقماری', '******', '******'),
-    (130, 'دانشگاه حضرت اميرالمومنين(ع) نزسا', 'نزسا', '******', '******'),
-    (131, 'سپاه روح اله - مرکزي', 'سپاه و رده های اقماری', '******', '******'),
-    (132, 'سپاه انصارالحسين (ع) - همدان', 'سپاه و رده های اقماری', '******', '******'),
-    (133, 'لشکر 25 کربلا', 'سپاه و رده های اقماری', '******', 'مازندران'),
-    (134, 'تيپ12 قائم(عج)', 'سپاه و رده های اقماری', '******', '******'),
-    (135, 'بيمارستان شهيد قاضي نزسا', 'نزسا', '******', '******'),
-    (136, 'نیروی زمینی', 'نزسا', '******', '******'),
-    (137, 'ندسا - معاونت بهداشت و درمان نيروي دريايي سپاه', 'ندسا', '******', '******'),
-    (138, 'تيپ 82 صاحب الامر(عج)', 'سپاه و رده های اقماری', '******', '******'),
-    (139, 'مرکز جنگال نيروي زميني سپاه', 'سپاه و رده های اقماری', '******', '******'),
-    (140, 'آموزشگاه وليعصر(عج) نزسا', 'نزسا', '******', '******'),
-    (141, 'ندسا - پايگاه دريايي مستقل امامت جاسک', 'ندسا', '******', '******'),
-    (142, 'تيپ 18 الغدير', 'سپاه و رده های اقماری', '******', '******'),
-    (143, 'قرارگاه منطقه اي حمزه سيد الشهداء(ع)(شمالغرب) نزسا', 'نزسا', '******', '******'),
-    (144, 'نیروی زمینی', 'نزسا', '******', '******'),
-    (145, 'معاونت آماد و پشتيباني نيروي زميني سپاه', 'سپاه و رده های اقماری', '******', '******'),
-    (146, 'مرکز پشتيباني عمومي و تخصصي اصفهان نزسا', 'نزسا', '******', '******'),
-    (147, 'نيروي هوافضاي سپاه', 'هوافضا', '******', '******'),
-    (148, 'سپاه نينوا - گلستان يگان حفاظت هواپيمايي', 'هوافضا', '******', '******'),
-    (149, 'تيپ 71 روح الله(ره)', 'سپاه و رده های اقماری', '******', '******'),
-    (150, 'ندسا - منطقه پنجم', 'ندسا', '******', '******'),
-    (151, ' قرارگاه فرهنگي بقيه ا... الاعظم عج', 'سپاه و رده های اقماری', '******', '******'),
-    (152, 'ندسا - معاونت نیروی انسانی نیروی دریایی سپاه', 'ندسا', '******', '******'),
-    (153, 'گروه 42 مهندسي قدر نزسا', 'نزسا', '******', '******'),
-    (153, 'لشکر22 بيت المقدس', 'سپاه و رده های اقماری', '******', '******'),
-    (154, 'نزسا-مرکز عمليات نيروي انساني', 'نزسا', '******', '******'),
-
-]
-
-# Constants for military ranks
-MILITARY_RANK_TABLE = {
-    "دکتری": {
-        "ستوان یکم": (0, 20),
-    },
-    "فوق لیسانس": {
-        "ستوان یکم": (10, 20),
-        "ستوان دوم": (6, 9.9),
-        "ستوان سوم": (0, 5.9),
-    },
-    "لیسانس": {
-        "ستوان دوم": (10, 20),
-        "ستوان سوم": (7, 9.9),
-        "رزمدار یکم": (6, 6.9),
-        "رزمدار دوم": (4, 5.9),
-        "رزم‌آور یکم": (2, 3.9),
-        "رزم‌آور دوم": (0, 1.9),
-    },
-    "فوق دیپلم": {
-        "رزم‌آور یکم": (5, 20),
-        "رزم‌آور دوم": (2, 4.9),
-        "رزم‌آور سوم": (0, 1.9),
-    },
-    "دیپلم": {
-        "رزمیار": (5, 20),
-        "سرباز یکم": (2, 4.9),
-        "سرباز دوم": (0, 1.9),
-    },
-    "زیر دیپلم": {
-        "سرباز دوم": (2, 20),
-        "سرباز": (0, 1.9),
-    },
-}
-
+from .constatns import *
 
 def get_military_rank(education, score):
     """
@@ -382,7 +118,9 @@ def soldier_search(request):
     Gordan = request.GET.get('Gordan')
     amire = request.GET.get('amire')
     battaliongroup = request.GET.get('battaliongroup')
-    soldiers = Soldier.objects.all()
+    admission_status = request.GET.get('admission_status')
+    sort_by = request.GET.get('sort_by')
+    soldiers = Soldier.objects.all().order_by('t_Gordan__name','t_battalion_group__name','code_gorhan_nahai')   
     gordan = battalion.objects.filter().all()
     grohan = battalion_group.objects.filter().all()
     count_f = soldiers
@@ -415,6 +153,27 @@ def soldier_search(request):
     if amire:
         soldiers = soldiers.filter(Amriye=amire)
 
+    if admission_status:
+        if admission_status == "accepted":
+            soldiers = soldiers.filter(acceptance_code__isnull=False)  # پذیرش شده‌ها
+        elif admission_status == "not_accepted":
+            soldiers = soldiers.filter(acceptance_code__isnull=True)   # پذیرش نشده‌ها
+
+    if sort_by:
+        if sort_by == "final_group_code":
+            soldiers = soldiers.order_by('t_Gordan__name','t_battalion_group__name','code_gorhan_nahai')  # کد نهایی گروهانی
+        elif sort_by == "acceptance_code":
+            soldiers = soldiers.order_by('acceptance_code')    # کد پذیرش
+        elif sort_by == "group_code":
+            soldiers = soldiers.order_by('code_gorhan')        # کد گروهانی
+        elif sort_by == "full_name":
+            soldiers = soldiers.order_by('name', 'family')    # نام و نام خانوادگی
+        elif sort_by == "tallest":
+            soldiers = soldiers.order_by('-height')           # بلندترین قد
+        elif sort_by == "shortest":
+            soldiers = soldiers.order_by('height')            # کوتاه‌ترین قد
+        elif sort_by == "birth_date":
+            soldiers = soldiers.order_by('birth_date')        # تاریخ تولد
     op_result = False
     count_e = soldiers
     if count_f != count_e:
@@ -1949,6 +1708,7 @@ def rank_group_print_gordani(request):
     }
     return render(request, 'ensani_soldires_management/rank_print.html', context)
 
+from django.db.models import Case, When, Value, IntegerField
 
 @login_required
 def export_to_excel_list_rank(request):
@@ -1959,6 +1719,15 @@ def export_to_excel_list_rank(request):
                          't_battalion_group',
                          'code_gorhan_nahai')
 
+    rank_cases = [
+        When(rank=rank_name, then=Value(rank_code)) 
+        for rank_name, rank_code in RANK_MAPPING.items()
+    ]
+
+    queryset = queryset.annotate(rank_code=Case(
+        *rank_cases,
+        output_field=IntegerField()
+    ))
     df = pd.DataFrame(list(queryset))
 
     # تغییر نام ستون‌ها
@@ -1972,6 +1741,7 @@ def export_to_excel_list_rank(request):
         't_battalion_group__name': 'گروهان',
         'code_gorhan_nahai': 'کدسازمانی',
         'rank': 'درجه',
+        'rank_code': 'کد درجه',
 
     }, inplace=True)
     # تنظیمات پاسخ HTTP برای اکسل
@@ -2603,7 +2373,12 @@ def soldiers_problems_export_excel(request):
     response['Content-Disposition'] = 'attachment; filename=soldiers_problems.xlsx'
     wb.save(response)
     return response
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
 
+@csrf_protect
 @login_required
 def soldiers_tatbigh_page(request):
     # گرفتن گردان‌ها و گروهان‌هایی که کاربر اجازه مشاهده دارد
@@ -2634,20 +2409,231 @@ def soldiers_tatbigh_page(request):
             else:
                 # اگر گردان هیچ گروهان نداشت، اولین گروهان موجود در کل گروهان‌ها
                 selected_group = str(groups_allowed.first().id)
+    
+    if selected_battalion:
+        selected_battalion_obj = battalions_allowed.filter(id=selected_battalion).first()
+
+    if selected_group:
+        selected_group_obj = groups_allowed.filter(id=selected_group).first()
+
+    # اگر درخواست POST باشد: ثبت تغییرات کد سازمانی
+    if request.method == "POST":
+        soldier_id = request.POST.get('soldier_id')
+        new_org_code = request.POST.get('new_org_code')
+        gordan_id = request.POST.get('gordan_id')
+        grohan_id = request.POST.get('grohan_id')
+        print(
+            soldier_id,
+            new_org_code,
+            gordan_id,
+            grohan_id,
+        )
+        if soldier_id and new_org_code:
+            try:
+                soldier = Soldier.objects.get(id=soldier_id)
+                # گرفتن اشیاء مرتبط
+                t_gordan = battalion.objects.get(id=gordan_id)
+                t_gorohan = battalion_group.objects.get(id=grohan_id)
+                # نسبت دادن اشیاء به فیلدهای سرباز
+                soldier.t_Gordan = t_gordan
+                soldier.t_battalion_group = t_gorohan
+                soldier.code_gorhan_nahai = new_org_code
+                
+                soldier.save()
+                messages.success(request, f"تغییرات سرباز {soldier.name} با موفقیت ثبت شد.")
+                return redirect(request.path + f"?battalion={selected_battalion}&group={selected_group}")
+            except Soldier.DoesNotExist:
+                messages.error(request, "سرباز مورد نظر یافت نشد.")
+        else:
+            messages.error(request, "اطلاعات ناقص است.")
 
     soldiers = Soldier.objects.all()
+    soldiers_in_battalion_group = (
+        soldiers.annotate(
+            code_gorhan_int=Cast('code_gorhan', IntegerField())
+        )
+        .filter(battalion_group=selected_group)
+        .order_by('code_gorhan_int')
+    )
 
-    print()
+    soldiers_in_t_battalion_group = (
+        soldiers.annotate(
+            code_gorhan_nahai_int=Cast('code_gorhan_nahai', IntegerField()),
+            code_gorhan_int=Cast('code_gorhan', IntegerField()),
+        )
+        .filter(t_battalion_group=selected_group)
+        .order_by('code_gorhan_nahai_int', 'code_gorhan_int')
+    )
     context = {
+        'soldiers_in_battalion_group':soldiers_in_battalion_group,
+        'soldiers_in_t_battalion_group':soldiers_in_t_battalion_group,
         'battalions': battalions_allowed,
         'groups': groups_allowed,
         'selected_battalion': str(selected_battalion),
         'selected_group': str(selected_group),
+        'selected_group_name': str(selected_group),
+        'selected_battalion_name': selected_battalion_obj.name if selected_battalion_obj else None,
+        'selected_group_name': selected_group_obj.name if selected_group_obj else None,
         'soldiers': soldiers
     }
     return render(request, 'courses/soldiers_tatbigh_page.html', context)
 
+
+from soldiers.constants import physical_condition_list ,Type_of_disease_list
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import TestSalamatRavanForm
+from django.utils import timezone
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.utils import timezone
+
+@login_required
+def test_salamat_rawan(request):
+    soldiers = Soldier.objects.filter( physical_condition_date_created__isnull=False).order_by('-physical_condition_date_created')
+  # تعداد هر وضعیت بررسی
+    inspection_filters = [
+        {'key': 'all', 'label': 'همه', 'count': soldiers.count()},
+        {'key': 'confirmed', 'label': 'تایید شده', 'count': soldiers.filter(physical_condition_Inspection_test=True).count()},
+        {'key': 'unconfirmed', 'label': 'تایید نشده', 'count': soldiers.filter(physical_condition_Inspection_test=False).count()},
+        {'key': 'proccess', 'label': 'در حال بررسی', 'count': soldiers.filter(physical_condition_Inspection_test__isnull=True).count()},
+    ]
+    
+    inspection_filter = request.GET.get('inspection_filter', 'all')
+    if inspection_filter == 'unconfirmed':
+        soldiers = soldiers.filter(physical_condition_Inspection_test=False)
+    elif inspection_filter == 'confirmed':
+        soldiers = soldiers.filter(physical_condition_Inspection_test=True)
+    elif inspection_filter == 'proccess':
+        soldiers = soldiers.filter(physical_condition_Inspection_test__isnull=True)
+    # جستجو
+    query = request.GET.get('q', '')
+    if query:
+        soldiers = soldiers.filter(name__icontains=query) | soldiers.filter(family__icontains=query) | soldiers.filter(National_Code__icontains=query)
+
+    # Pagination
+    paginator = Paginator(soldiers, 10)  # هر صفحه 10 سرباز
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.method == "POST":
+        form = TestSalamatRavanForm(request.POST)
+        if form.is_valid():
+            soldier = form.cleaned_data['soldier']
+
+            # مقدار قبلی وضعیت جسمانی
+            soldier.physical_condition_prev_test = soldier.physical_condition
+            # وضعیت سلامت روان
+            pct_value = form.cleaned_data['physical_condition_test']
+            pct_label = dict(physical_condition_list).get(int(pct_value), 'نامشخص')
+            soldier.physical_condition_test = pct_label
+
+            # توضیحات
+            soldier.physical_condition_description_test = form.cleaned_data['physical_condition_description_test']
+
+            # نوع بیماری
+            todt_value = form.cleaned_data['Type_of_disease_test']
+            try:
+                todt_int = int(todt_value)
+                todt_label = dict(Type_of_disease_list).get(todt_int)
+                soldier.Type_of_disease_test = todt_label or todt_value
+            except ValueError:
+                soldier.Type_of_disease_test = todt_value
+
+            # تاریخ‌ها
+            soldier.physical_condition_date_test = form.cleaned_data['physical_condition_date_test'] or timezone.now().date()
+            soldier.physical_condition_date_created = timezone.now()
+
+            soldier.save()
+            messages.success(request, "✅ اطلاعات تست سلامت روان با موفقیت ثبت شد.")
+            return redirect('test_salamat_rawan')
+        else:
+            messages.error(request, "⚠️ فرم معتبر نیست، لطفاً دوباره بررسی کنید.")
+    else:
+        form = TestSalamatRavanForm()
+
+    
+    return render(request, 'courses/test_salamat_rawan.html', {
+        'form': form,
+        'soldiers': page_obj,
+        'page_obj':page_obj,
+        'inspection_filter': inspection_filter,
+        'query': query,
+        'inspection_filters': inspection_filters,  # <-- ارسال تعدادها
+
+    })
+
+
 from django.views.decorators.http import require_GET
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from soldiers.models import Soldier
+from django.utils import timezone
+
+
+
+@login_required
+def test_salamat_ravan_actions(request, soldier_id=None, action=None):
+    """
+    مدیریت عملیات تست سلامت روان:
+    - عملیات تکی: delete, confirm, unconfirm
+    - عملیات دسته‌ای (صفحه یا همه): confirmall, unconfirmall, confirmall_in_page, unconfirmall_in_page
+    """
+    # --- عملیات دسته‌ای از طریق POST ---
+    if request.method == "POST" and 'soldier_ids' in request.POST:
+        action = request.POST.get('action')
+        if action not in ['confirmall', 'unconfirmall', 'confirmall_in_page', 'unconfirmall_in_page','processing_page','processing_all']:
+            messages.error(request, "عملیات دسته‌ای نامعتبر است.")
+            return redirect('test_salamat_rawan')
+        soldiers = Soldier.objects.filter(physical_condition_date_created__isnull=False)
+        print(action)
+        if  action in ["unconfirmall_in_page", "confirmall_in_page",'processing_page']:
+            soldier_ids = request.POST.getlist('soldier_ids')
+            soldiers = Soldier.objects.filter(id__in=soldier_ids)
+        for soldier in soldiers:
+            if action in ["processing_all", "processing_page",'']:
+                soldier.in_proccess_test_salamat_ravan()
+            if action in ["confirmall", "confirmall_in_page",'']:
+                soldier.confirm_test_salamat_ravan()
+            elif action in ["unconfirmall", "unconfirmall_in_page",'']:
+                soldier.unconfirm_test_salamat_ravan()
+
+        messages.success(request, f"عملیات {action} با موفقیت روی {len(soldiers)} سرباز انجام شد.")
+        return redirect('test_salamat_rawan')
+
+    # --- عملیات تکی ---
+    if soldier_id is None or action is None:
+        messages.error(request, "پارامترهای لازم ارسال نشده‌اند.")
+        return redirect('test_salamat_rawan')
+
+    soldier = get_object_or_404(Soldier, id=soldier_id)
+
+    if action == "delete":
+        soldier.delete_test_salamat_ravan()
+        messages.success(request, f"تست سلامت روان سرباز {soldier.name} {soldier.family} حذف شد.")
+
+    elif action == "confirm":
+        soldier.confirm_test_salamat_ravan()
+        messages.success(request, f"تست سلامت روان سرباز {soldier.name} {soldier.family} تایید شد.")
+
+    elif action == "unconfirm":
+        soldier.unconfirm_test_salamat_ravan()
+        messages.success(request, f"تست سلامت روان سرباز {soldier.name} {soldier.family} عدم تایید شد.")
+    elif action == "processing":
+        soldier.in_proccess_test_salamat_ravan()
+        messages.success(request, f"تست سلامت روان سرباز {soldier.name} {soldier.family} عدم تایید شد.")
+ 
+    else:
+        messages.error(request, "عملیات نامعتبر است.")
+
+    return redirect('test_salamat_rawan')
+
 
 @login_required
 @require_GET
@@ -2658,14 +2644,19 @@ def get_soldier_by_national_code(request):
 
     try:
         soldier = Soldier.objects.get(National_Code=code)
+
         data = {
             "id": soldier.id,
-            "code_melli": soldier.National_Code,
-            "first_name": soldier.name or "—",
-            "last_name": soldier.family or "—",
-            "current_battalion": soldier.Gordan.name if soldier.Gordan else "—",
-            "current_group": soldier.battalion_group.name if soldier.battalion_group else "—",
-            "org_code": soldier.code_paziresh or "—"
+            "National_Code": soldier.National_Code,
+            "name": soldier.name or "—",
+            "family": soldier.family or "—",
+            "Gordan": soldier.Gordan.name if soldier.Gordan else "—",
+            "t_Gordan": soldier.t_Gordan.name if soldier.t_Gordan else "—",
+            "battalion_group": soldier.battalion_group.name if soldier.battalion_group else "—",
+            "t_battalion_group": soldier.t_battalion_group.name if soldier.t_battalion_group else "—",
+            "code_paziresh": soldier.code_paziresh or "—",
+            "code_gorhan": soldier.code_gorhan or "—",
+            "code_gorhan_nahai": soldier.code_gorhan_nahai or "—",
         }
         return JsonResponse(data)
     except Soldier.DoesNotExist:

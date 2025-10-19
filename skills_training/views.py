@@ -840,3 +840,294 @@ def certificates_hazard_print(request):
         'order_by':order_by,
     }
     return render(request, f"{template_pages}/certificates_hazard_print.html", context)
+
+
+from .models import TechnicalVocational
+
+
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+def technical_vocational_page(request):
+    technical_vocationals = (
+        TechnicalVocational.objects
+        .annotate(soldier_count=Count('soldier'))
+        .order_by('-code')
+    )
+    selected_field = None
+    all_soldiers = Soldier.objects.all()
+    soldiers = []
+
+
+    # 📌 فیلتر رشته انتخاب‌شده از query string یا فرم
+    field_id = request.GET.get("technical_vocational_id") or request.POST.get("technical_vocational_id")
+    if field_id:
+        try:
+            selected_field = TechnicalVocational.objects.get(id=field_id)
+            soldiers = all_soldiers.filter(technical_exam=selected_field)
+        except TechnicalVocational.DoesNotExist:
+            messages.error(request, "رشته انتخاب شده معتبر نیست.")
+            selected_field = None
+    else:
+        # اگر رشته انتخاب نشده بود، همه سربازهایی که آزمون دارند رو نشون بده
+        soldiers = all_soldiers.filter(technical_exam__isnull=False)
+    
+    soldiers = soldiers.order_by('-technical_exam_submit_datetime')
+
+    # 📄 Pagination: هر صفحه حداکثر 20 سرباز
+    paginator = Paginator(soldiers, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    counts_in_selected_field = all_soldiers.filter(technical_exam=selected_field).count()
+    counts_in_all = all_soldiers.filter(technical_exam__isnull=False).count()
+    context = {
+        'counts_in_selected_field':counts_in_selected_field,
+        'counts_in_all':counts_in_all,
+        "technical_vocationals": technical_vocationals,
+        "selected_field": selected_field,
+        "soldiers": page_obj,  # سربازها به‌صورت صفحه‌بندی شده
+        "all_soldiers": all_soldiers,
+        "page_obj": page_obj,  # برای کنترل در template
+    }
+    return render(request, f"{template_pages}/technical_vocational.html", context)
+
+# ==================== ایجاد ====================
+def technical_vocational_create(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        code = request.POST.get("code")
+        if not name or not code:
+            messages.error(request, "نام و کد رشته باید وارد شود.")
+        else:
+            # بررسی یکتا بودن name و code
+            if TechnicalVocational.objects.filter(name=name).exists():
+                messages.error(request, "این نام رشته قبلاً ثبت شده است.")
+            elif TechnicalVocational.objects.filter(code=code).exists():
+                messages.error(request, "این کد رشته قبلاً ثبت شده است.")
+            else:
+                TechnicalVocational.objects.create(name=name, code=code)
+                messages.success(request, "رشته ایجاد شد.")
+    return redirect("skills:technical_vocational")
+
+# ==================== بروزرسانی ====================
+def technical_vocational_update(request, pk):
+    field = get_object_or_404(TechnicalVocational, id=pk)
+    if request.method == "POST":
+        name = request.POST.get("name")
+        code = request.POST.get("code")
+        # بررسی یکتا بودن قبل از بروزرسانی
+        if name and TechnicalVocational.objects.exclude(id=pk).filter(name=name).exists():
+            messages.error(request, "این نام رشته قبلاً ثبت شده است.")
+        elif code and TechnicalVocational.objects.exclude(id=pk).filter(code=code).exists():
+            messages.error(request, "این کد رشته قبلاً ثبت شده است.")
+        else:
+            if name: field.name = name
+            if code: field.code = code
+            field.save()
+            messages.success(request, "رشته بروزرسانی شد.")
+    return redirect("skills:technical_vocational")
+
+# ==================== حذف ====================
+def technical_vocational_delete(request, pk):
+    field = get_object_or_404(TechnicalVocational, id=pk)
+    if request.method == "POST":
+        field.delete()
+        messages.success(request, "رشته حذف شد.")
+    return redirect("skills:technical_vocational")
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from django.utils import timezone
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+def technical_vocational_add_soldier(request): 
+    if request.method != "POST":
+        messages.error(request, "درخواست معتبر نیست.")
+        return redirect(request.META.get("HTTP_REFERER", "skills:technical_vocational"))
+
+    # گرفتن داده‌ها از فرم
+    field_id = request.POST.get("technical_vocational_id")
+    soldier_id = request.POST.get("soldire_id")
+
+    if not field_id or not soldier_id:
+        messages.error(request, "لطفاً سرباز و رشته را انتخاب کنید.")
+        return redirect(request.META.get("HTTP_REFERER", "skills:technical_vocational"))
+
+    # دریافت رشته و سرباز
+    field = get_object_or_404(TechnicalVocational, id=field_id)
+    soldier = get_object_or_404(Soldier, id=soldier_id)
+
+    # بررسی اینکه سرباز قبلاً به این رشته اختصاص داده نشده باشد
+    if soldier.technical_exam == field:
+        messages.warning(request, f"سرباز {soldier} قبلاً به رشته {field.name} اختصاص داده شده است.")
+        return redirect(request.META.get("HTTP_REFERER", "skills:technical_vocational"))
+
+    # اختصاص سرباز به رشته
+    soldier.technical_exam = field
+    soldier.technical_exam_submit_datetime = timezone.now()
+
+    uploaded_file = request.FILES.get('avatar')
+    if uploaded_file:
+        soldier.save_avatar(uploaded_file)
+
+    soldier.save()
+
+    messages.success(request, f"سرباز {soldier} با موفقیت به رشته {field.name} اضافه شد.")
+    return redirect(request.META.get("HTTP_REFERER", "skills:technical_vocational"))
+
+def technical_vocational_eazy_register(request):
+    # می‌تونی اطلاعات لازم مثل رشته‌ها یا سربازان را اینجا پاس بدهی
+    technical_vocationals = TechnicalVocational.objects.all().order_by('-code')
+    soldiers = Soldier.objects.filter(technical_exam__isnull=False).order_by('name')
+    last_registered_soldiers = soldiers.order_by('-technical_exam_submit_datetime')[:19]
+        # 📌 فیلتر رشته انتخاب‌شده از query string یا فرم
+    field_id = request.GET.get("technical_vocational_id") or request.POST.get("technical_vocational_id")
+
+    selected_field=None
+    if field_id:
+        try:
+            selected_field = TechnicalVocational.objects.get(id=field_id)
+            if not selected_field:
+                selected_field = TechnicalVocational.objects.first()
+        except TechnicalVocational.DoesNotExist:
+            pass
+ 
+    if request.method == "POST":
+        soldier_id = request.POST.get("soldire_id")
+        technical_vocational_id = request.POST.get("technical_vocational_id")
+        avatar_data = request.POST.get("avatar")  # base64 image
+        
+        # ثبت اطلاعات سرباز
+        if soldier_id and technical_vocational_id:
+            try:
+                soldier = Soldier.objects.get(id=soldier_id)
+                technical_field = TechnicalVocational.objects.get(id=technical_vocational_id)
+                
+                soldier.technical_exam = technical_field
+                soldier.technical_exam_submit_datetime = timezone.now()
+                
+                # ذخیره عکس در صورت آپلود
+                uploaded_file = request.FILES.get('file')
+                
+                if uploaded_file:
+                    soldier.save_avatar(uploaded_file)
+
+                soldier.save()
+                
+                # ریدایرکت بعد از ثبت
+                return redirect(request.path + f"?technical_vocational_id={technical_vocational_id}")
+            except (Soldier.DoesNotExist, TechnicalVocational.DoesNotExist):
+                pass  # می‌توان پیام خطا نمایش داد
+
+    context = {
+        "selected_field":selected_field,
+        "technical_vocationals": technical_vocationals,
+        "soldiers": soldiers,
+        'last_registered_soldiers':last_registered_soldiers
+    }
+    return render(request, f"{template_pages}/technical_vocational_eazy_register.html", context)
+
+import os
+import zipfile
+import tempfile
+from django.http import HttpResponse
+from openpyxl import Workbook
+from ensaniapp_settings.models import EnsaniSettings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
+from io import BytesIO
+
+def technical_vocational_soldiers_export():
+    soldiers = Soldier.objects.filter(technical_exam__isnull=False).order_by('name')
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "سربازان فنی و حرفه‌ای"
+
+    headers = ["ردیف", "نام", "نام خانوادگی", "کد ملی", "رشته", "کد رشته","تصویر"]
+    ws.append(headers)
+
+    # استایل هدر
+    header_font = Font(bold=True, color="000000")
+    header_fill = PatternFill(start_color="92DCE5", end_color="92DCE5", fill_type="solid")
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),
+                         top=Side(style='thin'), bottom=Side(style='thin'))
+
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # داده‌ها
+    for i, soldier in enumerate(soldiers, 2):
+        values = [
+            i-1,
+            soldier.name,
+            soldier.family,
+            soldier.National_Code,
+            soldier.technical_exam.name if soldier.technical_exam else "",
+            soldier.technical_exam.code if soldier.technical_exam else "",
+            "دارد" if soldier.avatar else "ندارد",
+        ]
+        for col_num, value in enumerate(values, 1):
+            cell = ws.cell(row=i, column=col_num, value=value)
+            cell.font = Font(color="000000")
+            cell.border = thin_border
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # تنظیم عرض ستون‌ها
+    for col in ws.columns:
+        max_length = max(len(str(c.value)) if c.value else 0 for c in col) + 2
+        ws.column_dimensions[col[0].column_letter].width = max_length
+    
+    ws.sheet_view.rightToLeft = True
+
+    return wb
+
+def technical_vocational_soldiers_export_excel(request):
+    wb = technical_vocational_soldiers_export()
+    ensani_settings = EnsaniSettings.objects.first()
+    course_number = ensani_settings.shomare_dore if ensani_settings else "default"
+
+    # آماده‌سازی پاسخ HTTP
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=fani_herfeii_sodliers.xlsx'
+    wb.save(response)
+    return response
+
+def technical_vocational_soldiers_export_zip(request):
+    soldiers = Soldier.objects.filter(technical_exam__isnull=False).order_by('name')
+    wb = technical_vocational_soldiers_export()
+    ensani_settings = EnsaniSettings.objects.first()
+    course_number = ensani_settings.shomare_dore if ensani_settings else "default"
+
+    # ساخت ZIP در حافظه
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        # ذخیره اکسل در ZIP
+        excel_buffer = BytesIO()
+        wb.save(excel_buffer)
+        excel_buffer.seek(0)
+        zipf.writestr("fani_herfeii_soldiers.xlsx", excel_buffer.read())
+
+        # اضافه کردن تصاویر سربازان
+        for soldier in soldiers:
+            if soldier.avatar:
+                try:
+                    with default_storage.open(soldier.avatar.name, 'rb') as f:
+                        data = f.read()
+                        filename = f"pictures/{soldier.National_Code}.png"
+                        zipf.writestr(filename, data)
+                except Exception as e:
+                    print(f"خطا در افزودن تصویر {soldier.National_Code}: {e}")
+
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer.read(), content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=fani_herfeii.zip'
+    return response

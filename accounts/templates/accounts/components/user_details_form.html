@@ -49,6 +49,24 @@
 
     <!-- دکمه ذخیره -->
     <div class="form-actions">
-        <button type="submit">ذخیره اطلاعات</button>
+     <button 
+        name="action" 
+        value="save" 
+        type="submit"
+        onclick="return confirm('آیا مطمئن هستید می‌خواهید اطلاعات را ذخیره کنید؟');"
+    >
+        ذخیره اطلاعات
+    </button>
+    {%if  not user.is_staff %}
+    <button 
+        type="submit"
+        name="action" 
+        value="remove"
+        onclick="return confirm('آیا مطمئن هستید می‌خواهید این کاربر را حذف کنید؟');"
+        style="background-color:#dc3545; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;"
+    >
+        حذف کاربر
+    </button>
+    {% endif %}
     </div>
 </form>

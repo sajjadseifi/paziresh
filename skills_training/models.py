@@ -26,7 +26,6 @@ class SlillTraining(models.Model):
         return f"{self.title} ({self.category})"
 
 from django.db import models
-import jdatetime
 
 class HazardSettings(models.Model):
     # فیلدهای جدول گواهی مخاطرات
@@ -45,3 +44,22 @@ class HazardSettings(models.Model):
     class Meta:
         verbose_name = "تنظیمات مخاطرات"
         verbose_name_plural = "تنظیمات مخاطرات"
+
+from django.db import models
+
+class TechnicalVocational(models.Model):
+    name = models.CharField(max_length=255,verbose_name="نام رشته")
+    code = models.CharField(max_length=100,unique=True,verbose_name="کد رشته")
+    created_at = models.DateTimeField( auto_now_add=True,verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField( auto_now=True,verbose_name="تاریخ بروزرسانی")
+
+    class Meta:
+        db_table = 'technical_vocational_fields'
+        verbose_name = "رشته فنی و حرفه‌ای"
+        verbose_name_plural = "رشته‌های فنی و حرفه‌ای"
+        ordering = ['code']
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'code'], name='unique_name_code')
+        ]
+    def __str__(self):
+        return f"{self.name} ({self.code})"

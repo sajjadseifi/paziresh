@@ -1,0 +1,111 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+{% load access_filters %}
+
+{% block header %}
+   <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+   <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
+   <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
+   <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+   <script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
+   <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+<style>
+    .nav-tabs {
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .nav-tabs .nav-link {
+        color: #555;
+        font-weight: 500;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: all 0.25s ease;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .nav-tabs .nav-link:hover {
+        color: #007bff;
+        border-bottom: 3px solid rgba(0, 123, 255, 0.3);
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background-color: #f8f9fa;
+        border-bottom: 3px solid #0d6efd;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        font-weight: 600;
+        box-shadow: 0 -2px 6px rgba(13, 110, 253, 0.1);
+    }
+    .tab-content {
+    }
+</style>
+
+<div class="mt-4">
+    <!-- ناوبری تب‌ها -->
+    <ul class="nav nav-tabs mb-4 justify-content-center" dir="rtl">
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_index' %}active{% endif %}"
+               href="{% url 'interferences_index' %}">
+               <i class="fa fa-id-card"></i>
+               صفحه اصلی
+            </a>
+        </li>
+ 
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_base_information' %}active{% endif %}"
+               href="{% url 'interferences_base_information' %}">
+               <i class="fa fa-graduation-cap"></i>
+               اطلاعات پایه
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_enduction_info' %}active{% endif %}"
+               href="{% url 'interferences_enduction_info' %}">
+               <i class="fa fa-graduation-cap"></i>
+               اطلاعات تحصیلی
+            </a>
+        </li>
+                <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_city_and_province' %}active{% endif %}"
+               href="{% url 'interferences_city_and_province' %}">
+               <i class="fa fa-graduation-cap"></i>
+               شهر و استان
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_vaziat_jasmani' %}active{% endif %}"
+               href="{% url 'interferences_vaziat_jasmani' %}">
+               <i class="fa fa-heartbeat"></i>
+               وضعیت جسمانی
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_yegan_khedmati' %}active{% endif %}"
+               href="{% url 'interferences_yegan_khedmati' %}">
+               <i class="fa fa-shield"></i>
+               یگان خدمتی
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'interferences_yegan_tatbigh' %}active{% endif %}"
+               href="{% url 'interferences_yegan_tatbigh' %}">
+               <i class="fa fa-shield"></i>
+               تطبیق یگان
+            </a>
+        </li>
+    </ul>
+
+    <!-- محتوای تب فعال -->
+    <div class="tab-content">
+        {% block interferences_content %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}
