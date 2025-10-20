@@ -326,52 +326,55 @@
 
     <!-- بخش جدول -->
     <div class="tatbigh-right">
-        <div class="">
+        <form 
+            {% if not permissions.dep.niru_ensani and not tatbigh %}
+                style="display:none;"
+            {% endif %}
+            
+            method="POST" id="soldier-match-form">
+                {% csrf_token %}
+                <div id="soldier-form">
+                <h4>
+                        فرم ثبت کد سازمانی سرباز در 
+                        گردان:
+                        <span class="text-primary">
+                            {{ selected_battalion_name|default:"—" }}
+                        </span>
+                        گروهان:
+                        <span class="text-primary">
+                            {{ selected_group_name|default:"—" }}
+                        </span>
+                    </h4>
+                            <!-- 👇 hidden inputs -->
+                    <input type="hidden" id="soldier-id" name="soldier_id">
+                    <input type="hidden" id="gordan-id" name="gordan_id">
+                    <input type="hidden" id="grohan-id" name="grohan_id">
 
-        <form method="POST" id="soldier-match-form">
-            {% csrf_token %}
-            <div id="soldier-form">
-               <h4>
-                    فرم ثبت کد سازمانی سرباز در 
-                     گردان:
-                    <span class="text-primary">
-                        {{ selected_battalion_name|default:"—" }}
-                    </span>
-                    گروهان:
-                    <span class="text-primary">
-                        {{ selected_group_name|default:"—" }}
-                    </span>
-                </h4>
-                        <!-- 👇 hidden inputs -->
-                <input type="hidden" id="soldier-id" name="soldier_id">
-                <input type="hidden" id="gordan-id" name="gordan_id">
-                <input type="hidden" id="grohan-id" name="grohan_id">
+                    <div class="form-group-2">
+                        <label for="national-code">کد ملی سرباز</label>
+                        <input name="national-code" type="text" id="national-code" placeholder="کد ملی" required>
+                        <button id="fetch-soldier-btn" type="button">🔍 جستجو</button>
+                    </div>
 
-                <div class="form-group-2">
-                    <label for="national-code">کد ملی سرباز</label>
-                    <input name="national-code" type="text" id="national-code" placeholder="کد ملی" required>
-                    <button id="fetch-soldier-btn" type="button">🔍 جستجو</button>
+                    <div class="form-group-2">
+                        <label for="new-org-code">کد سازمانی جدید</label>
+                        <input name="new_org_code" type="text" id="new-org-code" placeholder="کد سازمانی جدید" required>
+                        <button id="form-submit-btn" type="submit" disabled>💾 ثبت تغییرات</button>
+                    </div>
                 </div>
 
-                <div class="form-group-2">
-                    <label for="new-org-code">کد سازمانی جدید</label>
-                    <input name="new_org_code" type="text" id="new-org-code" placeholder="کد سازمانی جدید" required>
-                    <button id="form-submit-btn" type="submit" disabled>💾 ثبت تغییرات</button>
+                <div id="soldier-info" >
+                    <p><span>کد ملی</span> <strong id="soldier-national-code"></strong></p>
+                    <p><span>نام و نام خانوادگی</strong> <strong id="soldier-name"></strong></p>
+                    <p><span>گردان قبلی</span> <strong id="soldier-current-battalion"></strong></p>
+                    <p><span>گردان نهایی</span> <strong id="soldier-current-t-battalion"></strong></p>
+                    <p><span>گروهان قبلی</span> <strong id="soldier-current-group"></strong></p>
+                    <p><span>گروهان نهایی</span> <strong id="soldier-current-t-group"></strong></p>
+                    <p><span>کد سازمانی قبلی</span> <strong id="soldier-current-code_gorhan"></strong></p>
+                    <p><span>کد سازمانی نهایی</span> <strong id="soldier-current-code_gorhan_nahai"></strong></p>
                 </div>
-            </div>
+            </form>
 
-            <div id="soldier-info" >
-                <p><span>کد ملی</span> <strong id="soldier-national-code"></strong></p>
-                <p><span>نام و نام خانوادگی</strong> <strong id="soldier-name"></strong></p>
-                <p><span>گردان قبلی</span> <strong id="soldier-current-battalion"></strong></p>
-                <p><span>گردان نهایی</span> <strong id="soldier-current-t-battalion"></strong></p>
-                <p><span>گروهان قبلی</span> <strong id="soldier-current-group"></strong></p>
-                <p><span>گروهان نهایی</span> <strong id="soldier-current-t-group"></strong></p>
-                <p><span>کد سازمانی قبلی</span> <strong id="soldier-current-code_gorhan"></strong></p>
-                <p><span>کد سازمانی نهایی</span> <strong id="soldier-current-code_gorhan_nahai"></strong></p>
-            </div>
-        </form>
-        </div>
         <div class="card">
 
             <div class="tabs-buttons-tatbig">
@@ -452,6 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 <script>
    /**
  * تابع گرفتن گردان و گروهان انتخاب شده

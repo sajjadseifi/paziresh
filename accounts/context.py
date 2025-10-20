@@ -1,4 +1,5 @@
 from .models import UserAccess, AccessName, ApplicationValues,DepartmentValues
+from ensaniapp_settings.models import EnsaniSettings
 
 def user_access_context(request):
     """
@@ -58,4 +59,5 @@ def user_access_context(request):
             permissions['dep'][key_access] = is_access
             # print(f"permissions['dep'][{key_access}] = {is_access}")
 
-    return {'permissions': permissions}
+    en = EnsaniSettings.objects.filter()
+    return {'permissions': permissions,'en':en}

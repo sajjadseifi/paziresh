@@ -65,7 +65,7 @@ def get_user_battalion_groups(user):
 
     return battalion_group.objects.filter(id__in=group_ids) | groups_from_battalion
 
-
+from ensaniapp_settings.models import EnsaniSettings
 # 3️⃣ تابع دریافت سربازان بر اساس دسترسی کاربر
 def get_user_soldiers(user):
     """
@@ -80,9 +80,17 @@ def get_user_soldiers(user):
 
     battalions_allowed = get_user_battalions(user)
     battalion_groups_allowed = get_user_battalion_groups(user)
-
-    return Soldier.objects.filter(
-        Gordan__in=battalions_allowed
-    ) | Soldier.objects.filter(
-        battalion_group__in=battalion_groups_allowed
-    )
+    tatbigh = EnsaniSettings.objects.first()
+    
+    if tatbigh:
+        return Soldier.objects.filter(
+            t_Gordan__in=battalions_allowed
+        ) | Soldier.objects.filter(
+            t_battalion_group__in=battalion_groups_allowed
+        )  
+    else:
+        return Soldier.objects.filter(
+            Gordan__in=battalions_allowed
+        ) | Soldier.objects.filter(
+            battalion_group__in=battalion_groups_allowed
+        )
