@@ -79,11 +79,17 @@
 
                     </div>
                     <div class="col-md-6">
-                        <p><i class="fa fa-hospital"></i><strong>دفترچه
-                            بیمه:</strong> {{ soldier.health_insurance_card }}</p>
+                        <p><i class="fa fa-hospital"></i><strong>رشته تحصیلی:</strong> {{ soldier.Study_group }}</p>
                         <p><i class="fa fa-notes-medical"></i><strong>نوع
                             بیماری:</strong> {{ soldier.Type_of_disease }}</p>
                     </div>
+                    <div class="col-md-6">
+
+                              <p><i class="fa fa-hospital"></i><strong>دفترچه
+                            بیمه:</strong> {{ soldier.health_insurance_card }}</p>
+                        
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -172,7 +178,7 @@
                         </p>
                         <p><i class="fa fa-weight"></i><strong>نوع یگان خدمتی:</strong> {{ soldier.unit_type }}
                         </p>
-                        <p><i class="fa fa-weight"></i><strong>نوع یگان خدمتی:</strong> {{ soldier.yegan_name }}
+                        <p><i class="fa fa-weight"></i><strong>نام اصلی یگان:</strong> {{ soldier.yegan_name }}
                         </p>
                     </div>
                     <div class="col-md-6">
@@ -219,6 +225,7 @@
                             <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
                             <p><strong>تعداد تالیفات:</strong> {{ soldier.publications }}</p>
                         {% endif %}
+                        
                         {% if soldier.rank == 'سرباز' %}
                             <img src="{% static 'img/rank/1.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
                                  style="width: 40px">

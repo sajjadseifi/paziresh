@@ -1,52 +1,244 @@
-{% extends "shared/_LetterA5.html" %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گواهی عضویت {{ checkout_letter.soldire.name }} {{ checkout_letter.soldire.family }} </title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        @page {
+            size: A5 portrait; /* تنظیم اندازه کاغذ به A5 و جهت گیری عمودی */
+        }
 
-{% block title %}نامه معرفی به کمیسیون{% endblock %}
-{% block content %}
-<style>
-    .letter_details,
-    .letter_note {
-        font-size:9px;
-        text-align:center;
-    }
-    .content-box {
-        flex:1;
-    }
+        html, body {
+            width: 148mm;
+            margin: 0;
+            padding: 0;
+        }
 
-            .letter_number { position: absolute; top: 45px; left: 55px; font-size: 9px; }
-        .letter_date { position: absolute; top: 65px; left: 55px; font-size: 9px; }
-        .shoare_sall { position: absolute; top: 145px; right: 120px; font-size: 13px; font-weight: bold; }
-        .letter_to { position: absolute; top: 170px; right: 40px; font-size: 12px; font-weight: bold; direction: rtl; text-align: right;  }
-        .letter_create_location { position: absolute; top: 195px; right: 40px; font-size: 12px; font-weight: bold; direction: rtl; text-align: right;  }
-        .letter_des { position: absolute; top: 280px; right: 40px; font-size: 12px; font-weight: bold; width: 120mm; word-break: break-word; text-align: right; direction: rtl; }
-        .letter_details { position: absolute; top: 400px; right: 40px; font-size: 12px; font-weight: normal;width: 120mm; word-break: break-word; text-align: right; direction: rtl; }
-        .farmande_padegan { position: absolute; top: 570px; right: 200px; font-size: 12px; font-weight: bold; }
-        .letter_note { position: absolute; top: 640px; right: 40px; font-size: 10px; width: 120mm; direction: rtl; text-align: right; }
-        .check_out { position: absolute; top: 690px; left: 100px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; }
-        .sutter { position: absolute; top: 690px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; }
-        .code_paziresh { position: absolute; top: 710px; right:400px; font-size: 12px; font-weight: bold; }
+        body {
+            font-family: 'B Nazanin';
+        }
 
-</style>
+        .container {
+            position: relative;
+            text-align: center;
+            color: rgb(0, 0, 0); /* رنگ متن */
+        }
 
-<!-- محتوای صفحه اول -->
-<div class="content-box">
-    <div class="content flex-content">
-        با صلوات بر محمد و آل محمد (ص) و با احترام،  
-        به استناد ابلاغیه شماره 40/4/10505س مورخ 90/10/28 ستاد کل سپاه،  
-        فراگیر {{ before_course_commission_letter.soldire.name }} {{ before_course_commission_letter.soldire.family }}  
-        فرزند {{ before_course_commission_letter.soldire.fathers_name }} با شناسه ملی  
-        {{ before_course_commission_letter.soldire.National_Code }} و تاریخ اعزام  
-        {{ before_course_commission_letter.soldire.Date_of_dispatch }}، برابر تأیید بهداری، به علت  
-        {{ before_course_commission_letter.description }} معرفی به کمیسیون، در تاریخ  
-        {{ before_course_commission_letter.create_time.date|date:"Y/m/d" }} از این آموزشگاه تسویه حساب نموده و جهت اعزام به کمیسیون بدوی پزشکی حضورتان معرفی می‌گردد.
+        .image {
+            display: block;
+            width: 100%; /* عرض عکس */
+            height: auto; /* ارتفاع خودکار */
+        }
+
+        .shoare_sall {
+            position: absolute;
+            top: 141px;
+            right: 116px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_des {
+            position: absolute;
+            top: 320px;
+            right: 34px;
+            font-size: 15px;
+            color: black;
+            font-weight: bold;
+            width: 449px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+        .bazgasht {
+            position: absolute;
+            top: 270px;
+            right: 34px;
+            font-size: 15px;
+            color: black;
+            font-weight: bold;
+            width: 449px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+        }
+
+        .destination {
+            position: absolute;
+            top: 167px;
+            right: 32px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .az {
+            position: absolute;
+            top: 189px;
+            right: 32px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+
+        .letter_number {
+            position: absolute;
+            top: 44px;
+            right: 418px;
+            font-size: 8px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .letter_date {
+            position: absolute;
+            top: 69px;
+            right: 418px;
+            font-size: 11px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .farmande_razm_moghadamati {
+            position: absolute;
+            top: 587px;
+            right: 196px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .note {
+            position: absolute;
+            top: 458px;
+            right: 32px;
+            font-size: 13px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .code_paziresh {
+            position: absolute;
+            top: 714px;
+            right: 412px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .gordan {
+            position: absolute;
+            top: 714px;
+            right: 35px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="{% static 'img/letters/register.jpg' %}" alt="register" class="image">
+    <div class="letter_number">ز/<bdi>512/106/6/<span>{{ Normal_letter_Register.number }}</span></bdi>
     </div>
+    <div class="letter_date">{{ Normal_letter_Register.create_time.date }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="destination">به : {{ Normal_letter_Register.destination }}</div>
+    <div class="az">از : آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی</div>
+    {% if rg is not None  %}
+        <div class="bazgasht">
+            باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، بازگشت به نامه شماره
+            {% if rg.in_come_letter_numbers or rg.in_come_letter_data %}
+                    {{ rg.in_come_letter_numbers }} {% if rg.in_come_letter_data %} مورخ {{ rg.in_come_letter_data }} {% endif %} از بابل
+            {% endif %}
+            به استحضار می رساند :
+        </div>
+        <div class="letter_des">
+            فراگیر {{ Normal_letter_Register.soldire.name }} {{ Normal_letter_Register.soldire.family }} فرزند
+            {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
+            ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
+            اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
+            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
+            حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
+            می باشد .
+        </div>
+    {% else %}
+        <div class="bazgasht">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استحضار می رساند :</div>
+        <div class="letter_des">
+            فراگیر {{ Normal_letter_Register.soldire.name }} {{ Normal_letter_Register.soldire.family }} فرزند
+            {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
+            ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
+            اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
+            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
+            حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
+            می باشد .
+        </div>
+    {% endif %}
+    <div class="note">مراتب بنا بر درخواست فرد صادر گردیده و اعتبار دیگری ندارد</div>
+    <div class="farmande_razm_moghadamati">{{ en.farmande_razme_moghadamati }}</div>
 </div>
-    <div class="letter_details">
-        مستدعی است ضمن معرفی نامبرده به کمیسیون پزشکی استان، در صورت معاف دائم به سازمان وظیفه عمومی و در صورت سلامت و معاف از رزم، نتیجه را بصورت محرمانه توسط خود شخص به آموزشگاه اعلام فرمایید.
+<div class="container">
+    <img src="{% static 'img/letters/register.jpg' %}" alt="register" class="image">
+    <div class="letter_number">ز/
+        <bdi>512/106/6/<span>{{ Normal_letter_Register.number }}</span></bdi>
     </div>
-    
-<div class="letter_note">
-    تذکر: مدت زمان وصول پاسخ نامه به این آموزشگاه از سوی کمیسیون استان، 59 روز از تاریخ فوق می‌باشد.  
-    در صورت عدم ارسال به موقع، فرار از خدمت برای نامبرده لحاظ می‌گردد.
+    <div class="letter_date">{{ Normal_letter_Register.create_time.date }}</div>
+    <div class="shoare_sall">{{ en.shoare_sall }}</div>
+    <div class="destination">به : {{ Normal_letter_Register.destination }}</div>
+    <div class="az">از : آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی</div>
+        {% if rg is not None  %}
+            <div class="bazgasht">
+                باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، بازگشت به نامه شماره
+                {% if rg.in_come_letter_numbers or rg.in_come_letter_data %}
+                        {{ rg.in_come_letter_numbers }} {% if rg.in_come_letter_data %} مورخ {{ rg.in_come_letter_data }} {% endif %} از بابل
+                {% endif %}
+                به استحضار می رساند :
+            </div>
+            <div class="letter_des">
+                فراگیر {{ Normal_letter_Register.soldire.name }} {{ Normal_letter_Register.soldire.family }} فرزند
+                {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
+                ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
+                اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
+                از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
+                حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
+                می باشد .
+            </div>
+        {% else %}
+        <div class="bazgasht">باصلوات برمحمّد وآل محمّد(ص) و با احتـرام، به استحضار می رساند :</div>
+        <div class="letter_des">
+            فراگیر {{ Normal_letter_Register.soldire.name }} {{ Normal_letter_Register.soldire.family }} فرزند
+            {{ Normal_letter_Register.soldire.fathers_name }} با شناسه
+            ملی {{ Normal_letter_Register.soldire.National_Code }} و تاریخ
+            اعزام {{ Normal_letter_Register.soldire.Date_of_dispatch }} ؛
+            از تاریخ {{ Normal_letter_Register.soldire.tarikh_paziresh.date.year }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.month }}/{{ Normal_letter_Register.soldire.tarikh_paziresh.date.day }} در این آموزشگاه پذیرش گردیده و در حال
+            حاضر نیز مشغول به گذراندن دوره ی آموزش رزم مقدماتی
+            می باشد .
+        </div>
+    {% endif %}
+    <div class="note">مراتب بنا بر درخواست فرد صادر گردیده و اعتبار دیگری ندارد</div>
+    <div class="farmande_razm_moghadamati">{{ en.farmande_razme_moghadamati }}</div>
+    <div class="code_paziresh">عدد پذیرش :{{ Normal_letter_Register.soldire.acceptance_code }}</div>
+    <div class="gordan"> گردان : {{ Normal_letter_Register.soldire.t_Gordan.name }} ؛ گروهان
+        : {{ Normal_letter_Register.soldire.t_battalion_group.name }} ؛ کد سازمانی
+        :{{ Normal_letter_Register.soldire.code_gorhan_nahai }}</div>
 </div>
-{% endblock %}
+<script>
+    window.print()
+    window.onafterprint = function () {
+        window.close();
+
+    }
+</script>
+</body>
+</html>

@@ -213,9 +213,100 @@ def soldire_details(request, code):
     if request.method == "GET":
         soldire = Soldier.objects.filter(National_Code=code).first()
         normalLetter = NormalLetterModels.objects.filter(soldire=soldire).all()
-        context = {'soldier': soldire, 'normalLetter': normalLetter, 'rank_mapping': RANK_MAPPING, }
+        context = {'soldier': soldire, 'normalLetter': normalLetter, 'rank_mapping': RANK_MAPPING}
         return render(request, 'ensani_soldires_management/soldire_details.html', context)
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from ensani_letter.models import *
+@login_required
+def soldier_detail(request):
+    code = request.GET.get('code') or request.POST.get('code')
+    
+    soldiers = Soldier.objects.all().order_by('name','family')
+    
+
+    if not code:
+        # هیچ کدی در query string نیست
+        return render(request, 'ensani_soldires_management/soldier_detail.html', {
+            'code':code,
+            'soldiers': soldiers,
+            'soldier': None,
+            'normalLetter': None,
+            'rank_mapping': RANK_MAPPING,
+            'message': "لطفاً ابتدا سرباز مورد نظر را انتخاب کنید."
+        })
+
+    soldier = Soldier.objects.filter(National_Code=code).first()
+
+    if not soldier:
+        # کد ملی اشتباه یا سرباز پیدا نشده
+        return render(request, 'ensani_soldires_management/soldier_detail.html', {
+            'code':code,
+            'soldiers': soldiers,
+            'soldier': None,
+            'normalLetter': None,
+            'rank_mapping': RANK_MAPPING,
+            'message': "سربازی با این کد ملی یافت نشد. لطفاً دوباره تلاش کنید."
+        })
+
+
+    normalLetter = NormalLetterModels.objects.filter(soldire=soldier).all()
+    rank_list = dict(RANK_MAPPING).keys()
+    current_rank = soldier.rank
+        
+    rank_access = []
+    if soldier.Grade == 'دکتری':
+        rank_access=["ستوان یکم"]
+    elif soldier.Grade == 'فوق لیسانس':
+        rank_access=["ستوان سوم","ستوان دوم"]
+    elif soldier.Grade == 'لیسانس':
+        rank_access=["رزم‌آور سوم","رزم‌آور دوم","رزم‌آور یکم","رزمدار دوم","رزمدار یکم","ستوان سوم"]
+    elif soldier.Grade == 'فوق دیپلم':
+        rank_access=["رزم‌آور سوم","رزم‌آور دوم"]
+    else:
+        rank_access=["سرباز","سرباز دوم","سرباز یکم","رزمیار"]
+    
+    if request.method == "POST": 
+        action = request.POST.get('action')
+        print(action)
+        if action == "rank":
+            new_rank = request.POST.get('new_rank')
+            if new_rank in rank_access and new_rank != soldier.rank:
+                print(soldier.rank,new_rank)
+                soldier.rank = new_rank
+        if action == "IsUnit":
+            # flag unit from user
+            soldier.IsUnit = not soldier.IsUnit 
+            
+        soldier.save()
+
+            
+    # محاسبه تعداد انواع نامه‌ها
+    letter_counts = {
+        "training_inquiry": NormalLetterModels.objects.filter(soldire=soldier,subject ="استعلام کفایت از آموزش").count(),
+        "normal": NormalLetterModels.objects.filter(soldire=soldier).count(),
+        "checkout_before": NormalLetterModels.objects.filter(soldire=soldier,subject = "معرفی به کمیسیون شروع دوره آموزشی").count(),
+        "checkout": CheckoutLetterModels.objects.filter(soldire=soldier).count(),
+        "register": RegisterNormalLetter.objects.filter(normal_letter__soldire=soldier).count(),
+        "runaway": RunawayNormallLetter.objects.filter(normal_letter__soldire=soldier).count(),
+        "faraja": FarajaNormallLetter.objects.filter(normal_letter__soldire=soldier).count(),
+        "moarefi": MoarefiNormallLetter.objects.filter(normal_letter__soldire=soldier).count(),
+        "raw": RawLetter.objects.filter(soldier_national_code=code).count(),
+    } 
+    # my_letter.
+
+    return render(request, 'ensani_soldires_management/soldier_detail.html', {
+        'code':code,
+        'soldiers': soldiers,
+        'soldier': soldier,
+        'rank_list':rank_list,
+        'current_rank':current_rank,
+        'rank_mapping': RANK_MAPPING,
+        'normalLetter': normalLetter,
+        'rank_access':rank_access,
+        'letter_counts':letter_counts,
+    })
 
 @login_required
 def export_to_excel_list_hazer_be_khdmat(request):
@@ -1989,10 +2080,7 @@ def send_rank_score_update(request):
 def soldiers_scores_page(request):
     user = request.user
     # 🔹 دریافت همه سربازان مجاز بر اساس دسترسی کاربر
-    in_course_soldiers = get_user_soldiers(user).filter(
-        in_coures=True,
-        willing_to_learn=True
-    )
+    in_course_soldiers = get_user_soldiers(user).filter(in_coures=True,willing_to_learn=True)
     # 🔹 فیلتر گردان و گروهان از request.GET
     battalion_filter = request.GET.get('battalion_filter')
     group_filter = request.GET.get('group_filter')
@@ -2035,7 +2123,6 @@ def soldiers_scores_page(request):
     }
 
     return render(request, 'courses/soldiers_scores_page.html', context)
-
 
 
 def top_soldiers_course_page(request):
@@ -2232,7 +2319,6 @@ def soldiers_problems_page(request):
     formset = SoldierProblemFormSet(initial=initial_data)
 
     form_soldier_pairs = list(zip(formset.forms, page_obj))
-
     context = {
         'filter_form': filter_form,
         'formset': formset,
@@ -2661,3 +2747,129 @@ def get_soldier_by_national_code(request):
         return JsonResponse(data)
     except Soldier.DoesNotExist:
         return JsonResponse({"error": "سربازی با این کد ملی یافت نشد."}, status=404)
+
+from ensaniapp_settings.models import EnsaniSettings
+import zipfile, io, os, pandas as pd
+from django.http import HttpResponse
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.shortcuts import render
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def soldiers_avatar_page(request):
+    # 🟦 دریافت گردان و گروهان‌های مجاز
+    battalions_allowed = get_user_battalions(request.user)
+    groups_allowed = get_user_battalion_groups(request.user).select_related('gordan')
+
+    selected_battalion = request.GET.get('battalion')
+    if not selected_battalion and battalions_allowed.exists():
+        selected_battalion = str(battalions_allowed.first().id)
+
+    selected_group = request.GET.get('group')
+
+    if groups_allowed.exists():
+        valid_group = (
+            groups_allowed.filter(id=int(selected_group), gordan_id=int(selected_battalion)).first()
+            if selected_group else None
+        )
+        if valid_group:
+            selected_group = str(valid_group.id)
+        else:
+            first_group = groups_allowed.filter(gordan_id=int(selected_battalion)).first()
+            if first_group:
+                selected_group = str(first_group.id)
+            else:
+                selected_group = str(groups_allowed.first().id)
+
+    selected_battalion_obj = battalions_allowed.filter(id=selected_battalion).first() if selected_battalion else None
+    selected_group_obj = groups_allowed.filter(id=selected_group).first() if selected_group else None
+
+    soldiers = get_user_soldiers(request.user).annotate(
+        code_gorhan_nahai_int=Cast('code_gorhan_nahai', IntegerField()),
+        code_gorhan_int=Cast('code_gorhan', IntegerField()),
+    )
+
+    # وقتی کاربر فایل ZIP آپلود می‌کند
+    if request.method == "POST" and request.FILES.get("zip_file"):
+        uploaded_zip = request.FILES["zip_file"]
+        results = []  # برای گزارش اکسل
+
+        # باز کردن فایل ZIP
+        with zipfile.ZipFile(uploaded_zip, "r") as z:
+            for filename in z.namelist():
+                if filename.endswith(("/", "\\")):  # رد کردن پوشه‌ها
+                    continue
+
+                # استخراج نام فایل بدون پسوند (کد ملی)
+                national_code = os.path.splitext(os.path.basename(filename))[0]
+                file_data = z.read(filename)
+                file_obj = io.BytesIO(file_data)
+                file_obj.name = os.path.basename(filename)
+
+                try:
+                    soldier = Soldier.objects.get(National_Code=national_code)
+                    
+                    try:
+                        if not soldier in soldiers:
+                            results.append({
+                                "کد ملی": national_code,
+                                "وضعیت": "دسترسی غیر مجاز",
+                            })
+                        else:
+                            soldier.save_avatar(file_obj)
+                            results.append({
+                                "کد ملی": national_code,
+                                "وضعیت": "ذخیره شد",
+                            })
+                    except Exception as e:
+                        results.append({
+                            "کد ملی": national_code,
+                            "وضعیت": f"خطا در ذخیره‌سازی: {str(e)}",
+                        })
+                except Soldier.DoesNotExist:
+                    results.append({
+                        "کد ملی": national_code,
+                        "وضعیت": "کد ملی یافت نشد",
+                    })
+
+        # ساخت DataFrame از نتایج
+        df = pd.DataFrame(results)
+
+        # تولید اکسل در حافظه
+        excel_buffer = io.BytesIO()
+        with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+            df.to_excel(writer, index=False, sheet_name="گزارش")
+
+        excel_buffer.seek(0)
+
+        # ساخت پاسخ برای دانلود اکسل
+        response = HttpResponse(
+            excel_buffer.getvalue(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="soldiers_report.xlsx"'
+        return response
+    
+    en = EnsaniSettings.objects.first()
+
+    if en.tatbigh:
+        soldiers = soldiers.filter(t_battalion_group=selected_group).order_by('code_gorhan_nahai_int', 'code_gorhan_int')
+    else:
+        soldiers = soldiers.filter(battalion_group=selected_group).order_by('code_gorhan_int')
+
+    context = {
+        'soldiers': soldiers,
+        'battalions': battalions_allowed,
+        'groups': groups_allowed,
+        'selected_battalion': str(selected_battalion),
+        'selected_group': str(selected_group),
+        'selected_battalion_name': selected_battalion_obj.name if selected_battalion_obj else None,
+        'selected_group_name': selected_group_obj.name if selected_group_obj else None,
+    }
+    return render(request, 'courses/soldiers_avatar_page.html', context)
+
+

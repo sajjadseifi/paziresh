@@ -1,0 +1,292 @@
+{% extends './_layout_soldiers_scores.html' %}
+
+{% block scores_content %}
+<style>
+    /* ==== ساختار کلی ==== */
+    .tatbigh-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .tatbigh-left {
+        flex: 1;
+        min-width: 300px;
+    }
+    .tatbigh-right {
+        flex: 2;
+        
+    }
+    .tatbigh-right > .card {
+         height:80vh;
+        overflow-y:scroll;
+
+    }
+    /* ==== استایل انتخاب‌ها ==== */
+    #battalion-form {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    #battalion-form ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+/* مخفی کردن input اصلی */
+.form-check-input {
+    display: none;
+}
+
+/* دکمه شیشه‌ای برای label */
+.form-check-label {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+/* حالت hover */
+.form-check-label:hover {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* وقتی radio انتخاب شده */
+.form-check-input:checked + .form-check-label {
+    background: #4f46e5; /* رنگ فعال */
+    color: white;
+    border-color: #4f46e5;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.4);
+}
+.form-check-input:checked + .form-check-label::after {
+    content: "✔";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: white;
+    color: #4f46e5;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #4f46e5;
+}
+    /* ==== توضیحات ==== */
+    .guide-box {
+        background-color: #eef2ff;
+        border-left: 5px solid #4f46e5;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        line-height: 1.8;
+    }
+
+    /* ==== لیست سربازان ==== */
+    .soldier-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .soldier-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        padding: 6px 10px;
+        transition: all 0.2s;
+        width: calc(50% - 10px);
+    }
+    .soldier-item:hover {
+        background: #f3f4f6;
+    }
+    .soldier-item img {
+        width: 45px;
+        height: 45px;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
+
+    /* ==== دکمه آپلود ==== */
+    .upload-box {
+        background: #fff;
+        border: 2px dashed #4f46e5;
+        border-radius: 10px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .upload-box:hover {
+        background: #f5f3ff;
+    }
+    .upload-box input {
+        display: none;
+    }
+    .upload-box span {
+        font-size: 18px;
+        color: #4f46e5;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .soldier-item {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="tatbigh-container">
+
+    <!-- 👈 بخش تنظیمات و فیلتر -->
+    <div class="tatbigh-left">
+        <div class="card">
+            <h3 class="text-center mb-3">🏛️ تطبیق تصاویر سرباز</h3>
+
+            <form method="get" id="battalion-form">
+                <h5>انتخاب گردان</h5>
+                <ul>
+                    {% for b in battalions %}
+                        <li>
+                            <input class="form-check-input" type="radio" name="battalion" id="battalion_{{ b.id }}" value="{{ b.id }}" {% if selected_battalion == b.id|stringformat:"s" %}checked{% endif %}>
+                            <label class="form-check-label" for="battalion_{{ b.id }}">گردان {{ b.name }}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <h5 class="mt-3">انتخاب گروهان</h5>
+                <ul>
+                    {% for g in groups %}
+                        {% if g.gordan.id|stringformat:"s" == selected_battalion %}
+                            <li>
+                                <input class="form-check-input" type="radio" name="group" id="group_{{ g.id }}" value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}checked{% endif %}>
+                                <label class="form-check-label" for="group_{{ g.id }}">گروهان {{ g.name }}</label>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </form>
+            <!-- 📦 دکمه آپلود ZIP -->
+            <form  method="post" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+                <label class="upload-box">
+                    <input type="file" name="zip_file" accept=".zip" >
+                    <span>📦 آپلود فایل ZIP تصاویر سربازان</span>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block">⬆️ آپلود و ثبت تصاویر</button>
+            </form>
+            <div class="guide-box mt-3">
+                <p>
+                    در این صفحه می‌توانید برای هر سرباز، گردان و گروهان مناسب را تطبیق دهید و تصاویر سربازان را از طریق فایل ZIP بارگذاری کنید.
+                </p>
+                <ul style="padding-right: 20px;">
+                    <li>ابتدا گردان و گروهان مورد نظر را انتخاب کنید.</li>
+                    <li>سپس با آپلود فایل ZIP شامل عکس‌های سربازان، تصاویر بر اساس کد ملی آن‌ها به‌صورت خودکار تنظیم می‌شود.</li>
+                    <li>نام هر فایل باید کد ملی سرباز باشد (مثلاً <code>1234567890.jpg</code>).</li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- 👉 بخش لیست سربازان -->
+    <div class="tatbigh-right">
+        <div class="card">
+            <h4>
+                🪖 فهرست تصاویر سربازان  
+                <span class="text-primary">{{ selected_battalion_name|default:"—" }}</span> /
+                <span class="text-primary">{{ selected_group_name|default:"—" }}</span>
+            </h4>
+
+            <ul class="soldier-list">
+                {% for soldier in soldiers %}
+                    <li class="soldier-item">
+                        {% if soldier.avatar %}
+                            <img src="{{ soldier.avatar.url }}" alt="{{soldier.name}} {{soldier.family}}">
+                        {% else %}
+                            <div style="width:45px;height:45px;border-radius:6px;background-color:#ddd;display:flex;align-items:center;justify-content:center;font-size:10px;color:#666;">?</div>
+                        {% endif %}
+                        <div style="flex:1; font-size:11px;">
+                           <div>{{ soldier.name }} {{ soldier.family }}</div>
+                           <div>کدملی : <span style="font-weight:bold;">{{ soldier.National_Code }}</span></div>
+                        </div>
+                        <span style="font-weight:bold;background:#eaeaea;padding:1px 4px;border-radius:2px;"><span style="font-size:11px;">کد سازمانی</span> : {{soldier.code_gorhan_nahai}} </span>
+                    </li>
+                {% empty %}
+                    <p class="text-center text-muted mt-3">هیچ سربازی برای نمایش وجود ندارد.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('battalion-form');
+    form.addEventListener('change', function() {
+        form.submit();
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('battalion-form');
+    // وقتی گردان یا گروهان انتخاب شد، فرم خودکار ارسال شود
+    form.addEventListener('change', function() {
+        form.submit();
+    });
+});
+function getSelectedBattalionAndGroup() {
+    // گرفتن inputهای انتخاب‌شده
+    const selectedBattalion = document.querySelector('input[name="battalion"]:checked');
+    const selectedGroup = document.querySelector('input[name="group"]:checked');
+
+    if (!selectedBattalion || !selectedGroup) {
+        console.error("لطفاً ابتدا گردان و گروهان را انتخاب کنید.");
+        return null;
+    }
+
+    // گرفتن labelهای مرتبط با inputها
+    const battalionLabel = document.querySelector(`label[for="${selectedBattalion.id}"]`);
+    const groupLabel = document.querySelector(`label[for="${selectedGroup.id}"]`);
+
+    const battalionText = battalionLabel ? battalionLabel.textContent.trim() : '';
+    const groupText = groupLabel ? groupLabel.textContent.trim() : '';
+
+    return {
+        battalion: selectedBattalion.value,
+        group: selectedGroup.value,
+        dataTitle: `${battalionText} ، ${groupText}` // ترکیب دو label
+    };
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+<style>
+    /* فرم فیلتر */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-form select,
+.filter-form button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    background-color: #fff;
+    font-size: 14px;
+}
+   .filters .form-control {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+   }
+ .filter-form   .btn-filter {
+      background-color: #1f3c88;
+      color: #fff;
+      border-radius: 5px;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
+   }
+ .filter-form   .btn-filter:hover { background-color: #142766; }
+
+</style>
+<form method="get" class="filter-form filters">
+        <!-- فیلتر گردان -->
+        <select name="battalion_filter">
+            <option value="">همه گردان ها</option>
+            {% for battalion in battalions %}
+                <option value="{{ battalion.id }}"
+                    {% if request.GET.battalion_filter == battalion.id|stringformat:"s" %}selected{% endif %}>
+                    {{ battalion.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+    <!-- فیلتر گروهان -->
+    <select name="group_filter">
+        <option value="">همه گروهان ها</option>
+        {% for group in groups %}
+            {% if not request.GET.battalion_filter or group.gordan.id|stringformat:"s" == request.GET.battalion_filter %}
+                <option value="{{ group.id }}"
+                    {% if request.GET.group_filter == group.id|stringformat:"s" %}selected{% endif %}>
+                    {{ group.name }} ({{ group.gordan.name }})
+                </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+
+    <button class="btn-filter" type="submit">فیلتر</button>
+</form>

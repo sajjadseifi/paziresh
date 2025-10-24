@@ -14,7 +14,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
 .print {
     width: 148mm;
     height: 210mm;
-    padding:10px;
+    padding:20px 40px;
     box-sizing: border-box;
 }
 
@@ -24,7 +24,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     justify-content: flex-start;
     width: 100%;
     height: 100%;
-    padding: 10px;
+    padding: 10px 5px;
     border: 1px solid black;
     border-radius: 5px;
     box-sizing: border-box;
@@ -36,7 +36,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     align-items: center;
     justify-content: space-between;
     border-bottom:1px solid black;
-    padding: 5px 0;
+    padding: 5px 10px;
 }
 
 .header-right {
@@ -67,7 +67,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    margin: 15px 0;
+    margin: 5px 0;
 }
 
 .content {
@@ -80,20 +80,20 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
 
 .letter_to, .letter_create_location, .letter_des, .letter_details,
 .farmande_padegan, .letter_note, .check_out, .sutter, .code_paziresh {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: normal;
 }
 .letter_to, .letter_create_location {
-    font-size: 14px;
+    font-size: 15px;
     font-weight:bold;
 
 }
-.letter_des {  font-size: 16px; text-align: justify; }
+.letter_des {  font-size: 18px; text-align: justify; }
 .letter_details { text-align: right; }
 .empty {
     flex:1;
 }
-.farmande_padegan { font-weight: bold; text-align: center;font-size:26px;margin:20px 0; }
+.farmande_padegan { font-weight: bold; text-align: center;font-size:26px;margin:20px 0; font-family: 'IranNastaliq';}
 .letter_note { font-size: 10px; text-align: center; margin-top: 20px; }
 .code_paziresh { font-weight: bold; text-align: left; margin-top: 10px; }
 .check_out, .sutter { font-weight: bold; text-align: center; }
@@ -109,7 +109,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     font-weight:bold;
 }
 @media print {
-    body, html { width: 148mm; height: 210mm; margin: 0; padding: 0; }
+    body, html { width: 148mm; height: 210mm; margin: 0; padding: 0; box-sizing:border-box;}
     .page { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
@@ -138,13 +138,11 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
             <div class='salam_aleikom'>سلام علیکم</div>
             <div class='subject'>موضوع : {{letter.title}}</div>
             <div class="letter_des">
-                <span>اللّهمّ صَلّ علی مُحمّد و آلِ مُحمّد، با تقدیم احترام،</span>
-                {% if letter.return_to_number %}
-                    <span>بازگشت به شماره نامه {{ letter.return_to_number }}</span>
-                {% endif %}
+                <span>اللّهمّ صَلّ علی مُحمّد و آلِ مُحمّد،</span>
+                <span>با تقدیم احترام</span>
+                {% if letter.return_to_number %} <span>بازگشت به شماره نامه {{ letter.return_to_number }}</span>{% endif %}
+                :
             </div>
-
-            
             <div class="letter_des">{{ letter.description|default:"متن نامه آماده اینجا قرار می‌گیرد." }}</div>
             <div class="empty"></div>
             <div class="farmande_padegan">{{ ens.farmande_razme_moghadamati }}</div>

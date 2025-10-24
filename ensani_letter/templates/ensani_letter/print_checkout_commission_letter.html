@@ -46,16 +46,16 @@ html, body {
     word-break: break-word;
 }
 
-.letter_number { position: absolute; top: 45px; left: 45px; font-size: 9px; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-.letter_date { position: absolute; top: 65px; left: 45px; font-size: 9px; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_number { position: absolute; top: 45px; left: 45px; font-size: 11px; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_date { position: absolute; top: 65px; left: 45px; font-size:11px; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .shoare_sall { position: absolute; top: 145px; right: 120px; font-size: 13px; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .letter_to { position: absolute; top: 170px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .letter_create_location { position: absolute; top: 195px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-.letter_des { text-align:justify; position: absolute; top: 280px; right: 40px; font-size: 12px; font-weight: bold; width: 120mm; word-break: break-word;  direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-.letter_details { position: absolute; top: 400px; right: 40px; font-size: 12px; font-weight: normal; width: 120mm; word-break: break-word; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_des { text-align:justify; position: absolute; top: 280px; right: 40px; font-size: 14px; font-weight: bold; width: 120mm; word-break: break-word;  direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.letter_details { position: absolute; top: 400px; right: 40px; font-size: 13px; font-weight: normal; width: 120mm; word-break: break-word; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .farmande_padegan { position: absolute; top: 570px; right: 200px; font-size: 12px; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .letter_note { position: absolute; top: 640px; right: 40px; font-size: 10px; width: 120mm; text-align: center; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-.check_out { position: absolute;  top: 710px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+.check_out { position: absolute;  top: 710px; right: 40px; font-size: 13px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .sutter { position: absolute; top: 690px; right: 40px; font-size: 12px; font-weight: bold; text-align: right; direction: rtl; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 .code_paziresh { position: absolute; top: 710px; right:440px; font-size: 12px; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
 
@@ -140,7 +140,6 @@ html, body {
         {% endif %}
 
         {% if check_out %}
-            
             <div class="check_out">نامبرده طی فرم به شماره {{check_out.number}} از مراجع ذیربط تسویه حساب نموده است.</div>
         {% endif %}
     </div>

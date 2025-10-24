@@ -1,6 +1,35 @@
 {% load static %}
+<style>
+    .user-loggedin
+    {
+        margin:6px 10px;
+        padding:4px 8px;
+        color:white;
+        background:#ffffff22;
+        border-radius:4px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+    }
+    .logout-btn {
+        background:#ff3342;
+        padding:2px 4px;
+        border-radius:4px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:4px;
+        color:white;
+    }
+</style>
 <aside class="main-sidebar">
     <section class="sidebar">
+        <p class="user-loggedin">
+            <span class="user-status">👤 {{ request.user.first_name }} {{ request.user.last_name }}</span>
+            <a style="color:white;" href="{% url 'logout' %}"  class="header-icon logout-btn">
+               خروج <i class="fa fa-sign-out"></i> 
+            </a>
+        </p>
         <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
                 <input type="text" name="q" class="form-control" placeholder="جستجو">
@@ -31,6 +60,7 @@
                         <li><a href="{% url 'updatePazireshpage' %}">ویرایش پذیرشی</a></li>
                         <li><a href="{% url 'MainViewSoldires' %}" class="btn-download"> لیست کامل سربازها</a></li>
                         <li><a href="{% url 'exel' %}">بارگذاری اکسل سامانه</a></li>
+                        <li><a href="{% url 'interferences_index' %}">تداخل و بررسی سامانه</a></li>
                         <li><a href="{% url 'exel_update_number' %}">بارگذاری اکسل شماره تماس</a></li>
                         <li><a href="{% url 'sater_group_print' %}">چاپ ساتر گروهی</a></li>
                         <li><a href="{% url 'moarefi_begordan_group_print' %}">چاپ معرفی به گردان گروهی</a></li>
@@ -47,6 +77,10 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
+                    {% if request.user.is_staff == True %}
+                        <li><a href="{% url 'soldier_detail' %}">اطلاعات جامع سرباز</a></li>
+                    {% endif %}
+
                     <li><a href="{% url 'all_soldire' %}">تمامی سربازان</a></li>
                     <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته</a></li>
                     {% if request.user.is_staff == True %}
@@ -84,19 +118,11 @@
                     </a>
                 </li>
             {% endif %}
-            {% if request.user.is_staff == True %}
-            <li>
-                    <a href="{% url 'data_app' %}">
-                    <i class="fa fa-database"></i>
-                    <span>بانک اطلاعات</span>
-                </a>
-            </li>
-            {% endif %}
             {% if permissions.app.course == True %}
                 <li>
                     <a href="{% url 'soldiers_scores_help_page' %}">
                         <i class="fa fa-graduation-cap"></i>
-                        <span>گروه آموزشی</span>
+                        <span>سازماندهی سربازان</span>
                     </a>
                 </li>
             {% endif %}
@@ -113,6 +139,7 @@
                         <li><a href="{% url 'rank_group_print' %}">حکم درجه گروهی عددپذیرش</a></li>
                         <li><a href="{% url 'rank_group_print_gordani' %}">حکم درجه گروهی گردانی</a></li>
                         <li><a href="{% url 'export_to_excel_list_rank' %}">لیست درجه سربازان</a></li>
+                        <li><a href="{% url 'create_rank_gardesh_kar' %}">نامه گردشکار درجات</a></li>
                     </ul>
                 </li>
             {% endif %}
@@ -162,9 +189,7 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
-                    {% if request.user.is_staff == True %}
-                        <li><a href="{% url 'interferences_index' %}">تداخل و بررسی</a></li>
-                    {% endif %}
+              
 
                     <li><a href="{% url 'amar' %}">افراد حاضر به خدمت</a></li>
                     <li><a href="{% url 'gordanvgorhan' %}">آمار گردان و گروهان</a></li>
@@ -186,27 +211,11 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{% url 'gozaresh_shoro_dore' %}">گزارش شروع دوره</a></li>
-                    <li><a href="{% url 'gozaresh_yegan_khedmati' %}">گزارش یگان بکارگیرنده</a></li>
+                    {% comment %} <li><a href="{% url 'gozaresh_yegan_khedmati' %}">گزارش یگان بکارگیرنده</a></li> {% endcomment %}
                     <li><a href="{% url 'gozaresh_payan_dore' %}">گزارش پایان دوره</a></li>
                 </ul>
             </li>
-            {% if request.user.is_staff == True %}
-                <li><a href="{% url 'CreateOrUpdateSettings' %}"><i class="fa fa-gears"></i> <span>تنظیمات</span></a>
-                </li>
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-area-chart"></i> <span>پشتیبان گیری</span>
-                        <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
-              </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="{% url 'backup_database' %}">دریافت پشتیبان</a></li>
-                        <li><a href="{% url 'restore_database' %}">بازگزاری پشتیبان</a></li>
-                    </ul>
-                </li>
-            {% endif %}
-            <li><a href="{% url 'support' %}"><i class="fa fa-support"></i> <span>درباره سامانه</span></a>
-            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> <span>خروج</span></a>
+
         </ul>
         <!-- /.sidebar-menu -->
     </section>

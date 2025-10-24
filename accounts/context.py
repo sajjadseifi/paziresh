@@ -43,7 +43,6 @@ def user_access_context(request):
                 is_access = app_accesses.filter(access_value__iexact=app.name).exists()
 
             permissions['app'][key_access] = is_access
-            # print(f"permissions['app'][{key_access}] = {is_access}")
 
         # حلقه برای enum DepartmentValues
         for dep in DepartmentValues:
@@ -57,7 +56,6 @@ def user_access_context(request):
                 is_access = dep_accesses.filter(access_value__iexact=dep.name).exists()
 
             permissions['dep'][key_access] = is_access
-            # print(f"permissions['dep'][{key_access}] = {is_access}")
 
     en = EnsaniSettings.objects.filter()
     return {'permissions': permissions,'en':en}

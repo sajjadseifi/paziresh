@@ -2,30 +2,170 @@
 {% load static %}
 
 {% block main %}
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title">بازگرداندن پایگاه داده</h3>
-        </div>
-        <form action="{% url 'restore_database' %}" method="POST" enctype="multipart/form-data">
-            <p>یک فایل پشتیبان بارگذاری کنید تا پایگاه داده بازیابی شود.</p>
-            {% csrf_token %}
-            <div class="box-body">
-                <div class="input-group input-group-sm">
+<style>
+/* کارت‌ها */
+.panel-custom {
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+}
+
+.panel-custom .panel-heading {
+    background-color: #3498db; /* رنگ آبی جذاب */
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px 6px 0 0;
+    padding: 10px 15px;
+}
+
+.panel-custom .panel-body {
+    padding: 15px;
+}
+
+/* جدول فایل‌ها */
+.table-custom {
+    margin-bottom: 0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.table-custom thead {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #f0f8ff;
+}
+
+.table-custom td, .table-custom th {
+    vertical-align: middle !important;
+}
+
+/* دکمه‌ها */
+.btn-custom {
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-custom.btn-success:hover {
+    background-color: #2ecc71;
+    border-color: #27ae60;
+}
+
+.btn-custom.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2471a3;
+}
+
+/* متن‌های کم‌رنگ */
+.text-muted-center {
+    color: #999;
+    text-align: center;
+    padding: 15px;
+}
+</style>
+
+<div class="row">
+    <!-- بخش بارگذاری بکاپ -->
+    <div class="col-md-6">
+        <div class="panel panel-custom">
+            <div class="panel-heading">بازگرداندن پایگاه داده</div>
+            <div class="panel-body">
+                <p>لطفاً یک فایل پشتیبان انتخاب کنید تا پایگاه داده بازیابی شود.</p>
+                <form action="{% url 'restore_database' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <!-- دکمه بررسی -->
-                        <button type="submit" class="btn btn-success">
-                            ✅ بررسی
+                    <div class="text-left">
+                        <button type="submit" class="btn btn-success btn-custom">
+                             بررسی و بازگردانی ✅
                         </button>
+                        <a class="btn btn-default btn-custom" href="{% url 'backup_database' %}">⬇️ دریافت پشتیبان</a>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
+                <div class="panel panel-custom">
+            <div class="panel-heading">تاریخچه بازگرداندن پایگاه داده</div>
+            <div class="panel-body" style="padding:0;">
+                {% if backups %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-custom">
+                            <thead>
+                                <tr>
+                                    <th>نام فایل</th>
+                                    <th>پسوند</th>
+                                    <th>حجم (کیلوبایت)</th>
+                                    <th>آخرین تغییر</th>
+                                    <th>دانلود</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                {% for backup in history_backups %}
+                                    <tr>
+                                        <td>{{ backup.name }}</td>
+                                        <td dir="ltr">{{ backup.ext }}</td>
+                                        <td>{{ backup.size_kb }}</td>
+                                        <td>{{ backup.modified }}</td>
+                                        <td>
+                                            <a  href="{% url 'backup_database_download' %}?path={{backup.path}}" class="btn btn-primary btn-custom btn-sm" download>
+                                                دانلود ⬇️
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted-center">هیچ فایل پشتیبانی پیدا نشد.</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
+
+    <!-- بخش نمایش بکاپ‌ها -->
+    <div class="col-md-6">
+        <div class="panel panel-custom">
+            <div class="panel-heading">فایل‌های پشتیبان موجود دوره</div>
+            <div class="panel-body" style="padding:0;">
+                {% if backups %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-custom">
+                            <thead>
+                                <tr>
+                                    <th>نام فایل</th>
+                                    <th>پسوند</th>
+                                    <th>حجم (کیلوبایت)</th>
+                                    <th>آخرین تغییر</th>
+                                    <th>دانلود</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                {% for backup in backups %}
+                                    <tr>
+                                        <td>{{ backup.name }}</td>
+                                        <td>{{ backup.ext }}</td>
+                                        <td>{{ backup.size_kb }}</td>
+                                        <td>{{ backup.modified }}</td>
+                                        <td>
+                                            <a  href="{% url 'backup_database_download' %}?path={{backup.path}}" class="btn btn-primary btn-custom btn-sm" download>
+                                                دانلود ⬇️
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted-center">هیچ فایل پشتیبانی پیدا نشد.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

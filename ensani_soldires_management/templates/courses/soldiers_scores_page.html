@@ -35,15 +35,6 @@
     font-size: 14px;
 }
 
-/* Pagination و دکمه ثبت نمرات کنار هم */
-.pagination-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
 /* فرم submit کنار pagination */
 .submit-form button {
     padding: 6px 12px;
@@ -71,41 +62,7 @@
         align-self: flex-start;
     }
 }
-/* ===== Pagination ===== */
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    margin: 12px 0;
-}
-.pagination a {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid #1f3c88;
-    color: #1f3c88;
-    text-decoration: none;
-    
-}
-.pagination a:hover { background-color: #1f3c88; color: #fff; }
-.pagination .current {
-    font-weight: bold;
-    background-color: #1f3c88;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    
-}
 
-.pagination span.dots {
-    border: none;
-    background: none;
-    color: #333;
-}
-.pagination .disabled {
-    color: #aaa;
-    border-color: #aaa;
-    pointer-events: none;
-}
 /* کارت سرباز */
 .panel {
     border-radius: 12px;
@@ -263,83 +220,17 @@ input[type="checkbox"].hidden-checkbox {
 
 <div class="">
     <div class="filter-card">
-        <!-- فرم فیلتر -->
-        <form method="get" class="filter-form">
-               <!-- فیلتر گردان -->
-               <select name="battalion_filter">
-                  <option value="">همه گردان ها</option>
-                  {% for battalion in battalions %}
-                     <option value="{{ battalion.id }}"
-                           {% if request.GET.battalion_filter == battalion.id|stringformat:"s" %}selected{% endif %}>
-                           {{ battalion.name }}
-                     </option>
-                  {% endfor %}
-               </select>
+        {%include 'components/filter_soldiers_battbattalion.html' with battalions=battalions groups=groups %}
 
-            <!-- فیلتر گروهان -->
-            <select name="group_filter">
-               <option value="">همه گروهان ها</option>
-               {% for group in groups %}
-                  {% if not request.GET.battalion_filter or group.gordan.id|stringformat:"s" == request.GET.battalion_filter %}
-                        <option value="{{ group.id }}"
-                           {% if request.GET.group_filter == group.id|stringformat:"s" %}selected{% endif %}>
-                           {{ group.name }} ({{ group.gordan.name }})
-                        </option>
-                  {% endif %}
-               {% endfor %}
-            </select>
-
-
-            <button type="submit">فیلتر</button>
-        </form>
-
-<div class="pagination">
-    {# قبلی و اول #}
-    {% if page_obj.has_previous %}
-        <a href="?page=1{% if query_params %}&{{ query_params }}{% endif %}">&laquo; اول</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">&lsaquo; قبلی</a>
-    {% else %}
-        <span class="disabled">&laquo; اول</span>
-        <span class="disabled">&lsaquo; قبلی</span>
-    {% endif %}
-
-    {# ±2 صفحه اطراف صفحه فعلی #}
-    {% for num in page_obj.paginator.page_range %}
-        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-            {% if page_obj.number == num %}
-                <span class="current">{{ num }}</span>
-            {% else %}
-                <a href="?page={{ num }}{% if query_params %}&{{ query_params }}{% endif %}">{{ num }}</a>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-
-    {# فاصله و صفحات اول و آخر #}
-    {% for num in page_obj.paginator.page_range %}
-        {% if num == 1 or num == page_obj.paginator.num_pages %}
-            {% if num < page_obj.number|add:-2 or num > page_obj.number|add:2 %}
-                <a href="?page={{ num }}{% if query_params %}&{{ query_params }}{% endif %}">{{ num }}</a>
-            {% endif %}
-        {% elif num == page_obj.number|add:-3 or num == page_obj.number|add:3 %}
-            <span class="dots">...</span>
-        {% endif %}
-    {% endfor %}
-
-    {# بعدی و آخر #}
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if query_params %}&{{ query_params }}{% endif %}">بعدی &rsaquo;</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if query_params %}&{{ query_params }}{% endif %}">آخر &raquo;</a>
-    {% else %}
-        <span class="disabled">بعدی &rsaquo;</span>
-        <span class="disabled">آخر &raquo;</span>
-    {% endif %}
-</div>
+        {%include 'components/pagination.html' with page_obj=page_obj %}
 
     </div>
 
     <form method="post" action="{% url 'send_rank_score_update' %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-success">ثبت نمرات</button>
+        <div class="text-left " style="margin-bottom:10px;">
+            <button type="submit" class="btn btn-success">ثبت نمرات</button>
+        </div>
 
         {% for soldier in page_obj %}
         <div class="panel">

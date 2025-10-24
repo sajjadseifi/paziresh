@@ -1,31 +1,122 @@
 {% load static %}
-<header class="main-header" style='display:flex;'>
-    <!-- Logo -->
-    <a href="{% url 'home_page' %}" class="logo">
-        <span class="logo-mini">رزم‌آموز</span>
-        <span class="logo-lg"><b>رزم‌آموز المهدی(عج)</b></span>
-    </a>
+<style>
+.glass-btn {
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.25s ease-in-out;
+    text-decoration: none;
+    background: rgba(255,255,255,0.6);
+    color: #222 !important;
+    border: 2px solid rgba(0, 0, 0, 0);
 
-    <!-- Navbar -->
-    <nav style="flex:1;margin-right:0;" class="navbar navbar-static-top">
-        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-            <span class="sr-only">Toggle navigation</span>
+}
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 255.35);
+    color: #222 !important;
+}
+.glass-btn-danger {
+    background: rgba(255, 0, 0, 0.8);
+    color: #fff !important;
+}
+.glass-btn.glass-btn-danger.active {
+    background: rgba(255,0,0,1);
+    color: #fff !important;
+}
+
+.glass-btn.active {
+    background: rgba(255,255,255,1);
+    color: #222 !important;
+    border: 2px solid rgba(0, 0, 0, 1);
+}
+
+/* دکمه سبز برای فعال‌سازی */
+.glass-btn-activate {
+    background: rgba(46, 204, 113, 0.25);
+    color: #eaffea !important;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+
+}
+.glass-btn-activate.active,
+.glass-btn-activate:hover {
+    background: rgba(46, 204, 113, 0.5);
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+    color: #000 !important;
+}
+
+.glass-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+}
+.glass-dropdown li a {
+    color: #333;
+    padding: 8px 15px;
+    display: block;
+}
+.glass-dropdown li a:hover {
+    background-color: rgba(60,141,188,0.1);
+    color: #3c8dbc;
+}
+</style>
+
+<header class="main-header" style='display:flex;'>
+        <!-- Logo -->
+        <a href="{% url 'home_page' %}" class="logo">
+            <span class="logo-mini">رزم‌آموز</span>
+            <span class="logo-lg"><b>رزم‌آموز المهدی(عج)</b></span>
         </a>
+        <nav style="flex:1;margin-right:0;" class="navbar navbar-static-top"> 
+            <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"></a>
+        <div class="navbar-buttons" style="display:flex; gap:10px; align-items:center;justify-content:end;padding:0 10px;height:100%;">
+            {% if request.user.is_staff %}
+                {% load tz %}
+                {% now "Y-m-d" as today %}
+                <a  href="{% url 'activity_logs' %}" 
+                    class="glass-btn glass-btn-danger {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}"
+                >
+                    کارهای امروز  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
+                </a>
+                <a href="{% url 'account_access' %}"
+                   class="glass-btn {% if request.resolver_match.url_name == 'account_access' %}active{% endif %}">
+                    🔐 دسترسی کاربران
+                </a>
+
+                <a href="{% url 'CreateOrUpdateSettings' %}"
+                   class="glass-btn {% if request.resolver_match.url_name == 'CreateOrUpdateSettings' %}active{% endif %}">
+                    ⚙️ تنظیمات
+                </a>
+
+                <!-- Dropdown پشتیبان گیری -->
+                <div class="btn-group {% if request.resolver_match.url_name in 'backup_database restore_database' %}active{% endif %}">
+                    <button type="button" class="glass-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        💾 پشتیبان‌گیری <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu glass-dropdown">
+                        <li><a href="{% url 'backup_database' %}">📤 دریافت پشتیبان</a></li>
+                        <li><a href="{% url 'restore_database' %}">📥 بازگردانی پشتیبان</a></li>
+                    </ul>
+                </div>
+
+                <a href="{% url 'data_app' %}"
+                   class="glass-btn {% if request.resolver_match.url_name == 'data_app' %}active{% endif %}">
+                    🗄️ بانک اطلاعات
+                </a>
+            {% endif %}
+
+            <a href="{% url 'support' %}"
+               class="glass-btn {% if request.resolver_match.url_name == 'support' %}active{% endif %}">
+                💬 درباره سامانه
+            </a>
+
+            {% if not request.user.is_active %}
+                <a href="{% url 'activate_account' %}"
+                class="glass-btn glass-btn-activate {% if request.resolver_match.url_name == 'activate_account' %}active{% endif %}">
+                    🚀 فعال‌سازی حساب
+                </a>
+            {% endif %}
+        </div>
     </nav>
 
-    <!-- بخش اضافه شده به انتهای header -->
-    <div  style="display:flex; gap:15px; align-items:center; padding:0 15px;background-color:#3c8dbc;color:white;">
-        {% if request.user.is_staff == True %}
-        <a href="{% url 'account_access' %}" style="color:white;" class="header-icon">
-            دسترسی ها
-        </a>
-        {% endif %}
-        <!-- مثال: نمایش کاربر آنلاین -->
-        <span class="user-status">{{ request.user.first_name }} {{ request.user.last_name }}</span>
-
-        <!-- مثال: دکمه خروج -->
-        <a href="{% url 'logout' %}" style="color:white;" class="header-icon">
-            <i class="fa fa-sign-out"></i>
-        </a>
-    </div>
 </header>

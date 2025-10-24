@@ -70,8 +70,30 @@
                 تطبیق گردان گروهانی
             </a>
         </li>
-        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_avatar_page' %}active{% endif %}"
+               href="{% url 'soldiers_avatar_page' %}">
+               <i class="fa fa-"></i>
+               تصاویر سربازان
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
+               href="{% url 'top_soldiers_gordan_page' %}">
+               <i class="fa fa-star"></i>
+               سربازان نمونه در گردان
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
+               href="{% url 'soldiers_problems_page' %}">
+               <i class="fa fa-exclamation-triangle"></i>
+               مشکلات سربازان
+            </a>
+        </li>
+ 
 
+        {% endif %}
         {% if permissions.app.rank_scores %}
         <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
@@ -92,25 +114,7 @@
         </li>
         {% endif %}
 
-        {% if permissions.dep.gorohan %}
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
-               href="{% url 'top_soldiers_gordan_page' %}">
-               <i class="fa fa-star"></i>
-               سربازان نمونه در گردان
-            </a>
-        </li>
-        {% endif %}
-
-        {% if permissions.dep.gorohan %}
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
-               href="{% url 'soldiers_problems_page' %}">
-               <i class="fa fa-exclamation-triangle"></i>
-               مشکلات سربازان
-            </a>
-        </li>
-        {% endif %}
+     
         {% if permissions.dep.behdari %}
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.url_name == 'test_salamat_rawan' %}active{% endif %}"

@@ -8,6 +8,9 @@
     padding: 0;
     direction: rtl;
   }
+  .number {
+    font-family:'B Koodak';
+  }
 
   .wrapper {
     display: grid;
@@ -84,10 +87,10 @@
   }
   #preview {
     font-size: 13px;
-    padding: 15px;
-      width: 210mm;
-      height: 297mm;
-    margin: 0 auto;
+    padding: 15px 20px;
+    width: 210mm;
+    height: 297mm;
+    margin: 0 ;
     box-sizing: border-box;
     background: #fff;
   }
@@ -196,27 +199,27 @@
   margin: 10px 0; /* فاصله بالا و پایین */
   height: 2px;
 }
+
 @media print {
   hr {
-  border: 0;
-  border-top: 2px solid black; /* ضخامت و رنگ دلخواه */
-  margin: 10px 0; /* فاصله بالا و پایین */
-  height: 2px;
-}
+    border: 0;
+    border-top: 2px solid black; /* ضخامت و رنگ دلخواه */
+    margin: 10px 0; /* فاصله بالا و پایین */
+    height: 2px;
+  }
   html, body {
     margin: 0;
     padding: 0;
     background: #fff;
     direction: rtl;
-
   }
 
   .wrapper { display: block; }
   .form-card { display: none; }
 
   #preview {
-    width: 210mm;
-    height: 297mm;
+    width: auto;
+    height: auto;
     margin: 0;
     padding: 0; /* حذف padding اضافی */
     border: 0 none;
@@ -229,7 +232,7 @@
 
   .letter-table {
     width: 70%;
-    border-collapse: collapse; /* مطمئن شوید collapse اعمال شده */
+    border-collapse: collapse;
     margin: 0 auto;
     page-break-inside: avoid;
   }
@@ -278,16 +281,16 @@
             <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
               <span>شماره:</span>
               <span>
-                <span id="pv-lnum" dir="ltr">----</span>/<span dir="ltr">512/106/6</span><span>ز</span>
+                <span id="pv-lnum" class="number" dir="ltr">----</span>/<span class="number" dir="ltr">512/106/6</span><span>ز</span>
               </span>
             </p>
             <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
               <span>تاریخ:</span>
-              <span><span id="pv-ldate" dir="ltr">----</span></span>
+              <span><span id="pv-ldate"  class="number" dir="ltr">----</span></span>
             </p>
             <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
               <span>پیوست:</span>
-              <span>1 برگ</span>
+              <span class="number">1 برگ</span>
             </p>
           </div>
         </div>
@@ -301,51 +304,64 @@
           از : فرمانده آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه
         </p>
 
-        <p><strong>موضوع :</strong> تصویب و ابلاغ درجه سربازان کارکنان وظیفه</p>
+        <p ><strong>موضوع :</strong> تصویب و ابلاغ درجه سربازان کارکنان وظیفه</p>
 
         <p>
           با سلام و صلوات بر محمد و آل محمد (ص)؛ بازگشت به نامه شماره
-          <span id="pv-lnum2">----</span>/6/106/512ز مورخ <span id="pv-ldate2">----</span>،
-          درجه کارکنان وظیفه جمعی این یگان (دوره آموزش رزم مقدماتی <span id="pv-coursenum">--</span>) مزین به نام
-          <span id="pv-coursename">--</span> به تعداد <span id="pv-allcount">--</span> نفر
+          
+          <span class="number">512/106/6/<span class="number" id="pv-lnum2">----</span>ز</span>
+          مورخ <span class="number" id="pv-ldate2">----</span>،
+          درجه کارکنان وظیفه جمعی این یگان (دوره آموزش رزم مقدماتی <span class="number" id="pv-coursenum">--</span>) مزین به نام
+          <span class="number" id="pv-coursename">--</span> به تعداد <span class="number"  id="pv-allcount">--</span> نفر
           با مشخصات ذیل‌الذکر تصویب و جهت سیر مراحل قانونی و اعطاء درجه ابلاغ می‌گردد.
         </p>
 
-        <p style="text-align:left;">سرهنگ پاسدار علی متولی طاهر<br>فرمانده آموزشگاه رزم مقدماتی المهدی(عج)</p>
+        <div style="display:flex;align-items:center;justify-content:end;">
+          <p style="text-align:center; font-weight:bold; padding:0;margin:0;">سرهنگ پاسدار علی متولی طاهر<br>فرمانده آموزشگاه رزم مقدماتی المهدی(عج)</p>
+        </div>
 
         <hr/>
 
         <!-- بخش دوم -->
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
-          <div style="flex:1; text-align:right;">
-            <p>
+          <div style="flex:1; text-align:right; ">
+            <p  style="padding:0;margin:0;">
               به : فرمانده آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه<br>
               از : قسمت نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه – منابع انسانی سرباز
             </p>
           </div>
-            <div style="text-align:right; font-weight:bold; margin-top:10px;">
-              <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
+            <div style="text-align:right; font-weight:bold; ">
+              <p  class="key-pair" style="display:flex; justify-content:space-between; padding:0;margin:0;">
                 <span>شماره:</span>
-                <span>
-                  <span id="pv-lnum-top" dir="ltr">----</span>/<span dir="ltr">512/106/6</span><span>ز</span>
+                <span class="number">
+                  <span  class="number" id="pv-lnum-top" dir="ltr">----</span>/<span  class="number" dir="ltr">512/106/6</span><span>ز</span>
                 </span>
               </p>
               <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
                 <span>تاریخ:</span>
-                <span><span id="pv-ldate-top" dir="ltr">----</span></span>
+                <span class="number"><span id="pv-ldate-top"  class="number" dir="ltr">----</span></span>
               </p>
             </div>
 
         </div>
 
-        <p><strong>موضوع :</strong> گردشکار درجه کارکنان وظیفه (دوره آموزش رزم مقدماتی 
-           <span id="pv-coursename2">--</span> - <span id="pv-coursenum2">--</span>)
+        <p style="padding:0;margin:0;"><strong>موضوع :</strong> گردشکار درجه کارکنان وظیفه (دوره آموزش رزم مقدماتی 
+           <span id="pv-coursename2">--</span> - <span class="number" id="pv-coursenum2">--</span>)
         </p>
 
         <p>
-          سلام علیکم<br><br>
-          با سلام و صلوات بر محمد و آل محمد (ص)؛ با استناد به دستورالعمل اعطاء درجه سرباز به شماره 5658 مورخه 27/04/1402 
-          معاونت نیروی انسانی نزسا (خودکارسازی 4964606 و 1089155)، با توجه به اطلاعات ذیل 
+          <span style="font-weight:bold;font-style:italic;">سلام علیکم</span>
+          <br>
+          با سلام و صلوات بر محمد و آل محمد (ص)؛ با استناد به دستورالعمل اعطاء درجه سرباز به شماره 
+          <span  class="number"> 5658 </span> 
+          مورخه 
+          <span  class="number"> 1402/04/27  </span> 
+          
+          معاونت نیروی انسانی نزسا (خودکارسازی 
+         <span  class="number"> 4964606 </span> 
+          و 
+         <span  class="number"> 1089155 </span> 
+          )، با توجه به اطلاعات ذیل 
           از آن مقام محترم درخواست می‌گردد در صورت صلاحدید در جهت انجام مراحل اداری و تصویب درجات 
           دستورات لازم را صادر فرمایید.
         </p>
@@ -355,25 +371,24 @@
           <thead>
             <tr><th>ردیف</th><th>درجه</th><th>تعداد</th></tr>
           </thead>
-          <tbody>
-<tr><td>12</td><td>ستوان یکم (12)</td><td id="pv-d12">--</td></tr>
-<tr><td>11</td><td>ستوان دوم (11)</td><td id="pv-d11">--</td></tr>
-<tr><td>10</td><td>ستوان سوم (10)</td><td id="pv-d10">--</td></tr>
-<tr><td>9</td><td>رزمدار یکم (9)</td><td id="pv-d9">--</td></tr>
-<tr><td>8</td><td>رزمدار دوم (8)</td><td id="pv-d8">--</td></tr>
-<tr><td>7</td><td>رزم‌آور یکم (7)</td><td id="pv-d7">--</td></tr>
-<tr><td>6</td><td>رزم‌آور دوم (6)</td><td id="pv-d6">--</td></tr>
-<tr><td>5</td><td>رزم‌آور سوم (5)</td><td id="pv-d5">--</td></tr>
-<tr><td>4</td><td>رزمیار (4)</td><td id="pv-d4">--</td></tr>
-<tr><td>3</td><td>سرباز یکم (3)</td><td id="pv-d3">--</td></tr>
-<tr><td>2</td><td>سرباز دوم (2)</td><td id="pv-d2">--</td></tr>
-<tr><td>1</td><td>سرباز (1)</td><td id="pv-d1">--</td></tr>
-<tr><td colspan="2">مجموع</td><td id="pv-dc">--</td></tr>
-
+          <tbody class="number">
+            <tr><td>12</td><td>ستوان یکم (12)</td><td id="pv-d12">--</td></tr>
+            <tr><td>11</td><td>ستوان دوم (11)</td><td id="pv-d11">--</td></tr>
+            <tr><td>10</td><td>ستوان سوم (10)</td><td id="pv-d10">--</td></tr>
+            <tr><td>9</td><td>رزمدار یکم (9)</td><td id="pv-d9">--</td></tr>
+            <tr><td>8</td><td>رزمدار دوم (8)</td><td id="pv-d8">--</td></tr>
+            <tr><td>7</td><td>رزم‌آور یکم (7)</td><td id="pv-d7">--</td></tr>
+            <tr><td>6</td><td>رزم‌آور دوم (6)</td><td id="pv-d6">--</td></tr>
+            <tr><td>5</td><td>رزم‌آور سوم (5)</td><td id="pv-d5">--</td></tr>
+            <tr><td>4</td><td>رزمیار (4)</td><td id="pv-d4">--</td></tr>
+            <tr><td>3</td><td>سرباز یکم (3)</td><td id="pv-d3">--</td></tr>
+            <tr><td>2</td><td>سرباز دوم (2)</td><td id="pv-d2">--</td></tr>
+            <tr><td>1</td><td>سرباز (1)</td><td id="pv-d1">--</td></tr>
+            <tr><td colspan="2">مجموع</td><td id="pv-dc">--</td></tr>
           </tbody>
         </table>
-
-        <p style="margin-top:20px;text-align:center;">
+    
+        <p style="margin-top:20px;text-align:center;font-weight:bold;">
           <span>سرهنگ دوم پاسدار رضا سرو‌ی</span><br>
           <span>مسئول نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج)</span>
         </p>
@@ -381,12 +396,12 @@
 
       <footer class="letter-footer">
         <div class="right">
-          شماره خودکارسازی: <span id="pv-shkh">--</span>
+          شماره خودکارسازی: <span class="number" id="pv-shkh">--</span>
         </div>
         <div class="left">
-          حاضر در دوره: <span id="pv-ex">--</span> –
-          کفایتدار بسیج: <span id="pv-kb">--</span> –
-          خدمت قبلی: <span id="pv-kh">--</span>
+          حاضر در دوره: <span class="number" id="pv-ex">--</span> –
+          کفایتدار بسیج: <span class="number" id="pv-kb">--</span> –
+          خدمت قبلی: <span class="number" id="pv-kh">--</span>
         </div>
       </footer>
 

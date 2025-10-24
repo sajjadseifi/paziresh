@@ -30,10 +30,9 @@
                     <th style="width:5%; padding:12px;">ردیف</th>
                     <th style="width:15%; padding:12px;">شماره نامه</th>
                     <th style="width:20%; padding:12px;">نوع نامه / گیرنده</th>
-                    <th style="width:30%; padding:12px;">اطلاعات سرباز</th>
-                    <th style="width:10%; padding:12px;">تاریخ نامه</th>
-                    <th style="width:10%; padding:12px;">عملیات</th>
-                    <th style="width:10%; padding:12px;">وضعیت</th>
+                    <th style="width:20%; padding:12px;">اطلاعات سرباز</th>
+                    <th style="width:20%; padding:12px;">تاریخ نامه</th>
+                    <th style="width:15%; padding:12px;">عملیات</th>
                 </tr>
             </thead>
             <tbody>
@@ -71,7 +70,24 @@
                     </td>
 
                     <!-- تاریخ نامه فقط yyyy/mm/dd -->
-                    <td class="text-center">{{ letter.date|date:"Y/m/d" }}</td>
+                    <td class="text-center">
+                        <div dir="rtl" class="text-center">
+                            {{ letter.date|date:"h:m:s Y/m/d" }}
+                        </div>
+
+                        <div class="text-center">
+                            
+                        {% if letter.status %}
+                            <span style="display:inline-block; padding:6px 12px; border-radius:14px; font-weight:600; font-size:0.75em; color:#fff; 
+                                background-color:{% if letter.status == 'تکمیل شده' %}#28a745{% elif letter.status == 'در حال بررسی' %}#ffc107{% else %}#6c757d{% endif %};
+                                box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+                               وضعیت : {{ letter.status }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">وضعیت : نامشخص</span>
+                        {% endif %}
+                        </div>
+                    </td>
 
                     <!-- عملیات -->
                     <td>
@@ -91,20 +107,10 @@
                                 </button>
                             </form>
                         </div>
+                        
                     </td>
 
-                    <!-- وضعیت -->
-                    <td class="text-center">
-                        {% if letter.status %}
-                            <span style="display:inline-block; padding:6px 12px; border-radius:14px; font-weight:600; font-size:0.75em; color:#fff; 
-                                background-color:{% if letter.status == 'تکمیل شده' %}#28a745{% elif letter.status == 'در حال بررسی' %}#ffc107{% else %}#6c757d{% endif %};
-                                box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
-                                {{ letter.status }}
-                            </span>
-                        {% else %}
-                            <span class="text-muted">نامشخص</span>
-                        {% endif %}
-                    </td>
+
                 </tr>
                 {% empty %}
                 <tr>

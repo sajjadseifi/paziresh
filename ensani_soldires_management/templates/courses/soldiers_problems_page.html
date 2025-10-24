@@ -86,10 +86,11 @@
    .pagination span.current { background-color: #1f3c88; color: #fff; font-weight: bold; }
    /* ===== Checkboxes ===== */
 .problem-checkbox {
-    width: 48px;      /* بزرگتر از حالت پیش‌فرض */
-    height: 48px;
+    width: 32px;      /* بزرگتر از حالت پیش‌فرض */
+    height: 32px;
     cursor: pointer;
     vertical-align: middle;
+    border-radius:10px;
     margin: 0 auto;   /* وسط چین در جدول */
 }
 
@@ -98,6 +99,12 @@
     font-size: 13px;
     cursor: pointer;
 }
+  th.rotate  {
+               writing-mode: vertical-rl;
+            /* چرخش متن به صورت افقی */
+            transform: rotate(180deg);
+  }
+        
 </style>
 <div class="">
 
@@ -122,37 +129,21 @@
             <div class="col-md-3" style="margin-top:23px;">
                 <button type="submit" class="btn-filter"><i class="fa fa-filter"></i> اعمال فیلتر</button>
             </div>
-           
         </form>
-  <!-- Pagination -->
-        <div class="pagination">
-            {% if page_obj.has_previous %}
-                <a href="?{{ query_params }}&page={{ page_obj.previous_page_number }}">قبلی</a>
-            {% endif %}
+        <!-- صفحه بندی -->
+        {%include 'components/pagination.html' with page_obj=page_obj %}
 
-            {% for page_num in page_obj.paginator.page_range %}
-                {% if page_num >= page_obj.number|add:-2 and page_num <= page_obj.number|add:2 %}
-                    {% if page_num == page_obj.number %}
-                        <span class="current">{{ page_num }}</span>
-                    {% else %}
-                        <a href="?{{ query_params }}&page={{ page_num }}">{{ page_num }}</a>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-                <a href="?{{ query_params }}&page={{ page_obj.next_page_number }}">بعدی</a>
-            {% endif %}
-        </div>
         <!-- فرم مشکلات -->
         <form method="POST" action="{% url 'soldiers_problems_update' %}">
             {% csrf_token %}
             {{ formset.management_form }} 
-             <div class="text-right" style="margin:15px 0;">
+             <div class="text-left" style="margin:15px 0;">
                <button type="submit" class="btn btn-success">ثبت تغییرات</button>
-               <a href="{% url 'soldiers_problems_export_excel' %}" class="btn btn-primary" style="margin-left:10px;">
-                  <i class="fa fa-download"></i> دانلود اکسل
-               </a>
+               {%if permissions.dep.niru_ensani %}
+                <a href="{% url 'soldiers_problems_export_excel' %}" class="btn btn-primary" style="margin-left:10px;">
+                    <i class="fa fa-download"></i> دانلود اکسل
+                </a>
+               {% endif %}
             </div>
      <div class="table-responsive">
     <table class="soldier-table">
@@ -160,7 +151,7 @@
             <tr>
                 <th>سرباز و محل</th>
                 {% for label in problem_fields %}
-                    <th style="white-space:normal; text-align:center;">{{ label }}</th>
+                    <th class="rotate" class="vertical" style="white-space:normal; text-align:center;">{{ label }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -178,7 +169,7 @@
                     </td>
                     {% for field in form %}
                         {% if field.name in PROBLEM_FIELDS %}
-                           <td class="text-center">{{ field }}</td>
+                           <td class=" text-center">{{ field }}</td>
                         {% else %}
                            <td style="display:none;">{{ field }}</td>
                         {% endif %}

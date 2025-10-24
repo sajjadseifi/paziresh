@@ -1,3 +1,4 @@
+
 from django import template
 import re
 import jdatetime
@@ -25,3 +26,20 @@ def gregorian_to_jalali(value):
         except:
             return value
     return "-"
+
+
+@register.filter
+def split(value, sep=","):
+    return value.split(sep)
+@register.filter
+def get(value={}, item=''):
+    if item in value:
+        return value.get(item)
+    
+    return None;
+
+@register.filter
+def is_rank_access(access=None, item=''):
+    if access is None:
+        access = []
+    return item in access

@@ -86,3 +86,8 @@ def check_department_access(user_access, department_section):
             except Exception:
                 continue
     return False
+
+
+
+
+

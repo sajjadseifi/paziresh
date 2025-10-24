@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     path('soldire/detail/<str:code>', soldire_details, name='soldire_details'),
     path('soldire/all/', all_soldire, name='all_soldire'),
+    path('soldire/soldier/detail', soldier_detail, name='soldier_detail'),
     path('soldire/search/', soldier_search, name='soldier_search'),
     path('soldire/in/almahdi/', soldier_in_almahdi, name='soldier_in_almahdi'),
     path('soldire/p/poshe_nokhodi', PrintPosheNokhodi, name='poshe_nokhodi'),
@@ -53,7 +54,9 @@ urlpatterns = [
     # score
     path('soldire/rank/score', send_rank_score_page, name='send_rank_score_page'),
     path('soldire/rank/update', send_rank_score_update, name='send_rank_score_update'),
+    path('soldire/rank/update/eazy', send_rank_score_update, name='rank_update_eazy'),
     # 
+    path('courses/soldiers/avatar', soldiers_avatar_page, name='soldiers_avatar_page'),
     path('courses/problems', soldiers_problems_page, name='soldiers_problems_page'),
     path('courses/scores/', soldiers_scores_page, name='soldiers_scores_page'),
     path('courses/problems/update', soldiers_problems_update, name='soldiers_problems_update'),

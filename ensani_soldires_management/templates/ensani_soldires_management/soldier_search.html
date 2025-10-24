@@ -285,7 +285,6 @@
                         <td>{{ soldier.Religion }}</td>
                         <td>{{ soldier.t_Gordan }}-{{ soldier.t_battalion_group.name }}-{{ soldier.code_gorhan_nahai }}</td>
 
-
                         {% if soldier.has_been_accepted and soldier.willing_to_learn %}
                             <td>درحال آموزش</td>
                         {% endif %}
@@ -307,8 +306,7 @@
                         {% if soldier.has_been_accepted is False %}
                             <td style="background-color: #ff9000">پذیرش نشده</td>
                         {% endif %}
-                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i
-                                class="fa fa-eye"></i></a></td>
+                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i class="fa fa-eye"></i></a></td>
 
                     </tr>
                 {% endfor %}

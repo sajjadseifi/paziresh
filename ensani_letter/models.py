@@ -114,7 +114,6 @@ class MoarefiNormallLetter(models.Model):
 
 
 
-
 class RawLetter(models.Model):
     # ========================
     # اطلاعات سرباز

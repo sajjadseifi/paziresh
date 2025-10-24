@@ -140,19 +140,7 @@ margin-top: 0;
         font-size: 18px;
     }
 </style>
-{% if request.user.is_staff == True %}
-<div style="margin: 20px;">
-    {% load tz %}
-    {% now "Y-m-d" as today %}
-    <a href="{% url 'activity_logs' %}" 
-       style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
-        کارهای امروز
-        <span style="background-color: red; color: white; padding: 2px 8px; border-radius: 50%; margin-left: 10px;">
-            {{ logs_today }}
-        </span>
-    </a>
-</div>
-    {% endif %}
+
 
 <div class="row">
 <div class="col-lg-4 col-xs-6">

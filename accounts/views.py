@@ -31,33 +31,24 @@ from django.contrib.auth.models import User
 from .forms import LoginForm
 
 def user_login_page(request, *args, **kwargs):
-    print("=== ورود به صفحه لاگین ===")
     login_form = LoginForm(request.POST or None)
-    print("POST data:", request.POST)
     
     if login_form.is_valid():
-        print("فرم لاگین معتبر است ✅")
         username = login_form.cleaned_data.get('username')
         password = login_form.cleaned_data.get('password')
-        print("داده‌های فرم:", "username =", username, ", password =", password)
         
         user = User.objects.filter(username=username).first()
-        print("کاربر پیدا شد؟", "بله" if user else "خیر")
         
         if user is None:
-            print(f"کاربری با نام کاربری '{username}' وجود ندارد ❌")
             login_form = LoginForm(request.POST or None)
             return render(request, 'accounts/login_page.html', {'login_form': login_form})
         
         if user.check_password(password):
-            print(f"رمز عبور برای کاربر '{username}' صحیح است ✅")
             login(request, user)
             return HttpResponseRedirect(reverse("home_page"))
         else:
-            print(f"رمز عبور برای کاربر '{username}' نادرست ❌")
             return render(request, 'accounts/login_page.html', {'login_form': login_form})
     else:
-        print("فرم لاگین معتبر نیست ❌")
         print("خطاهای فرم:", login_form.errors)
 
     return render(request, 'accounts/login_page.html', {'login_form': login_form})

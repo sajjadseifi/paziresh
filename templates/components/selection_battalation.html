@@ -1,0 +1,39 @@
+<div>
+   <div class="card">
+            <div id="error-box" class="error-box"></div>
+            <h3 class="text-center"><i class="fa fa-random"></i> تطبیق گردان و گروهان</h3>
+            <div class="filter-box text-right">
+            <form method="get" id="battalion-form">
+            <h3>انتخاب گردان</h3>
+            <ul>
+               {% for b in battalions %}
+               <li>
+                     <input class="form-check-input" type="radio" name="battalion" id="battalion_{{ b.id }}" value="{{ b.id }}" {% if selected_battalion == b.id|stringformat:"s" %}checked{% endif %}>
+                     <label class="form-check-label" for="battalion_{{ b.id }}">گردان {{ b.name }}</label>
+               </li>
+               {% endfor %}
+            </ul>
+            <h3 >انتخاب گروهان‌</h3>
+            <ul>
+               {% for g in groups %}
+                     {% if g.gordan.id|stringformat:"s" == selected_battalion %}
+                        <li>
+                           <input class="form-check-input" type="radio" name="group" id="group_{{ g.id }}" value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}checked{% endif %}>
+                           <label class="form-check-label" for="group_{{ g.id }}">گروهان {{ g.name }}</label>
+                        </li>
+                     {% endif %}
+               {% endfor %}
+            </ul>
+         </form>
+   </div>
+   <h4><i class="fa fa-info-circle text-primary"></i> راهنما</h4>
+   <p>
+         در این صفحه می‌توانید تطبیق گردان و گروهان جدید سربازان را انجام دهید.
+         ابتدا گردان و گروهان مورد نظر را از فیلتر بالا انتخاب کنید.
+         سپس با وارد کردن <strong>کد ملی</strong>، اطلاعات سرباز به‌صورت خودکار بارگذاری می‌شود.
+   </p>
+   <p class="text-muted">
+         ⚠️ توجه: قبل از اعمال تغییرات، حتما گردان و گروهان انتخاب شده باشند.
+   </p>
+   </div>
+</div>
