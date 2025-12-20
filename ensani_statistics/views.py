@@ -2428,6 +2428,12 @@ def create_rank_gardesh_kar(request):
         Previous_service_record=True
     ).count()
 
+    en = EnsaniSettings.objects.first()
+    form = {
+        'shkh':en.hokme_darje_gardeshkar,
+        'ldate':en.tarikh_hokme_darje_gardeshkar or jdatetime.date.today().strftime("%Y/%m/%d"),
+        'lnum':f'4{en.shomare_dore}' 
+    }
     # دیکشنری داده‌ها برای کلاینت
     context = {
         "today": jdatetime.date.today().strftime("%Y/%m/%d"),
@@ -2437,6 +2443,7 @@ def create_rank_gardesh_kar(request):
         "total_in_course": total_in_course,
         "basij_count": basij_count,
         "previous_service_count": previous_service_count,
+        'form':form,
     }
 
     return render(request, "ensani_statistics/create_rank_gardesh_kar_form.html", context)
@@ -2522,19 +2529,24 @@ def generate_gardesh_kar(request):
 
 from django.db.models import Avg, Max, Min
 import json
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
 
 def physical_stats_view(request):
     soldiers = Soldier.objects.all()
     valid_soldiers = soldiers.exclude(height__isnull=True).exclude(height='').exclude(height='0')
-
+    valid_soldiers = soldiers.exclude(height__isnull=True).exclude(height='').exclude(height='0')
+    valid_soldiers = valid_soldiers.annotate(height_int=Cast('height', IntegerField()))
     # محاسبه آمار کلی
     total_users = valid_soldiers.count()
     avg_height = valid_soldiers.aggregate(Avg('height'))['height__avg']
     avg_weight = valid_soldiers.aggregate(Avg('Weight'))['Weight__avg']
 
     # بلندقد ترین و کوتاه قد ترین فرد
-    tallest_user = valid_soldiers.order_by('-height').first()
-    shortest_user = valid_soldiers.order_by('height').first()
+    tallest_user = valid_soldiers.order_by('-height_int').first()
+    shortest_user = valid_soldiers.order_by('height_int').first()
 
     # میانگین سن (فرض بر اساس تاریخ تولد)
     ages = []

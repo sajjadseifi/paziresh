@@ -58,43 +58,41 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_help_page' %}active{% endif %}"
                href="{% url 'soldiers_scores_help_page' %}">
                 <i class="fa fa-graduation-cap"></i>
-                راهنما
+                سازماندهی
             </a>
         </li>
 
-        {% if permissions.dep.gorohan %}
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_tatbigh_page' %}active{% endif %}"
-               href="{% url 'soldiers_tatbigh_page' %}">
-                <i class="fa fa-users"></i>
-                تطبیق گردان گروهانی
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_avatar_page' %}active{% endif %}"
-               href="{% url 'soldiers_avatar_page' %}">
-               <i class="fa fa-"></i>
-               تصاویر سربازان
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
-               href="{% url 'top_soldiers_gordan_page' %}">
-               <i class="fa fa-star"></i>
-               سربازان نمونه در گردان
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
-               href="{% url 'soldiers_problems_page' %}">
-               <i class="fa fa-exclamation-triangle"></i>
-               مشکلات سربازان
-            </a>
-        </li>
- 
-
+        {% if permissions.dep.farmandehi or permissions.dep.gorohan %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_tatbigh_page' %}active{% endif %}"
+                href="{% url 'soldiers_tatbigh_page' %}">
+                    <i class="fa fa-users"></i>
+                    تطبیق گردان گروهانی
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_avatar_page' %}active{% endif %}"
+                href="{% url 'soldiers_avatar_page' %}">
+                <i class="fa fa-"></i>
+                تصاویر سربازان
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
+                href="{% url 'top_soldiers_gordan_page' %}">
+                <i class="fa fa-star"></i>
+                سربازان نمونه در گردان
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
+                href="{% url 'soldiers_problems_page' %}">
+                <i class="fa fa-exclamation-triangle"></i>
+                مشکلات سربازان
+                </a>
+            </li>
         {% endif %}
-        {% if permissions.app.rank_scores %}
+        {% if permissions.dep.farmandehi or  permissions.app.rank_scores %}
         <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
                href="{% url 'soldiers_scores_page' %}">
@@ -104,7 +102,7 @@
         </li>
         {% endif %}
 
-        {% if permissions.dep.amoozesh %}
+        {% if permissions.dep.farmandehi or permissions.dep.amoozesh %}
         <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
                href="{% url 'top_soldiers_course_page' %}">
@@ -115,7 +113,7 @@
         {% endif %}
 
      
-        {% if permissions.dep.behdari %}
+        {% if permissions.dep.farmandehi or  permissions.dep.behdari %}
             <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.url_name == 'test_salamat_rawan' %}active{% endif %}"
                 href="{% url 'test_salamat_rawan' %}">

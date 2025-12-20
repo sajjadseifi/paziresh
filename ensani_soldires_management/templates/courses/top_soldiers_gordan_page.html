@@ -90,12 +90,13 @@
 <div class="">
     <form method="post">
         {% csrf_token %}
-        <div class="text-right" style="margin-bottom:10px;">
-            <button type="submit" class="btn btn-custom">
-                <i class="fa fa-check"></i> ثبت نفرات نمونه گردان
-            </button>
-        </div>
-
+        {%if permissions.dep.gordan %}
+            <div class="text-right" style="margin-bottom:10px;">
+                <button type="submit" class="btn btn-custom">
+                    <i class="fa fa-check"></i> ثبت نفرات نمونه گردان
+                </button>
+            </div>
+        {% endif %}
         <div class="row">
             {% for table in gordan_tables %}
             <div class="col-md-6 mb-4">
@@ -108,7 +109,7 @@
                         <thead>
                             <tr>
                                 <th>ردیف</th>
-                                <th>انتخاب سرباز نمونه</th>
+                                <th>سرباز نمونه</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,7 +117,9 @@
                             <tr>
                               <td>{{ i }}</td>
                               <td>
-                                 <select name="gordan_{{ table.gordan.id }}_soldier_{{ i }}" class="form-control select2">
+                                 <select 
+                                 {%if not permissions.dep.gordan %}disabled {%endif%}
+                                 name="gordan_{{ table.gordan.id }}_soldier_{{ i }}" class="form-control select2">
                                        <option value="">-- انتخاب کنید --</option>
                                        {% for soldier in table.soldiers %}
                                        <option value="{{ soldier.id }}"    
@@ -125,9 +128,12 @@
                                           {{ soldier.name }} {{ soldier.family }}
                                           {% if soldier.National_Code %}- کدملی: {{ soldier.National_Code }}{% endif %}
                                           {% if soldier.t_Gordan %}- {{ soldier.t_Gordan.name }}{% endif %}
-                                          {% if soldier.t_battalion_group %} ({{ soldier.t_battalion_group.name }}){% endif %}
-                                          - امتیاز: {{ soldier.total_score }}  
-                                          - درجه: {{ soldier.rank }}
+                                          {% if soldier.t_battalion_group %} {{ soldier.t_battalion_group.name }}{% endif %}
+                                          - کدسازمانی : [ {{ soldier.t_battalion_group.name }} ]
+                                          {% if  permissions.dep.niru_ensani %}
+                                            - امتیاز: {{ soldier.total_score }}  
+                                            - درجه: {{ soldier.rank }}
+                                          {%endif%}
                                        </option>
                                        {% endfor %}
                                  </select>

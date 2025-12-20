@@ -1,0 +1,290 @@
+    <style>
+        .card-ui {
+            background-color: #ececec5b;
+            border-radius: 10px;
+            padding:5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        
+        }
+        .card-title-ui {
+            text-align: center;
+            padding:6px;
+            font-weight: bold;
+            font-size: 16px;
+            background-color: #00384eff;
+            margin: 0;
+            text-align: center;
+            color:white;
+            border-radius: 4px;
+            
+        }
+        .card-body-ui {
+            display: flex;
+            flex-direction: column;
+            padding: 5px 10px;
+            gap: 4px;
+        }
+        .card-item-ui {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .card-item-ui label {
+            flex: 2;
+            min-width: 140px;
+            color: #00445fff;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            font-size: 11px;
+        }
+         
+        .card-item-ui input,
+        .card-item-ui select,
+        .card-item-ui textarea,
+        .card-item-ui .select2 
+        {
+            flex: 4;
+            border-radius: 4px;
+            background-color: #e0f6ff42;
+            color: #00445fff;
+            border: 1px solid #0077a7ff;
+            font-weight: bold;
+            outline: 0;
+            padding: 5px 10px;
+            transition: 0.3s;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        .card-item-ui input:focus,
+        .card-item-ui select:focus,
+        .card-item-ui textarea:focus {
+            background-color: #ffe0ef42;
+            color: #5f003bff;
+            border: 1px solid #a70067ff;
+
+        }
+        .card-item-error {
+            color: brown;
+        }
+        .card-item-ui input::placeholder,
+        .card-item-ui select::placeholder,
+        .card-item-ui textarea::placeholder 
+        
+        {
+            content: 'وارد کنید...';
+        }
+        .page-title {
+            text-align: center;
+            padding: 20px 0 20px;
+            border-bottom: 1px solid gray;
+            font-weight: bold;
+        }
+    </style>
+
+<form role="form" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card-ui">
+                            <ul class="card-body-ui">
+                                <h4 class="card-title-ui">
+                                    اطلاعات فردی سرباز
+                                </h4>
+                                <li class="card-item-ui ">
+                                    <label>{{ form.National_Code.label }}</label>
+                                    {{ form.National_Code }}
+                                </li>
+                                <li class="card-item-ui card-item-error">
+                                    <span style='color: red'>{{ form.National_Code.errors }}</span>
+                                </li>
+                                <li class="card-item-ui ">
+                                    <label>{{ form.name.label }}</label>
+                                    {{ form.name }}
+                                </li>
+                                <li class="card-item-ui ">
+                                    <label>{{ form.family.label }}</label>
+                                    {{ form.family }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.fathers_name.label }}</label>
+                                    {{ form.fathers_name }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.marital_status.label }}</label>
+                                    {{ form.marital_status }}
+                                </li>
+                                
+                                <h4 class="card-title-ui">
+                                    تولد و مذهب
+                                </h4>
+                                <div class="card-item-ui">
+                                    <label>{{ form.Religion.label }}</label>
+                                    {{ form.Religion }}
+                                </div>
+                                <div class="card-item-ui">
+                                    <label>{{ form.Date_of_birth.label }}</label>
+                                    {{ form.Date_of_birth }}
+                                </div>
+                                <div class="card-item-ui">
+                                    <label>{{ form.place_of_birth.label }}</label>
+                                    {{ form.place_of_birth }}
+                                </div>
+                                <div class="card-item-ui">
+                                    <label>{{ form.Place_of_Issue.label }}</label>
+                                    {{ form.Place_of_Issue }}
+                                </div>
+                                <h4 class="card-title-ui">
+                                    اطلاعات سکونت 
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.province_name.label }}</label>
+                                    {{ form.province_name }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.city_name.label }}</label>
+                                    {{ form.city_name }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Address.label }}</label>
+                                    {{ form.Address }}
+                                </li>
+                            </ul>
+                        </div>
+                      
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-ui">
+                            <ul class="card-body-ui">
+                                <h4 class="card-title-ui">
+                                    راه ارتباطی
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.phone_number.label }}</label>
+                                    {{ form.phone_number }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.home_phone_number.label }}</label>
+                                    {{ form.home_phone_number }}
+                                </li>
+                                <h4 class="card-title-ui">
+                                    اطلاعات تماس بستگان درجه یک
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Relative_to_inclusive.label }}</label>
+                                    {{ form.Relative_to_inclusive }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Relative_to_inclusive_number.label }}</label>
+                                    {{ form.Relative_to_inclusive_number }}
+                                </li>
+                               
+                                <h4 class="card-title-ui">
+                                    مدرک و تحصیلات
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Grade.label }}</label>
+                                    {{ form.Grade }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Grade_precise.label }}</label>
+                                    {{ form.Grade_precise }}
+                                </li>
+                               
+                                <li class="card-item-ui">
+                                    <label>{{ form.educational_level_of_the_system.label }}</label>
+                                    {{ form.educational_level_of_the_system }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Study_group.label }}</label>
+                                    {{ form.Study_group }}
+                                </li>
+                                <h4 class="card-title-ui">جذب و امریه</h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Amriye.label }}</label>
+                                    {{ form.Amriye }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Amriye_organization.label }}</label>
+                                    {{ form.Amriye_organization }}
+                                </li>
+                                <div class="card-item-ui">
+                                    <label>{{ form.attraction_of_the_organization.label }}</label>
+                                    {{ form.attraction_of_the_organization }}
+                                </div>
+                            </ul>
+                        </div>
+                                        
+                        <button style="width: 100%;"type="submit" class="btn btn-success pull-right">
+                            {{submit_label|default:"ذخیره اطلاعات"}}
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-ui">
+                            <ul class="card-body-ui">
+                                <h4 class="card-title-ui">
+                                    اطلاعات جسمانی 
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.physical_condition.label }}</label>
+                                    {{ form.physical_condition }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Type_of_disease.label }}</label>
+                                    {{ form.Type_of_disease }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.health_insurance_card.label }}</label>
+                                    {{ form.health_insurance_card }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.height.label }}</label>
+                                    {{ form.height }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Weight.label }}</label>
+                                    {{ form.Weight }}
+                                </li>
+                                <h4 class="card-title-ui">
+                                    تجدید دوره آموزشی 
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Renewal_of_the_previous_period.label }}</label>
+                                    {{ form.Renewal_of_the_previous_period }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Renewal_of_the_previous_period_code.label }}</label>
+                                    {{ form.Renewal_of_the_previous_period_code }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Course_renewal_date.label }}</label>
+                                    {{ form.Course_renewal_date }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Reason_for_renewing_the_course.label }}</label>
+                                    {{ form.Reason_for_renewing_the_course }}
+                                </li>
+                                <h4 class="card-title-ui">
+                                    شروع در دوره 
+                                </h4>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Sufficiency_of_mobilization.label }}</label>
+                                    {{ form.Sufficiency_of_mobilization }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Sutter.label }}</label>
+                                    {{ form.Sutter }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.battalion_group.label }}</label>
+                                    {{ form.battalion_group }}
+                                </li>
+                                <li class="card-item-ui">
+                                    <label>{{ form.Date_of_dispatch.label }}</label>
+                                    {{ form.Date_of_dispatch }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>

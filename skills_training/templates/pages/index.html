@@ -203,13 +203,15 @@
             <p class="stat-number">{{ total_skills }}</p>
         </div>
         <div class="stat-card gradient-green">
-            <h3>تعداد دسته‌بندی‌ها</h3>
+            <h3>تعداد گروه مهارتی </h3>
             <p class="stat-number">{{ total_categories }}</p>
         </div>
-        <div class="stat-card gradient-orange">
-            <h3>مهارت‌های بدون کد</h3>
-            <p class="stat-number">{{ skills_without_code }}</p>
-        </div>
+        {%if permissions.dep.niru_ensani %}
+            <div class="stat-card gradient-orange">
+                <h3>مهارت‌های بدون کد</h3>
+                <p class="stat-number">{{ skills_without_code }}</p>
+            </div>
+        {% endif %}
         <div class="stat-card gradient-purple">
             <h3>سربازان دارای مهارت</h3>
             <p class="stat-number">{{ soldiers_with_skills }}</p>
@@ -219,6 +221,7 @@
     <!-- بخش‌های جانبی -->
     <div class="info-sections">
         <!-- باکس دانلود -->
+        {% if permissions.dep.niru_ensani %}
         <div class="info-box download-box">
             <div class="box-header">
                 <span class="icon">⬇️</span>
@@ -227,7 +230,6 @@
             <p>می‌توانید فایل Excel شامل لیست مهارت‌ها و آمار سربازان را دریافت کنید.</p>
             <button class="download-btn">دانلود فایل اکسل</button>
         </div>
-
         <!-- باکس مخاطرات -->
         <div class="info-box warning-box">
             <div class="box-header">
@@ -237,9 +239,11 @@
             <p>تعدادی از مهارت‌ها فاقد کد یا دسته‌بندی معتبر هستند. لطفاً داده‌ها را بررسی کنید.</p>
             <ul>
                 <li><strong>{{ skills_without_code }}</strong> مهارت بدون کد</li>
-                <li><strong>{{ total_skills|add:"-5" }}</strong> مهارت بررسی نشده</li>
+                <li><strong>{{ total_skills }}</strong> مهارت بررسی نشده</li>
             </ul>
         </div>
+        {% endif %}
+
     </div>
 
     <!-- ۵ مهارت پر استفاده -->

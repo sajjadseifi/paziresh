@@ -158,6 +158,8 @@
 </style>
 <div class="page-container">
   <!-- بخش فرم -->
+{%if permissions.dep.niru_ensani %}
+
   <div class="form-card">
     <h4>⚙️ تنظیمات گواهی مخاطرات</h4>
     <form method="post" novalidate>
@@ -176,7 +178,7 @@
       <button type="submit" class="btn-save">💾 ذخیره تنظیمات</button>
     </form>
   </div>
-
+{% endif %}
 <!-- بخش پیش‌نمایش A4 افقی -->
 <div class="certificate-preview" id="certificate">
   <h2>📜 گواهی مخاطرات</h2>
@@ -227,14 +229,15 @@
       -
     {% endif %}
   </div>
+{%if permissions.dep.niru_ensani %}
+  <a href="{% url 'skills:certificates_hazard_print' %}?order_by=acceptance_code" class="print-btn btn-acceptance">
+    🖨 چاپ گواهی (کد پذیرش)
+  </a>
 
-<a href="{% url 'skills:certificates_hazard_print' %}?order_by=acceptance_code" class="print-btn btn-acceptance">
-  🖨 چاپ گواهی (کد پذیرش)
-</a>
-
-<a href="{% url 'skills:certificates_hazard_print' %}?order_by=structure" class="print-btn btn-structure">
-  📁 چاپ گواهی (گردانی)
-</a>
+  <a href="{% url 'skills:certificates_hazard_print' %}?order_by=structure" class="print-btn btn-structure">
+    📁 چاپ گواهی (گردانی)
+  </a>
+{% endif %}
 </div>
 
 </div>

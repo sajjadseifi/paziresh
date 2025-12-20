@@ -138,11 +138,13 @@
             {% csrf_token %}
             {{ formset.management_form }} 
              <div class="text-left" style="margin:15px 0;">
-               <button type="submit" class="btn btn-success">ثبت تغییرات</button>
-               {%if permissions.dep.niru_ensani %}
-                <a href="{% url 'soldiers_problems_export_excel' %}" class="btn btn-primary" style="margin-left:10px;">
-                    <i class="fa fa-download"></i> دانلود اکسل
-                </a>
+                 {%if permissions.dep.gordan %}
+                 <button type="submit" class="btn btn-success">ثبت تغییرات</button>
+                 {% endif %}
+                 {%if permissions.dep.niru_ensani %}
+                    <a href="{% url 'soldiers_problems_export_excel' %}" class="btn btn-primary" style="margin-left:10px;">
+                        <i class="fa fa-download"></i> دانلود اکسل
+                    </a>
                {% endif %}
             </div>
      <div class="table-responsive">
@@ -158,21 +160,39 @@
         <tbody>
              {% for form, soldier in form_soldier_pairs %}
                 <tr>
-                    <td style="min-width:240px; vertical-align:top; padding:8px; background:#f8f9fa; border-radius:6px;">
-                        <div style="font-weight:bold; font-size:14px; color:#1f3c88;">
-                            {{ soldier.name }} {{ soldier.family }}
+                    <td style="vertical-align:top; padding:8px 4px; background:#f8f9fa; border-radius:6px;">
+                        <div style="font-weight:bold; font-size:14px; color:#1f3c88; display:flex;align-items:center;justify-content:space-between;">
+                            <div style="flex:2;">{{ soldier.name }} {{ soldier.family }}</div>
+                            <div style="flex:1;background:#ffc107; padding:2px 6px; border-radius:12px;">کد ملی: {{ soldier.National_Code }}</div>
                         </div>
-                           <div style="background:#ffc107; padding:2px 6px; border-radius:12px;">کد ملی: {{ soldier.National_Code }}</div>
-                        <div style="font-size:18px; font-weight:bold; color:#333;">
-                            {{ soldier.t_Gordan }} - {{ soldier.t_battalion_group.name }} - {{ soldier.code_gorhan_nahai }}
+                        <div style="margin-top:4px; font-size:14px; font-weight:bold; color:#333;display:flex;align-items:center;justify-content:space-between;">
+                            <div style="flex:2;"> {{ soldier.t_Gordan }} - {{ soldier.t_battalion_group.name }}</div>
+                            <div style="flex:1;background:#66fff8; padding:2px 6px; border-radius:12px;">کد سازمانی: {{ soldier.code_gorhan_nahai }}</div>
                         </div>
                     </td>
                     {% for field in form %}
-                        {% if field.name in PROBLEM_FIELDS %}
-                           <td class=" text-center">{{ field }}</td>
+                        {%if permissions.dep.gordan %}
+                            {% if field.name in PROBLEM_FIELDS %}
+                                <td  class=" text-center">{{ field }}</td>
+                            {% else %}
+                                <td style="display:none;">{{ field }}</td>
+                            {% endif %}
                         {% else %}
-                           <td style="display:none;">{{ field }}</td>
+                            {% if field.name in PROBLEM_FIELDS %}
+                                <td  class="text-center">
+                                    {%if field.value == True or field.value == False  %}
+                                        {%if field.value %}✅{% else %}{% endif %}
+                                    {% else %}
+                                        {{field.value}}
+                                    {%endif%}
+                                </td>
+                            {% else %}
+                                <td style="display:none;">{{field.value}}</td>   
+                            {% endif %}
                         {% endif %}
+
+                        
+                        
                      {% endfor %}
                 </tr>
             {% endfor %}

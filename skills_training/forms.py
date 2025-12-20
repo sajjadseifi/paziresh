@@ -7,15 +7,9 @@ class HazardSettingsForm(forms.ModelForm):
         model = HazardSettings
         fields = "__all__"
         widgets = {
-            "certificate_date": forms.TextInput(attrs={
-                "class": "form-control", "dir":"ltr", "placeholder":"سال/ماه/روز"
-            }),
-            "start_date": forms.TextInput(attrs={
-                "class": "form-control", "dir":"ltr", "placeholder":"سال/ماه/روز"
-            }),
-            "end_date": forms.TextInput(attrs={
-                "class": "form-control", "dir":"ltr", "placeholder":"سال/ماه/روز"
-            }),
+            "certificate_date": forms.TextInput(attrs={"class": "form-control", "dir":"ltr", "placeholder":"سال/ماه/روز"}),
+            "start_date": forms.TextInput(attrs={"class": "form-control", "dir":"ltr", "placeholder":"سال/ماه/روز"}),
+            "end_date": forms.TextInput(attrs={"class": "form-control", "dir":"ltr", "placeholder":"سال/ماه/روز"}),
             "letter_number": forms.TextInput(attrs={"class": "form-control","dir":"ltr"}),
             "year": forms.NumberInput(attrs={"class": "form-control","dir":"ltr"}),
             "month_name": forms.TextInput(attrs={"class": "form-control","dir":"ltr"}),
@@ -27,11 +21,12 @@ class HazardSettingsForm(forms.ModelForm):
         if isinstance(value, str):
             try:
                 y, m, d = map(int, value.split("/"))
-                return jdatetime.date(y, m, d).togregorian()
+                return jdatetime.date(y, m, d)
             except:
                 raise forms.ValidationError(f"فرمت {field_name} باید سال/ماه/روز باشد")
         return value
 
+     
     def clean_certificate_date(self):
         return self._clean_shamsi_date(self.cleaned_data.get("certificate_date"), "تاریخ گواهی")
 
@@ -40,3 +35,18 @@ class HazardSettingsForm(forms.ModelForm):
 
     def clean_end_date(self):
         return self._clean_shamsi_date(self.cleaned_data.get("end_date"), "تاریخ پایان دوره")
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     print(self)
+    def clean(self):
+        pass
+    
+        
+    #   cleaned_data = super().clean()
+      
+    #   cleaned_data.start_date= self.clean_start_date()
+    #   cleaned_data.end_date= self.clean_end_date()
+    #   cleaned_data.certificate_date= self.clean_certificate_date()
+      
+    #   return cleaned_data

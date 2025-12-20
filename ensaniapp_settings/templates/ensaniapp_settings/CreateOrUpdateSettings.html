@@ -7,133 +7,654 @@
         .datepicker-plot-area {
             z-index: 9999 !important; /* Ensure the datepicker is on top of other elements */
         }
-    </style>
-{% endblock %}
+        .ui-form {
+            display: flex;
+            align-items: center;
+            border: 2px solid #d2691e94;
+            background-color: white;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        .ui-form > * {
+            flex: 3;
+        }
+        .ui-form > * , .ui-form  .input-group > * {
+            outline: none;
+            border: none;
+            background-color: transparent;
+            font-size: 12px;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.3s;
+            color: black;
+        }
+/* Container دکمه های بله / خیر */
+.ui-form .yesno-buttons {
+    display: flex;
+    gap: 4px;
+    margin: 4px;
+    background-color: transparent !important;
+    padding: 0 5px;
+    margin: 0;
+    flex: 3 !important;
+    height: 32px;
+    padding: 2px 12px;
+}
 
+/* دکمه ها */
+.btn-yesno {
+    flex: 1;
+    text-align: center;
+    background-color: #eef3ff;
+    border: 1px solid #1f4fd8;
+    border-radius: 3px;
+    padding: 4px 0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    color: #1f4fd8;
+    user-select: none;
+}
+
+input#tatbigh + .yesno-buttons .btn-yesno {
+    background-color: #eee !important;
+    color: black;
+    border: 1px solid #282829ff;
+    
+}
+
+/* حالت NO - سبز Legend */
+input#tatbigh[type="checkbox"]:not(:checked) + .yesno-buttons > .btn-yesno[value="yes"] {
+    background-color: #0B6B3A !important;
+    color: #FFFFFF;
+    border: 1px solid #06492A;
+}
+
+/* حالت YES - قرمز Crimson */
+input#tatbigh[type="checkbox"]:checked + .yesno-buttons > .btn-yesno[value="no"] {
+    background-color: #8B0000 !important;
+    color: #FFFFFF;
+    border: 1px solid #5C0000;
+}
+
+.btn-yesno {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-yesno:hover {
+    transform: translateY(-1px);
+}
+
+
+        .ui-form > *:focus  {
+            color: #a74805ff;
+        }
+        .ui-form > label {
+            border-radius: 0 4px 4px 0;
+            flex: 2;
+            font-size: 12px;
+            background-color: #f18d4521;
+            color: #8a8481ff;
+            display: block;
+            height: 100%;
+            padding: 10px 0;
+            text-align: center;
+            margin: 0;
+        }
+        .form-card {
+
+        }
+        h3.form-title {
+            font-size: 20px;
+            padding: 15px 20px ;
+        }
+        h2.form-title {
+            font-size: 24px;
+            padding: 20px 20px ;
+        }
+        .form-title {
+            font-size: 18px;
+            font-weight: bold;
+            border-left: 3px solid chocolate;
+            padding: 10px 20px ;
+            border-radius: 4px;
+            background-color: #f18d4511;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            
+        }
+    </style>
+    <style>
+        
+/* ===============================
+   INFO (Royal Blue)
+================================ */
+.form-info .form-title {
+    border-left-color: #1f4fd8;
+    background-color: #1f4fd812;
+    color: #1f3fa8;
+}
+
+.form-info .ui-form {
+    border-color: #1f50d8bd;
+}
+
+.form-info .ui-form > label {
+    background-color: #1f4fd820;
+    color: #1f3fa8;
+}
+
+.form-info .ui-form *:focus {
+    color: #1f3fa8;
+}
+
+/* ===============================
+   SUCCESS (Royal Green)
+================================ */
+.form-success .form-title {
+    border-left-color: #0b6e4f;
+    background-color: #0b6e4f18;
+    color: #064635;
+}
+
+.form-success .ui-form {
+    border-color: #0b6e4fbd;
+}
+
+.form-success .ui-form > label {
+    background-color: #00885d1e;
+    color: #064635;
+}
+
+.form-success .ui-form *:focus {
+    color: #064635;
+}
+
+/* ===============================
+   WARNING (نارنجی ملایم)
+================================ */
+.form-warning .form-title {
+    border-left-color: #f39c12;
+    background-color: #f39c1218;
+    color: #9c640c;
+}
+
+.form-warning .ui-form {
+    border-color: #f39c1266;
+}
+
+.form-warning .ui-form > label {
+    background-color: #f39c1222;
+    color: #9c640c;
+}
+
+.form-warning .ui-form *:focus {
+    color: #9c640c;
+}
+/* ===============================
+   DANGER (Royal Red)
+================================ */
+.form-danger .form-title {
+    border-left-color: #9b1c1c;
+    background-color: #9b1c1c18;
+    color: #7a1414;
+}
+
+.form-danger .ui-form {
+    border-color: #9b1c1cb6;
+}
+
+.form-danger .ui-form > label {
+    background-color: #940b0b17;
+    color: #7a1414;
+}
+
+.form-danger .ui-form *:focus {
+    color: #7a1414;
+}
+/* ===============================
+   ROYAL GRAY / STEEL
+================================ */
+.form-gray .form-title {
+    border-left-color: #5F6C7B;
+    background-color: #5F6C7B18;
+    color: #2F3A44;
+}
+
+.form-gray .ui-form {
+    border-color: #5F6C7BB6;
+}
+
+.form-gray .ui-form > label {
+    background-color: #5F6C7B12;
+    color: #2F3A44;
+}
+
+.form-gray .ui-form *:focus {
+    color: #3E4A56;
+}
+/* ===============================
+   ROYAL PURPLE
+================================ */
+.form-purple .form-title {
+    border-left-color: #5B2D8B;
+    background-color: #5B2D8B18;
+    color: #2E1A47;
+}
+
+.form-purple .ui-form {
+    border-color: #5B2D8BB6;
+}
+
+.form-purple .ui-form > label {
+    background-color: #5B2D8B12;
+    color: #2E1A47;
+}
+
+.form-purple .ui-form *:focus {
+    color: #4A2373;
+}
+
+
+    </style>
+<style>
+    .btn-save-system {
+    background: linear-gradient(135deg, #1f7a5c, #16634a);
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 10px 22px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(22, 99, 74, 0.35);
+    transition: all 0.25s ease;
+}
+
+.btn-save-system i {
+    margin-left: 6px;
+}
+
+.btn-save-system:hover {
+    background: linear-gradient(135deg, #16634a, #0f4d39);
+    box-shadow: 0 6px 14px rgba(22, 99, 74, 0.5);
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.btn-save-system:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(22, 99, 74, 0.4);
+}
+.ui-from-group {
+    display: flex;
+    gap: 10px;
+}
+.ui-from-group > .ui-form {
+    flex: 1;
+}
+</style>
+<style>
+    .ui-upload-btn {
+        background: cadetblue;
+        color: #fff;
+    }
+
+    .ui-upload-btn input {
+        display: none;
+    }
+
+    .ui-form-button {
+        display: block;
+        font-size: 10px;
+        color: white;
+        border-radius: 5px;
+        padding: 4px 10px;  
+    }
+    .ui-clear {
+        background-color: crimson;
+        cursor: pointer;
+    }
+
+    .ui-image-preview {
+        text-align: center;
+    }
+    .ui-form-image {
+        display: flex;
+        flex-direction: column;
+    }
+    .ui-form-image  img {
+        width:  100px;
+        height: 100px;
+        border: 1px dashed #999;
+        border-radius: 4px;
+    }
+     
+    .ui-form-image > label {
+        width: 100%;
+        flex: 0;
+        padding: 10px;
+
+    }
+    .ui-form-image .ui-group-image {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: 5px;
+        gap: 10px;
+    }
+
+
+    .ui-form-help{
+        display: flex;
+    }
+    .ui-form-help .ui-form {
+    }
+    .ui-form-help .ui-help {
+        flex: 1;
+        padding: 10px;
+    }
+    .ui-help p {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .ui-help code {
+        font-family: 'Vazir';
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+</style>
+<style>
+    .page-title {
+        padding:20px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        background-color: chocolate;
+        color: white;
+        font-weight: bold;
+    }
+</style>
+    {% endblock %}
 
 {% block main %}
-    <div class="box box-warning">
-        <div class="box-header with-border">
-            <h3 class="box-title">تنظیمات</h3>
-        </div>
-        <!-- /.box-header -->
+    <div style="border-radius: 10px;" class="box box-warning">
+        {% comment %} <h3 class="page-title" >تنظیمات سامانه</h3> {% endcomment %}
+        
         <div class="box-body">
-            <form role="form" method="post">
+            <div>
+                {% include "./new_period_form.html" %}    
+            </div>
+            <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form.farmande_razme_moghadamati.label }}
-                            {{ form.farmande_razme_moghadamati }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.modire_niroye_ensani.label }}
-                            {{ form.modire_niroye_ensani }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.karshenas_manabe_ensani.label }}
-                            {{ form.karshenas_manabe_ensani }}
-
-                        </div>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            {{ form.shoare_sall.label }}
-                            {{ form.shoare_sall }}
-
-                        </div>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.shomare_dore.label }}
-                            {{ form.shomare_dore }}
-
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form.esmedore.label }}
-                            {{ form.esmedore }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.tarikhpaziresh.label }}
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-card form-gray">
+                            <h4 class="form-title ">
+                                <span>تنظیمات دوره</span>
+                                <i class="fa fa-calendar-check-o"></i>
+                            </h4>
+                            <div class="form-body">
+                                <div class="ui-form">
+                                    <label>{{ form.shomare_dore.label }}</label>
+                                    {{ form.shomare_dore }}
                                 </div>
-                                {{ form.tarikhpaziresh }}
+                                <div class="ui-form">
+                                    <label>{{ form.esmedore.label }}</label>
+                                    {{ form.esmedore }}
+                                </div>
+                                <div class="ui-form ui-form-check yesno">
+                                    <label>{{ form.tatbigh.label }}</label>
+                                    {{ form.tatbigh }}
+                                    <label for="tatbigh" class="yesno-buttons">
+                                        <button type="button" class="btn-yesno" value="yes">فعال</button>
+                                        <button type="button" class="btn-yesno" value="no">غیرفعال</button>
+                                    </label>
+                                </div>
+                                <hr/>
+                                <div class="ui-form">
+                                    <label>{{ form.sall.label }}</label>
+                                    {{ form.sall }}
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.mahezam.label }}</label>
+                                    {{ form.mahezam }}
+                                </div>
+                               
                             </div>
                         </div>
-                        <div class="col-xs-6">
-                            {{ form.tarikhetmampaziresh.label }}
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
+                        
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-card form-gray">
+                            <h4 class="form-title ">
+                                <span>تنظیمات پذیرش</span>
+                                <i class="fa fa-sign-in"></i>
+                            </h4>
+                            <div class="form-body">
+                                <div class="ui-form">
+                                    <label>{{ form.saghf_paziresh.label }}</label>
+                                    {{ form.saghf_paziresh }}
                                 </div>
-                                {{ form.tarikhetmampaziresh }}
+                                <div class="ui-form">
+                                    <label>{{ form.tarikhpaziresh.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        {{ form.tarikhpaziresh }}
+                                    </div>
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.tarikhetmampaziresh.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        {{ form.tarikhetmampaziresh }}
+                                    </div>
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.tarihkeshorodoreh.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        {{ form.tarihkeshorodoreh }}
+                                    </div>
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.tarihkepayanedore.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        {{ form.tarihkepayanedore }}
+                                    </div>
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.tarikhezam.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        {{ form.tarikhezam }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                       <div class="col-md-5">
+                         <div class="form-card form-gray">
+                            <h4 class="form-title ">
+                                <span>حکم درجه و گردشکار</span>
+                                <i class="fa fa-calendar-check-o"></i>
+                            </h4>
+                            <div class="form-body">
+                                <div class="ui-form">
+                                    <label>{{ form.hokme_darje_gardeshkar.label }}</label>
+                                    {{ form.hokme_darje_gardeshkar }}
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.tarikh_hokme_darje_gardeshkar.label }}</label>
+                                    {{ form.tarikh_hokme_darje_gardeshkar }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-card form-gray">
+                            <h4 class="form-title ">
+                                <span>تنظیمات نامه</span>
+                                <i class="fa fa-envelope-open-o"></i>
+                            </h4>
+                            <div class="form-body">
+                                <div class="ui-form">
+                                    <label>{{ form.shoare_sall.label }}</label>
+                                    {{ form.shoare_sall }}
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.shomare_name_shoro_doreh.label }}</label>
+                                    {{ form.shomare_name_shoro_doreh }}
+                                </div>
+                                <div class="ui-form">
+                                    <label>{{ form.tarihke_name_shoro_doreh.label }}</label>
+                                    {{ form.tarihke_name_shoro_doreh }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                            <div class="form-card form-info">
+                            <h4 class="form-title ">
+                                <span>امضا ها</span>
+                                <i class="fa fa-envelope-open-o"></i>
+                            </h4>
+                            <div class="row form-body">
+                                <div class="col-md-4">
+                                    <div class="ui-form">
+                                        <label>{{ form.farmande_razme_moghadamati.label }}</label>
+                                        {{ form.farmande_razme_moghadamati }}
+                                    </div>
+                                    <div class="ui-form-help">
+                                        <div class="ui-form ui-form-image">
+                                            <label>{{ form.emza_farmande.label }}</label>
+                                            {{ form.emza_farmande }}
+                                        </div>
+                                        <div class="ui-help">
+                                            <h3>امضا در :</h3>
+                                            <p>
+                                                <code>حکم درجه</code>
+                                                <code>گواهی عضویت</code>
+                                                <code>معرفی به کمیسیون</code>
+                                                <code>معرفی نامه</code>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="ui-form">
+                                        <label>{{ form.modire_niroye_ensani.label }}</label>
+                                        {{ form.modire_niroye_ensani }}
+                                    </div>
+                                    <div class="ui-form-help">
+                                        <div class="ui-form ui-form-image">
+                                            <label>{{ form.emza_masole_niro_ensani.label }}</label>
+                                            {{ form.emza_masole_niro_ensani }}
+                                        </div>
+                                        <div class="ui-help">
+                                            <h3>امضا در :</h3>
+                                            <p>
+                                                <code>گواهی عضویت</code>
+                                                <code>گواهی مخاطرات</code>
+                                                <code>استعلام کفایت از آموزش</code>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="ui-form">
+                                         <label>{{ form.karshenas_manabe_ensani.label }}</label>
+                                        {{ form.karshenas_manabe_ensani }}
+                                    </div>
+                                    <div class="ui-form-help">
+                                        <div class="ui-form ui-form-image">
+                                            <label>{{ form.emza_karshenas_manabe_ensani.label }}</label>
+                                            {{ form.emza_karshenas_manabe_ensani }}
+                                        </div>
+                                        <div class="ui-help">
+                                            <h3>امضا در :</h3>
+                                            <p>
+                                                <code>نامه فرار</code>
+                                                <code>تسویه حساب</code>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.tarihkeshorodoreh.label }}
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                {{ form.tarihkeshorodoreh }}
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form.tarihkepayanedore.label }}
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                {{ form.tarihkepayanedore }}
-                            </div>
-                        </div>
-                    </div>
+                <hr/>
+                <div>
+                    <button type="submit" class="btn btn-save-system pull-right">
+                    <i class="fa fa-save"></i>
+                    ذخیره و بروزرسانی تنظیمات
+                </button>
                 </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            {{ form.tarikhezam.label }}
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                {{ form.tarikhezam }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success pull-right">ثبت</button>
             </form>
-
         </div>
-        <!-- /.box-body -->
     </div>
 
 {% endblock %}
 
 {% block footer %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkbox = document.getElementById("tatbigh");
+            const buttons = document.querySelectorAll(".btn-yesno");
+
+            buttons.forEach(btn => {
+                btn.addEventListener("click", function () {
+                    console.log(this.value)
+                    checkbox.checked = this.value !== "yes";
+                });
+            });
+        });
+    </script>
+
     <script src="{% static 'dist/js/persian-date-0.1.8.min.js' %}"></script>
     <script src="{% static 'dist/js/persian-datepicker-0.4.5.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $(".normal-date").each(function () {
+                let initial = $(this).data("initial");
+                let pd = null;
+                let frmt =''
+
+                if (initial) {
+                    const [yyyy,mm,dd] = initial.split('-')
+                    try {
+                        pd = new persianDate([+yyyy,+mm,+dd]);
+                        if (pd) {
+                            const gd = new Date(pd.gDate);
+                            const year  = gd.getFullYear();
+                            const month = String(gd.getMonth() + 1).padStart(2, '0'); // +1 مهم
+                            const day   = String(gd.getDate()).padStart(2, '0');      // getDate نه getDay
+
+                            const frmt = `${year}-${month}-${day}`;
+
+                            // ست کردن value این input
+                            $(this).val(frmt);
+                        }
+                    } catch (e) {
+                        console.warn("PersianDate invalid:", initial);
+                        pd = null;
+                    }
+                }
+
                 $(this).pDatepicker({
                     format: 'YYYY/MM/DD',
                     autoClose: true,
@@ -147,7 +668,7 @@
                     timePicker: {
                         enabled: false
                     },
-                    initialValue: false,
+                    initialValue: frmt || false,
                     position: 'auto', // Set position to auto
                     onShow: function () {
                         var datepicker = this;

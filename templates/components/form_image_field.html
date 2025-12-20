@@ -1,0 +1,44 @@
+<style>
+    .ui-group-image  {
+        flex: 1;
+    }
+    .ui-form-image  > label {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 8px 10px;
+        display: block;
+    }
+    .ui-form-image  {
+        display: flex;
+        flex-direction: column;
+    } 
+    .ui-group-image label {
+        margin: 0;
+        background-color: crimson;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+
+    }
+    .ui-form-image  input {
+    }
+    .ui-from-group  {
+        display: flex;
+        gap: 10px;
+    }
+    .ui-image {
+        width: 200px;
+        height: 200px;
+        margin: 10px auto;
+    }
+</style>
+<div class="ui-form ui-form-image">
+    <label class="ui-label">{{ emza.label }}</label>
+    {% if url %}
+        <img src="{{ url }}" alt="{{emza.label}}" class="ui-image"     />
+    {% endif %}
+    <div class="ui-group-image">
+        {{ emza }}
+    </div>
+</div>

@@ -21,9 +21,37 @@
         gap:4px;
         color:white;
     }
+    .main-sidebar {
+        height: calc(100vh - 100px);
+        max-height: calc(100vh - 100px);
+        display: flex;
+        flex-direction: column;
+    }
+    .sep-nav-logo {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 10px;
+        margin:10px 20px;
+        text-align: center;
+    }
+    .sep-nav-logo img {
+        width: 120px;
+    }
+    .sep-nav-title {
+        font-weight: bold;
+    }
+    .main-sidebar {
+        width: 280px;
+    }
+    .main-header .logo  {
+        width: 280px;
+    }
+    .content-wrapper, .main-footer {
+        margin-right: 280px;
+    }
 </style>
 <aside class="main-sidebar">
-    <section class="sidebar">
+    <section style="flex: 1;overflow-y:auto ;" class="sidebar">
         <p class="user-loggedin">
             <span class="user-status">👤 {{ request.user.first_name }} {{ request.user.last_name }}</span>
             <a style="color:white;" href="{% url 'logout' %}"  class="header-icon logout-btn">
@@ -51,7 +79,7 @@
                 <li class="treeview">
                     <a href="#"><i class="fa fa-user-plus"></i> <span>پذیرش سرباز</span>
                         <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
+                <i class="fa fa-angle-left pull-left"></i>
               </span>
                     </a>
                     <ul class="treeview-menu">
@@ -73,14 +101,11 @@
             <li class="treeview">
                 <a href="#"><i class="fa fa-user-plus"></i> <span>مدیریت سرباز</span>
                     <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
+                <i class="fa fa-angle-left pull-left"></i>
               </span>
                 </a>
                 <ul class="treeview-menu">
-                    {% if request.user.is_staff == True %}
-                        <li><a href="{% url 'soldier_detail' %}">اطلاعات جامع سرباز</a></li>
-                    {% endif %}
-
+                    <li><a href="{% url 'soldier_detail' %}">اطلاعات جامع سرباز</a></li>
                     <li><a href="{% url 'all_soldire' %}">تمامی سربازان</a></li>
                     <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته</a></li>
                     {% if request.user.is_staff == True %}
@@ -111,17 +136,17 @@
             {% if permissions.app.skill_management  %}
                 <li class="">
                     <a href="{% url 'skills:index' %}">
-                        <i class="fa fa-user-plus"></i>
+                        <i class="fa  fa-graduation-cap"></i>
                         <span>مهارت اموزی</span>
                         <span class="pull-left-container">
                     </span>
                     </a>
                 </li>
             {% endif %}
-            {% if permissions.app.course == True %}
+            {% if permissions.app.course %}
                 <li>
                     <a href="{% url 'soldiers_scores_help_page' %}">
-                        <i class="fa fa-graduation-cap"></i>
+                        <i class="fa ">⚙️</i>
                         <span>سازماندهی سربازان</span>
                     </a>
                 </li>
@@ -131,7 +156,7 @@
                 <li class="treeview">
                     <a href="#"><i class="fa fa-user-plus"></i> <span>مدیریت درجه</span>
                         <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
+                <i class="fa fa-angle-left pull-left"></i>
               </span>
                     </a>
                     <ul class="treeview-menu">
@@ -147,7 +172,7 @@
                 <li class="treeview">
                     <a href="#"><i class="fa fa-group"></i> <span>مدیریت گردان ها</span>
                         <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
+                <i class="fa fa-angle-left pull-left"></i>
               </span>
                     </a>
                     <ul class="treeview-menu">
@@ -185,7 +210,7 @@
             <li class="treeview">
                 <a href="#"><i class="fa fa-area-chart"></i> <span>آمار</span>
                     <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
+                <i class="fa fa-angle-left pull-left"></i>
               </span>
                 </a>
                 <ul class="treeview-menu">
@@ -206,7 +231,7 @@
          <li class="treeview">
                 <a href="#"><i class="fa fa-area-chart"></i> <span>گزارشات</span>
                     <span class="pull-left-container">
-                <i class="fa fa-angle-right pull-left"></i>
+                <i class="fa fa-angle-left pull-left"></i>
               </span>
                 </a>
                 <ul class="treeview-menu">
@@ -219,5 +244,11 @@
         </ul>
         <!-- /.sidebar-menu -->
     </section>
-    <!-- /.sidebar -->
+    <div>
+        <div class="sep-nav-logo">
+            <img src="{% static 'img/Sepah.png' %}"/>
+            <hr style="margin: 5px;"/>
+            <span class="sep-nav-title">نیروی زمینی سپاه</span>
+        </div>
+    </div>
 </aside>

@@ -76,8 +76,8 @@
                <i class="fa fa-star"></i> سربازان برتر دوره
          </div>
 
+         {%if permissions.dep.amoozesh %}
          <p class="text-muted mb-4" style="font-size:1em;">در این صفحه می‌توانید سه سرباز برتر دوره را انتخاب و ثبت کنید.</p>
-
          <!-- راهنما و توضیحات تکمیلی -->
          <div class="card-section alert-custom mt-4">
                <i class="fa fa-info-circle"></i> راهنما:
@@ -93,7 +93,7 @@
                   در صورت نیاز به بروزرسانی داده‌های دوره، لطفاً با مسئول سیستم هماهنگ کنید.
                </p>
          </div>
-
+         {% endif %}
          <form method="post">
                {% csrf_token %}
                <table class="table table-bordered table-custom">
@@ -113,7 +113,7 @@
                               <span class="rank-label">{{ item.label }}</span>
                            </td>
                            <td>
-                              <select name="soldier_{{ item.rank }}" class="form-control select2">
+                              <select {%if not permissions.dep.amoozesh %}disabled{%endif%} name="soldier_{{ item.rank }}" class="form-control select2">
                                  <option value="">انتخاب کنید</option>
                                  {% for soldier in soldiers %}
                                  <option value="{{ soldier.id }}" {% if item.soldier and item.soldier.id == soldier.id %}selected{% endif %}>
@@ -132,12 +132,13 @@
                      {% endfor %}
                   </tbody>
                </table>
-
+            {%if permissions.dep.amoozesh %}
                <div class="text-right">
                   <button type="submit" class="btn btn-custom">
                      <i class="fa fa-check"></i> ثبت نفرات برتر
                   </button>
                </div>
+            {% endif %}
          </form>
 
       </div>

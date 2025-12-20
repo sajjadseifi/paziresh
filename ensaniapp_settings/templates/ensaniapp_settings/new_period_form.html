@@ -1,0 +1,296 @@
+<style>
+/* ===============================
+   ROYAL BLUE THEME
+================================ */
+:root {
+    --royal-blue: #1E3A8A;
+    --royal-blue-light: #3B82F6;
+    --royal-bg: #1e3a8a10;
+}
+
+/* ===== Period Box ===== */
+.box-period {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--royal-bg), #ffffff);
+    border: 1px solid #1e3b8a1f;
+}
+.period-preview {
+    flex: 1;
+}
+.period-preview h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--royal-blue);
+}
+
+.period-preview p {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #27374eff;
+}
+
+/* ===== Button ===== */
+#new-period-button {
+    padding: 16px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: bold;
+    background: linear-gradient(135deg, var(--royal-blue), var(--royal-blue-light));
+    box-shadow: 0 6px 16px #1e3a8a40;
+    transition: all .25s ease;
+    line-height: 16px;
+}
+
+#new-period-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px #1e3a8a55;
+}
+
+/* ===== Modal ===== */
+/* ===== Modal ===== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ===== Modal Content ===== */
+.modal-content {
+    width: 640px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    transform: scale(0.8) translateY(-40px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.modal.active .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal.closing .modal-content {
+    transform: scale(0.8) translateY(-40px);
+    opacity: 0;
+}
+
+/* ===== Close Button ===== */
+.modal-close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: crimson;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.modal-close:hover {
+    color: #1E3A8A; /* آبی سلطنتی هنگام هاور */
+    transform: scale(1.2);
+}
+
+/* ===== Header ===== */
+.modal-content h3 {
+    margin: 0 0 14px;
+    font-size: 17px;
+    color: var(--royal-blue);
+}
+
+
+/* ===== Modal Actions ===== */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.modal-actions button {
+    width: 50%;
+    padding: 14px 0;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: all .25s ease;
+}
+
+.btn-cancel {
+    background: #e5e7eb;
+    color: #334155;
+}
+
+.btn-cancel:hover {
+    background: #d1d5db;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, var(--royal-blue), var(--royal-blue-light));
+    color: #fff;
+    box-shadow: 0 6px 16px #1e3a8a40;
+    transition: 0.5s;
+    opacity: 1;
+}
+.btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px #1e3a8a55;
+}
+.form-hint {
+    padding: 10px;
+    background-color: #ffa4a428;
+    color: crimson;
+    border-radius: 5px;
+}
+.ui-form-box {
+    display: flex;
+}
+.ui-form-rule {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1E3A8A;
+    border-radius: 2px solid #1E3A8A;
+    background-color: #7eafff3b;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+.ui-form-rule label,.ui-form-rule input {
+    padding: 0;
+    margin: 0;
+}
+.ui-form-rule input {
+    width: 18px;
+    height: 18px;
+}
+</style>
+
+<div class="box-period">
+    <div class="period-preview">
+        <h2>فرم تنظیمات پذیرش دوره</h2>
+        <p>
+            در این بخش می‌توانید دوره‌های پذیرش جدید را تعریف کرده و
+            زمان‌بندی و مشخصات هر دوره را مدیریت کنید.
+        </p>
+    </div>
+
+    <div class="period-actions">
+        <button id="new-period-button">✨ ایجاد دوره جدید ➕</button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="newPeriodModel" class="modal">
+    <div class="modal-content">
+        <form action="{% url 'new_period_setting' %}" method="post" id="new-period-form">
+            <div class="form-card form-info">
+                <h2 style="margin-top: 0;" class="form-title ">
+                    <span>شروع دوره جدید</span>
+                    ✨
+                </h2>
+                <div class="form-body">
+                    {% csrf_token %}
+                    <div class="ui-form">
+                        <label for="shomare_dore">{{ period_form.shomare_dore.label_tag }}</label>
+                        {{ period_form.shomare_dore }}
+                    </div>
+                    <div class="ui-form">
+                        <label for="name_dore">{{ period_form.name_dore.label_tag }}</label>
+                        {{ period_form.name_dore }}
+                    </div>
+                    <div class="ui-form">
+                        <label for="tarikhezam">{{ period_form.tarikhezam.label_tag }}</label>
+                        {{ period_form.tarikhezam }}
+                    </div>
+                    <div class="ui-form">
+                        <label for="modat_rooz_amozesh">{{ period_form.modat_rooz_amozesh.label_tag }}</label>
+                        {{ period_form.modat_rooz_amozesh }}
+                    </div>
+                    <div class="ui-form">
+                        <label for="tarikh_shoro">{{ period_form.tarikh_shoro.label_tag }}</label>
+                        {{ period_form.tarikh_shoro }}
+                    </div>
+                    <div class="ui-form">
+                        <label for="modat_rooz_paziresh">{{ period_form.modat_rooz_paziresh.label_tag }}</label>
+                        {{ period_form.modat_rooz_paziresh }}
+                    </div>
+                    
+                    <p class="form-hint">با ایجاد دوره جدید فهرست نامه ها و سربازان حذف خواهد شد و یک بایگانی ای پایگاه داده فعلی در پشتیبانی ذخیره خواهد شد.</p>
+                    <div class="ui-form-box">
+                        <label class="ui-form-rule">
+                            <span for="rule_accepted">{{period_form.rule_accepted.label}}</span>
+                            {{period_form.rule_accepted}}
+                        </label>
+                    </div>
+
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeModal()">انصراف ✖</button>
+                    <button id="save-btn" class="btn-save">ذخیره و ادامه ✨</button>
+                </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('newPeriodModel');
+    const btn = document.getElementById('new-period-button');
+    const rule_accepted = document.getElementById('rule_accepted');
+    const saveBtn = document.getElementById('save-btn');
+
+    btn.addEventListener('click', () => {
+        modal.classList.add('active');
+        modal.classList.remove('closing');
+    });
+
+    function closeModal() {
+        modal.classList.add('closing');
+
+        // بعد از مدت انیمیشن، کلاس active را حذف می‌کنیم
+        setTimeout(() => {
+            modal.classList.remove('active');
+            modal.classList.remove('closing');
+        }, 350); // زمان انیمیشن مطابق CSS
+    }
+
+    // کلیک روی بک‌گراند مودال
+    modal.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+    });
+    console.log({rule_accepted})
+
+    saveBtn.setAttribute('disabled',true)
+    rule_accepted.addEventListener('change',()=>{
+        if (rule_accepted.checked) saveBtn.removeAttribute('disabled')
+        else saveBtn.setAttribute('disabled',true)
+    })
+</script>

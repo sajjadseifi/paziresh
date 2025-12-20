@@ -143,71 +143,65 @@ margin-top: 0;
 
 
 <div class="row">
-<div class="col-lg-4 col-xs-6">
-    <div class="small-box" style="background: linear-gradient(135deg,#9321b0,#d56ded);">
-        <h1 class="title">آمار کل</h1>
-        <div class="icon"><i class="ion ion-person"></i></div>
-        <h2 class="number">{{ amar_kol }}</h2>
-        {% if request.user.is_staff == True %}
-        <div class="download">
-            <form action="{% url 'download_amar_kol' %}" method="get">
-                <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-            </form>
-        </div>
-    {% endif %}
-    </div>
-</div>
-
-<div class="col-lg-4 col-xs-6">
-    <div class="small-box" style="background: linear-gradient(135deg,#5fff5a,#075910);">
-        <h1 class="title">کل پذیرش شده‌ها</h1>
-        <div class="icon"><i class="ion ion-person-add"></i></div>
-        <h2 class="number">{{ amar_kole_paziresh_shode }}</h2>
-        {% if request.user.is_staff == True %}
-        <div class="download">
-            <form action="{% url 'download_paziresh' %}" method="get">
-                <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-            </form>
-            <form action="{% url 'export_to_excel_list_elame_hozor' %}" method="get">
-                <button type="submit" class="download-btn">اکسل اعلام حضور <i class="fa fa-download"></i></button>
-            </form>
-        </div>
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box" style="background: linear-gradient(135deg,#9321b0,#d56ded);">
+            <h1 class="title">آمار کل</h1>
+            <div class="icon"><i class="ion ion-person"></i></div>
+            <h2 class="number">{{ amar_kol }}</h2>
+            {% if request.user.is_staff == True %}
+            <div class="download">
+                <form action="{% url 'download_amar_kol' %}" method="get">
+                    <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                </form>
+            </div>
         {% endif %}
-    </div>
-</div>
-<div class="col-lg-4 col-xs-6">
-    <div class="small-box" style="background: linear-gradient(135deg,#56ccf2,#2f80ed);">
-        <h1 class="title">شروع دوره</h1>
-        <div class="icon"><i class="ion ion-play"></i></div>
-        <h2 class="number">{{ amar_shoro_dore }}</h2>
-        {% if request.user.is_staff == True %}
-        <div class="download">
-            <form action="{% url 'download_shoro_dore' %}" method="get">
-                <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-            </form>
         </div>
-        {% endif %}
     </div>
-</div>
-
-<div class="col-lg-4 col-xs-6">
-    <div class="small-box" style="background: linear-gradient(135deg,#43cea2,#185a9d);">
-        <h1 class="title">درحال آموزش (حاضر)</h1>
-        <div class="icon"><i class="ion ion-stats-bars"></i></div>
-        <h2 class="number">{{ amar_kole_hezer_bekhdmat }}</h2>
-        {% if request.user.is_staff == True %}
-        <div class="download">
-            <form action="{% url 'download_hezer' %}" method="get">
-                <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-            </form>
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box" style="background: linear-gradient(135deg,#5fff5a,#075910);">
+            <h1 class="title">کل پذیرش شده‌ها</h1>
+            <div class="icon"><i class="ion ion-person-add"></i></div>
+            <h2 class="number">{{ amar_kole_paziresh_shode }}</h2>
+            {% if request.user.is_staff == True %}
+            <div class="download">
+                <form action="{% url 'download_paziresh' %}" method="get">
+                    <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                </form>
+                <form action="{% url 'export_to_excel_list_elame_hozor' %}" method="get">
+                    <button type="submit" class="download-btn">اکسل اعلام حضور <i class="fa fa-download"></i></button>
+                </form>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-</div>
-
-
-
-
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box" style="background: linear-gradient(135deg,#56ccf2,#2f80ed);">
+            <h1 class="title">شروع دوره</h1>
+            <div class="icon"><i class="ion ion-play"></i></div>
+            <h2 class="number">{{ amar_shoro_dore }}</h2>
+            {% if request.user.is_staff == True %}
+            <div class="download">
+                <form action="{% url 'download_shoro_dore' %}" method="get">
+                    <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box" style="background: linear-gradient(135deg,#43cea2,#185a9d);">
+            <h1 class="title">درحال آموزش (حاضر)</h1>
+            <div class="icon"><i class="ion ion-stats-bars"></i></div>
+            <h2 class="number">{{ amar_kole_hezer_bekhdmat }}</h2>
+            {% if request.user.is_staff == True %}
+            <div class="download">
+                <form action="{% url 'download_hezer' %}" method="get">
+                    <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
     <div class="col-lg-4 col-xs-6">
         <div class="small-box" style="background: linear-gradient(135deg, #fff941, #d5d001);">
             <h1 class="title">تطبیق نشده</h1>
@@ -223,117 +217,122 @@ margin-top: 0;
         </div>
     </div>
     <div class="col-lg-4 col-xs-6">
-    <div class="small-box" style="background: linear-gradient(135deg, #ffca34, #895300);">
-        <h1 class="title">یگان خدمتی حاضر</h1>
-        <div class="icon"><i class="ion ion-person-stalker"></i></div>
-        <h2 class="number">{{ total_tegan_khdmati_in_course }}</h2>
-        {% if request.user.is_staff == True %}
-        <div class="download">
-            <form action="{% url 'download_yegan' %}" method="get">
-                <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-            </form>
+        <div class="small-box" style="background: linear-gradient(135deg, #ffca34, #895300);">
+            <h1 class="title">یگان خدمتی حاضر</h1>
+            <div class="icon"><i class="ion ion-person-stalker"></i></div>
+            <h2 class="number">{{ total_tegan_khdmati_in_course }}</h2>
+            {% if request.user.is_staff == True %}
+            <div class="download">
+                <form action="{% url 'download_yegan' %}" method="get">
+                    <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                </form>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-</div>
     <div class="col-lg-6 col-xs-12">
-
-    <div class="card">
-        <div class="card-body">
-            <table class="styled-table">
-                <thead>
-                <tr>
-                    <th>نام گردان</th>
-                    <th>نام گروهان</th>
-                    <th>تعداد</th>
-                    <th>ظرفیت خالی</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% if list_btn  %}
-                    {% for foo in list_btn %}
-                        <tr>
-                            <td>{{ foo.gordan }}</td>
-                            <td>{{ foo.gorohan }}</td>
-                            <td>{{ foo.count }}</td>
-                            <td>{{ foo.capacity|add:"-foo.count" }}</td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr class="empty-row">
-                        <td colspan="4">
-                            <p>
-                            <i class="ion ion-alert-circled"></i>
-                            </p>
-                            <p>هیچ داده‌ای یافت نشد</p>
-                        </td>
+        <div class="card">
+            <div class="card-body">
+                <table class="styled-table">
+                    <thead>
+                    <tr>
+                        <th>نام گردان</th>
+                        <th>نام گروهان</th>
+                        <th>تعداد</th>
+                        {% comment %} <th>ظرفیت خالی</th> {% endcomment %}
                     </tr>
-                {% endif %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% if list_btn  %}
+                        {% for foo in list_btn %}
+                            <tr style="text-align: right;">
+                                <td>{{ foo.gordan }}</td>
+                                <td>{{ foo.gorohan }}</td>
+                                <td>{{ foo.count }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="empty-row">
+                            <td colspan="4">
+                                <p>
+                                <i class="ion ion-alert-circled"></i>
+                                </p>
+                                <p>هیچ داده‌ای یافت نشد</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
- <div class="col-lg-6 col-md-12">
-    {% with total=basij|add:komisyon|add:shoro_komisyon|add:previous|add:tajdiddoreh %}
-<div class="small-box" style="background: linear-gradient(135deg, #ff7e5f, #feb47b); position:relative;">
-    <h1 class="title">خارج از دوره</h1>
+    <div class="col-lg-6 col-md-12">
+        {% with total=basij|add:komisyon|add:shoro_komisyon|add:previous|add:tajdiddoreh %}
+            <div class="small-box" style="background: linear-gradient(135deg, #ff7e5f, #feb47b); position:relative;">
+                <h1 class="title">خارج از دوره</h1>
 
-    <div class="icon" style="position:absolute; top:10px; right:10px; font-size:60px; opacity:0.15; color:#000;">
-        <i class="ion ion-checkmark-circled"></i>
-    </div>
+                <div class="icon" style="position:absolute; top:10px; right:10px; font-size:60px; opacity:0.15; color:#000;">
+                    <i class="ion ion-checkmark-circled"></i>
+                </div>
 
-    <h2 class="number" >{{ total }}</h2>
-{% if request.user.is_staff == True %}
-    <div class="download">
-        <form action="{% url 'download_kafiat' %}" method="get">
-            <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-        </form>
+                <h2 class="number" >{{ total }}</h2>
+                {% if request.user.is_staff == True %}
+                    <div class="download">
+                        <form action="{% url 'download_kafiat' %}" method="get">
+                            <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                        </form>
+                    </div>
+                {% endif %}
+                    <div
+                    style="
+                        font-size:13px;
+                        line-height:1.5;
+                        background:white;
+                        color:#222;
+                        padding:8px 12px;
+                        border-radius:10px;
+                        display:flex;
+                        flex-direction:column;
+                        gap:4px;
+                        width: 300px;
+                        margin:0 100px;
+                        box-sizing: border-box;
+                    "
+                    >
+                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                            <span>کفایت دار بسیج</span>
+                            <span style="font-weight:bold; color:#000;">{{ basij }}</span>
+                        </p>
+                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                            <span>کفایت دار خدمت قبلی</span>
+                            <span style="font-weight:bold; color:#000;">{{ previous }}</span>
+                        </p>
+                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                            <span>تجدید دوره</span>
+                            <span style="font-weight:bold; color:#000;">{{ tajdiddoreh }}</span>
+                        </p>
+                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                            <span>معرفی به کمیسیون</span>
+                            <span style="font-weight:bold; color:#000;">{{ komisyon }}</span>
+                        </p>
+                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                            <span>معرفی به کمیسیون شروع دوره</span>
+                            <span style="font-weight:bold; color:#000;">{{ shoro_komisyon }}</span>
+                        </p>
+                    </div>
+            </div>
+        {% endwith %}    
     </div>
-{% endif %}
-    <div
-    style="
-        font-size:13px;
-        line-height:1.5;
-        background:white;
-        color:#222;
-        padding:8px 12px;
-        border-radius:10px;
-        display:flex;
-        flex-direction:column;
-        gap:4px;
-        width: 300px;
-        margin:0 100px;
-        box-sizing: border-box;
-    "
-    >
-        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-            <span>کفایت دار بسیج</span>
-            <span style="font-weight:bold; color:#000;">{{ basij }}</span>
-        </p>
-        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-            <span>کفایت دار خدمت قبلی</span>
-            <span style="font-weight:bold; color:#000;">{{ previous }}</span>
-        </p>
-        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-            <span>تجدید دوره</span>
-            <span style="font-weight:bold; color:#000;">{{ tajdiddoreh }}</span>
-        </p>
-        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-            <span>معرفی به کمیسیون</span>
-            <span style="font-weight:bold; color:#000;">{{ komisyon }}</span>
-        </p>
-        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-            <span>معرفی به کمیسیون شروع دوره</span>
-            <span style="font-weight:bold; color:#000;">{{ shoro_komisyon }}</span>
-        </p>
+    <div class="col-md-8">
+        <div style="background-color: white;border-radius: 10px;">
+            {% include "../components/paziresh_peak.html" with chart=peakChart  %}
+        </div>
     </div>
-</div>
-
-{% endwith %}    
-    <div class="card" >
-            <div class="card-body chartjs" style="display:flex;align-items:center;justify-content:center;" >
-                <canvas id="pieChart"></canvas>
+    <div class="col-md-4">
+        <div style="background-color: white;border-radius: 10px;" class="card">
+                <div class="card-body chartjs" style="display:flex;align-items:center;justify-content:center;" >
+                    <canvas id="pieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -357,7 +356,10 @@ const data = {
     }]
 };
 
+Chart.defaults.font.family = "'Vazir','IRANSans',Tahoma,sans-serif";
+Chart.defaults.font.size = 12;
 const pieCtx = document.getElementById('pieChart').getContext('2d');
+// فونت پیش‌فرض Chart.js
 new Chart(pieCtx, {
     type: 'pie',
     data: data,
@@ -369,7 +371,7 @@ new Chart(pieCtx, {
                 labels: {
                     font: {
                         size: 14,
-                        family: 'Vazirmatn'
+                        family: 'Vazir'
                     },
                     color: '#333'
                 },
@@ -381,7 +383,7 @@ new Chart(pieCtx, {
                 font: {
                     size: 18,
                     weight: 'bold',
-                    family: 'Vazirmatn'
+                    family: 'Vazir'
                 },
                 color: '#222'
             },

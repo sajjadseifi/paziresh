@@ -71,7 +71,10 @@
         .badge-secondary { background-color: #6c757d; color: #fff; }
 </style>
 
-<h2 class="text-center">{{ soldiers|length }} پذیرش آخر</h2>
+<h2 style="padding: 10px; margin: 10px;background-color: #ffc107;color: white;border-radius: 10px;" class="text-center">
+    <span>{{ soldiers|length }} پذیرش آخر</span>
+    <span><i class="fa fa-arrow-up"></i></span>
+</h2>
 <div class="row">
         {% for soldier in soldiers %}
         <div dir="rtl" class="col-md-6 mb-3">
@@ -85,17 +88,16 @@
                 </div>
                 <div class="card-body d-flex flex-wrap align-items-start">
                     <div class="info-col">
-                        <span>کد ملی: <strong>{{ soldier.National_Code }}</strong></span>
-                    </div>
-                    
-                    <div class="info-col">
-                        <span >گردان: <strong dir="rtl">{{ soldier.battalion_group }}</strong></span>
+                        <span>کد ملی:</span><strong>{{ soldier.National_Code }}</strong>
                     </div>
                     <div class="info-col">
-                    <span>کد انفرادی:<strong> {{ soldier.code_gorhan }}</strong></span>
+                        <span>گردان:<strong >{{ soldier.battalion_group }}</strong></span>
                     </div>
                     <div class="info-col">
-                    <span>کد پذیرش: <strong>{{ soldier.acceptance_code }}</strong></span>
+                        <span>کد انفرادی:<strong> {{ soldier.code_gorhan }}</strong></span>
+                    </div>
+                    <div class="info-col">
+                        <span>کد پذیرش: <strong>{{ soldier.acceptance_code }}</strong></span>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -104,7 +106,7 @@
                 <span class="badge badge-success"> {{ soldier.physical_condition|default:"نامشخص" }}</span>
                     {% if soldier.Amriye %}<span class="badge badge-success">امریه دار</span>{% endif %}
                     {% if soldier.Sufficiency_of_mobilization %}<span class="badge badge-primary">کفایت بسیج</span>{% endif %}
-                    {% if soldier.Sutter %}<span class="badge badge-warning">ساتر تحویل گرفته</span>{% endif %}
+                    {% if soldier.Sutter %}<span class="badge badge-warning">ساتر مجاز </span>{% endif %}
                 </div>
             </div>
         </div>

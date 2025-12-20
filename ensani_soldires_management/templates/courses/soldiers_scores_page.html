@@ -228,10 +228,11 @@ input[type="checkbox"].hidden-checkbox {
 
     <form method="post" action="{% url 'send_rank_score_update' %}">
         {% csrf_token %}
-        <div class="text-left " style="margin-bottom:10px;">
-            <button type="submit" class="btn btn-success">ثبت نمرات</button>
-        </div>
-
+        {%if  permissions.dep.aqidati or  permissions.dep.gordan or permissions.dep.niru_ensani or permissions.dep.amoozesh %}
+            <div class="text-left " style="margin-bottom:10px;">
+                <button type="submit" class="btn btn-success">ثبت نمرات</button>
+            </div>
+        {% endif %}
         {% for soldier in page_obj %}
         <div class="panel">
             <div class="panel-body soldier-box">
@@ -256,25 +257,34 @@ input[type="checkbox"].hidden-checkbox {
                 <div class="form-inputs-container">
                     <div class="form-inputs">
 
-                        {% if permissions.dep.gorohan %}
+                        {% if permissions.dep.gorohan or permissions.dep.farmandehi    %}
                         <!-- 🟢 برنامه نیرو انسانی -->
                         <div class="compact-form-group"><span>انضباط</span>
-                            <input type="number" step="0.1" min="0" max="20"
+                            <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                                type="number" step="0.1" min="0" max="20"
                                 name="discipline_score_{{ soldier.id }}"
                                 value="{{ soldier.discipline_score|default_if_none:'' }}">
                         </div>
 
                               <div class="compact-form-group"><span>فعالیت گردان</span>
-                              <input type="number" step="0.1" min="0" max="20" name="battalion_activity_{{ soldier.id }}" value="{{ soldier.battalion_activity|default_if_none:'' }}">
+                              <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                                type="number" step="0.1" min="0" max="20" name="battalion_activity_{{ soldier.id }}" value="{{ soldier.battalion_activity|default_if_none:'' }}">
                               </div>
                         <div class="compact-form-group"><span>سابقه بسیج (ماه)</span>
-                            <input type="number"  min="0" step="1"
+                            <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                                
+                                type="number"  min="0" step="1"
                                 name="basij_experience_{{ soldier.id }}"
                                 value="{{ soldier.basij_experience|default_if_none:'' }}">
                         </div>
                         <div class="compact-form-group">
                             <span>کفایت بسیج</span>
-                            <select name="basij_efficiency_{{ soldier.id }}">
+                            <select 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                                name="basij_efficiency_{{ soldier.id }}">
                                 <option value="">-- ندارد --</option>
                                 <option value="30 روزه" {% if soldier.basij_efficiency == "30 روزه" %}selected{% endif %}>30 روزه</option>
                                 <option value="45 روزه" {% if soldier.basij_efficiency == "45 روزه" %}selected{% endif %}>45 روزه</option>
@@ -282,72 +292,102 @@ input[type="checkbox"].hidden-checkbox {
                         </div>
 
                         <div class="compact-form-group"><span>شورای پایگاه (ماه)</span>
-                            <input type="number"  min="0" step="1"
+                            <input
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                                type="number"  min="0" step="1"
                                 name="council_experience_{{ soldier.id }}"
                                 value="{{ soldier.council_experience|default_if_none:'' }}">
                         </div>
                         <div class="compact-form-group"><span>مقام استانی</span>
-                            <input type="number" min="0" step="1"
+                            <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                            
+                                type="number" min="0" step="1"
                                 name="provincial_awards_{{ soldier.id }}"
                                 value="{{ soldier.provincial_awards|default_if_none:'' }}">
                         </div>
                                <div class="compact-form-group"><span>مقام کشوری</span>
-                               <input type="number" min="0" step="1" name="national_awards_{{ soldier.id }}" value="{{ soldier.national_awards|default_if_none:'' }}">
+                               <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                               
+                               type="number" min="0" step="1" name="national_awards_{{ soldier.id }}" value="{{ soldier.national_awards|default_if_none:'' }}">
                               </div>
 
                               <div class="compact-form-group"><span>مقام جهانی</span>
-                              <input type="number" min="0" step="1" name="global_awards_{{ soldier.id }}" value="{{ soldier.global_awards|default_if_none:'' }}">
+                              <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                              
+                              type="number" min="0" step="1" name="global_awards_{{ soldier.id }}" value="{{ soldier.global_awards|default_if_none:'' }}">
                               </div>
 
                               <div class="compact-form-group"><span>مقالات جهانی</span>
-                              <input type="number" min="0" step="1" name="global_articles_{{ soldier.id }}" value="{{ soldier.global_articles|default_if_none:'' }}">
+                              <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                              
+                              type="number" min="0" step="1" name="global_articles_{{ soldier.id }}" value="{{ soldier.global_articles|default_if_none:'' }}">
                               </div>
 
                               <div class="compact-form-group"><span>نشریات</span>
-                              <input type="number" min="0" step="1" name="publications_{{ soldier.id }}" value="{{ soldier.publications|default_if_none:'' }}">
+                              <input 
+                                {%if not permissions.dep.gorohan %}disabled{% endif %}
+                                  type="number" min="0" step="1" name="publications_{{ soldier.id }}" value="{{ soldier.publications|default_if_none:'' }}">
                               </div>
 
                         {% endif %}
 
-                        {% if permissions.dep.aqidati %}
+                        {% if permissions.dep.aqidati or permissions.dep.farmandehi %}
                         <!-- 🟣 برنامه عقیدتی -->
                         <div class="compact-form-group"><span>نمره عقیدتی</span>
-                            <input type="number" step="0.1" min="0" max="20"
+                            <input 
+                                {%if not permissions.dep.aqidati %}disabled{% endif %}
+                                type="number" step="0.1" min="0" max="20"
                                 name="ideological_score_{{ soldier.id }}"
                                 value="{{ soldier.ideological_score|default_if_none:'' }}">
                         </div>
 
                         <div class="compact-form-group"><span>حافظ جز قرآن (جز)</span>
-                            <input type="number" min="0" max="30"
+                            <input 
+                                {%if not permissions.dep.aqidati %}disabled{% endif %}
+                                type="number" min="0" max="30"
                                 name="quran_memorization_{{ soldier.id }}"
                                 value="{{ soldier.quran_memorization|default_if_none:'' }}">
                         </div>
 
                         <div>
-                            <span class="toggle-btn" data-input="nahj_memorization_{{ soldier.id }}">
+                            <span 
+                             {%if not permissions.dep.aqidati %}disabled{% endif %}
+                            class="toggle-btn" data-input="nahj_memorization_{{ soldier.id }}">
                                 <i class="check-icon"></i> حافظ نهج البلاغه
                             </span>
-                            <input type="checkbox" class="hidden-checkbox"
+                            <input 
+                                {%if not permissions.dep.aqidati %}disabled{% endif %}
+                                type="checkbox" class="hidden-checkbox"
                                 name="nahj_memorization_{{ soldier.id }}"
                                 id="nahj_memorization_{{ soldier.id }}"
                                 {% if soldier.nahj_memorization %}checked{% endif %}>
                         </div>
 
                         <div>
-                            <span class="toggle-btn" data-input="sajjadiya_memorization_{{ soldier.id }}">
+                            <span 
+                             {%if not permissions.dep.aqidati %}disabled{% endif %}
+                            class="toggle-btn" data-input="sajjadiya_memorization_{{ soldier.id }}">
                                 <i class="check-icon"></i> حافظ صحیفه سجادیه
                             </span>
-                            <input type="checkbox" class="hidden-checkbox"
+                            <input 
+                                {%if not permissions.dep.aqidati %}disabled{% endif %}
+                                type="checkbox" class="hidden-checkbox"
                                 name="sajjadiya_memorization_{{ soldier.id }}"
                                 id="sajjadiya_memorization_{{ soldier.id }}"
                                 {% if soldier.sajjadiya_memorization %}checked{% endif %}>
                         </div>
                         {% endif %}
 
-                        {% if permissions.dep.amoozesh %}
+                        {% if permissions.dep.amoozesh or permissions.dep.farmandehi %}
                         <!-- 🟠 برنامه آموزش -->
                         <div class="compact-form-group"><span>میدان تیر</span>
-                            <input type="number" step="0.1" min="0" max="20"
+                            <input 
+                                {%if not permissions.dep.amoozesh %}disabled{% endif %}
+                                type="number" step="0.1" min="0" max="20"
                                 name="shooting_score_{{ soldier.id }}"
                                 value="{{ soldier.shooting_score|default_if_none:'' }}">
                         </div>
@@ -363,23 +403,25 @@ input[type="checkbox"].hidden-checkbox {
     </form>
 </div>
 
+{%if  permissions.dep.aqidati or  permissions.dep.gordan or permissions.dep.niru_ensani or permissions.dep.amoozesh %}
 <script>
 document.querySelectorAll('.toggle-btn').forEach(btn => {
     const inputId = btn.dataset.input;
     const input = document.getElementById(inputId);
-
-    // تنظیم حالت اولیه toggle-btn مطابق با checkbox
-    btn.classList.toggle('active', input.checked);
-
-    // رویداد کلیک برای تغییر وضعیت
     btn.addEventListener('click', () => {
         input.checked = !input.checked;
-        
-        console.log("input.checked",input.checked)
         btn.classList.toggle('active', input.checked);
     });
 });
 </script>
-
+{% endif %}
+<script>
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+    const inputId = btn.dataset.input;
+    const input = document.getElementById(inputId);
+    // تنظیم حالت اولیه toggle-btn مطابق با checkbox
+    btn.classList.toggle('active', input.checked);
+});
+</script>
 
 {% endblock %}

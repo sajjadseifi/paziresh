@@ -4,9 +4,25 @@ from enum import Enum
 
 class ApplicationValues(Enum):
     RANK_SCORES = "نمره درجات"
+    # RANK_SCORES_ADD = "افزودن - نمره درجات"
+    # RANK_SCORES_EDIT = "ویرایش - نمره درجات"
+    # RANK_SCORES_DELETE = "حذف - نمره درجات"
+
+    SKILL_MANAGEMENT = "مهارت آموزی"
+    # SKILL_MANAGEMENT_ADD = "افزودن - مهارت آموزی"
+    # SKILL_MANAGEMENT_EDIT = "ویرایش - مهارت آموزی"
+    # SKILL_MANAGEMENT_DELETE = "حذف - مهارت آموزی"
+
+    COURSE = "سازماندهی سرباز"
+    # COURSE_ADD = "افزودن   سازماندهی سرباز"
+    # COURSE_EDIT = "ویرایش   سازماندهی سرباز"
+    # COURSE_DELETE = "حذف - سازماندهی سرباز"
+     
     SOLDIER_PROBLEMS = "مشکلات سربازان"
-    SKILL_MANAGEMENT = "مدیریت مهارت آموزی"
-    COURSE = "مدیریت سرباز اموزشی"
+    # SOLDIER_PROBLEMS_ADD = "افزودن - مشکلات سربازان"
+    # SOLDIER_PROBLEMS_EDIT = "ویرایش - مشکلات سربازان"
+    # SOLDIER_PROBLEMS_DELETE = "حذف - مشکلات سربازان"
+    
     @classmethod
     def choices(cls):
         return [(tag.name, tag.value) for tag in cls]

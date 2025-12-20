@@ -1,14 +1,24 @@
 {% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+{% endblock header %}
 {% block main %}
 <style>
+
   body {
-    font-family:  Vazirmatn, sans-serif;
+    font-family:  'B Nazanin', sans-serif;
     background-color: #f4f6f9;
     margin: 0;
     padding: 0;
     direction: rtl;
   }
+  body .fbold {
+    font-family:  'B Nazanin', sans-serif;
+    font-weight: bold;
+  }
   .number {
+    color: black;
     font-family:'B Koodak';
   }
 
@@ -24,7 +34,7 @@
     animation: fadeIn 0.5s ease-in-out;
     box-sizing: border-box;
     height:max-content;
-    border-radius: 12px;
+    border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   }
 
@@ -101,7 +111,7 @@
     justify-content: space-between;
     align-items: center;
     border: 2px solid black;
-    border-radius: 12px;
+    border-radius: 6px;
     padding: 5px 20px;
     margin:0px 0;
   }
@@ -128,11 +138,11 @@
 
   /* Body */
   .letter-body {
-    padding: 15px;
+    padding: 10px 15px;
     line-height: 1.5;
     font-size: 13px;
     border: 2px solid black;
-    border-radius: 12px;
+    border-radius: 6px;
     margin:5px 0;
   }
 
@@ -153,8 +163,8 @@
 
   /* Footer */
   .letter-footer {
-    padding: 12px 20px 0;
-    font-size: 16px;
+    padding: 0 20px 0;
+    font-size: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -169,16 +179,19 @@
 
   .print-btn, .download-btn {
     display: block;
-    margin: 10px auto;
+    margin: 10px 0;
+    width: 100%;
     padding: 10px 18px;
     background: #17a2b8;
     color: #fff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 18px;
     text-decoration: none;
     text-align: center;
+    font-weight: bold;
+    font-family: 'B Nazanin';
   }
   .print-btn:hover, .download-btn:hover {
     background: #138496;
@@ -191,6 +204,7 @@
   .key-pair {
     padding:0;
     margin:3px 0;
+    gap: 5px;
   }
 
   hr {
@@ -250,16 +264,16 @@
     <div class="card-body">
       <form id="gardesh-form">
         <div class="form-group">
-          <label for="lnum">شماره نامه</label>
-          <input type="text" id="lnum" name="lnum" required>
+          <label for="lnum">شماره نامه حکم درجه</label>
+          <input type="text" id="lnum" name="lnum" value="{{form.lnum}}" required>
         </div>
         <div class="form-group">
-          <label for="ldate">تاریخ</label>
-          <input type="text" id="ldate" name="ldate" value="{{ today }}" required>
+          <label for="ldate">تاریخ ایجاد گردش کار</label>
+          <input type="text" id="ldate" name="ldate"  value="{{form.ldate}}" required>
         </div>
         <div class="form-group">
-          <label for="shkh">شماره خودکارسازی</label>
-          <input type="text" id="shkh" name="shkh" required>
+          <label for="shkh">شماره خودکارسازی گردش کار</label>
+          <input type="text" id="shkh" name="shkh" value="{{form.shkh}}" required>
         </div>
       </form>
       <button class="print-btn" onclick="printPreview()">🖨️ پرینت</button>
@@ -276,7 +290,7 @@
         <div class="col center">
           <img style="width:80px;height:80px;" src="{% static '/img/allah-placeholder.png' %}" alt="الله">
         </div>
-        <div class="col left">
+        <div  class="col left">
            <div style="text-align:right; font-weight:bold;">
             <p class="key-pair" style="display:flex; justify-content:space-between; margin:0;">
               <span>شماره:</span>
@@ -299,14 +313,14 @@
       <!-- Main -->
       <main class="letter-body">
         <!-- بخش اول -->
-        <p>
+        <p class="fbold" style="font-size: 18px;margin: 0;padding: 0;">
           به : قسمت نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه – منابع انسانی سرباز<br>
           از : فرمانده آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه
         </p>
 
-        <p ><strong>موضوع :</strong> تصویب و ابلاغ درجه سربازان کارکنان وظیفه</p>
+        <p class="fbold" style="font-size: 18px;margin:5px 0 10px;padding: 0;"><strong>موضوع :</strong> تصویب و ابلاغ درجه سربازان کارکنان وظیفه</p>
 
-        <p>
+        <p style="font-size: 16px;text-align: justify; font-weight: lighter;margin: 0;padding-bottom: 5px;padding-top: 5px;">
           با سلام و صلوات بر محمد و آل محمد (ص)؛ بازگشت به نامه شماره
           
           <span class="number">512/106/6/<span class="number" id="pv-lnum2">----</span>ز</span>
@@ -323,9 +337,9 @@
         <hr/>
 
         <!-- بخش دوم -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:5px;">
           <div style="flex:1; text-align:right; ">
-            <p  style="padding:0;margin:0;">
+            <p class="fbold"  style="padding:0;margin:0; font-size: 16px;">
               به : فرمانده آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه<br>
               از : قسمت نیروی انسانی آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه – منابع انسانی سرباز
             </p>
@@ -345,12 +359,12 @@
 
         </div>
 
-        <p style="padding:0;margin:0;"><strong>موضوع :</strong> گردشکار درجه کارکنان وظیفه (دوره آموزش رزم مقدماتی 
+        <p class="fbold" style="padding:0;margin:0; font-size: 16px;"><strong>موضوع :</strong> گردشکار درجه کارکنان وظیفه (دوره آموزش رزم مقدماتی 
            <span id="pv-coursename2">--</span> - <span class="number" id="pv-coursenum2">--</span>)
         </p>
 
-        <p>
-          <span style="font-weight:bold;font-style:italic;">سلام علیکم</span>
+        <p style="font-size: 16px;text-align: justify; font-weight: lighter; margin: 10px 0 5px;">
+          <span style="font-weight:bold;font-style:italic;font-size: 14px;">سلام علیکم</span>
           <br>
           با سلام و صلوات بر محمد و آل محمد (ص)؛ با استناد به دستورالعمل اعطاء درجه سرباز به شماره 
           <span  class="number"> 5658 </span> 
@@ -394,13 +408,13 @@
         </p>
       </main>
 
-      <footer class="letter-footer">
+      <footer style="color: gray;" class="letter-footer">
         <div class="right">
           شماره خودکارسازی: <span class="number" id="pv-shkh">--</span>
         </div>
         <div class="left">
-          حاضر در دوره: <span class="number" id="pv-ex">--</span> –
-          کفایتدار بسیج: <span class="number" id="pv-kb">--</span> –
+          حاضر در دوره: <span class="number" id="pv-ex">--</span> ،
+          کفایتدار بسیج: <span class="number" id="pv-kb">--</span> ،
           خدمت قبلی: <span class="number" id="pv-kh">--</span>
         </div>
       </footer>

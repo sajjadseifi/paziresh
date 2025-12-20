@@ -24,6 +24,14 @@
     background: rgba(255,0,0,1);
     color: #fff !important;
 }
+.glass-btn-warning {
+    background: rgba(255, 217, 0, 0.8);
+    color: #fff !important;
+}
+.glass-btn.glass-btn-warning.active {
+    background: rgba(255, 230, 0, 1);
+    color: #fff !important;
+}
 
 .glass-btn.active {
     background: rgba(255,255,255,1);
@@ -77,6 +85,11 @@
                     class="glass-btn glass-btn-danger {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}"
                 >
                     کارهای امروز  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
+                </a>
+                <a  href="{% url 'interferences_index' %}" 
+                    class="glass-btn glass-btn-warning {% if request.resolver_match.url_name == 'interferences_index' %}active{% endif %}"
+                >
+                    تداخل آماری  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
                 </a>
                 <a href="{% url 'account_access' %}"
                    class="glass-btn {% if request.resolver_match.url_name == 'account_access' %}active{% endif %}">

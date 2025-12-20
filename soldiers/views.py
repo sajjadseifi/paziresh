@@ -1286,7 +1286,7 @@ class MainViewSoldires(LoginRequiredMixin, View):
         cx = {'results': soldire}
         return render(request, 'soldiers/MainViewSoldires.html', cx)
 
-
+from .models import Soldier
 class exel_add_to_db(LoginRequiredMixin, View):
     def get(self, request):
         form = FormAddExelToDb()
@@ -1296,7 +1296,7 @@ class exel_add_to_db(LoginRequiredMixin, View):
     def post(self, request):
         form = FormAddExelToDb(request.POST, request.FILES or None)
         cx = {'form': form}
-
+        action = request.POST.get('action')
         if form.is_valid():
             exel = request.FILES['file']
 
@@ -1311,9 +1311,16 @@ class exel_add_to_db(LoginRequiredMixin, View):
             num_cols = sheet.ncols
             # برای هر سطر
             for row_idx in range(1, num_rows):
+                # nc = str(one_soldire_list[1]).strip()
+                # if action == 'new':
+                #     exist_soldier = Soldier.objects.filter(National_Code=nc).first()
+                #     if exist_soldier:
+                #         continue
+                
                 one_soldire_list = []
                 soldire = sarbaz()
                 for col_idx in range(num_cols):
+                    
                     # مقدار سلول را بخوانید
                     cell_value = sheet.cell_value(row_idx, col_idx)
                     # مقدار دهی به لیست

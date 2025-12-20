@@ -3,7 +3,10 @@
 {% block scores_content %}
 <style>
    html,body > * {
-      font-family:'Vazirmatn'
+      font-family:'Vazir', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   }
+   .number { 
+
    }
    .soldier-card {
       background: #fff;
@@ -250,43 +253,52 @@
 <div class="mt-4">
     <div class="row">
         <!-- فرم ثبت تست سلامت روان -->
-        <div class="col-md-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h4 class="panel-title"><i class="fa fa-edit"></i> ثبت تست سلامت روان</h4>
-                </div>
-                <div class="panel-body">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            {{ form.soldier.label_tag }}
-                            {{ form.soldier }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.physical_condition_test.label_tag }}
-                            {{ form.physical_condition_test }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.Type_of_disease_test.label_tag }}
-                            {{ form.Type_of_disease_test }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.physical_condition_description_test.label_tag }}
-                            {{ form.physical_condition_description_test }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.physical_condition_date_test.label_tag }}
-                            {{ form.physical_condition_date_test }}
-                        </div>
-                        <button type="submit" class="btn btn-success btn-block">
-                            <i class="fa fa-save"></i> ثبت
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        {%if permissions.dep.behdari %}
+         <div class="col-md-3">
+               <div class="panel panel-primary">
+                  <div class="panel-heading">
+                     <h4 class="panel-title"><i class="fa fa-edit"></i> ثبت تست سلامت روان</h4>
+                  </div>
+                  <div class="panel-body">
+                     <form method="POST">
+                           {% csrf_token %}
+                           <div class="form-group">
+                              {{ form.soldier.label_tag }}
+                              {{ form.soldier }}
+                           </div>
+                           <div class="form-group">
+                              {{ form.physical_condition_test.label_tag }}
+                              {{ form.physical_condition_test }}
+                           </div>
+                           <div class="form-group">
+                              {{ form.Type_of_disease_test.label_tag }}
+                              {{ form.Type_of_disease_test }}
+                           </div>
+                           <div class="form-group">
+                              {{ form.physical_condition_description_test.label_tag }}
+                              {{ form.physical_condition_description_test }}
+                           </div>
+                           <div class="form-group">
+                              {{ form.physical_condition_date_test.label_tag }}
+                              {{ form.physical_condition_date_test }}
+                           </div>
+                           <button type="submit" class="btn btn-success btn-block">
+                              <i class="fa fa-save"></i> ثبت
+                           </button>
+                     </form>
+                  </div>
+               </div>
+         </div>
+        {% endif %}
 
-        <div class="col-md-9">
+        <div 
+        {%if permissions.dep.behdari %}
+           class="col-md-9"
+           {% else %}
+           class="col-md-12"
+        {% endif %}
+
+        >
                <div class="main-card">
                   <div class="header-row">
                      <!-- عنوان -->
@@ -462,7 +474,6 @@
                                     </div>
                                 </div>
                                  <div class="col-sm-4">
-                                   
                                        <div class="soldier-footer">
                                           <div class="info-section">
                                              <strong><i class="fa fa-calendar-check-o text-info"></i> تاریخ تست:</strong>

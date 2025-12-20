@@ -3,27 +3,66 @@
 {% load jalali_filters %}
 
 {% block main %}
-<div class="container mt-4">
+<style>
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 10px auto 0 ;
+    }
+        .card-item-ui input,
+        .card-item-ui select,
+        .card-item-ui textarea,
+        .card-item-ui .select2 
+        {
+            border-radius: 4px;
+            background-color: #e0f6ff42;
+            color: #00445fff;
+            border: 1px solid #0077a7ff;
+            font-weight: bold;
+            outline: 0;
+            padding: 5px 10px;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+        .card-item-ui input:focus,
+        .card-item-ui select:focus,
+        .card-item-ui textarea:focus {
+            background-color: #e0fff042;
+            color: #005f5aff;
+            border: 1px solid #00a78bff;
+
+        }
+</style>
+<div class=" mt-4">
     <!-- فرم کد ملی -->
     <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="box p-3">
+        <div class="col-md-6">
+            <div style="border-radius: 10px; border: 2px solid gray;" class="box p-3">
                 <div class="box-header with-border mb-2">
-                    <h3 class="box-title">پذیرش با کد ملی</h3>
+                    <h3 style="text-align: center;font-weight: bold;margin-top: 10px;" >پذیرش سریع با کد ملی</h3>
                 </div>
-                <form action="" method="post">
+                <form  method="post">
                     {% csrf_token %}
                     <div class="box-body">
-                        <div id="code_meli" class="input-group input-group-sm">
-                            {{ SarbazCodeMeli.code_meli }}
-                            <span class="text-danger ml-2">{{ SarbazCodeMeli.code_meli.errors }}</span>
-                            <span class="input-group-btn">
-                                <button type="submit" class="btn btn-info btn-flat">بررسی</button>
-                            </span>
+                        <div style="font-size: 18px;display: flex;gap: 10px;" id="code_meli" >
+                            <div class="card-item-ui" style="flex: 1;">
+                                {{ SarbazCodeMeli.code_meli }}
+                            </div>
+                            <button 
+                                    style="width: 200px;border-radius: 4px;padding: 0 4px;line-height: 18px; font-size: 18px;background-color: #00a78bff;"
+                                    type="submit" class="btn btn-info btn-flat"
+                                >
+                                بررسی
+                            </button>
+                        </div>
+                        <div style="display: flex;" class="text-danger ml-2">
+                                {{ SarbazCodeMeli.code_meli.errors }}
                         </div>
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="col-md-6">
         </div>
     </div>
     {% include "components/last_acceptance_soldiers.html" with soldiers=soldiers %}

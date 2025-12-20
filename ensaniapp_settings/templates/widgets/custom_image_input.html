@@ -1,0 +1,18 @@
+
+<div class="ui-group-image">
+    <div class="ui-image-preview">
+        <img src="{% if widget.value %} {{ widget.value.url }} {% endif %}" class="ui-image">
+    </div>
+    {% comment %} <div class="ui-group-actions">
+        <label class="ui-form-button ui-clear">
+                {{ widget.clear_checkbox }}
+                پاک کردن 
+        </label>
+        <label class="ui-form-button ui-upload-btn">
+             تصویر جدید
+            <input type="file" name="{{ widget.name }}" >
+        </label>
+    </div> {% endcomment %}
+  
+</div>
+

@@ -1,87 +1,161 @@
 {% extends 'shared/_PanelMain.html' %}
+{% load jalali_filters %}
 {% load static %}
 
 
 {% block main %}
+    <style>
+        .status-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .status-group p {
+            padding: 5px;
+            margin: 0;
+        }
+        .status-group .status-label {
+            flex: 1;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .status-group .status-card {
+            flex: 4;
+            margin: 0;
+        }
+        address strong {
+            padding: 2px;
+            border-radius: 2px;
+            background: #ebebebff;
+            color: black;
+            display: inline-block;
+        }
+        address {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        address > div {
+            display: flex;
+            align-items: center;
+        }
+        address > div span {
+            flex: 2;
+        } 
 
-    <section class="invoice">
+        address > div strong {
+            flex: 3;
+            text-align: center;
+        } 
+    </style>
+    <section style="border-radius: 10px; border: 2px solid gray;margin: 0;" class="invoice">
         <!-- title row -->
         <div class="row">
             <div class="col-xs-12">
                 <h2 class="page-header">
                     <i class="fa fa-globe"></i>
-                    <small class="pull-left">۳ مرداد ۱۳۹۶</small>
+                    <span style="font-weight: bold;">اطلاعات پذیرش</span>
+                    <small style="font-weight: bold;" class="pull-left">{{ sarbaz.tarikh_paziresh|jalali_date_fmt }}</small>
                 </h2>
             </div>
             <!-- /.col -->
         </div>
         <!-- info row -->
         <div class="row invoice-info">
-            <div class="col-sm-4 invoice-col">
+            <div class="col-sm-2 invoice-col">
                 <address>
-                    <strong>{{ sarbaz.National_Code }}</strong><br>
-                    نام : {{ sarbaz.name }}<br>
-                    نام خانوادگی : {{ sarbaz.family }}<br>
+                    <div>
+                        <strong>کدملی : {{ sarbaz.National_Code }}</strong>
+                    </div>
+                    <div>
+                        <span>نام :</span> <strong>{{ sarbaz.name }}</strong>
+                    </div>
+                    <div>
+                        <span>نام خانوادگی :</span> <strong>{{ sarbaz.family }}</strong>
+                    </div>
                 </address>
             </div>
             <!-- /.col -->
-            <div class="col-sm-4 invoice-col">
+            <div class="col-sm-2 invoice-col">
 
                 <address>
-                    <strong>گردان : {{ sarbaz.Gordan.name }}</strong><br>
-                    گروهان : {{ sarbaz.battalion_group.name }}<br>
-                    کد فردی : {{ sarbaz.code_gorhan }}<br>
+                    <div>
+                        <span>گردان : </span> <strong> {{ sarbaz.Gordan.name }}</strong>
+                    </div>
+                    <div>
+                        <span>گروهان :</span> <strong>{{ sarbaz.battalion_group.name }}</strong>
+                    </div>
+                    <div>
+                        <span>کد فردی :</span> <strong>{{ sarbaz.code_gorhan }}</strong>
+                    </div>
                 </address>
             </div>
             <!-- /.col -->
-            <div class="col-sm-4 invoice-col">
-                <b>کد پذیرش:</b> {{ sarbaz.acceptance_code }}<br>
-                <b>تاریخ پذیرش:</b><span style="unicode-bidi:embed">{{ date }}</span><br>
-                <b>زمان پذیرش:</b>{{ time }}<br>
+            <div class="col-sm-2 invoice-col">
+                <address>
+                    <div>
+                        <span>کد پذیرش:</span> <strong>{{ sarbaz.acceptance_code }}</strong>
+                    </div>
+                    <div>
+                        <span>تاریخ پذیرش:</span><strong style="unicode-bidi:embed">{{ date }}</strong>
+                    </div>
+                    <div>
+                        <span>زمان پذیرش:</span> <strong>{{ time }}</strong>
+                    </div>
+                </address>
+            </div>
+            <div class="col-sm-6 invoice-col">
+                <div class="row">
+                    <div class="col-xs-12 status-group">
+                        <p class="status-label lead">وضعیت ساتر:</p>
+                        <p class="status-card text-muted well well-sm no-shadow" >
+                            {{ sarbaz.name }} {{ sarbaz.family }} مجاز به دریافت برگه ساتر می باشد
+                        </p>
+                    </div>
+                    <div class="col-xs-12 status-group">
+                        <p class="status-label lead">وضعیت گردان:</p>
+                        <p class="status-card text-muted well well-sm no-shadow" >
+                            {{ sarbaz.name }} {{ sarbaz.family }} در گردان:{{ sarbaz.Gordan.name }} و
+                            گروهان:{{ sarbaz.battalion_group.name }} باکد فردی :{{ sarbaz.code_gorhan }} مجاز به پذیرش می باشد
+                        </p>
+                    </div>
+                    
+
+                    </div>
+
             </div>
             <!-- /.col -->
         </div>
 
-
-        <div class="row">
-            <div class="col-xs-6">
-                <p class="lead">وضعیت ساتر:</p>
-                <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                    {{ sarbaz.name }} {{ sarbaz.family }} مجاز به دریافت برگه ساتر می باشد
-                </p>
-                <a href="{% url 'sater' pk=sarbaz.pk %}" target="_blank" class="btn btn-default"><i
-                        class="fa fa-print"></i>
-                    پرینت برگه ساتر</a>
-            </div>
-            <!-- /.col -->
-            <div class="col-xs-6">
-                <p class="lead">وضعیت گردان:</p>
-                <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                    {{ sarbaz.name }} {{ sarbaz.family }} در گردان:{{ sarbaz.Gordan.name }} و
-                    گروهان:{{ sarbaz.battalion_group.name }} باکد فردی :{{ sarbaz.code_gorhan }} مجاز به پذیرش می باشد
-                </p>
-                <a href="{% url 'moarefibegordan' pk=sarbaz.pk %}" target="_blank" class="btn btn-default"><i
-                        class="fa fa-print"></i>
-                    پرینت معرفی به گردان</a>
-            </div>
-            <!-- /.col -->
-        </div>
-        <!-- /.row -->
-        <br>
-        <br>
-        <br>
-        <!-- this row will not appear when printing -->
-        <div class="row no-print">
-
-            <div class="col-xs-12">
-                <a href="{% url 'sarbaz_codemeli' %}" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>پذیرش باکد ملی
+        <div style="margin-top:10px;display: flex;align-items: center;justify-content: center; gap: 10px;" class=" no-print">
+                <a href="{% url 'sarbaz_codemeli' %}" class="btn btn-success pull-right">
+                    <i class="fa fa-credit-card"></i> <span>پذیرش باکد ملی</span> | <span>F2 یا (F1 فایرفاکس)</span>
                 </a>
-                <a href="{% url 'CreatePaziresh' %}" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>پذیرش دستی
+                <a href="{% url 'CreatePaziresh' %}" class="btn btn-info pull-right">
+                    <i class="fa fa-credit-card"></i> <span>پذیرش دستی</span> 
                 </a>
-            </div>
+                <div style="flex: 1;"></div>
+                <a href="{% url 'sater' pk=sarbaz.pk %}" target="_blank" class="btn btn-default">
+                    <i class="fa fa-print"></i> <span>چاپ برگه ساتر</span>
+                </a>
+                <a href="{% url 'moarefibegordan' pk=sarbaz.pk %}" target="_blank" class="btn btn-default">
+                    <i class="fa fa-print"></i> <span>چاپ معرفی به گردان</span>
+                </a>
         </div>
     </section>
 
     {% include "components/last_acceptance_soldiers.html" with soldiers=soldiers %}
 
 {% endblock %}
+
+{% block footer %}
+<script>
+    const unregister = callKeyword(
+        ['F2', 'F1'],
+        () =>{
+            window.location.href  = "{% url 'sarbaz_codemeli' %}"
+        }
+    );
+
+</script>
+{% endblock footer %}

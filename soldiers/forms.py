@@ -217,7 +217,6 @@ class FormSoldiers(forms.Form):
         required=True,
     )
 
-
 class FormSoldiersCreate(forms.Form):
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
@@ -654,19 +653,27 @@ class FormSoldiersUpdate(forms.Form):
         required=False
     )
 
-
+errrs = {
+    'not_found':'این سرباز با این کد ملی وجود ندارد',
+    'has_been_accepted':'این سرباز پذیرش شده'   
+}
 class SarbazCodeMeli(forms.Form):
     code_meli = forms.CharField(widget=forms.TextInput(
-        attrs={'type': 'text', 'class': 'form-control', 'id': 'codemeli',
-               'placeholder': 'کدملی وارد کنید'}),
-        label='کدملی', )
+        attrs={
+            'type': 'text', 
+            'class': 'form-control ui-codemeli', 
+            'id': 'codemeli', 
+            'placeholder': 'کدملی وارد کنید'
+        }),
+        label='کدملی' 
+    )
 
     def clean_code_meli(self):
         s = sarbaz.objects.filter(National_Code=self.cleaned_data['code_meli']).first()
         if s is None:
-            raise ValidationError("این سرباز با این کد ملی وجود ندارد")
+            raise ValidationError(errrs['not_found'])
         if s.has_been_accepted is True:
-            raise ValidationError("این سرباز پذیرش شده")
+            raise ValidationError(errrs['has_been_accepted'])
         return self.cleaned_data['code_meli']
 
 

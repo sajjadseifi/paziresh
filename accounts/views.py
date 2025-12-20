@@ -111,11 +111,11 @@ def account_access(request):
     # گردان‌ها و گروهان‌ها
     gordans = battalion.objects.all()
     grohans = battalion_group.objects.all()
-    print(user_access)
+    departments_values = sorted(DepartmentValues.choices(), key=lambda x:x[1])
     context = {
         'access_names': access_names,
         'application_values': ApplicationValues.choices(),
-        'departments_values': DepartmentValues.choices(),
+        'departments_values': departments_values,
         'user_id': user_id,
         'user_access': user_access,
         'user': user,
@@ -298,7 +298,7 @@ def application_access_form(request):
         form = FlexibleAccessForm(request.POST, user=user)
         if form.is_valid():
             form.save()
-            messages.success(request, f"دسترسی‌های کاربر {user.username} ذخیره شد ✅")
+            messages.success(request, f"دسترسی‌های کاربر [{user.username} : {user.first_name} {user.last_name}]  ذخیره شد ✅")
 
         else:
             for field, errors in form.errors.items():

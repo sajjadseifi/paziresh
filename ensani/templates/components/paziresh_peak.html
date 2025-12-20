@@ -1,0 +1,68 @@
+<style>
+     canvas {
+        font-family: 'Vazir', sans-serif;
+    }
+</style>
+<div style="padding: 10px 20px;" class="form-gray">
+    <h2 style="text-align: center;color: cadetblue;border-bottom: 4px solid cadetblue;margin: 0 20px 10px;padding: 10px;">
+        پیک پذیرش
+    </h2>
+    <canvas id="pazireshPeakChart" height="120"></canvas>
+</div>
+
+<script>
+(function () {
+    const chartData = {{ chart|safe }};
+
+    // تنظیمات نمودار
+    chartData.datasets.forEach(ds => {
+        ds.borderWidth = 2;
+        ds.tension = 0.35;
+        ds.fill = false;
+    });
+
+    // فونت پیش‌فرض Chart.js
+    Chart.defaults.font.family = "'Vazir','IRANSans',Tahoma,sans-serif";
+    Chart.defaults.font.size = 12;
+
+    const ctx = document.getElementById('pazireshPeakChart').getContext('2d');
+
+    // تعریف مقادیر دلخواه محور Y
+    const maxY = Math.max(...chartData.datasets.flatMap(ds => ds.data));
+    const yTicks = [];
+    for(let i=0; i<=40; i+=5) yTicks.push(i);       // تقسیمات کوچک تا 40
+    for(let i=60; i<=maxY; i+=20) yTicks.push(i);   // بعد از 40 فاصله بزرگتر
+    if (!yTicks.includes(maxY))
+    {
+        yTicks.push(maxY);
+    }
+
+    console.log({yTicks})
+    new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'right' }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'ساعت' }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'تعداد پذیرش' },
+                    ticks: {
+                        callback: function(value) {
+                            return value
+                        },
+                        stepSize: 5,
+                    },
+                    suggestedMax: maxY
+                }
+            }
+        }
+    });
+})();
+</script>

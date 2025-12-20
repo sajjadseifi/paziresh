@@ -133,7 +133,7 @@
     <!-- بخش واحدها -->
     <div class="panel-box">
         <div class="panel-header panel-header-units">
-            <span class="panel-title">🏛️ واحدها</span>
+            <span class="panel-title">🏛️ واحدها (عملیات های بروزرسانی اطلاعات)</span>
             <label class="select-all-btn">
                 <input type="checkbox" id="selectAllUnits">
                 <span class="label-text">همه</span>
@@ -153,20 +153,24 @@
     <!-- بخش برنامه‌ها -->
     <div class="panel-box mt-3">
         <div class="panel-header panel-header-apps">
-            <span class="panel-title">🧩 برنامه‌ها</span>
+            <span class="panel-title">🧩 برنامه‌ها (مشاهده نرم افزار)</span>
             <label class="select-all-btn">
                 <input type="checkbox" id="selectAllApps" >
                 <span class="label-text">همه</span>
             </label>
         </div>
-        <div class="panel-body grid-2">
-            {% for key, value in application_values %}
-            <label class="checkbox-btn">
-                <input type="checkbox" name="applications_{{ key }}" value="{{ key }}" {% if user_access|check_application_access:key %}checked{% endif %}>
-                {{ value }}
-                <span class="icon">✔</span>
-            </label>
-            {% endfor %}
+        <div class="panel-body">
+            <ul class="row" style="list-style:none;">
+                {% for key, value in application_values %}
+                    <li class="col-md-3">
+                        <label class="checkbox-btn">
+                            <input type="checkbox" name="applications_{{ key }}" value="{{ key }}" {% if user_access|check_application_access:key %}checked{% endif %}>
+                            {{ value }}
+                            <span class="icon">✔</span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </form>

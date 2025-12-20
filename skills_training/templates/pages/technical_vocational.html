@@ -218,7 +218,9 @@
         <div class="panel-list">
             <div class="panel-top">
                 <h3>رشته‌های فنی و حرفه‌ای</h3>
-                <button class="btn btn-excel btn-success"><i class="fas fa-file-excel"></i>📄 اکسل رشته ها</button>
+                {%if permissions.dep.niru_ensani %}
+                    <button class="btn btn-excel btn-success"><i class="fas fa-file-excel"></i>📄 اکسل رشته ها</button>
+                {% endif %}
             </div>
 
             <form class="list-form" method="post" onsubmit="return false;">
@@ -229,9 +231,11 @@
                     <span class="list-item-title">همه</span>
                     <span class="list-item-counts">{{ counts_in_all }} نفر</span>
                     <span class="list-item-subtitle">[تمامی رشته‌ها]</span>
-                    <div>
-                        <button type="button" class="btn btn-create" onclick="openModal('create',id=null, name='', code='', event)">رشته جدید➕</button>
-                    </div>
+                    {%if permissions.dep.niru_ensani %}
+                        <div>
+                            <button type="button" class="btn btn-create" onclick="openModal('create',id=null, name='', code='', event)">رشته جدید➕</button>
+                        </div>
+                    {% endif %}
                 </label>
 
                 {% for field in technical_vocationals %}
@@ -240,10 +244,13 @@
                     <span class="list-item-title">{{ field.name }}</span>
                     <span class="list-item-counts">{{ field.soldier_count }} نفر</span>
                     <span class="list-item-subtitle">[کد : {{ field.code }} ]</span>
-                    <div>
-                        <button type="button" class="btn btn-update" onclick="openModal('update', {{ field.id }}, '{{ field.name }}', '{{ field.code }}', event)">✏️</button>
-                        <button type="button" class="btn btn-delete" onclick="openModal('delete', {{ field.id }}, '', '', event)">🗑️</button>
-                    </div>
+                    {%if permissions.dep.niru_ensani %}
+                        <div>
+                            <button type="button" class="btn btn-update" onclick="openModal('update', {{ field.id }}, '{{ field.name }}', '{{ field.code }}', event)">✏️</button>
+                            <button type="button" class="btn btn-delete" onclick="openModal('delete', {{ field.id }}, '', '', event)">🗑️</button>
+                        </div>
+                    {% endif %}
+
                 </label>
                 {% endfor %}
             </form>
@@ -251,11 +258,12 @@
     </div>
     <div class="col-md-7">
         <div class="row">
+            {%if permissions.dep.niru_ensani %}
             <div class=" col-md-6">
-                        <div class="panel-content">
-                        <div class="panel-header">
-                            <h3>ثبت نام آزمون</h3>
-                        </div>
+                <div class="panel-content">
+                <div class="panel-header">
+                    <h3>ثبت نام آزمون</h3>
+                </div>
             <form method="post" enctype="multipart/form-data" id="assign-soldier-form" class="assign-soldier-form" action="{% url 'skills:technical_vocational_add_soldier' %}" >
                 {% csrf_token %}
                 <div>
@@ -299,6 +307,8 @@
                     فرم بارگذاری اکسل
                 </div>
             </div>
+
+        {% endif %}
             <div class="col-md-12">
                             <!-- 🧾 جدول سربازان -->
         <div class="panel-content ">
@@ -306,6 +316,8 @@
                     <h3>
                         فهرست سربازان در آزمون {% if selected_field %}{{ selected_field.name }}{% else %}همه{% endif %}
                     </h3>
+            {%if permissions.dep.niru_ensani %}
+
                     <div style="margin-top: 8px; display: flex; gap: 8px;">
                         <!-- لینک اکسل -->
                         <a href="{% url 'skills:technical_vocational_export_excel' %}?technical_vocational_id={{ selected_field.id|default:'' }}" 
@@ -319,6 +331,7 @@
                             دانلود ZIP با تصاویر
                         </a>
                     </div>
+            {% endif %}
                 </div>
 
                 <div style="margin:10px 0;display:flex;align-items:center;justify-content:space-between;">

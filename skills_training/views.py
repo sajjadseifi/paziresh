@@ -63,12 +63,12 @@ from django.views import View
 template_pages = 'pages'
 
 @login_required
-@permissions_required(
-    main_permission='dep.niru_ensani',
-    fallback_permission='dep.gorohan',
-    fallback_url='skills:assign',
-    redirect_url='account_access_403'
-)
+# @permissions_required(
+#     main_permission='dep.niru_ensani',
+#     fallback_permission='dep.gorohan',
+#     fallback_url='skills:assign',
+#     redirect_url='account_access_403'
+# )
 def index(request):
     # ✅ تعداد کل مهارت‌ها
     total_skills = SlillTraining.objects.count()
@@ -775,7 +775,7 @@ class CreateOrUpdateHazardSettings(LoginRequiredMixin, View):
     def post(self, request):
         hz = HazardSettings.objects.last()
         form = HazardSettingsForm(request.POST or None)
-
+        form.clean()
         if not form.is_valid():
             return render(request, f"{template_pages}/certificate_hazard.html", {'form': form, 'hazard': hz})
 

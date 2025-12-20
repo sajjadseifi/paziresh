@@ -217,76 +217,84 @@ form input[type="file"]::file-selector-button:hover {
     {% csrf_token %}
 
     <div class="row">
-        <div class="col-md-8">
+        <div
+            {% if permissions.dep.niru_ensani %}class="col-md-8"{% endif %} 
+            {% if not permissions.dep.niru_ensani %}class="col-md-12"{% endif %} 
+        >
             <!-- Toolbar -->
             <div class="toolbar">
                 <div class="toolbar-stats">
                 <span class="counter">کل دسته‌ها: {{ total_categories }}</span> |
-                <span class="counter">کل آیتم‌ها: {{ total_items }}</span> |
-                <span id="new" class="counter">جدید: 0</span> |
-                <span id="del" class="counter">حذف : 0</span> |
-                <span class="counter">انتخاب: <span id="selectedCount">0</span></span> |
-                <span class="counter">تغییرات: <span id="changedCount">0</span></span> 
+                <span class="counter">کل آیتم‌ها: {{ total_items }}</span> 
+                {%if permissions.dep.niru_ensani %}
+                    |
+                    <span id="new" class="counter">جدید: 0</span> |
+                    <span id="del" class="counter">حذف : 0</span> |
+                    <span class="counter">انتخاب: <span id="selectedCount">0</span></span> |
+                    <span class="counter">تغییرات: <span id="changedCount">0</span></span> 
+                {% endif %}
                 </div>
                 <div class="toolbar-actions">
-                    <a class="btn btn-download" href="{% url 'skills:export_skills_excel' %}">
-                        <i class="fa fa-download"></i> دانلود اکسل مهارت ها
-                    </a>
+                    {%if permissions.dep.niru_ensani or permissions.dep.gordan  %}
+                        <a class="btn btn-download" href="{% url 'skills:export_skills_excel' %}">
+                            <i class="fa fa-download"></i> دانلود اکسل مهارت ها
+                        </a>
+                    {% endif %}
                 </div>
             </div>
-
-            <div class="toolbar">
-                <div class="toolbar-actions">
-                    <button type="button"  class="btn btn-view" id="applyBtn" disabled>
-                        <i class="fa fa-check"></i> اعمال نهایی
-                    </button>
-                    <button type="button" class="btn btn-edit-category" id="editCategoryBtn" disabled>
-                        <i class="fa fa-folder"></i> ویرایش دسته
-                    </button>
-                    <button type="button" class="btn btn-edit" id="editCodeBtn" disabled>
-                        <i class="fa fa-barcode"></i> ویرایش کد
-                    </button>
-                    <button type="button" class="btn btn-delete" id="deleteBtn" disabled>
-                        <i class="fa fa-trash"></i> حذف موارد
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">لغو عملیات</button>
-                </div>
-                <div  class="toolbar-stats">
-                <button type="" class="btn btn-success" id="addBtn">
-                    مهارت جدید <i class="fa fa-plus"></i> 
-                    </button>
-                </div>
-            </div>
-        </div>
-            <!-- فرم Excel -->
-        <div class="col-md-4">
-            <div class="form-section">
-                <div class="form-header" style="display:flex; align-items:center; justify-content:space-between;">
-                    <h3 style="flex:1;">ثبت با فایل Excel</h3>
-                    <a href="{% url 'skills:download_sample_excel' %}" class="btn btn-add" download>
-                        <i class="fa fa-download"></i> دانلود فایل نمونه
-                    </a>
-                </div>
-
-                <!-- Progress Bar -->
-                <div style="border-radius:5px;margin-bottom:4px;background-color:#565d68;justify-content:end;display:none;" id="excelProgressContainer" class="progress" >
-                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width:0%; background-color:#5cb85c;">
-                        %0
+            {%if permissions.dep.niru_ensani %}
+                <div class="toolbar">
+                    <div class="toolbar-actions">
+                        <button type="button"  class="btn btn-view" id="applyBtn" disabled>
+                            <i class="fa fa-check"></i> اعمال نهایی
+                        </button>
+                        <button type="button" class="btn btn-edit-category" id="editCategoryBtn" disabled>
+                            <i class="fa fa-folder"></i> ویرایش دسته
+                        </button>
+                        <button type="button" class="btn btn-edit" id="editCodeBtn" disabled>
+                            <i class="fa fa-barcode"></i> ویرایش کد
+                        </button>
+                        <button type="button" class="btn btn-delete" id="deleteBtn" disabled>
+                            <i class="fa fa-trash"></i> حذف موارد
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">لغو عملیات</button>
+                    </div>
+                    <div  class="toolbar-stats">
+                    <button type="" class="btn btn-success" id="addBtn">
+                        مهارت جدید <i class="fa fa-plus"></i> 
+                        </button>
                     </div>
                 </div>
-
-                <!-- دکمه‌ها -->
-                <button type="button" class="btn-submit" id="openExcelModalBtn">
-                    <i class="fa fa-upload"></i> بارگذاری و ثبت فایل Excel
-                </button>
-                <button style='width:100%;justify-content:center;display:none;' type="button" class="btn btn-danger" id="cancelExcelUploadBtn" >
-                    لغو عملیات
-                </button>
-
-            </div>
+            {% endif %}
         </div>
+        {%if permissions.dep.niru_ensani %}
+            <div  class="col-md-4">
+                <div class="form-section">
+                    <div class="form-header" style="display:flex; align-items:center; justify-content:space-between;">
+                        <h3 style="flex:1;">ثبت با فایل Excel</h3>
+                        <a href="{% url 'skills:download_sample_excel' %}" class="btn btn-add" download>
+                            <i class="fa fa-download"></i> دانلود فایل نمونه
+                        </a>
+                    </div>
 
-    
+                    <!-- Progress Bar -->
+                    <div style="border-radius:5px;margin-bottom:4px;background-color:#565d68;justify-content:end;display:none;" id="excelProgressContainer" class="progress" >
+                        <div id="uploadProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" style="width:0%; background-color:#5cb85c;">
+                            %0
+                        </div>
+                    </div>
+
+                    <!-- دکمه‌ها -->
+                    <button type="button" class="btn-submit" id="openExcelModalBtn">
+                        <i class="fa fa-upload"></i> بارگذاری و ثبت فایل Excel
+                    </button>
+                    <button style='width:100%;justify-content:center;display:none;' type="button" class="btn btn-danger" id="cancelExcelUploadBtn" >
+                        لغو عملیات
+                    </button>
+
+                </div>
+            </div>
+        {% endif %}
     </div>
 
     <!-- Table -->
@@ -294,7 +302,9 @@ form input[type="file"]::file-selector-button:hover {
         <table class="skills-table">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="selectAll" style="width:20px;height:20px;" /></th>
+                    {%if  permissions.dep.niru_ensani%}
+                        <th><input type="checkbox" id="selectAll" style="width:20px;height:20px;" /></th>
+                    {% endif %}
                     <th>ردیف</th>
                     <th>دسته</th>
                     <th>مهارت</th>
@@ -305,17 +315,33 @@ form input[type="file"]::file-selector-button:hover {
             <tbody>
                 {% for group in skills_in_category %}
                     <tr class="category-row" data-category="{{ group.category|safe_slug }}">
-                        <td><input type="checkbox" class="category-check" data-category="{{ group.category|safe_slug }}" /></td>
+                        {%if  permissions.dep.niru_ensani%}
+                            <td><input type="checkbox" class="category-check" data-category="{{ group.category|safe_slug }}" /></td>
+                        {% endif %}
                         <td colspan="4">{{ group.category }} - تعداد آیتم‌ها: {{ group.counts }}</td>
                         <td>انتخاب شده: <span class="selectedCountCategory" id="selectedCount-{{ group.category|safe_slug }}">0</span></td>
                     </tr>
                     {% for skill in group.items %}
                         <tr class="data-row category-{{ group.category|safe_slug }}">
-                            <td><input type="checkbox" value="{{ skill.id }}" class="row-check category-{{ group.category|safe_slug }}" data-category="{{ group.category|safe_slug }}" /></td>
+                            {%if  permissions.dep.niru_ensani%}
+                                <td><input type="checkbox" value="{{ skill.id }}" class="row-check category-{{ group.category|safe_slug }}" data-category="{{ group.category|safe_slug }}" /></td>
+                            {% endif %}
                             <td>{{ forloop.counter }}</td>
-                            <td><div class="input-wrapper"><input class="table-input" name="field_{{ skill.id }}_category" value="{{ skill.category }}" /><i class="fa fa-pencil edit-icon"></i></div></td>
-                            <td><div class="input-wrapper"><input class="table-input" name="field_{{ skill.id }}_title" value="{{ skill.title }}" /><i class="fa fa-pencil edit-icon"></i><i class="fa fa-times clear-icon" title="پاک کردن"></i></div></td>
-                            <td><div class="input-wrapper"><input class="table-input" name="field_{{ skill.id }}_code" value="{{ skill.code }}" /><i class="fa fa-pencil edit-icon"></i></div></td>
+                            <td><div class="input-wrapper"><input {%if not permissions.dep.niru_ensani%}disabled{% endif %} class="table-input" name="field_{{ skill.id }}_category" value="{{ skill.category }}" />
+                                {%if  permissions.dep.niru_ensani%}
+                                    <i class="fa fa-pencil edit-icon"></i>
+                                {% endif %} 
+                            </div></td>
+                            <td><div class="input-wrapper"><input {%if not permissions.dep.niru_ensani%}disabled{% endif %} class="table-input" name="field_{{ skill.id }}_title" value="{{ skill.title }}" />
+                                {%if  permissions.dep.niru_ensani%}
+                                    <i class="fa fa-pencil edit-icon"></i><i class="fa fa-times clear-icon" title="پاک کردن"></i>
+                                {% endif %} 
+                            </div></td>
+                            <td><div class="input-wrapper"><input {%if not permissions.dep.niru_ensani%}disabled{% endif %} class="table-input" name="field_{{ skill.id }}_code" value="{{ skill.code }}" />
+                                {%if  permissions.dep.niru_ensani%}
+                                    <i class="fa fa-pencil edit-icon"></i>
+                                {% endif %} 
+                            </div></td>
                             <td>{{ skill.primary_soldiers.count|add:skill.secondary_soldiers.count }}</td>
                         </tr>
                     {% endfor %}
@@ -326,6 +352,7 @@ form input[type="file"]::file-selector-button:hover {
         </table>
     </div>
 </form>
+{%if permissions.dep.niru_ensani %}
 
 <!-- --------------------- مودال بارگذاری Excel --------------------- -->
 <div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-hidden="true">
@@ -433,502 +460,501 @@ form input[type="file"]::file-selector-button:hover {
     </div>
   </div>
 </div>
+{% endif %}
 
 {% endblock %}
 
+
 {% block footer %}
+{%if permissions.dep.niru_ensani %}
+    <script>
+        // --------------------- متغیرهای اصلی ---------------------
+        const tableBody = document.querySelector("tbody");
+        const selectAll = document.getElementById("selectAll");
+        const changedCountEl = document.getElementById("changedCount");
+        const selectedCountEl = document.getElementById("selectedCount");
+        const applyBtn = document.getElementById("applyBtn");
+        const deleteBtn = document.getElementById("deleteBtn");
+        const editCategoryBtn = document.getElementById("editCategoryBtn");
+        const editCodeBtn = document.getElementById("editCodeBtn");
+        let newRowCounter = 0;
 
-<script>
-    // --------------------- متغیرهای اصلی ---------------------
-    const tableBody = document.querySelector("tbody");
-    const selectAll = document.getElementById("selectAll");
-    const changedCountEl = document.getElementById("changedCount");
-    const selectedCountEl = document.getElementById("selectedCount");
-    const applyBtn = document.getElementById("applyBtn");
-    const deleteBtn = document.getElementById("deleteBtn");
-    const editCategoryBtn = document.getElementById("editCategoryBtn");
-    const editCodeBtn = document.getElementById("editCodeBtn");
-    let newRowCounter = 0;
-
-    // --------------------- شمارنده‌ها ---------------------
-    function updateSelectedCount() {
-        const count = document.querySelectorAll(".row-check:checked").length;
-        selectedCountEl.textContent = count;
-        deleteBtn.disabled = count === 0;
-        editCategoryBtn.disabled = count === 0;
-        editCodeBtn.disabled = count === 0;
-    }
-    function updateDeletedCount() {
-        const deletedCount = $('tr.deleted').length;
-        $('#del').text(`حذف : ${deletedCount}`);
-    }
-    function updateChangedCount() {
-        const changed = $('.table-input.changed').length;
-        const newRows = $('.new-row').length;
-        const deleted = $('.deleted').length;
-        const hasDuplicate = $('.input-duplicate').length > 0;
-
-        changedCountEl.textContent = changed;
-        const isDisabled = !(changed + newRows + deleted > 0) && hasDuplicate;
-        applyBtn.disabled = isDisabled;
-    }
-
-
-    // --------------------- Alert ---------------------
-    function showAlert(message, type='success', duration=4000){
-        const container = document.getElementById('alertContainer');
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
-        alert.innerHTML = `<span>${message}</span><i class="fa fa-times" onclick="this.parentElement.remove()"></i>`;
-        container.appendChild(alert);
-        setTimeout(()=> alert.remove(), duration);
-    }
-
-    // --------------------- Event delegation برای ردیف‌ها ---------------------
-    tableBody.addEventListener("change", e => {
-        if(e.target.classList.contains("row-check")){
-            const row = e.target.closest("tr");
-            const cat = e.target.dataset.category;
-            const countSpan = document.getElementById("selectedCount-" + cat);
-            const checkedCount = document.querySelectorAll(`.row-check[data-category="${cat}"]:checked`).length;
-            countSpan.textContent = checkedCount;
-
-            // چک کردن سرگروه
-            const categoryCheck = document.querySelector(`.category-check[data-category="${cat}"]`);
-            if(categoryCheck){
-                const total = document.querySelectorAll(`.row-check[data-category="${cat}"]`).length;
-                categoryCheck.checked = (checkedCount === total);
-            }
-
-            updateSelectedCount();
+        // --------------------- شمارنده‌ها ---------------------
+        function updateSelectedCount() {
+            const count = document.querySelectorAll(".row-check:checked").length;
+            selectedCountEl.textContent = count;
+            deleteBtn.disabled = count === 0;
+            editCategoryBtn.disabled = count === 0;
+            editCodeBtn.disabled = count === 0;
         }
-    });
+        function updateDeletedCount() {
+            const deletedCount = $('tr.deleted').length;
+            $('#del').text(`حذف : ${deletedCount}`);
+        }
+        function updateChangedCount() {
+            const changed = $('.table-input.changed').length;
+            const newRows = $('.new-row').length;
+            const deleted = $('.deleted').length;
+            const hasDuplicate = $('.input-duplicate').length > 0;
 
-    // --------------------- select all ---------------------
-    if(selectAll){
-        selectAll.addEventListener("change", e => {
-            const checked = e.target.checked;
-            document.querySelectorAll(".row-check").forEach(cb => cb.checked = checked);
-            document.querySelectorAll(".category-check").forEach(cb => cb.checked = checked);
-            document.querySelectorAll(".selectedCountCategory").forEach(span => {
-                const cat = span.id.replace("selectedCount-", "");
-                const count = document.querySelectorAll(`.row-check[data-category="${cat}"]`).length;
-                span.textContent = checked ? count : 0;
-            });
-            updateSelectedCount();
-        });
-    }
+            changedCountEl.textContent = changed;
+            const isDisabled = !(changed + newRows + deleted > 0) && hasDuplicate;
+            applyBtn.disabled = isDisabled;
+        }
 
-    // --------------------- دسته‌ها ---------------------
-    document.querySelectorAll(".category-check").forEach(cb => {
-        cb.addEventListener("change", () => {
-            const cat = cb.dataset.category;
-            console.log({cb})
-            const rows = document.querySelectorAll(`.row-check[data-category="${cat}"]`);
-            rows.forEach(r => r.checked = cb.checked);
 
-            const countSpan = document.getElementById("selectedCount-" + cat);
-            countSpan.textContent = cb.checked ? rows.length : 0;
+        // --------------------- Alert ---------------------
+        function showAlert(message, type='success', duration=4000){
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `<span>${message}</span><i class="fa fa-times" onclick="this.parentElement.remove()"></i>`;
+            container.appendChild(alert);
+            setTimeout(()=> alert.remove(), duration);
+        }
 
-            updateSelectedCount();
-        });
-    });
-
-    // --------------------- افزودن سطر جدید ---------------------
-    document.getElementById("addBtn").addEventListener("click", e => {
-        e.preventDefault();
-        newRowCounter++;
-
-        const defaultCategory = "";
-        const defaultSlug = "";
-
-        let existingCategoryRow = document.querySelector(`.category-row[data-category="${defaultSlug}"]`);
-        if(!existingCategoryRow){
-            const catRow = document.createElement("tr");
-            catRow.classList.add("category-row");
-            catRow.dataset.category = defaultSlug;
-            catRow.innerHTML = `
-                <td><input type="checkbox" class="category-check" data-category="${defaultSlug}" style="width:18px;height:18px;" /></td>
-                <td colspan="4">${defaultCategory} - تعداد آیتم‌ها: <span id="itemCount-${defaultSlug}">0</span></td>
-                <td>انتخاب شده: <span class="selectedCountCategory" id="selectedCount-${defaultSlug}">0</span></td>`;
-          tableBody.prepend(catRow);
-
-            existingCategoryRow = catRow;
-
-            // listener برای دسته جدید
-            catRow.querySelector(".category-check").addEventListener("change", () => {
-                const cat = catRow.dataset.category;
-                const rows = document.querySelectorAll(`.row-check[data-category="${cat}"]`);
-                rows.forEach(r => r.checked = catRow.querySelector(".category-check").checked);
+        // --------------------- Event delegation برای ردیف‌ها ---------------------
+        tableBody.addEventListener("change", e => {
+            if(e.target.classList.contains("row-check")){
+                const row = e.target.closest("tr");
+                const cat = e.target.dataset.category;
                 const countSpan = document.getElementById("selectedCount-" + cat);
-                countSpan.textContent = catRow.querySelector(".category-check").checked ? rows.length : 0;
+                const checkedCount = document.querySelectorAll(`.row-check[data-category="${cat}"]:checked`).length;
+                countSpan.textContent = checkedCount;
+
+                // چک کردن سرگروه
+                const categoryCheck = document.querySelector(`.category-check[data-category="${cat}"]`);
+                if(categoryCheck){
+                    const total = document.querySelectorAll(`.row-check[data-category="${cat}"]`).length;
+                    categoryCheck.checked = (checkedCount === total);
+                }
+
+                updateSelectedCount();
+            }
+        });
+
+        // --------------------- select all ---------------------
+        if(selectAll){
+            selectAll.addEventListener("change", e => {
+                const checked = e.target.checked;
+                document.querySelectorAll(".row-check").forEach(cb => cb.checked = checked);
+                document.querySelectorAll(".category-check").forEach(cb => cb.checked = checked);
+                document.querySelectorAll(".selectedCountCategory").forEach(span => {
+                    const cat = span.id.replace("selectedCount-", "");
+                    const count = document.querySelectorAll(`.row-check[data-category="${cat}"]`).length;
+                    span.textContent = checked ? count : 0;
+                });
                 updateSelectedCount();
             });
         }
 
-        const newRow = document.createElement("tr");
-        newRow.classList.add("data-row", "new-row");
-        newRow.dataset.category = defaultSlug;
-        newRow.innerHTML = `
-            <td><input type="checkbox" name="selected" value="new_${newRowCounter}" class="row-check" data-category="${defaultSlug}" style="width:18px;height:18px;" /></td>
-            <td>+</td>
-            <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_category" value="${defaultCategory}" /><i class="fa fa-pencil edit-icon"></i></div></td>
-            <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_title" placeholder="عنوان مهارت..." /><i class="fa fa-pencil edit-icon"></i><i class="fa fa-times clear-icon"></i></div></td>
-            <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_code" placeholder="کد..." /><i class="fa fa-pencil edit-icon"></i></div></td>
-            <td>۰</td>
-        `;
-        existingCategoryRow.insertAdjacentElement("afterend", newRow);
-        attachInputListeners(newRow.querySelectorAll(".table-input"));
+        // --------------------- دسته‌ها ---------------------
+        document.querySelectorAll(".category-check").forEach(cb => {
+            cb.addEventListener("change", () => {
+                const cat = cb.dataset.category;
+                console.log({cb})
+                const rows = document.querySelectorAll(`.row-check[data-category="${cat}"]`);
+                rows.forEach(r => r.checked = cb.checked);
 
-        const itemCountEl = document.getElementById(`itemCount-${defaultSlug}`);
-        itemCountEl.textContent = document.querySelectorAll(`.data-row[data-category="${defaultSlug}"]`).length;
+                const countSpan = document.getElementById("selectedCount-" + cat);
+                countSpan.textContent = cb.checked ? rows.length : 0;
 
-        updateChangedCount();
-        showAlert("یک سطر جدید در دسته «بدون دسته» اضافه شد.","success");
-    });
-
-    // --------------------- مدیریت تغییر input ---------------------
-    function attachInputListeners(inputs){
-inputs.forEach(el => {
-    const $input = $(el); // ساخت نسخه jQuery از element
-    $input.data('original', $input.val());
-    $input.data('originalName', $input.attr('name'));
-
-    $input.on('input', function () {
-        const currentVal = $input.val();
-        const originalVal = $input.data('original');
-        const changed = currentVal !== originalVal;
-
-        // اگر تغییر کرده، name را برای backend تغییر بده
-        const oldName = $input.data('originalName');
-        if (changed) {
-            if (!oldName.startsWith('changed_')) {
-                $input.attr('name', `changed_${oldName}`);
-            }
-            $input.addClass('changed');
-        } else {
-            // اگر مقدار برگشت به حالت اولیه، نام را برگردان
-            $input.attr('name', oldName);
-            $input.removeClass('changed');
-        }
-
-        // اگر عنوان باشد، بررسی تکراری بودن
-        if ($input.attr('name').endsWith('_title')) {
-            validateTitles();
-        }
-
-        updateChangedCount();
-    });
-});
-
-    }
-
-    // --------------------- اعتبارسنجی عنوان تکراری ---------------------
-    function validateTitles(){
-        const seen = {};
-        document.querySelectorAll("input[name$='_title']").forEach(input => {
-            input.classList.remove("input-duplicate");
-            const val = input.value.trim();
-            if(val){
-                if(seen[val]){
-                    input.classList.add("input-duplicate");
-                    seen[val].classList.add("input-duplicate");
-                } else seen[val] = input;
-            }
+                updateSelectedCount();
+            });
         });
-        updateChangedCount();
-    }
 
-    attachInputListeners(document.querySelectorAll(".table-input"));
+        // --------------------- افزودن سطر جدید ---------------------
+        document.getElementById("addBtn").addEventListener("click", e => {
+            e.preventDefault();
+            newRowCounter++;
 
-</script>
+            const defaultCategory = "";
+            const defaultSlug = "";
 
-<script>
-$(document).ready(function(){
-// --------------------- باز کردن مودال بارگذاری Excel ---------------------
-    $('#openExcelModalBtn').click(function(){
-        $('#uploadExcelModal').modal('show');
-    });
+            let existingCategoryRow = document.querySelector(`.category-row[data-category="${defaultSlug}"]`);
+            if(!existingCategoryRow){
+                const catRow = document.createElement("tr");
+                catRow.classList.add("category-row");
+                catRow.dataset.category = defaultSlug;
+                catRow.innerHTML = `
+                    <td><input type="checkbox" class="category-check" data-category="${defaultSlug}" style="width:18px;height:18px;" /></td>
+                    <td colspan="4">${defaultCategory} - تعداد آیتم‌ها: <span id="itemCount-${defaultSlug}">0</span></td>
+                    <td>انتخاب شده: <span class="selectedCountCategory" id="selectedCount-${defaultSlug}">0</span></td>`;
+            tableBody.prepend(catRow);
 
-    // --------------------- لغو مودال بارگذاری Excel ---------------------
-    $('#cancelExcelUploadBtn').click(function(){
-        $('#excelUploadForm')[0].reset(); // ریست کردن فرم
-        $('#uploadExcelModal').modal('hide');
-    });
-  
-    // --------------------- لغو مودال بارگذاری Excel ---------------------
-    $('#cancelExcelUploadBtn').click(function(){
-        $('#excelUploadForm')[0].reset(); // ریست کردن فرم
-        $('#uploadExcelModal').modal('hide');
-    });
+                existingCategoryRow = catRow;
 
-    // --------------------- تأیید بارگذاری Excel ---------------------
-    // لغو عملیات
-$('#cancelExcelUploadBtn').click(function() {
-    if (eventSource) {
-        eventSource.close();
-    }
-    resetExcelUpload();
-});
+                // listener برای دسته جدید
+                catRow.querySelector(".category-check").addEventListener("change", () => {
+                    const cat = catRow.dataset.category;
+                    const rows = document.querySelectorAll(`.row-check[data-category="${cat}"]`);
+                    rows.forEach(r => r.checked = catRow.querySelector(".category-check").checked);
+                    const countSpan = document.getElementById("selectedCount-" + cat);
+                    countSpan.textContent = catRow.querySelector(".category-check").checked ? rows.length : 0;
+                    updateSelectedCount();
+                });
+            }
 
-function resetExcelUpload() {
-    $('#excelProgressContainer').hide();
-    $('#uploadProgressBar').css('width', '0%').text('0%');
-    $('#openExcelModalBtn').show();
-    $('#cancelExcelUploadBtn').hide();
-    $('#skillsExcelInput').val('');
-}
-$('#confirmUploadExcelBtn').click(function(event){
-    event.preventDefault();
-    const fileInput = $('#skillsExcelInput')[0];
-    if (!fileInput.files.length) {
-        alert('لطفاً یک فایل انتخاب کنید.');
-        return;
-    }
+            const newRow = document.createElement("tr");
+            newRow.classList.add("data-row", "new-row");
+            newRow.dataset.category = defaultSlug;
+            newRow.innerHTML = `
+                <td><input type="checkbox" name="selected" value="new_${newRowCounter}" class="row-check" data-category="${defaultSlug}" style="width:18px;height:18px;" /></td>
+                <td>+</td>
+                <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_category" value="${defaultCategory}" /><i class="fa fa-pencil edit-icon"></i></div></td>
+                <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_title" placeholder="عنوان مهارت..." /><i class="fa fa-pencil edit-icon"></i><i class="fa fa-times clear-icon"></i></div></td>
+                <td><div class="input-wrapper"><input class="table-input changed" name="new_${newRowCounter}_code" placeholder="کد..." /><i class="fa fa-pencil edit-icon"></i></div></td>
+                <td>۰</td>
+            `;
+            existingCategoryRow.insertAdjacentElement("afterend", newRow);
+            attachInputListeners(newRow.querySelectorAll(".table-input"));
 
+            const itemCountEl = document.getElementById(`itemCount-${defaultSlug}`);
+            itemCountEl.textContent = document.querySelectorAll(`.data-row[data-category="${defaultSlug}"]`).length;
 
-    const form = $('#excelUploadForm')[0];
-    const formData = new FormData(form);
+            updateChangedCount();
+            showAlert("یک سطر جدید در دسته «بدون دسته» اضافه شد.","success");
+        });
 
-    const uploadId = crypto.randomUUID(); // ایجاد شناسه یکتا
-    formData.append('upload_id', uploadId); // ارسال به سرور اگر لازم باشد
-    
-    $('#excelUploadForm')[0].reset(); // ریست کردن فرم
-    $('#uploadExcelModal').modal('hide');
-    
-    // نمایش progress و دکمه لغو
-    $('#excelProgressContainer').show();
-    $('#uploadProgressBar').css('width', '0%').text('0%');
-    $('#openExcelModalBtn').hide();
-    $('#cancelExcelUploadBtn').show().prop('disabled', false);
+        // --------------------- مدیریت تغییر input ---------------------
+        function attachInputListeners(inputs){
+            inputs.forEach(el => {
+                const $input = $(el); // ساخت نسخه jQuery از element
+                $input.data('original', $input.val());
+                $input.data('originalName', $input.attr('name'));
 
-    // شروع SSE
-    const eventSource = new EventSource("{% url 'skills:create_excel_stream' %}?upload_id=" + uploadId);
+                $input.on('input', function () {
+                    const currentVal = $input.val();
+                    const originalVal = $input.data('original');
+                    const changed = currentVal !== originalVal;
 
-    eventSource.onmessage = function(e) {
-        const percent = e.data;
-        $('#uploadProgressBar').css('width', percent + '%').text(percent + '%');
+                    // اگر تغییر کرده، name را برای backend تغییر بده
+                    const oldName = $input.data('originalName');
+                    if (changed) {
+                        if (!oldName.startsWith('changed_')) {
+                            $input.attr('name', `changed_${oldName}`);
+                        }
+                        $input.addClass('changed');
+                    } else {
+                        // اگر مقدار برگشت به حالت اولیه، نام را برگردان
+                        $input.attr('name', oldName);
+                        $input.removeClass('changed');
+                    }
 
-        if (percent >= 100) {
-            $('#uploadProgressBar').text('تکمیل شد ✅');
+                    // اگر عنوان باشد، بررسی تکراری بودن
+                    if ($input.attr('name').endsWith('_title')) {
+                        validateTitles();
+                    }
+
+                    updateChangedCount();
+                });
+            });
+        }
+
+        // --------------------- اعتبارسنجی عنوان تکراری ---------------------
+        function validateTitles(){
+            const seen = {};
+            document.querySelectorAll("input[name$='_title']").forEach(input => {
+                input.classList.remove("input-duplicate");
+                const val = input.value.trim();
+                if(val){
+                    if(seen[val]){
+                        input.classList.add("input-duplicate");
+                        seen[val].classList.add("input-duplicate");
+                    } else seen[val] = input;
+                }
+            });
+            updateChangedCount();
+        }
+
+        attachInputListeners(document.querySelectorAll(".table-input"));
+
+    </script>
+    <script>
+        $(document).ready(function(){
+        // --------------------- باز کردن مودال بارگذاری Excel ---------------------
+            $('#openExcelModalBtn').click(function(){
+                $('#uploadExcelModal').modal('show');
+            });
+
+            // --------------------- لغو مودال بارگذاری Excel ---------------------
+            $('#cancelExcelUploadBtn').click(function(){
+                $('#excelUploadForm')[0].reset(); // ریست کردن فرم
+                $('#uploadExcelModal').modal('hide');
+            });
+        
+            // --------------------- لغو مودال بارگذاری Excel ---------------------
+            $('#cancelExcelUploadBtn').click(function(){
+                $('#excelUploadForm')[0].reset(); // ریست کردن فرم
+                $('#uploadExcelModal').modal('hide');
+            });
+
+            // --------------------- تأیید بارگذاری Excel ---------------------
+            // لغو عملیات
+        $('#cancelExcelUploadBtn').click(function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+            resetExcelUpload();
+        });
+
+        function resetExcelUpload() {
+            $('#excelProgressContainer').hide();
+            $('#uploadProgressBar').css('width', '0%').text('0%');
             $('#openExcelModalBtn').show();
             $('#cancelExcelUploadBtn').hide();
-            eventSource.close();
-
-            // بعد از 1 ثانیه فرم و progress را ریست کن
-            setTimeout(() => {
-                $('#excelProgressContainer').hide();
-                $('#uploadProgressBar').css('width', '0%').text('0%');
-                $('#skillsExcelInput').val('');
-                // ریدایرکت به لیست
-                window.location.href = "{% url 'skills:list' %}";
-            }, 1000);
+            $('#skillsExcelInput').val('');
         }
-    };
-    // ارسال فایل
-    $.ajax({
-        url: "{% url 'skills:create_excel' %}",
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            window.location.href = "{% url 'skills:list' %}";
-        },
-        error: function() {
-            alert('❌ خطا در ارسال فایل');
-            $('#confirmUploadExcelBtn').prop('disabled', false).text('بارگذاری و ثبت');
-        }
-    });
-
-});
-
-    // --------------------- لغو همه مودال‌ها ---------------------
-    $('.modal-footer .btn-secondary').click(function(){
-        $(this).closest('.modal').modal('hide');
-    });
-
-    // --------------------- حذف موارد ---------------------
-    $('#deleteBtn').click(function(){
-        const selectedRows = $('.row-check:checked');
-        if(selectedRows.length === 0) return;
-
-        $('#deleteModalText').text(`شما قصد حذف ${selectedRows.length} مورد را دارید. آیا مطمئن هستید؟`);
-        $('#confirmDeleteModal').modal('show');
-
-        $('#confirmDeleteBtn').off('click').on('click', function(){
-            selectedRows.each(function(){
-                const $checkbox = $(this);
-                const $row = $checkbox.closest('tr');
-
-                $row.addClass('deleted');       // علامت حذف برای سطر
-                $checkbox.prop('checked', false); // غیرفعال‌کردن خود چک‌باکس
-            });
-
-            $('#confirmDeleteModal').modal('hide');
-            showAlert(`${selectedRows.length} مورد برای حذف علامت‌گذاری شد.`, 'warning');
-            updateSelectedCount();
-            updateDeletedCount();
-            updateChangedCount();
-        });
-
-    });
-
-    // --------------------- ویرایش دسته ---------------------
-    $('#editCategoryBtn').click(function(){
-        const selectedRows = $('.row-check:checked');
-        if(selectedRows.length === 0) return;
-
-        $('#newCategoryInput').val('');
-        $('#editCategoryModal').modal('show');
-
-        $('#confirmEditCategoryBtn').off('click').on('click', function(){
-            const newCat = $('#newCategoryInput').val().trim();
-            if(!newCat) return;
-            selectedRows.each(function(){
-                const input = $(this).closest('tr').find("input[name$='_category']");
-                input.val(newCat).addClass('changed');
-
-                // تغییر نام input برای شناسایی در backend
-                const oldName = input.attr('name');
-                if(!oldName.startsWith('changed_')) {
-                    input.attr('name', `changed_${oldName}`);
-                }
-            });
-            $('#editCategoryModal').modal('hide');
-            showAlert(`دسته ${selectedRows.length} مورد تغییر یافت.`, 'success');
-            updateChangedCount();
-        });
-    });
-
-    // --------------------- ویرایش کد ---------------------
-    $('#editCodeBtn').click(function(){
-        const selectedRows = $('.row-check:checked');
-        if(selectedRows.length === 0) return;
-
-        $('#newCodeInput').val('');
-        $('#editCodeModal').modal('show');
-
-        $('#confirmEditCodeBtn').off('click').on('click', function(){
-            const newCode = $('#newCodeInput').val().trim();
-            if(!newCode) return;
-            selectedRows.each(function(){
-                const input = $(this).closest('tr').find("input[name$='_code']");
-                input.val(newCode).addClass('changed');
-
-                // تغییر نام input برای شناسایی در backend
-                const oldName = input.attr('name');
-                if(!oldName.startsWith('changed_')) {
-                    input.attr('name', `changed_${oldName}`);
-                }
-            });
-            $('#editCodeModal').modal('hide');
-            showAlert(`کد ${selectedRows.length} مورد تغییر یافت.`, 'success');
-            updateChangedCount();
-        });
-    });
-
-$('#applyBtn').click(function() {
-    // جمع‌آوری داده‌ها
-    const changedInputs = $('.table-input.changed').filter(function() {
-        return !$(this).closest('tr').hasClass('new-row');
-    });
-    const deletedRows = $('.deleted');
-    const newRows = $('.new-row');
-
-    const totalChanges = changedInputs.length + deletedRows.length + newRows.length;
-    if (totalChanges === 0) {
-        showAlert('هیچ تغییری برای اعمال وجود ندارد.', 'info');
-        return;
-    }
-    console.log({changedInputs,newRows})
-    // نمایش مودال تأیید
-    $('#applyChangesText').text(`شما در حال اعمال نهایی ${totalChanges} تغییر هستید. مطمئن هستید؟`);
-    $('#applyChangesModal').modal('show');
-
-    // تأیید اعمال نهایی
-    $('#confirmApplyBtn').off('click').on('click', function() {
-        const form = $('#mainForm');
-
-        // برداشتن disabled از همه فیلدها
-        form.find(':input').prop('disabled', false);
-
-        // اضافه کردن تغییرات سطرهای موجود
-        changedInputs.each(function() {
-            const input = $(this);
-            const original = input.data('originalName') || input.attr('name');
-            if (original) {
-                const parts = original.split('_');
-                const fieldName = `changed_${parts[1]}_${parts[2]}`;
-                input.attr('name',fieldName)
+        $('#confirmUploadExcelBtn').click(function(event){
+            event.preventDefault();
+            const fileInput = $('#skillsExcelInput')[0];
+            if (!fileInput.files.length) {
+                alert('لطفاً یک فایل انتخاب کنید.');
+                return;
             }
+
+
+            const form = $('#excelUploadForm')[0];
+            const formData = new FormData(form);
+
+            const uploadId = crypto.randomUUID(); // ایجاد شناسه یکتا
+            formData.append('upload_id', uploadId); // ارسال به سرور اگر لازم باشد
+            
+            $('#excelUploadForm')[0].reset(); // ریست کردن فرم
+            $('#uploadExcelModal').modal('hide');
+            
+            // نمایش progress و دکمه لغو
+            $('#excelProgressContainer').show();
+            $('#uploadProgressBar').css('width', '0%').text('0%');
+            $('#openExcelModalBtn').hide();
+            $('#cancelExcelUploadBtn').show().prop('disabled', false);
+
+            // شروع SSE
+            const eventSource = new EventSource("{% url 'skills:create_excel_stream' %}?upload_id=" + uploadId);
+
+            eventSource.onmessage = function(e) {
+                const percent = e.data;
+                $('#uploadProgressBar').css('width', percent + '%').text(percent + '%');
+
+                if (percent >= 100) {
+                    $('#uploadProgressBar').text('تکمیل شد ✅');
+                    $('#openExcelModalBtn').show();
+                    $('#cancelExcelUploadBtn').hide();
+                    eventSource.close();
+
+                    // بعد از 1 ثانیه فرم و progress را ریست کن
+                    setTimeout(() => {
+                        $('#excelProgressContainer').hide();
+                        $('#uploadProgressBar').css('width', '0%').text('0%');
+                        $('#skillsExcelInput').val('');
+                        // ریدایرکت به لیست
+                        window.location.href = "{% url 'skills:list' %}";
+                    }, 1000);
+                }
+            };
+            // ارسال فایل
+            $.ajax({
+                url: "{% url 'skills:create_excel' %}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    window.location.href = "{% url 'skills:list' %}";
+                },
+                error: function() {
+                    alert('❌ خطا در ارسال فایل');
+                    $('#confirmUploadExcelBtn').prop('disabled', false).text('بارگذاری و ثبت');
+                }
+            });
+
         });
 
-        // اضافه کردن سطرهای جدید
-        newRows.each(function() {
-            $(this).find('.table-input').each(function() {
-                const input = $(this);
-                const original = input.data('originalName') || input.attr('name');
-                if (original) {
-                    const parts = original.split('_');
-                    const fieldName = `new_${parts[1]}_${parts[2]}`;
-                    input.attr('name',fieldName)
-                    //form.append(`<input type="hidden" name="${fieldName}" value="${input.val()}">`);
-                }
+            // --------------------- لغو همه مودال‌ها ---------------------
+            $('.modal-footer .btn-secondary').click(function(){
+                $(this).closest('.modal').modal('hide');
+            });
+
+            // --------------------- حذف موارد ---------------------
+            $('#deleteBtn').click(function(){
+                const selectedRows = $('.row-check:checked');
+                if(selectedRows.length === 0) return;
+
+                $('#deleteModalText').text(`شما قصد حذف ${selectedRows.length} مورد را دارید. آیا مطمئن هستید؟`);
+                $('#confirmDeleteModal').modal('show');
+
+                $('#confirmDeleteBtn').off('click').on('click', function(){
+                    selectedRows.each(function(){
+                        const $checkbox = $(this);
+                        const $row = $checkbox.closest('tr');
+
+                        $row.addClass('deleted');       // علامت حذف برای سطر
+                        $checkbox.prop('checked', false); // غیرفعال‌کردن خود چک‌باکس
+                    });
+
+                    $('#confirmDeleteModal').modal('hide');
+                    showAlert(`${selectedRows.length} مورد برای حذف علامت‌گذاری شد.`, 'warning');
+                    updateSelectedCount();
+                    updateDeletedCount();
+                    updateChangedCount();
+                });
+
+            });
+
+            // --------------------- ویرایش دسته ---------------------
+            $('#editCategoryBtn').click(function(){
+                const selectedRows = $('.row-check:checked');
+                if(selectedRows.length === 0) return;
+
+                $('#newCategoryInput').val('');
+                $('#editCategoryModal').modal('show');
+
+                $('#confirmEditCategoryBtn').off('click').on('click', function(){
+                    const newCat = $('#newCategoryInput').val().trim();
+                    if(!newCat) return;
+                    selectedRows.each(function(){
+                        const input = $(this).closest('tr').find("input[name$='_category']");
+                        input.val(newCat).addClass('changed');
+
+                        // تغییر نام input برای شناسایی در backend
+                        const oldName = input.attr('name');
+                        if(!oldName.startsWith('changed_')) {
+                            input.attr('name', `changed_${oldName}`);
+                        }
+                    });
+                    $('#editCategoryModal').modal('hide');
+                    showAlert(`دسته ${selectedRows.length} مورد تغییر یافت.`, 'success');
+                    updateChangedCount();
+                });
+            });
+
+            // --------------------- ویرایش کد ---------------------
+            $('#editCodeBtn').click(function(){
+                const selectedRows = $('.row-check:checked');
+                if(selectedRows.length === 0) return;
+
+                $('#newCodeInput').val('');
+                $('#editCodeModal').modal('show');
+
+                $('#confirmEditCodeBtn').off('click').on('click', function(){
+                    const newCode = $('#newCodeInput').val().trim();
+                    if(!newCode) return;
+                    selectedRows.each(function(){
+                        const input = $(this).closest('tr').find("input[name$='_code']");
+                        input.val(newCode).addClass('changed');
+
+                        // تغییر نام input برای شناسایی در backend
+                        const oldName = input.attr('name');
+                        if(!oldName.startsWith('changed_')) {
+                            input.attr('name', `changed_${oldName}`);
+                        }
+                    });
+                    $('#editCodeModal').modal('hide');
+                    showAlert(`کد ${selectedRows.length} مورد تغییر یافت.`, 'success');
+                    updateChangedCount();
+                });
+            });
+
+        $('#applyBtn').click(function() {
+            // جمع‌آوری داده‌ها
+            const changedInputs = $('.table-input.changed').filter(function() {
+                return !$(this).closest('tr').hasClass('new-row');
+            });
+            const deletedRows = $('.deleted');
+            const newRows = $('.new-row');
+
+            const totalChanges = changedInputs.length + deletedRows.length + newRows.length;
+            if (totalChanges === 0) {
+                showAlert('هیچ تغییری برای اعمال وجود ندارد.', 'info');
+                return;
+            }
+            console.log({changedInputs,newRows})
+            // نمایش مودال تأیید
+            $('#applyChangesText').text(`شما در حال اعمال نهایی ${totalChanges} تغییر هستید. مطمئن هستید؟`);
+            $('#applyChangesModal').modal('show');
+
+            // تأیید اعمال نهایی
+            $('#confirmApplyBtn').off('click').on('click', function() {
+                const form = $('#mainForm');
+
+                // برداشتن disabled از همه فیلدها
+                form.find(':input').prop('disabled', false);
+
+                // اضافه کردن تغییرات سطرهای موجود
+                changedInputs.each(function() {
+                    const input = $(this);
+                    const original = input.data('originalName') || input.attr('name');
+                    if (original) {
+                        const parts = original.split('_');
+                        const fieldName = `changed_${parts[1]}_${parts[2]}`;
+                        input.attr('name',fieldName)
+                    }
+                });
+
+                // اضافه کردن سطرهای جدید
+                newRows.each(function() {
+                    $(this).find('.table-input').each(function() {
+                        const input = $(this);
+                        const original = input.data('originalName') || input.attr('name');
+                        if (original) {
+                            const parts = original.split('_');
+                            const fieldName = `new_${parts[1]}_${parts[2]}`;
+                            input.attr('name',fieldName)
+                            //form.append(`<input type="hidden" name="${fieldName}" value="${input.val()}">`);
+                        }
+                    });
+                });
+
+                // اضافه کردن IDهای حذف شده
+                deletedRows.each(function() {
+                    const rowCheck = $(this).find('.row-check');
+                    const id = rowCheck.val();
+                    form.append(`<input type="hidden" name="deleted_ids" value="${id}">`);
+                });
+
+                // اضافه کردن action
+                form.append('<input type="hidden" name="action" value="apply_changes">');
+
+                // بررسی داده‌ها قبل از ارسال
+                const formData = new FormData(form[0]);
+                console.log('🟢 ارسال داده‌ها به سرور:', [...formData.entries()]);
+
+                // ارسال فرم
+                form.trigger('submit'); // ← trigger نه submit
+
+                // بستن مودال
+                $('#applyChangesModal').modal('hide');
+
+                // بروزرسانی شمارنده‌ها
+                showAlert(`اعمال نهایی ${totalChanges} تغییر انجام شد.`, 'success');
+                updateChangedCount();
+                updateSelectedCount();
             });
         });
 
-        // اضافه کردن IDهای حذف شده
-        deletedRows.each(function() {
-            const rowCheck = $(this).find('.row-check');
-            const id = rowCheck.val();
-            form.append(`<input type="hidden" name="deleted_ids" value="${id}">`);
+        // لغو همه عملیات حذف
+        $('#cancelDeleteBtn').click(function(){
+            // بازگردانی سطرهای علامت‌گذاری شده برای حذف
+            const deletedRows = $('tr.deleted');
+            deletedRows.removeClass('deleted');
+            deletedRows.find('.row-check').prop('checked', false);
+
+            // بروزرسانی شمارنده‌ها
+            updateSelectedCount();
+            updateChangedCount();
+
+            // بروزرسانی شمارنده حذف
+            const delCount = $('tr.deleted').length;
+            $('#del').text(`حذف : ${delCount}`);
+
+            showAlert('عملیات ها لغو شد.', 'success');
         });
 
-        // اضافه کردن action
-        form.append('<input type="hidden" name="action" value="apply_changes">');
-
-        // بررسی داده‌ها قبل از ارسال
-        const formData = new FormData(form[0]);
-        console.log('🟢 ارسال داده‌ها به سرور:', [...formData.entries()]);
-
-        // ارسال فرم
-        form.trigger('submit'); // ← trigger نه submit
-
-        // بستن مودال
-        $('#applyChangesModal').modal('hide');
-
-        // بروزرسانی شمارنده‌ها
-        showAlert(`اعمال نهایی ${totalChanges} تغییر انجام شد.`, 'success');
-        updateChangedCount();
-        updateSelectedCount();
-    });
-});
-
-// لغو همه عملیات حذف
-$('#cancelDeleteBtn').click(function(){
-    // بازگردانی سطرهای علامت‌گذاری شده برای حذف
-    const deletedRows = $('tr.deleted');
-    deletedRows.removeClass('deleted');
-    deletedRows.find('.row-check').prop('checked', false);
-
-    // بروزرسانی شمارنده‌ها
-    updateSelectedCount();
-    updateChangedCount();
-
-    // بروزرسانی شمارنده حذف
-    const delCount = $('tr.deleted').length;
-    $('#del').text(`حذف : ${delCount}`);
-
-    showAlert('عملیات ها لغو شد.', 'success');
-});
 
 
-
-});
-
-
-</script>
+        });
+    </script>
+{% endif %}
 
 {% endblock %}
 

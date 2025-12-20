@@ -154,13 +154,17 @@
     <div class="toolbar">
             <h1>تخصیص مهارت به سربازان</h1>
             <div class="download-links">
-               <button type="submit" form="soldierForm">
-                  <i class="fa fa-floppy-o"></i> ثبت تغییرات
-               </button>
-               <a href="{% url 'skills:export_assign_excel' 'full' %}" class="full"><i class="fa fa-download"></i> مهارت سربازان</a>
-               <a href="{% url 'skills:export_assign_excel' 'codes' %}" class="codes"><i class="fa fa-download"></i> (کد) سربازان مهارت‌ها</a>
-               <a href="{% url 'skills:export_assign_excel' 'titles' %}" class="titles"><i class="fa fa-download"></i> (عنوان) سربازان مهارت‌ها</a>
-               <a href="{% url 'skills:export_assign_excel' 'all' %}" class="all"><i class="fa fa-download"></i> مهارت همه سربازان</a>
+                {%if permissions.dep.niru_ensani or permissions.dep.gordan  %}
+                    <button type="submit" form="soldierForm">
+                        <i class="fa fa-floppy-o"></i> ثبت تغییرات
+                    </button>
+                {% endif %}
+                {%if permissions.dep.niru_ensani %}
+                    <a href="{% url 'skills:export_assign_excel' 'full' %}" class="full"><i class="fa fa-download"></i> مهارت سربازان</a>
+                    <a href="{% url 'skills:export_assign_excel' 'codes' %}" class="codes"><i class="fa fa-download"></i> (کد) سربازان مهارت‌ها</a>
+                    <a href="{% url 'skills:export_assign_excel' 'titles' %}" class="titles"><i class="fa fa-download"></i> (عنوان) سربازان مهارت‌ها</a>
+                    <a href="{% url 'skills:export_assign_excel' 'all' %}" class="all"><i class="fa fa-download"></i> مهارت همه سربازان</a>
+                {% endif %}   
             </div>
     </div>
 
@@ -274,15 +278,19 @@
                 <td>{{ soldier.National_Code }}</td>
                 <td>{{ soldier.name }} {{ soldier.family }}</td>
                 <td>
-                  <select name="skill_1_{{ soldier.id }}" class="select2-textable">
-                     <option value="" {% if not soldier.skill_1_id %}selected{% endif %}>انتخاب مهارت</option>
-                     {% for skill in skills %}
-                     <option value="{{ skill.title }}" {% if soldier.skill_1_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
-                     {% endfor %}
-                  </select>
+                        <select 
+                        {%if not permissions.dep.niru_ensani and not permissions.dep.gordan %} disabled {% endif %}
+                        name="skill_1_{{ soldier.id }}" class="select2-textable">
+                            <option value="" {% if not soldier.skill_1_id %}selected{% endif %}>انتخاب مهارت</option>
+                            {% for skill in skills %}
+                            <option value="{{ skill.title }}" {% if soldier.skill_1_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
+                            {% endfor %}
+                        </select>
                </td>
                <td>
-                  <select name="skill_2_{{ soldier.id }}" class="select2-textable">
+                  <select 
+                    {%if not permissions.dep.niru_ensani and not permissions.dep.gordan %} disabled {% endif %}
+                  name="skill_2_{{ soldier.id }}" class="select2-textable">
                      <option value="" {% if not soldier.skill_2_id %}selected{% endif %}>انتخاب مهارت</option>
                      {% for skill in skills %}
                      <option value="{{ skill.title }}" {% if soldier.skill_2_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
@@ -303,31 +311,31 @@
 {% endblock %}
 
 {% block footer %}
-<script>
-$(document).ready(function() {
-    // Select2 قابل تایپ
-    $('.select2-textable').select2({
-        tags: true,
-        placeholder: 'انتخاب یا تایپ مهارت جدید',
-        width: '100%',
-    });
+    <script>
+    $(document).ready(function() {
+        // Select2 قابل تایپ
+        $('.select2-textable').select2({
+            tags: true,
+            placeholder: 'انتخاب یا تایپ مهارت جدید',
+            width: '100%',
+        });
 
-    // Sort ساده front-end
-    $('th[data-sort]').click(function() {
-        var table = $(this).parents('table').eq(0);
-        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
-        this.asc = !this.asc;
-        if (!this.asc) rows = rows.reverse();
-        for (var i = 0; i < rows.length; i++) table.append(rows[i]);
-    });
-    function comparer(index) {
-        return function(a, b) {
-            var valA = getCellValue(a, index), valB = getCellValue(b, index);
-            return valA.localeCompare(valB);
+        // Sort ساده front-end
+        $('th[data-sort]').click(function() {
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+            if (!this.asc) rows = rows.reverse();
+            for (var i = 0; i < rows.length; i++) table.append(rows[i]);
+        });
+        function comparer(index) {
+            return function(a, b) {
+                var valA = getCellValue(a, index), valB = getCellValue(b, index);
+                return valA.localeCompare(valB);
+            }
         }
-    }
-    function getCellValue(row, index) { return $(row).children('td').eq(index).text(); }
-});
+        function getCellValue(row, index) { return $(row).children('td').eq(index).text(); }
+    });
 </script>
 
 {% endblock %}

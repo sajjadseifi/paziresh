@@ -142,7 +142,7 @@ class SoldierFilterForm(forms.Form):
         groups = kwargs.pop('groups', [])
         super().__init__(*args, **kwargs)
         self.fields['battalion_filter'].choices = [('', 'انتخاب گردان')] + [(b.id, b.name) for b in battalions]
-        self.fields['group_filter'].choices = [('', 'انتخاب گروهان')] + [(g.id, g.name) for g in groups]
+        self.fields['group_filter'].choices = [('', 'انتخاب گروهان')] + [(g.id, f'{g.gordan.name} (گروهان {g.name})') for g in groups]
 
 class SoldierProblemForm(forms.Form):
     soldier_id = forms.IntegerField(widget=forms.HiddenInput())

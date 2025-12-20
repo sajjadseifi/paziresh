@@ -2,35 +2,389 @@
 {% load static %}
 
 {% block main %}
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title">بارگذاری اکسل</h3>
-        </div>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="box-body">
-                <div class="input-group input-group-sm">
+<style>
+ 
+
+    .panel-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.06);
+        margin-bottom: 20px;
+    }
+
+    /* ====== Titles ====== */
+    .panel-title {
+        font-size: 15px;
+        font-weight: bold;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #aaa;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .panel-title h3 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        text-align: center;
+    }
+    /* ====== Buttons ====== */
+    .btn-action {
+        border: none !important;
+        padding: 10px !important;
+        border-radius: 6px !important;
+        font-size: 13px !important;
+        cursor: pointer !important;
+        background: linear-gradient(135deg, #757575ff, #3b3b3bff) !important;
+        color: #fff !important;
+    }
+
+    .btn-action:hover {
+        opacity: .9;
+    }
+    .btn-action.wfull {
+        width: 100%;
+    }
+    .btn-action.success {
+        background: linear-gradient(135deg, #3cbc51ff, #36a983ff) !important;
+    }
+    .btn-action.danger {
+        background: linear-gradient(135deg, #bc3c78ff, #a93683ff) !important;
+    }
+    .btn-action.info {
+        background: linear-gradient(135deg, #3cadbcff, #36a1a9ff) !important;
+    }
+
+    /* ====== Result Box ====== */
+    .result-box {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 6px;
+        background: #f9fafb;
+        border: 1px dashed #ddd;
+        font-size: 13px;
+    }
+
+    .result-box.success {
+        border-color: #4caf50;
+        background: #f1f8f4;
+    }
+
+    .result-box.warning {
+        border-color: #ff9800;
+        background: #fff7ec;
+    }
+
+    /* ====== Guide ====== */
+    .excel-guide {
+        position: sticky;
+        top: 20px;
+    }
+
+    .excel-guide p {
+        font-size: 13px;
+        line-height: 1.9;
+        color: #444;
+    }
+
+    .excel-guide ul {
+        padding-right: 18px;
+        list-style: none;
+    }
+
+    .excel-guide li {
+        margin-bottom: 3px;
+    }
+
+    /* ====== Table ====== */
+    .guide-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 15px 0;
+    }
+
+    .guide-table th,
+    .guide-table td {
+        border: 1px solid #eee;
+        padding: 3px;
+        text-align: center;
+    }
+
+    .guide-table th {
+        background: #f4f6f8;
+        font-weight: bold;
+    }
+    .guide-table td code {
+        display: inline-block;
+        margin: 2px 4px;
+        padding: 2px 6px;
+        font-size: 11px;
+        background: #f1f3f5;
+        border-radius: 4px;
+    }
+
+</style>
+
+<div class="import-page">
+    <div class="row">
+        <!-- فرم کامل -->
+        <div class="col-md-4">
+            <div class="panel-card">
+                <div class="panel-title">
+                    <h3>بارگذاری اکسل (کامل)</h3>
+                </div>
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <!-- دکمه‌ها -->
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <!-- دکمه بررسی -->
-                        <button type="submit" class="btn btn-success">
-                            ✅ بررسی
-                        </button>
-
-                        <!-- دکمه دانلود فایل راهنما -->
-                        <a href="{% url 'download_import_samane_sample_excel' %}" class="btn btn-warning">
-                            📥 دانلود فایل خام نمونه
-                        </a>
+                    <button class="btn-action wfull info" type="submit">
+                        بررسی فایل
+                    </button>
+                </form>
+                {% if result_all %}
+                    <div class="result-box success">
+                        <div>کل رکوردها: {{ result_all.total }}</div>
+                        <div>ثبت موفق: {{ result_all.success }}</div>
+                        <div>دارای خطا: {{ result_all.errors }}</div>
                     </div>
-                </div>
+                {% endif %}
             </div>
-        </form>
+                <div class="panel-card">
+                    <div class="panel-title">
+                        <h3>فقط افراد جدید</h3>
+                    </div>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="new">
+                        {{ form.as_p }}
+                        <button class="btn-action wfull info" type="submit">
+                            بررسی افراد جدید
+                        </button>
+                    </form>
+                    {% if result_new %}
+                        <div class="result-box warning">
+                            <div>افراد جدید ثبت شده: {{ result_new.inserted }}</div>
+                            <div>تکراری‌ها: {{ result_new.duplicate }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+        </div>
+        <!-- راهنما -->
+        <div class="col-md-8">
+            <div class="panel-card excel-guide">
+                <div class="panel-title">
+                    <h3 style="flex: 1;">راهنمای فایل اکسل سامانه</h3>
+                    <a href="{% url 'download_import_samane_sample_excel' %}" class="btn-action success">
+                        دانلود فایل نمونه
+                    </a>
+                </div>
+                <p>
+                    فایل اکسل ورودی باید دقیقاً مطابق ترتیب و عناوین ستون‌های تعریف‌شده در سامانه باشد.
+                    هرگونه جابه‌جایی ستون، تغییر نام یا مقدار نامعتبر باعث خطا در پردازش خواهد شد.
+                </p>
+                <table class="guide-table">
+                    <colgroup>
+                        <col style="width:5%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:65%">
+                    </colgroup>
+
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام ستون</th>
+                        <th>نوع ورودی</th>
+                        <th>توضیحات</th>
+                    </tr>
+
+                    <tr>
+                        <td>1</td>
+                        <td>وضعیت</td>
+                        <td>متنی</td>
+                        <td>وضعیت فعلی فرد</td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>کد ملی</td>
+                        <td>عددی</td>
+                        <td>کد ملی ۱۰ رقمی</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>نام</td>
+                        <td>متنی</td>
+                        <td>نام فرد</td>
+                    </tr>
+
+                    <tr>
+                        <td>4</td>
+                        <td>نام خانوادگی</td>
+                        <td>متنی</td>
+                        <td>نام خانوادگی</td>
+                    </tr>
+
+                    <tr>
+                        <td>5</td>
+                        <td>نام پدر</td>
+                        <td>متنی</td>
+                        <td>نام پدر</td>
+                    </tr>
+
+                    <tr>
+                        <td>6</td>
+                        <td>محل تولد</td>
+                        <td>متنی</td>
+                        <td>شهر محل تولد</td>
+                    </tr>
+
+                    <tr>
+                        <td>7</td>
+                        <td>تاریخ تولد</td>
+                        <td>فرمت تاریخ</td>
+                        <td>فرمت معتبر تاریخ</td>
+                    </tr>
+
+                    <tr>
+                        <td>8</td>
+                        <td>محل صدور</td>
+                        <td>متنی</td>
+                        <td>محل صدور شناسنامه</td>
+                    </tr>
+
+                    <tr>
+                        <td>9</td>
+                        <td>مذهب</td>
+                        <td>انتخابی </td>
+                        <td>
+                            مقادیر مجاز:
+                            <code>شیعه</code>،
+                            <code>اهل تسنن</code>،
+                            <code>نامشخص</code>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>10</td>
+                        <td>مدرک تحصیلی</td>
+                        <td>انتخابی </td>
+                        <td>
+                            <code>بی‌سواد</code>،
+                            <code>نهضت سواد آموزی</code>،
+                            <code>ابتدایی</code>،
+                            <code>راهنمایی</code>،
+                            <code>سیکل</code>،
+                            <code>دبیرستان</code>،
+                            <code>زیر دیپلم</code>،
+                            <code>دیپلم</code>،
+                            <code>فوق دیپلم</code>،
+                            <code>لیسانس</code>،
+                            <code>فوق لیسانس</code>،
+                            <code>دکتری</code>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>11</td>
+                        <td>رشته تحصیلی</td>
+                        <td>متنی</td>
+                        <td>عنوان رشته تحصیلی</td>
+                    </tr>
+
+                    <tr>
+                        <td>12</td>
+                        <td>تاریخ اعزام</td>
+                        <td>فرمت تاریخ</td>
+                        <td>فرمت معتبر تاریخ</td>
+                    </tr>
+
+                    <tr>
+                        <td>13</td>
+                        <td>قد</td>
+                        <td>عددی</td>
+                        <td>به سانتی‌متر</td>
+                    </tr>
+
+                    <tr>
+                        <td>14</td>
+                        <td>وزن</td>
+                        <td>عددی</td>
+                        <td>به کیلوگرم</td>
+                    </tr>
+
+                    <tr>
+                        <td>15</td>
+                        <td>استان محل سکونت</td>
+                        <td>انتخابی </td>
+                        <td>
+                            مطابق لیست:
+                            <code>province_name_list</code>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>16</td>
+                        <td>شهر محل سکونت</td>
+                        <td>متنی</td>
+                        <td>نام شهر</td>
+                    </tr>
+
+                    <tr>
+                        <td>17</td>
+                        <td>آدرس محل سکونت</td>
+                        <td>متنی</td>
+                        <td>آدرس کامل</td>
+                    </tr>
+
+                    <tr>
+                        <td>18</td>
+                        <td>شماره همراه</td>
+                        <td>عددی</td>
+                        <td>شماره موبایل</td>
+                    </tr>
+
+                    <tr>
+                        <td>19</td>
+                        <td>شماره منزل</td>
+                        <td>عددی</td>
+                        <td>تلفن ثابت</td>
+                    </tr>
+
+                    <tr>
+                        <td>20</td>
+                        <td>وضعیت سلامت</td>
+                        <td>انتخابی </td>
+                        <td>
+                            <code>سالم</code>،
+                            <code>معاف از رزم</code>،
+                            <code>گروه ب</code>،
+                            <code>معاف+گروه ب</code>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>21</td>
+                        <td>وضعیت تاهل</td>
+                        <td>انتخابی </td>
+                        <td>
+                            <code>مجرد</code>،
+                            <code>متاهل</code>
+                        </td>
+                    </tr>
+                </table>
+
+                <ul>
+                    <li>فرمت فایل باید xlsx باشد</li>
+                    <li>ردیف اول شامل عنوان ستون‌ها است</li>
+                    <li>سلول‌های خالی باعث رد شدن رکورد می‌شوند</li>
+                </ul>
+            </div>
+        </div>
+
     </div>
+</div>
 {% endblock %}

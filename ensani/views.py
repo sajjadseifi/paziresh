@@ -10,7 +10,7 @@ from ensani.excel_utils  import export_soldiers_to_excel,export_kafiat_to_excel
 from ensani_letter.models import NormalLetterModels,CheckoutLetterModels
 from django.utils import timezone
 from .models import ActivityLog
-
+from .services.statistics import get_paziresh_peak_multi_day
 class panel_home(LoginRequiredMixin, View):
     def get(self, request):
         soldire = Soldier.objects.filter().all()
@@ -45,7 +45,11 @@ class panel_home(LoginRequiredMixin, View):
                 for iteam in gorhan:
                     t = b_soldire.filter(battalion_group=iteam).all().count()
                     if t != 0:
-                        list_btn.append({'gordan': iteam.gordan.name, 'gorohan': iteam.name, 'count': t})
+                        list_btn.append({
+                            'gordan': iteam.gordan.name, 
+                            'gorohan': iteam.name, 
+                            'count': t
+                        })
         else:
 
             list_btn = []
@@ -65,8 +69,11 @@ class panel_home(LoginRequiredMixin, View):
                         list_btn.append({'gordan': iteam.gordan.name, 'gorohan': iteam.name, 'count': t,'capacity': int(iteam.zarfiat) - t})
         today = timezone.localtime(timezone.now()).date()
         logs_today = ActivityLog.objects.filter(created_at__date=today).count()
-        print(today, logs_today)
+        
+        en = EnsaniSettings.objects.first()
+        peakChart = get_paziresh_peak_multi_day(en.tarikhpaziresh ,en.tarikhetmampaziresh)
         cx = {
+            'peakChart':peakChart,
             'logs_today': logs_today,
             'amar_kol': amar_kol, 
             'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,

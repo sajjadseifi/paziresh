@@ -191,6 +191,7 @@
                     {% endfor %}
                 </ul>
             </form>
+        {%if permissions.dep.gordan %}
             <!-- 📦 دکمه آپلود ZIP -->
             <form  method="post" enctype="multipart/form-data" class="mt-4">
                 {% csrf_token %}
@@ -210,7 +211,7 @@
                     <li>نام هر فایل باید کد ملی سرباز باشد (مثلاً <code>1234567890.jpg</code>).</li>
                 </ul>
             </div>
-
+            {% endif %}
 
         </div>
     </div>

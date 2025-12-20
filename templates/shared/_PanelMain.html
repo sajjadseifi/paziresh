@@ -6,6 +6,38 @@
     {% block header %}
 
     {% endblock %}
+    <script>
+        function callKeyword(keys, actions, eventType = 'keyup',preventDefault = true) {
+            // کلیدها و اکشن‌ها را استاندارد می‌کنیم
+            if (!Array.isArray(keys)) keys = [keys];
+            if (!Array.isArray(actions)) actions = [actions];
+
+            const handler = (event) => {
+                if (keys.includes(event.key)) {
+                    event.preventDefault(); // جلوگیری از رفتار پیش‌فرض
+                    event.stopPropagation(); // جلوگیری از انتشار ایونت به بالادست
+                    actions.forEach(fn => {
+                        if (typeof fn === 'function') fn(event);
+                    });
+                }
+            };
+
+            document.addEventListener(eventType, handler);
+
+            // بازگرداندن تابعی برای حذف listener
+            return () => document.removeEventListener(eventType, handler, { capture: true });
+        }
+
+        function focusInput(element, mode = 'select') {
+            if (!element || typeof element.focus !== 'function') return;
+
+            element.focus();
+
+            if (mode === 'select' && typeof element.select === 'function') {
+                element.select();
+            }
+        }
+    </script>
 </head>
 {% render_partial 'header_partial_view' %}
 {% render_partial 'navbar_partial_view' %}
@@ -14,22 +46,16 @@
 <div class="wrapper">
 
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <section class="content-header">
         <div class="head_p">
             <p>منابع انسانی</p>
         </div>
-        <!-- Main content -->
         <section class="content container-fluid">
-
             {% block main %}no data{% endblock %}
-
         </section>
-        <!-- /.content -->
     </div>
-    <footer class="main-footer text-center">
-        <strong>توسعه یافته توسط محمد رضا رحیمایی و سجاد سیفی</strong>
-    </footer>
+    {% include "./_FooterPanel.html" %}
+
 </div>
 {% include "components/toast.html" %}
 
