@@ -104,6 +104,7 @@ class CreateOrUpdateSettings(LoginRequiredMixin, View):
         
         tarikh_hokme_darje_gardeshkar = form.cleaned_data['tarikh_hokme_darje_gardeshkar']
         tarihke_name_shoro_doreh = form.cleaned_data['tarihke_name_shoro_doreh']
+        print("form.cleaned_data['tatbigh'] = ",form.cleaned_data['tatbigh'])
         tatbigh  = form.cleaned_data['tatbigh'] 
         if en is None:
             en = EnsaniSettings()

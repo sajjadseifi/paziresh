@@ -24,9 +24,8 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     justify-content: flex-start;
     width: 100%;
     height: 100%;
-    padding: 10px 5px;
-    border: 1px solid black;
-    border-radius: 5px;
+    padding: 10px;
+    border: 2px solid black;
     box-sizing: border-box;
     page-break-after: always;
 }
@@ -35,7 +34,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom:1px solid black;
+    border:2px solid black;
     padding: 5px 10px;
 }
 
@@ -55,8 +54,14 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     display: flex;
     flex-direction: column;
     align-items: center;
-}
 
+}
+.letter_number {
+    display: flex;
+    align-items: center;
+    direction: ltr;
+    flex-direction: row-reverse;
+}
 .letter_number, .letter_date {
     font-size: 11px;
     font-weight: bold;
@@ -74,8 +79,7 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     flex:1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 10px 20px 0;
+    padding: 10px 10px 0;
 }
 
 .letter_to, .letter_create_location, .letter_des, .letter_details,
@@ -84,8 +88,8 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
     font-weight: normal;
 }
 .letter_to, .letter_create_location {
-    font-size: 15px;
     font-weight:bold;
+    font-size: 16px;
 
 }
 .letter_des {  font-size: 18px; text-align: justify; }
@@ -93,29 +97,94 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
 .empty {
     flex:1;
 }
-.farmande_padegan { font-weight: bold; text-align: center;font-size:26px;margin:20px 0; font-family: 'IranNastaliq';}
+.farmande_padegan { 
+    font-weight: bold; 
+    text-align: center;
+    font-size:16px;
+    display: flex;
+    padding: 10px 5px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: end;
+
+}
 .letter_note { font-size: 10px; text-align: center; margin-top: 20px; }
 .code_paziresh { font-weight: bold; text-align: left; margin-top: 10px; }
 .check_out, .sutter { font-weight: bold; text-align: center; }
 .salam_aleikom{
-     font-size:20px;
+     font-size:18px;
         font-style: italic;
         font-weight:light;
-
+    margin: 10px;
 }
 .subject {
     font-weight:bold;
-    font-size: 18px;
-    font-weight:bold;
+    font-size: 16px;
 }
 @media print {
     body, html { width: 148mm; height: 210mm; margin: 0; padding: 0; box-sizing:border-box;}
     .page { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print {
+        display: none;
+    }
 }
 </style>
 </head>
 <body>
 
+    <style>
+        .no-print {
+            margin:10px 0 0;
+            
+        }
+        .no-print .controls {
+            max-width: 400px;
+        }
+        
+        .no-print select {
+            font-family: 'B Nazanin';
+            padding: 4px 10px;
+            font-size: 14px;
+        }
+        
+        .no-print button {
+            font-family: 'B Nazanin';
+            padding: 6px 14px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .signature-preview {
+            text-align: center;
+        }
+        
+        #sig_name {
+            font-weight: bold;
+            font-size: 18px;
+            padding-bottom: 5px;
+        }
+        
+        #sig_label {
+            font-size: 14px;
+        }
+        
+    </style>
+    <div class="no-print">
+        <div class="controls" style="padding:0 100px;">
+            <div style="display: flex;align-items: center;gap: 10px;">
+                <strong style="">انتخاب امضا</strong>
+                <select id="signature_select">
+                    <option value="">---</option>
+                    <option  value="farmande">فرمانده آموزشگاه</option>
+                    <option  selected value="niro">مدیر نیروی انسانی</option>
+                    <option value="manabe">کارشناس منابع انسانی سرباز</option>
+                </select>
+                <button style="flex: 1;" onclick="window.print()">چاپ نامه</button>
+            </div>
+    
+        </div>
+    </div>
+    
 <div class="print">
     <div class="page">
         <div class="header">
@@ -126,7 +195,12 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
                 <img width="50px" src="{% static 'img/rank/name.jpg' %}" alt="logo_name">
             </div>
             <div class="header-right">
-                    <div class="letter_number">شماره: 512/106/6/<span>{{ letter.number }}</span></div>
+                    <div class="letter_number">
+                        <strong>شماره: </strong>
+                        <span>{{ letter.number }}</span>
+                        <span>512/106/6/</span>
+                        <span>ز</span>
+                    </div>
                     <div class="letter_date">تاریخ: {{ letter.date|date:"Y/m/d" }}</div>
             </div>
         </div>
@@ -135,23 +209,70 @@ html, body { margin: 0; padding: 0; font-family: 'B Nazanin'; direction: rtl; }
             <div class="shoare_sall">{{ ens.shoare_sall }}</div>
             <div class="letter_to">به: {{ letter.destination }}</div>
             <div class="letter_create_location">از: آموزشگاه رزم مقدماتی المهدی(عج) نیروی زمینی سپاه - نیروی انسانی - منابع انسانی سرباز</div>
-            <div class='salam_aleikom'>سلام علیکم</div>
             <div class='subject'>موضوع : {{letter.title}}</div>
+            <div class='salam_aleikom'>سلام علیکم</div>
             <div class="letter_des">
-                <span>اللّهمّ صَلّ علی مُحمّد و آلِ مُحمّد،</span>
+                <span style="font-weight: bold;">((اللّهمّ صَلّ علی مُحمّد و آلِ مُحمّد))</span>
+                <span>،</span>
                 <span>با تقدیم احترام</span>
                 {% if letter.return_to_number %} <span>بازگشت به شماره نامه {{ letter.return_to_number }}</span>{% endif %}
-                :
+                ،
+                {{ letter.description|default:"متن نامه آماده اینجا قرار می‌گیرد." }}
             </div>
-            <div class="letter_des">{{ letter.description|default:"متن نامه آماده اینجا قرار می‌گیرد." }}</div>
+            <div class="farmande_padegan">
+                <div style="max-width: 80%;">
+                    <p style="margin: 0;padding-bottom: 10px;" id="sig_name"></p>
+                    <p style="margin: 0;padding: 0;" id="sig_label"></p>
+                </div>
+            </div>
             <div class="empty"></div>
-            <div class="farmande_padegan">{{ ens.farmande_razme_moghadamati }}</div>
             <div class="letter_details">مستدعی است ضمن بررسی موضوع، اقدامات لازم انجام شود.</div>
             <div class="code_paziresh">عدد پذیرش: {{ letter.soldier_acceptance_code|default:"-" }}</div>
 
         </div>
     </div>
 </div>
+
+
+
+<script>
+    const signatures = {
+        farmande: {
+            label: "فرمانده آموزشگاه رزم مقدماتی المهدی (عج) بابل",
+            name: "{{ ens.farmande_razme_moghadamati|default:'' }}"
+        },
+        niro: {
+            label: "مدیر نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) بابل",
+            name: "{{ ens.modire_niroye_ensani|default:'' }}"
+        },
+        manabe: {
+            label: "کارشناس منابع انسانی سرباز آموزشگاه رزم مقدماتی المهدی (عج) بابل",
+            name: "{{ ens.karshenas_manabe_ensani|default:'' }}"
+        }
+    };
+
+    const sigName = document.getElementById('sig_name');
+    const sigLabel = document.getElementById('sig_label');
+    const select = document.getElementById('signature_select');
+
+    const action = (item) => {
+        const sig = signatures[item.value];
+        if (sig) {
+            sigName.innerText = sig.name;
+            sigLabel.innerText = sig.label;
+        } else {
+            sigName.innerText = '';
+            sigLabel.innerText = '';
+        }
+    };
+
+    select.addEventListener('change', function () {
+        action(this);
+    });
+
+    // ⭐ مقدار پیش‌فرض
+    action(select);
+</script>
 
 
 </body>

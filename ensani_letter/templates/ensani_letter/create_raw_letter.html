@@ -7,8 +7,6 @@
 />
 <style>
   .raw-letter-form {
-    max-width: 1400px;
-    margin: auto;
     font-family: "Vazir", sans-serif;
   }
 
@@ -34,10 +32,13 @@
     transform: translateY(-3px);
   }
   .card-section h4 {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-weight: 700;
     color: #1f2937;
     text-align: center;
+    border-bottom:2px solid #4f46e544;
+    border-radius: 10px;
+    padding: 10px;
   }
   .form-group {
     margin-bottom: 8px;
@@ -116,9 +117,11 @@
   }
   .form-actions button, .form-actions a {
     padding: 10px 20px;
-    border-radius: 25px;
+    border-radius: 10px;
     border: none;
+    flex: 1;
     cursor: pointer;
+    display: block;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.2s;
@@ -143,6 +146,9 @@
     .sections-row {
       flex-direction: column;
     }
+  }
+  .card-content {
+    flex: 1;
   }
    select option.extra-option {
     background-color: #f0f4ff; /* رنگ روشن آبی */
@@ -177,55 +183,54 @@
         <!-- اطلاعات نامه -->
         <div class="card-section">
           <h4>اطلاعات نامه</h4>
-          <div class="form-group">
-            {{ form.return_to_number.label_tag }} {{ form.return_to_number }}
+          <div class="card-content">
+
+            <div class="form-group">
+              {{ form.return_to_number.label_tag }} {{ form.return_to_number }}
+            </div>
+            <div class="form-group">
+              <label for="id_title">عنوان / نوع نامه</label>
+              <select id="id_title" name="title" class="form-control select2">
+                <option value="">یک نوع نامه انتخاب یا وارد کنید</option>
+                {% for choice in form.letter_type.field.choices %}
+                  {% if choice.0 != 'normal' %}
+                    <option value="{{ choice.1 }}">{{ choice.1 }}</option>
+                  {% endif %}
+                {% endfor %}
+                <option value="درخواست مرخصی" class="extra-option">درخواست مرخصی</option>
+                <option value="گواهی وضعیت خدمت" class="extra-option">گواهی وضعیت خدمت</option>
+                <option value="اعلام ماموریت" class="extra-option">اعلام ماموریت</option>
+                <option value="تسویه حساب مالی" class="extra-option">تسویه حساب مالی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="id_destination">گیرنده / مقصد</label>
+              <select
+                id="id_destination"
+                name="destination"
+                class="form-control select2"
+              >
+                <option value="" disabled selected>یک مقصد انتخاب کنید</option>
+                <option value="سپاه کربلا مازندران">سپاه کربلا مازندران</option>
+                <option value="اداره نظام وظیفه">اداره نظام وظیفه</option>
+                <option value="کمیسیون پزشکی">کمیسیون پزشکی</option>
+                <option value="کمیسیون پزشکی - ستاد">کمیسیون پزشکی - ستاد</option>
+                <option value="مرکز آموزش قبلی">مرکز آموزش قبلی</option>
+                <option value="یگان آموزشی قبلی">یگان آموزشی قبلی</option>
+                <option value="اداره آموزش">اداره آموزش</option>
+                <option value="اداره پرسنلی">اداره پرسنلی</option>
+                <option value="اداره مالی">اداره مالی</option>
+                {% for dest in server_destinations %}
+                  <option value="{{ dest }}">{{ dest }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              {{ form.description.label_tag }} {{ form.description }}
+            </div>
           </div>
-          <div class="form-group">
-            <label for="id_title">عنوان / نوع نامه</label>
-            <select id="id_title" name="title" class="form-control select2">
-              <option value="">یک نوع نامه انتخاب یا وارد کنید</option>
-              {% for choice in form.letter_type.field.choices %}
-                {% if choice.0 != 'normal' %}
-                  <option value="{{ choice.1 }}">{{ choice.1 }}</option>
-                {% endif %}
-              {% endfor %}
-               <option value="درخواست مرخصی" class="extra-option">درخواست مرخصی</option>
-               <option value="گواهی وضعیت خدمت" class="extra-option">گواهی وضعیت خدمت</option>
-               <option value="اعلام ماموریت" class="extra-option">اعلام ماموریت</option>
-               <option value="تسویه حساب مالی" class="extra-option">تسویه حساب مالی</option>
-            </select>
-          </div>
-
-<div class="form-group">
-  <label for="id_destination">گیرنده / مقصد</label>
-  <select
-    id="id_destination"
-    name="destination"
-    class="form-control select2"
-  >
-    <option value="" disabled selected>یک مقصد انتخاب کنید</option>
-    <option value="سپاه کربلا مازندران">سپاه کربلا مازندران</option>
-    <option value="اداره نظام وظیفه">اداره نظام وظیفه</option>
-    <option value="کمیسیون پزشکی">کمیسیون پزشکی</option>
-    <option value="کمیسیون پزشکی - ستاد">کمیسیون پزشکی - ستاد</option>
-    <option value="مرکز آموزش قبلی">مرکز آموزش قبلی</option>
-    <option value="یگان آموزشی قبلی">یگان آموزشی قبلی</option>
-    <option value="اداره آموزش">اداره آموزش</option>
-    <option value="اداره پرسنلی">اداره پرسنلی</option>
-    <option value="اداره مالی">اداره مالی</option>
-    {% for dest in server_destinations %}
-      <option value="{{ dest }}">{{ dest }}</option>
-    {% endfor %}
-  </select>
-</div>
-
-
-          <div class="form-group">
-            {{ form.description.label_tag }} {{ form.description }}
-          </div>
-
           <div class="form-actions">
-            <a href="{% url 'AllRawLetters' %}" class="btn-back">بازگشت</a>
             <button type="submit">ثبت نامه</button>
           </div>
         </div>

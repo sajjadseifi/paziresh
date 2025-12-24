@@ -36,6 +36,7 @@ class panel_home(LoginRequiredMixin, View):
             name_list = []
             total_list = []
             gordan = battalion.objects.filter().all().order_by('name')
+            print(gordan)
             for iteam in gordan:
                 gorhan = battalion_group.objects.filter(gordan=iteam).order_by('name')
                 tt = b_soldire.filter(Gordan=iteam).all().count()

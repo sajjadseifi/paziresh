@@ -81,16 +81,7 @@
             {% if request.user.is_staff %}
                 {% load tz %}
                 {% now "Y-m-d" as today %}
-                <a  href="{% url 'activity_logs' %}" 
-                    class="glass-btn glass-btn-danger {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}"
-                >
-                    کارهای امروز  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
-                </a>
-                <a  href="{% url 'interferences_index' %}" 
-                    class="glass-btn glass-btn-warning {% if request.resolver_match.url_name == 'interferences_index' %}active{% endif %}"
-                >
-                    تداخل آماری  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
-                </a>
+
                 <a href="{% url 'account_access' %}"
                    class="glass-btn {% if request.resolver_match.url_name == 'account_access' %}active{% endif %}">
                     🔐 دسترسی کاربران
@@ -115,6 +106,13 @@
                 <a href="{% url 'data_app' %}"
                    class="glass-btn {% if request.resolver_match.url_name == 'data_app' %}active{% endif %}">
                     🗄️ بانک اطلاعات
+                </a>
+                <span style="flex: 1;"></span>
+                <a  href="{% url 'activity_logs' %}"  class="glass-btn glass-btn-danger {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}">
+                    کارهای امروز  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
+                </a>
+                <a  href="{% url 'interferences_index' %}"   class="glass-btn glass-btn-warning {% if request.resolver_match.url_name == 'interferences_index' %}active{% endif %}">
+                    تداخل آماری  ( <span style="font-weight:bold;font-size:16px;">{{ logs_today|default:"0" }}</span> )
                 </a>
             {% endif %}
 

@@ -63,18 +63,16 @@ input#tatbigh + .yesno-buttons .btn-yesno {
     
 }
 
-/* حالت NO - سبز Legend */
-input#tatbigh[type="checkbox"]:not(:checked) + .yesno-buttons > .btn-yesno[value="yes"] {
-    background-color: #0B6B3A !important;
-    color: #FFFFFF;
-    border: 1px solid #06492A;
-}
-
-/* حالت YES - قرمز Crimson */
-input#tatbigh[type="checkbox"]:checked + .yesno-buttons > .btn-yesno[value="no"] {
+input#tatbigh[type="checkbox"]:not(:checked) + .yesno-buttons > .btn-yesno[value="no"] {
     background-color: #8B0000 !important;
     color: #FFFFFF;
     border: 1px solid #5C0000;
+}
+
+input#tatbigh[type="checkbox"]:checked + .yesno-buttons > .btn-yesno[value="yes"] {
+    background-color: #0B6B3A !important;
+    color: #FFFFFF;
+    border: 1px solid #06492A;
 }
 
 .btn-yesno {

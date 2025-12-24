@@ -2,8 +2,8 @@
 <style>
     .user-loggedin
     {
-        margin:6px 10px;
-        padding:4px 8px;
+        margin:5px 10px;
+        padding: 8px 14px;
         color:white;
         background:#ffffff22;
         border-radius:4px;
@@ -13,7 +13,7 @@
     }
     .logout-btn {
         background:#ff3342;
-        padding:2px 4px;
+        padding:4px 12px;
         border-radius:4px;
         display:flex;
         align-items:center;
@@ -49,11 +49,12 @@
     .content-wrapper, .main-footer {
         margin-right: 280px;
     }
+
 </style>
 <aside class="main-sidebar">
     <section style="flex: 1;overflow-y:auto ;" class="sidebar">
         <p class="user-loggedin">
-            <span class="user-status">👤 {{ request.user.first_name }} {{ request.user.last_name }}</span>
+            <span class="user-status">{{ request.user.first_name }} {{ request.user.last_name }}</span>
             <a style="color:white;" href="{% url 'logout' %}"  class="header-icon logout-btn">
                خروج <i class="fa fa-sign-out"></i> 
             </a>

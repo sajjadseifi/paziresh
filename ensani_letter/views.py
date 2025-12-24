@@ -1043,8 +1043,8 @@ def create_raw_letter(request):
             ens = EnsaniSettings.objects.first()
             nationa_code = data['soldier_national_code']
             unique_number =generate_unique_number()
-            letter_code= '100'
-            number = f"{ens.shomare_dore}{letter_code}{unique_number}{nationa_code}"
+            letter_code= '12'
+            number = f"{letter_code}{unique_number}"
             data['number'] = number
             data['date'] = jdatetime.datetime.now()
             data['status'] = 'ایجاد شده'
