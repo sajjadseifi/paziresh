@@ -26,7 +26,6 @@ class ApplicationValues(Enum):
     @classmethod
     def choices(cls):
         return [(tag.name, tag.value) for tag in cls]
-
 class DepartmentValues(Enum):
     FARMANDEHI = "فرماندهی"
     NIRU_ENSANI = "نیرو انسانی"

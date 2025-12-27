@@ -25,9 +25,14 @@ urlpatterns = [
     # 
     path('interferences/',          interferences_index, name='interferences_index'),
     path('interferences/enduction-info/',          interferences_enduction_info, name='interferences_enduction_info'),
+    path('interferences/enduction/group/',          interferences_enduction_info_group, name='interferences_enduction_info_group'),
+    path('interferences/enduction/group/from_grade',          interferences_enduction_system_level_from_Grade, name='interferences_enduction_system_level_from_Grade'),
+    path('interferences/enduction/system_level/update', interferences_enduction_system_level_update, name='interferences_enduction_system_level_update'),
+    path('interferences/enduction/system_level/sample', interferences_enduction_system_level_update_sample, name='interferences_enduction_system_level_update_sample'),
     path('interferences/yegan-khedmati/',   interferences_yegan_khedmati, name='interferences_yegan_khedmati'),
     path('interferences/vaziat-jasmani/',   interferences_vaziat_jasmani, name='interferences_vaziat_jasmani'),
     path('interferences/yegan-tatbigh/',   interferences_yegan_tatbigh, name='interferences_yegan_tatbigh'),
     path('interferences/base-information/',   interferences_base_information, name='interferences_base_information'),
+    path('interferences/city-province/',   interferences_city_and_province, name='interferences_city_and_province'),
     path('interferences/city-province/',   interferences_city_and_province, name='interferences_city_and_province'),
 ]

@@ -1,6 +1,8 @@
 {% load static %}
+{% load form_extras %}
+
 <style>
-   .custom-panel {
+.custom-panel {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -36,6 +38,7 @@
   justify-content: space-between;
   padding: 0.5rem;
   border-bottom: 1px solid #eee;
+  font-size: 10px;
 }
 
 .custom-list-item:last-child {
@@ -88,29 +91,37 @@
 .badge-warning { background-color: #ffc107; color: #212529; }
 .badge-danger { background-color: #ff0000; color: #fff; }
 .badge-secondary { background-color: #6c757d; color: #fff; }
+.badge {
+   padding:  2px 4px;
+   border-radius: 4px;
+   display: inline-block;
+   min-width: 80px;
+}
 </style>
 
-<div class="container-fluid">
   <div class="row">
     <!-- ✅ وضعیت جسمانی معتبر -->
     {% for collect in collections %}
-      <div class="col-md-{{ colmd|default:'4' }}">
+      <div class="col-md-{{ collect.colmd|default:'4' }}">
          <div class="custom-panel">
-         <div class="custom-panel-header bg-{{collect.color}} text-white text-center">
-            وضعیت {{collect.title}} معتبر 
-            <span class="badge badge-{{collect.color}}">{{ collect.known_values|length }} {{collect.small_titlle}}</span>
-            <span class="badge badge-{{collect.color}}">مجموع : {{ collect.known_values_counts }}</span>
-         </div>
-         <div class="custom-panel-body">
-            <ul class="custom-list">
-               {% for item in collect.known_values %}
-               <li class="custom-list-item">
-                  <span>{{ item.value }}</span>
-                  <span class="badge badge-{{collect.color}}">تعداد : {{ item.counts }}</span>
-               </li>
-               {% endfor %}
-            </ul>
-         </div>
+            <div class="custom-panel-header bg-{{collect.color}} text-white text-center">
+               <span>وضعیت {{collect.title}} معتبر</span> 
+               <span>
+                  <span class="badge badge-{{collect.color}}">{{ collect.known_values|length }} {{collect.small_titlle}}</span>
+                  <span class="badge badge-{{collect.color}}">مجموع : {{ collect.known_values_counts }}</span>
+               </span>
+            </div>
+            <div class="custom-panel-body">
+               <ul class="custom-list">
+                  {% for item in collect.known_values %}
+                  <li class="custom-list-item">
+                     <span>{{ item.value }}</span>
+                     <span class="badge badge-{{collect.color}}">تعداد : {{ item.counts }}</span>
+                  </li>
+                  {% endfor %}
+               </ul>
+            </div>
+     
          </div>
 
          <!-- ✅ فرم وضعیت جسمانی نامعتبر -->
@@ -118,16 +129,11 @@
          {% csrf_token %}
          <div class="custom-panel">
             <div class="custom-panel-header bg-{{collect.color}} text-white d-flex justify-content-between align-items-center">
+               <span> وضعیت {{collect.title}} نامعتبر </span>
                <span>
-               وضعیت {{collect.title}} نامعتبر 
-               <span class="badge badge-{{collect.color}}">{{ collect.unknown_values|length }} {{collect.small_titlle}}</span>
-               <span class="badge badge-{{collect.color}}">مجموع : {{ collect.unknown_values_counts }}</span>
-            </span>
-                  
-
-               <button action="{{collect.action}}" type="submit" id="save-btn" class="btn btn-success btn-sm d-flex align-items-center gap-1 px-3">
-                  <i class="bi bi-check-circle-fill me-1"></i> تبدیل کردن
-               </button>
+                  <span class="badge badge-{{collect.color}}">{{ collect.unknown_values|length }} {{collect.small_titlle}}</span>
+                  <span class="badge badge-{{collect.color}}">مجموع : {{ collect.unknown_values_counts }}</span>
+               </span>
             </div>
             <div class="custom-panel-body">
                <ul class="custom-list">
@@ -140,14 +146,29 @@
                      <select name="new_{{collect.action}}_{{ forloop.counter }}" class="custom-select select2">
                         <option value="" selected>انتخاب وضعیت جدید</option>
                         {% for label in collect.valid_labels %}
-                           <option value="{{ label }}">{{ label }}</option>
+                           <option  
+                                 value="{{ label }}"
+                                 {% if item and item.value|include_splited_0:label %}
+                                    selected
+                                 {% endif %}   
+                           >
+                              {{ label }}
+                           </option>
                         {% endfor %}
                      </select>
                   </li>
                   {% empty %}
-                  <p class="text-center mt-5">تداخلی موجود نیست</p>
+                  <div>
+                     <div style="margin: 100px auto;padding: 10px ; font-size: 24px; border:1px dashed gray;border-radius: 10px;" class="text-center">تداخلی موجود نیست</div>
+                  </div>
                   {%  endfor %}
                </ul>
+            </div>
+               <div class="custom-panel-header bg-{{collect.color}} text-white d-flex justify-content-between align-items-center">
+                  <span></span>
+                  <button action="{{collect.action}}" type="submit" id="save-btn" class="btn btn-success btn-sm d-flex align-items-center gap-1 px-3">
+                     <i class="bi bi-check-circle-fill me-1"></i> تبدیل کردن
+                  </button>
             </div>
          </div>
          </form>
@@ -155,7 +176,6 @@
 
     {%endfor%}
   </div>
-</div>
 
 <script>
    $(document).ready(function(){

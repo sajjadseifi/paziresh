@@ -126,6 +126,39 @@
         background: #f1f3f5;
         border-radius: 4px;
     }
+/* کانتینر Radio */
+#id_khatam_status {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* دو ستون مساوی */
+    gap: 10px; /* فاصله بین گزینه‌ها */
+}
+
+/* هر گزینه */
+#id_khatam_status > div {
+    display: block;
+}
+
+/* استایل label */
+#id_khatam_status > div > label {
+    background-color: #efefef;
+    border-radius: 4px;
+    display: block;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* وقتی موس روی گزینه رفت */
+#id_khatam_status > div > label:hover {
+    background-color: #ddd;
+}
+
+/* استایل وقتی Radio انتخاب شد */
+#id_khatam_status input[type="radio"]:checked + label {
+    background-color: #4f46e5; /* رنگ بنفش */
+    color: white;
+    border: 1px solid #4f46e5;
+}
 
 </style>
 
@@ -156,7 +189,7 @@
                     <div class="panel-title">
                         <h3>فقط افراد جدید</h3>
                     </div>
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="post"  enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="new">
                         {{ form.as_p }}
@@ -170,6 +203,25 @@
                             <div>تکراری‌ها: {{ result_new.duplicate }}</div>
                         </div>
                     {% endif %}
+                </div>
+                <div class="panel-card">
+                    <div class="panel-title">
+                        <h3>بروز رسانی گروهی وضعیت طرح قرارگاه سازندگی خاتم</h3>
+                    </div>
+                    <form method="post" action="{% url 'excel_change_gharargah_sazandegi_khatam_true' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="new">
+                        <p>برای تغییر وضعیت سرباز به طرح قرارگاه سازندگی خاتم فهرست کد ملی این اشخاص را به صورت فایل ارسال کنید.</p>
+                        {{ khatam_form.as_p }}
+                        <div style="display: flex;gap: 4px;">
+                            <button style="flex: 1;" class="btn-action  info" type="submit">
+                                ارسال فهرست کد ملی
+                            </button>
+                            <a href="{% url 'excel_change_gharargah_sazandegi_khatam_true_sample' %}" class="btn-action success">
+                                دانلود فایل نمونه
+                            </a>
+                        </div>
+                    </form>
                 </div>
         </div>
         <!-- راهنما -->

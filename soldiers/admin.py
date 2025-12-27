@@ -4,9 +4,43 @@ from .models import Soldier
 
 @admin.register(Soldier)
 class SoldierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'family', 'National_Code', 'Gordan', 'battalion_group', 'Date_of_dispatch', 'has_been_accepted', 'IsCheckout')
-    search_fields = ('name', 'family', 'National_Code', 'phone_number', 'code_paziresh')
-    list_filter = ('Amriye', 'has_been_accepted', 'IsCheckout', 'Gordan', 'battalion_group', 'province_name', 'marital_status')
+    list_display = (
+        'acceptance_code',
+        'name', 
+        'family', 
+        'National_Code', 
+        'Gordan', 
+        'battalion_group', 
+        'Date_of_dispatch', 
+        'Grade',
+        'educational_level_of_the_system',
+        'physical_condition',
+        'has_been_accepted', 
+        'IsCheckout'
+    )
+    search_fields = (
+        'name', 
+        'family', 
+        'National_Code',
+        'phone_number', 
+        'code_paziresh'
+    )
+    list_filter = (
+        'has_been_accepted', 
+        'Amriye',
+        'IsCheckout', 
+        'marital_status',
+        'physical_condition',
+        'educational_level_of_the_system',
+        'Gordan', 
+        'battalion_group',
+        't_Gordan',
+        't_battalion_group',
+        'rank',
+        'unit_name',
+        'city_name', 
+        'province_name', 
+    )
     fieldsets = (
         ('اطلاعات فردی', {
             'fields': ('name', 'family', 'fathers_name', 'National_Code', 'Date_of_birth', 'place_of_birth',

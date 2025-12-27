@@ -12,7 +12,7 @@
         grid-template-columns: 1fr auto;
         grid-template-rows: auto auto;
         gap: 10px;
-        padding: 16px;
+        padding: 16px 20px;
         color: #fff;
         box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         background: linear-gradient(135deg,#667eea,#764ba2);
@@ -27,10 +27,12 @@
 
     .small-box .title {
         grid-area: title;
-        font-size: 26px;
+        font-size: 32px;
         font-weight: bold;
         align-self: start;
         justify-self: start;
+        margin: 0;
+        margin-top: 10px;
     }
 
     .small-box .icon {
@@ -38,6 +40,8 @@
         font-size: 90px;
         align-self: start;
         justify-self: end;
+        color: black;
+        opacity: 0.3;
     }
 
     .small-box .number {
@@ -139,6 +143,30 @@ margin-top: 0;
         color: #764ba2;
         font-size: 18px;
     }
+    .splitor-numbers-box {
+        font-size:13px;
+        line-height:1.5;
+        background:white;
+        color:#222;
+        padding:8px 12px;
+        border-radius:10px;
+        display:flex;
+        flex-direction:column;
+        gap:4px;
+        width: 300px;
+        box-sizing: border-box;
+    }
+    .small-box > .small-box {
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        margin-bottom: 0;
+
+    }
+    .small-box > .small-box:hover {
+        transform: none;
+        box-shadow: none;
+    }
 </style>
 
 
@@ -238,6 +266,8 @@ margin-top: 0;
                     <tr>
                         <th>نام گردان</th>
                         <th>نام گروهان</th>
+                        {% comment %} <th>تعداد (تطبیق شده)</th> {% endcomment %}
+                        {% comment %} <th>تعداد (پذیرش)</th> {% endcomment %}
                         <th>تعداد</th>
                         {% comment %} <th>ظرفیت خالی</th> {% endcomment %}
                     </tr>
@@ -248,7 +278,8 @@ margin-top: 0;
                             <tr style="text-align: right;">
                                 <td>{{ foo.gordan }}</td>
                                 <td>{{ foo.gorohan }}</td>
-                                <td>{{ foo.count }}</td>
+                                {% comment %} <td>{{ foo.t_count|default:'0' }}</td> {% endcomment %}
+                                <td>{{ foo.count|default:'0' }}</td>
                             </tr>
                         {% endfor %}
                     {% else %}
@@ -265,63 +296,80 @@ margin-top: 0;
                 </table>
             </div>
         </div>
+       
     </div>
     <div class="col-lg-6 col-md-12">
+
         {% with total=basij|add:komisyon|add:shoro_komisyon|add:previous|add:tajdiddoreh %}
-            <div class="small-box" style="background: linear-gradient(135deg, #ff7e5f, #feb47b); position:relative;">
-                <h1 class="title">خارج از دوره</h1>
-
-                <div class="icon" style="position:absolute; top:10px; right:10px; font-size:60px; opacity:0.15; color:#000;">
-                    <i class="ion ion-checkmark-circled"></i>
+            <div class="small-box" style="background: linear-gradient(135deg,#feb47b,#ff7e5f); position:relative; ">
+                <div class="small-box" style="background-color: transparent;">
+                    <h1 class="title">خارج از دوره</h1>
+                    <div class="icon" >
+                        <i class="ion ion-checkmark-circled"></i>
+                    </div>
+                    <h2 class="number" >{{ total }}</h2>
+                    {% if request.user.is_staff == True %}
+                        <div class="download">
+                            <form action="{% url 'download_kafiat' %}" method="get">
+                                <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
+                            </form>
+                        </div>
+                    {% endif %}
                 </div>
-
-                <h2 class="number" >{{ total }}</h2>
-                {% if request.user.is_staff == True %}
-                    <div class="download">
-                        <form action="{% url 'download_kafiat' %}" method="get">
-                            <button type="submit" class="download-btn">دانلود اکسل <i class="fa fa-download"></i></button>
-                        </form>
-                    </div>
-                {% endif %}
-                    <div
-                    style="
-                        font-size:13px;
-                        line-height:1.5;
-                        background:white;
-                        color:#222;
-                        padding:8px 12px;
-                        border-radius:10px;
-                        display:flex;
-                        flex-direction:column;
-                        gap:4px;
-                        width: 300px;
-                        margin:0 100px;
-                        box-sizing: border-box;
-                    "
-                    >
-                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                            <span>کفایت دار بسیج</span>
-                            <span style="font-weight:bold; color:#000;">{{ basij }}</span>
-                        </p>
-                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                            <span>کفایت دار خدمت قبلی</span>
-                            <span style="font-weight:bold; color:#000;">{{ previous }}</span>
-                        </p>
-                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                            <span>تجدید دوره</span>
-                            <span style="font-weight:bold; color:#000;">{{ tajdiddoreh }}</span>
-                        </p>
-                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                            <span>معرفی به کمیسیون</span>
-                            <span style="font-weight:bold; color:#000;">{{ komisyon }}</span>
-                        </p>
-                        <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                            <span>معرفی به کمیسیون شروع دوره</span>
-                            <span style="font-weight:bold; color:#000;">{{ shoro_komisyon }}</span>
-                        </p>
-                    </div>
+                <div class="splitor-numbers-box">
+                    <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>کفایت دار بسیج</span>
+                        <span style="font-weight:bold; color:#000;">{{ basij }}</span>
+                    </p>
+                    <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>کفایت دار خدمت قبلی</span>
+                        <span style="font-weight:bold; color:#000;">{{ previous }}</span>
+                    </p>
+                    <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>تجدید دوره</span>
+                        <span style="font-weight:bold; color:#000;">{{ tajdiddoreh }}</span>
+                    </p>
+                    <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>معرفی به کمیسیون</span>
+                        <span style="font-weight:bold; color:#000;">{{ komisyon }}</span>
+                    </p>
+                    <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>معرفی به کمیسیون شروع دوره</span>
+                        <span style="font-weight:bold; color:#000;">{{ shoro_komisyon }}</span>
+                    </p>
+                </div>
             </div>
         {% endwith %}    
+        <div class="small-box" style="background: linear-gradient(135deg,  #6a11cb,#4aa1ff);">
+            <div class="small-box">
+                <h1 class="title">قرارگاه سازندگی خاتم</h1>
+                <div class="icon" ><i class="fa fa-hand-grab-o"></i></div>
+                <h2 class="number">{{ garargah_sazandegi_khatam.present }}</h2>
+            </div>
+            <div class="splitor-numbers-box">
+                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                    <span>آمار کل</span>
+                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.all }}</span>
+                </p>
+                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                    <span>پذیرش شده</span>
+                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.paziresh }}</span>
+                </p>
+                 
+                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                    <span>تجدید دوره</span>
+                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.tajdiddoreh }}</span>
+                </p>
+                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                    <span>معرفی به کمیسیون</span>
+                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.komisyon }}</span>
+                </p>
+                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                    <span>معرفی به کمیسیون شروع دوره</span>
+                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.shoro_komisyon }}</span>
+                </p>  
+            </div>
+        </div>
     </div>
     <div class="col-md-8">
         <div style="background-color: white;border-radius: 10px;">

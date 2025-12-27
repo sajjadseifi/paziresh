@@ -680,7 +680,69 @@ class SarbazCodeMeli(forms.Form):
 class FormAddExelToDb(forms.Form):
     file = forms.FileField()
 
+import pandas as pd
+from soldiers.models import Soldier
+from django.db import transaction
 
+class FormKhatamChecked(forms.Form):
+    file = forms.FileField(label='انتخاب فایل اکسل')
+
+    KHATAM_CHOICES = [
+        ('khatam', 'وضعیت خاتم'),
+        ('non_khatam', 'وضعیت غیر خاتم'),
+        ('all', 'اکسل همه خاتم / و بقیه غیر خاتم'),
+    ]
+
+    khatam_status = forms.ChoiceField(
+        choices=KHATAM_CHOICES,
+        widget=forms.RadioSelect,
+        initial='khatam',  # گزینه پیش‌فرض
+        label='وضعیت خاتم'
+    )
+
+    def save(self):
+        """خواندن فایل اکسل و آپدیت وضعیت خاتم در Soldiers"""
+        file = self.cleaned_data['file']
+        status = self.cleaned_data['khatam_status']
+
+        try:
+            # خواندن اکسل با حفظ صفرهای ابتدایی
+            df = pd.read_excel(file, dtype=str)
+            clabel = df.columns[0]
+
+            # trim و حذف مقادیر خالی
+            national_codes = (
+                df[clabel]
+                .dropna()
+                .astype(str)
+                .str.strip()
+                .unique()
+                .tolist()
+            )
+
+            if status == 'all':
+                # همه رکوردها آپدیت شوند
+                soldiers_to_update = Soldier.objects.all()
+                for s in soldiers_to_update:
+                    s.garargah_sazandegi_khatam = s.National_Code in national_codes
+            else:
+                # فقط رکوردهای مشخص شده
+                new_value = True if status == 'khatam' else False
+                soldiers_to_update = Soldier.objects.filter(National_Code__in=national_codes)
+                for s in soldiers_to_update:
+                    s.garargah_sazandegi_khatam = new_value
+
+            with transaction.atomic():
+                Soldier.objects.bulk_update(
+                    soldiers_to_update,
+                    ['garargah_sazandegi_khatam']
+                )
+
+            return len(soldiers_to_update)  # می‌توان تعداد آپدیت‌ها را برگرداند
+
+        except Exception as e:
+            # می‌توان لاگ یا validation error ایجاد کرد
+            raise forms.ValidationError(f'خطا در پردازش اکسل: {e}')
 class FormSaterGroup(forms.Form):
     start = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "start"}),

@@ -30,6 +30,17 @@ class panel_home(LoginRequiredMixin, View):
         shoro_komisyon = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",soldire__the_medical_commission=True).all().count()
         komisyon = NormalLetterModels.objects.filter(subject="معرفی به کمیسیون",soldire__the_medical_commission=True).all().count()
         tajdiddoreh = CheckoutLetterModels.objects.filter(c_type="تجدید دوره").all().count()
+
+        gsforg =Soldier.objects.filter(garargah_sazandegi_khatam=True)
+        garargah_sazandegi_khatam = {
+            'all':gsforg.all().count(),
+            'paziresh':gsforg.filter(has_been_accepted=True).all().count(),
+            'present':gsforg.filter(has_been_accepted=True,in_coures=True).all().count(),
+            'shoro_komisyon' : NormalLetterModels.objects.filter(subject="معرفی به کمیسیون شروع دوره آموزشی",soldire__the_medical_commission=True,soldire__garargah_sazandegi_khatam=True).all().count(),
+            'komisyon' : NormalLetterModels.objects.filter(subject="معرفی به کمیسیون",soldire__the_medical_commission=True,soldire__garargah_sazandegi_khatam=True).all().count(),
+            'tajdiddoreh' : CheckoutLetterModels.objects.filter(c_type="تجدید دوره",soldire__garargah_sazandegi_khatam=True).all().count()
+        }
+        
         
         if en.tatbigh is False:
             list_btn = []
@@ -78,15 +89,18 @@ class panel_home(LoginRequiredMixin, View):
             'logs_today': logs_today,
             'amar_kol': amar_kol, 
             'amar_kole_hezer_bekhdmat': amar_kole_hezer_bekhdmat,
-              'amar_kole_paziresh_shode': amar_kole_paziresh_shode, 'tatbikh_nashode': tatbikh_nashode,
-              'total_tegan_khdmati_in_course': total_tegan_khdmati_in_course, 'list_btn': list_btn,
-              'name_list': name_list, 'total_list': total_list,'amar_shoro_dore':amar_shoro_dore,
-                 'basij':basij ,  # مثال
-                 'komisyon': komisyon,
-                 'shoro_komisyon':shoro_komisyon ,
-                 'previous':previous ,
-                 'tajdiddoreh':tajdiddoreh
-              }
+            'amar_kole_paziresh_shode': amar_kole_paziresh_shode, 'tatbikh_nashode': tatbikh_nashode,
+            'total_tegan_khdmati_in_course': total_tegan_khdmati_in_course, 'list_btn': list_btn,
+            'name_list': name_list, 
+            'total_list': total_list,
+            'amar_shoro_dore':amar_shoro_dore,
+            'basij':basij ,  # مثال
+            'komisyon': komisyon,
+            'shoro_komisyon':shoro_komisyon ,
+            'previous':previous ,
+            'tajdiddoreh':tajdiddoreh,
+            'garargah_sazandegi_khatam':garargah_sazandegi_khatam
+        }
         return render(request, 'ensani/panel_home_page.html', cx)
 
 @login_required

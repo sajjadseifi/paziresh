@@ -30,6 +30,18 @@ urlpatterns = [
          name='update_db_from_exel_paziresh_shode'),
     path('soldire/search/paziresh/', soldier_search, name='soldier_search_paziresh'),
     path('export_to_excel_bdone_madrak_tahsili', export_to_excel_bdone_madrak_tahsili, name='export_to_excel_bdone_madrak_tahsili'),
+    path(
+         'excel_change_gharargah_sazandegi_khatam_true', 
+          excel_change_gharargah_sazandegi_khatam_true, 
+          name='excel_change_gharargah_sazandegi_khatam_true'
+     ),
+    path(
+         'excel_change_gharargah_sazandegi_khatam_true_sample', 
+         excel_change_gharargah_sazandegi_khatam_true_sample, 
+         name='excel_change_gharargah_sazandegi_khatam_true_sample'
+     ),
+
+
 
 
 ]

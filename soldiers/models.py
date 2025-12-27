@@ -45,11 +45,16 @@ class Soldier(models.Model):
                                                       verbose_name='تجدید دوره')
     Renewal_of_the_previous_period_code = models.CharField(null=True, blank=True, max_length=150,
                                                            verbose_name='کد تجدید دوره')
-    Course_renewal_date = models.CharField(null=True, blank=True, max_length=100,
-                                           verbose_name='تاریخ تجدید دوره قبل')
+    Course_renewal_date = models.CharField(null=True, blank=True, max_length=100,verbose_name='تاریخ تجدید دوره قبل')
     willing_to_learn = models.BooleanField(default=False, verbose_name='حاضر به آموزش', null=True, blank=True)
+    # امریه | طرح خاتم | طرح سازندگی قرارگاه خاتم | عادی
+    organization_type = models.CharField(null=True, blank=True, max_length=100,verbose_name='نوع سرباز')
+    
+    
     Amriye = models.BooleanField(default=False, verbose_name='امریه دار', null=True, blank=True)
+    garargah_sazandegi_khatam = models.BooleanField(default=False, verbose_name='قرارگاه سازندگی خاتم', null=True, blank=True)
     Amriye_organization = models.CharField(max_length=250, verbose_name='سازمان امریه', null=True, blank=True)
+    
     Sufficiency_of_mobilization = models.BooleanField(default=False, verbose_name='کفایت بسیج', blank=True, null=True)
     the_medical_commission = models.BooleanField(default=False, verbose_name='کمیسیون پزشکی', blank=True, null=True)
     has_been_accepted = models.BooleanField(default=False, verbose_name='پذیرش شده است', blank=True, null=True)

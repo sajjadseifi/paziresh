@@ -272,9 +272,9 @@
    /* تیتر */
     #soldier-form h4 {
         font-weight: bold;
-        font-size: 16px;
-        border-bottom: 2px solid #4f46e5;
-        padding-bottom: 5px;
+        font-size: 20px;
+        border-bottom: 4px solid white;
+        padding-bottom: 15px;
         margin-bottom: 15px;
     }
 </style>
@@ -327,7 +327,12 @@
     <!-- بخش جدول -->
     <div class="tatbigh-right">
         <form 
-            {% if not permissions.dep.niru_ensani and not tatbigh %} style="display:none;"
+
+            {% if permissions.dep.niru_ensani  %} 
+            {% else %}
+                {% if not permissions.dep.gordan or tatbigh %}
+                    style="display:none;"
+                {% endif %}
             {% endif %}
             
             method="POST" id="soldier-match-form">
@@ -400,6 +405,7 @@
                                 {% if s.battalion_group %}{{ s.battalion_group.name }}{% else %}-{% endif %}
                             </td>
                             <td>{{ s.code_gorhan|default:"-" }}</td>
+                            
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -418,6 +424,8 @@
                             <th>کد سازمانی قبلی</th>
                             <th>گروهان تطبیق شده</th>
                             <th>کد سازمانی تطبیق شده</th>
+                            <th>عملیات</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -435,6 +443,18 @@
                                 {% if s.t_battalion_group %}{{ s.t_battalion_group.name }}{% else %}-{% endif %}
                             </td>
                             <td>{{ s.code_gorhan_nahai|default:"-" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'remove_soldier_from_tatbigh' s.pk %}">
+                                    {% csrf_token %}
+                                    <button
+                                        onclick="return confirm('آیا اطمینان دارید؟')"
+                                        class="btn btn-danger"
+                                    >
+                                        حذف از تطبیق
+                                    </button>
+                                </form>
+                            </td>
+
                         </tr>
                         {% endfor %}
                     </tbody>

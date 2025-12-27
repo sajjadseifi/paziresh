@@ -8,11 +8,9 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-
 from battalions.models import battalion, battalion_group
 from soldiers.models import Soldier as sarbaz
-from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate, \
-    FormSaterGroup, FormMoarefiGroup, FormUpdatePazireshHazer, FormUpdatePazireshshode
+from .forms import SarbazCodeMeli, FormSoldiers, FormSoldiersCreate, FormAddExelToDb, FormSoldiersUpdate,FormSaterGroup, FormMoarefiGroup, FormUpdatePazireshHazer, FormUpdatePazireshshode,FormKhatamChecked
 from saterapps.models import Sater
 from django.db.models import Q
 from ensaniapp_settings.models import EnsaniSettings
@@ -1287,15 +1285,28 @@ class MainViewSoldires(LoginRequiredMixin, View):
         return render(request, 'soldiers/MainViewSoldires.html', cx)
 
 from .models import Soldier
+def generate_grade_temp(educational_level_of_the_system):
+    temp = 0
+    for i in educational_level_of_the_system_list:
+        i1 = i[1].replace(" ", "").replace("\u200c", "")
+        nv =  educational_level_of_the_system.replace(" ", "").replace("\u200c", "")
+        if i1 == nv:
+            temp = i[0]
+            
+    return temp
+
 class exel_add_to_db(LoginRequiredMixin, View):
     def get(self, request):
         form = FormAddExelToDb()
-        cx = {'form': form}
+        khatam_form = FormKhatamChecked()
+        cx = {'form': form,'khatam_form':khatam_form}
         return render(request, 'soldiers/AddExelToDb.html', cx)
 
     def post(self, request):
         form = FormAddExelToDb(request.POST, request.FILES or None)
-        cx = {'form': form}
+        khatam_form = FormKhatamChecked()
+    
+        cx = {'form': form,'khatam_form':khatam_form}
         action = request.POST.get('action')
         if form.is_valid():
             exel = request.FILES['file']
@@ -1391,6 +1402,58 @@ class exel_add_to_db(LoginRequiredMixin, View):
                 if check_soldire is None:
                     soldire.save()
         return render(request, 'soldiers/AddExelToDb.html', cx)
+
+from django import forms
+from django.http import HttpResponse
+from openpyxl import Workbook
+import pandas as pd
+clabel = 'کدملی'
+def excel_change_gharargah_sazandegi_khatam_true_sample(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "نمونه"
+    # Header
+    ws.append([clabel])
+    # Sample data
+    data = [["1234567890"],["0987654321" ],["2150604736"],]
+    for row in data:
+        ws.append(row)
+    # Create response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = (
+        'attachment; filename="gharagah_sazandegi_khatam_sample.xlsx"'
+    )
+    # راست‌چین کردن کل شیت
+    ws.sheet_view.rightToLeft = True
+    wb.save(response)
+    return response
+
+from django.contrib import messages
+from django.shortcuts import redirect
+from .forms import FormKhatamChecked
+from django import forms
+
+def excel_change_gharargah_sazandegi_khatam_true(request):
+    if request.method == 'POST':
+        form = FormKhatamChecked(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                updated_count = form.save()
+                messages.success(
+                    request,
+                    f'{updated_count} رکورد با موفقیت به‌روز شد.'
+                )
+            except forms.ValidationError as e:
+                messages.error(request, f'خطا در پردازش اکسل: {e}')
+        else:
+            messages.error(request, 'فرم نامعتبر است. لطفاً فایل و گزینه‌ها را بررسی کنید.')
+
+    return redirect('exel')
+
+
+
 
 class exel_update_number(LoginRequiredMixin, View):
     def get(self, request):

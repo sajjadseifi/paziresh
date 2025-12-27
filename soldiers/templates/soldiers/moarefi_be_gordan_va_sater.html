@@ -135,12 +135,12 @@
                     <i class="fa fa-credit-card"></i> <span>پذیرش دستی</span> 
                 </a>
                 <div style="flex: 1;"></div>
-                <a href="{% url 'sater' pk=sarbaz.pk %}" target="_blank" class="btn btn-default">
-                    <i class="fa fa-print"></i> <span>چاپ برگه ساتر</span>
-                </a>
-                <a href="{% url 'moarefibegordan' pk=sarbaz.pk %}" target="_blank" class="btn btn-default">
-                    <i class="fa fa-print"></i> <span>چاپ معرفی به گردان</span>
-                </a>
+                <div class="btn-group">
+                    <a href="{% url 'updatePaziresh' pk=sarbaz.National_Code %}" class="btn btn-default">ویرایش</a>
+                    <a href="{% url 'sater' pk=sarbaz.pk %}" class="btn btn-default">چاپ ساتر</a>
+                    <a href="{% url 'moarefibegordan' pk=sarbaz.pk %}"class="btn btn-default">معرفی گردان</a>
+                    <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{sarbaz.National_Code}}" class="btn btn-default">مشاهده</a>
+                </div>
         </div>
     </section>
 

@@ -11,8 +11,7 @@
                             <div class="row">
                                 <div class="form-group">
                                     <label for="acceptance_code">عدد پذیرش</label>
-                                    <input type="text" class="form-control" id="acceptance_code" name="acceptance_code"
-                                           placeholder="عدد پذیرش">
+                                    <input type="text" class="form-control" id="acceptance_code" name="acceptance_code" placeholder="عدد پذیرش">
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -51,9 +50,10 @@
                             <tr>
                                 <th>کد داخلی</th>
                                 <th>کد پذیرش</th>
+                                <th>کدملی</th>
                                 <th>نام</th>
                                 <th>نام خانوادگی</th>
-                                <th>کدملی</th>
+                                <th>تحصیلات</th>
                                 <th>گردان</th>
                                 <th>گروهان</th>
                                 <th>وضعیت پذیرش</th>
@@ -64,9 +64,15 @@
                                 <tr>
                                     <td>{{ sodire.pk }}</td>
                                     <td>{{ sodire.acceptance_code }}</td>
+                                    <td>{{ sodire.National_Code }}</td>
                                     <td>{{ sodire.name }}</td>
                                     <td>{{ sodire.family }}</td>
-                                    <td>{{ sodire.National_Code }}</td>
+
+                                    <td>
+                                        <strong>سامانه : </strong> {{ sodire.educational_level_of_the_system }}
+                                        <br/>
+                                        <strong>پایه تحصیلی : </strong> {{ sodire.Grade }}
+                                    </td>
                                     {% if sodire.Gordan %}
                                         <th>{{ sodire.Gordan.name }}</th>
                                     {% else %}
@@ -100,9 +106,10 @@
                                             <a href="{% url 'moarefibegordan' pk=sodire.pk %}"
                                                class="btn btn-default">معرفی
                                                 گردان</a>
-                                            <a href="{% url 'soldire_details' code=sodire.National_Code %}"
-                                               class="btn btn-default">مشاهده</a>
-                                            {#                                            <a href="{% url 'SoldireProfile' %}"#}
+                                            {% comment %} <a href="{% url 'soldire_details' code=sodire.National_Code %}"class="btn btn-default">مشاهده</a> {% endcomment %}
+                                            <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{sodire.National_Code}}" class="btn btn-default">مشاهده</a>
+
+                                               {#                                            <a href="{% url 'SoldireProfile' %}"#}
                                             {#                                               class="btn btn-default">پذیرش</a>#}
                                         </div>
 

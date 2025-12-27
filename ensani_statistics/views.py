@@ -2736,7 +2736,7 @@ def bmi_chart_view(request):
 
 
 
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from ensani_soldires_management.constatns import *
 from django.db.models import Count, F
 from soldiers.constants import *
@@ -2777,6 +2777,10 @@ def interferences_index(request):
     return render(request, 'interferences/interferences_index.html',{'counts':counts})
 
 
+from soldiers.views import map_educational_level_to_grade,generate_grade_temp,educational_level_of_the_system_list,categorize_educational_level
+
+
+
 def interferences_replaceor(request,collections):
     if request.method == "POST":
         data = request.POST
@@ -2806,8 +2810,17 @@ def interferences_replaceor(request,collections):
             for change in valid_changes:
                 old_val = change["old"]
                 new_val = change["new"]
+                update_data = {f"{db_key}":new_val}
                 affected = Soldier.objects.filter(**{f"{db_key}":old_val})
-                count = affected.update(**{f"{db_key}":new_val})
+
+                if  db_key == 'educational_level_of_the_system':
+                    temp = generate_grade_temp(new_val)
+                    Grade = categorize_educational_level(temp)[1]
+                    Grade_precise =  map_educational_level_to_grade(temp)[1]
+                    update_data["Grade_precise"] = Grade_precise
+                    update_data["Grade"] = Grade
+
+                count = affected.update(**update_data)
                 updated_count += count
 
             messages.success(request, f"✅ تغییرات {title} با موفقیت ذخیره شد ({updated_count} مورد ویرایش شد).")
@@ -2833,7 +2846,6 @@ def interferences_replaceor(request,collections):
             .annotate(counts=Count('id'))
             .order_by('-counts')
         )
-        print(item.get('remove_values'))
         if item.get('remove_values'):
             unknown_values = unknown_values.exclude(value__in=item['remove_values'])
 
@@ -2843,8 +2855,156 @@ def interferences_replaceor(request,collections):
         item['known_values_counts'] =  sum([x['counts'] for x in list(known_values)])
         item['unknown_values_counts'] = sum([x['counts'] for x in list(unknown_values)])
     return collections
+
+from django.db import transaction
+def interferences_enduction_info_group(request):
+    soldiers = list(Soldier.objects.all())
+
+    for s in soldiers:
+        temp = generate_grade_temp(s.educational_level_of_the_system)
+        s.Grade = categorize_educational_level(temp)[1]
+        s.Grade_precise = map_educational_level_to_grade(temp)[1]
+
+    with transaction.atomic():
+        Soldier.objects.bulk_update(soldiers,['Grade', 'Grade_precise'])
+    return redirect('interferences_enduction_info')
+
+from django.db import transaction
+def interferences_enduction_system_level_from_Grade(request):
+    kwargs = {}
+    no_specific = request.POST.get('no_specific')
+    if no_specific:
+       kwargs['educational_level_of_the_system'] = 'نامشخص'
+       
+    soldiers = list(Soldier.objects.filter(**kwargs))
+
+    for s in soldiers:
+        s.educational_level_of_the_system =s.Grade
+
+    with transaction.atomic():
+        Soldier.objects.bulk_update(soldiers,['educational_level_of_the_system'])
+    return redirect('interferences_enduction_info')
+
+from django.http import HttpResponse
+from openpyxl import Workbook
+import pandas as pd
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+clabel = 'کدملی'
+edlabel = 'وضعیت پایه تحصیلی سامانه معتبر'
+def interferences_enduction_system_level_update_sample(request):
+    """
+    Excel format:
+    Column A: national_code
+    Column B: educational_level
+    """
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "نمونه"
+
+    # Header
+    ws.append([clabel, edlabel])
+
+    # Sample data
+    data = [
+        ["1234567890", "دکتری پزشکی پیوسته(دیپلم به دکتری)"],
+        ["0987654321", "فوق دیپلم پزشکی"],
+        ["2150604736", "لیسانس غیر پزشکی پیوسته - کامپیوتر"],
+    ]
+
+    for row in data:
+        ws.append(row)
+
+    # Create response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = (
+        'attachment; filename="educational_level_sample.xlsx"'
+    )
+    # راست‌چین کردن کل شیت
+    ws.sheet_view.rightToLeft = True
+    wb.save(response)
+    return response
+
+import re
+
+DASH_REGEX = r'[‐-‒–—−-]'
+
+def normalize_educational_level(value: str, normalization=True) -> str:
+    if not value:
+        return ""
+
+    value = str(value)
+
+    # 1️⃣ حروف عربی → فارسی
+    value = (
+        value.replace('ي', 'ی')
+             .replace('ك', 'ک')
+             .replace('ؤ', 'و')
+             .replace('أ', 'ا')
+             .replace('إ', 'ا')
+    )
+
+
+    if normalization:
+        # 2️⃣ حذف کاراکترهای مخفی
+        value = re.sub(r'[\u200c\u200f\u202a-\u202e]', '', value)
+
+        # 3️⃣ یکسان‌سازی فاصله‌ها
+        value = re.sub(r'\s+', ' ', value)
+        # 4️⃣ حذف هر چیزی بعد از اولین dash (هر نوع dash)
+        value = re.split(DASH_REGEX, value, maxsplit=1)[0]
+
+    # 5️⃣ تمیزکاری نهایی
+    return value.strip()
+
+def interferences_enduction_system_level_update(request):
+    excel_file = request.FILES.get("enduction_system_level_file")
+    normalization = request.POST.get('normalization',False)
+    print(excel_file)
+    print(normalization)
+    
+    if not excel_file:
+        return redirect('interferences_enduction_info')
+        
+    df = pd.read_excel(excel_file,dtype={clabel: str})
+    # فرض: ستون‌ها دقیقاً این نام‌ها را دارند
+    df.columns = [clabel, edlabel]
+    updated = 0
+    not_found = []
+    soldiers = []
+    for _, row in df.iterrows():
+        national_code = str(row[clabel]).strip()
+        educational_level = normalize_educational_level(row[edlabel],normalization)
+
+        try:
+            print(national_code,educational_level)
+            soldier = Soldier.objects.filter(National_Code=national_code).first()
+
+            if soldier:
+                soldier.educational_level_of_the_system = educational_level
+                soldiers.append(soldier)
+                updated += 1
+            else:
+                not_found.append(national_code)
+
+        except Exception as e:
+            print(e)
+    try:
+        with transaction.atomic():
+            Soldier.objects.bulk_update(soldiers,['educational_level_of_the_system'])
+    except Exception as e:
+        print(e)
+        
+    print("not_found",not_found)
+    return redirect('interferences_enduction_info')
+
+
 # 🟨 بخش پایه تحصیلی
 def interferences_enduction_info(request):
+    
     """
     نمایش تداخل‌های مربوط به پایه تحصیلی سربازان
     """
@@ -2866,6 +3026,23 @@ def interferences_enduction_info(request):
             'key_in_soldier':'educational_level_of_the_system',
             'color':'primary',
             'remove_values':['نامشخص'],
+            'colmd':6,
+        },
+
+        {
+            'title':'پایه تحصیلی',
+            'small_titlle':'پایه',
+            'name':'Grade',
+            'action':'Grade',
+            'list':nrm_Grade_list,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'known_values':[],
+            'key_in_soldier':'Grade',
+            'color':'success',
+            'remove_values':['نامشخص'],
+            'colmd':3,
         },
         {
             'title':'پایه تحصیلی دقیق',
@@ -2881,22 +3058,7 @@ def interferences_enduction_info(request):
             'key_in_soldier':'Grade_precise',
             'color':'danger',
             'remove_values':['نامشخص'],
-            
-        },
-        {
-            'title':'پایه تحصیلی',
-            'small_titlle':'پایه',
-            'name':'Grade',
-            'action':'Grade',
-            'list':nrm_Grade_list,
-            'valid_labels':[],
-            'known_values':[],
-            'unknown_values':[],
-            'known_values':[],
-            'key_in_soldier':'Grade',
-            'color':'success',
-            'remove_values':['نامشخص'],
-            
+            'colmd':3,
         },
     ]
  

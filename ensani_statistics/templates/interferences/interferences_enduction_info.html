@@ -1,5 +1,144 @@
 {% extends 'interferences/_layout_interferences.html' %}
 {% block interferences_content %}
-<h4 class="">در این بخش تداخل‌های وضعیت اطلاعات تحصیلی بررسی می‌شود.</h4>
+<style>
+/* ===============================
+   ROYAL BLUE THEME
+================================ */
+:root {
+    --royal-blue: #1E3A8A;
+    --royal-blue-light: #3B82F6;
+    --royal-bg: #1e3a8a10;
+}
+
+/* ===== Period Box ===== */
+.box-period {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--royal-bg), #ffffff);
+    border: 1px solid #1e3b8a1f;
+    margin: 10px 0;
+}
+.period-preview {
+    flex: 1;
+}
+.period-preview h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--royal-blue);
+}
+
+.period-preview p {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #27374eff;
+    padding: 0 20px;
+}
+
+/* ===== Button ===== */
+#button {
+    padding: 16px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: bold;
+    background: linear-gradient(135deg, var(--royal-blue), var(--royal-blue-light));
+    box-shadow: 0 6px 16px #1e3a8a40;
+    transition: all .25s ease;
+    line-height: 16px;
+}
+
+#button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px #1e3a8a55;
+}
+.check-group {
+    padding: 12px 12px;
+    border-radius: 6px;
+    background-color: darkgreen;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;   
+    font-size: 16px;
+    line-height: 16px;
+    margin-bottom: 10px;
+}
+</style>
+
+<form method="POST" action="{% url 'interferences_enduction_info_group' %}"  class="box-period">
+    {% csrf_token %}
+    <div class="period-preview">
+        <h2>تبدیل گروهی وضعیت پایه تحصیلی سامانه جامع</h2>
+        <p>در این بخش میتوانید تداخل های آماری خود را درصورت اشتباه ورودی اطلاعات برطرف کنید.</p>
+        <p>درصورتی که تداخلی موجود نیست و فیلد نامشخص در بخش وضعیت پایه تحصیلی دارید بر روی گزینه "تبدیل گروهی وضعیت پایه تحصیلی سامانه" کلیک کنید تا تمامی پایه ها مجددا محاسبه شوند</p>
+    </div>
+    <div class="period-actions">
+        <button id="button">اجرای عملیات ✨</button>
+    </div>
+</form>
+<form method="POST" enctype="multipart/form-data" action="{% url 'interferences_enduction_system_level_from_Grade' %}"  class="box-period">
+    {% csrf_token %}
+    <div class="period-preview">
+        <h2>بازگردانی وضعیت سامانه جامع از وضعیت پایه تحصیلی معتبر</h2>
+        <p>در این بخش میتوانید تداخل های آماری خود را درصورت اشتباه ورودی اطلاعات برطرف کنید.</p>
+        <p>درصورتی که تداخلی موجود نیست و فیلد نامشخص در بخش وضعیت پایه تحصیلی دارید بر روی گزینه "تبدیل گروهی وضعیت پایه تحصیلی سامانه" کلیک کنید تا تمامی پایه ها مجددا محاسبه شوند</p>
+    </div>
+    <div class="period-actions">
+        <label class="check-group" for="no_specific" >
+            <span>فقط نامشخص ها</span>
+            <input type="checkbox" name="no_specific" id="no_specific" checked  />
+        </label>
+        <button id="button">اجرای عملیات ✨</button>
+    </div>
+</form>
+
+<form method="POST" enctype="multipart/form-data" action="{% url 'interferences_enduction_system_level_update' %}"  class="box-period">
+    {% csrf_token %}
+    <div class="period-preview">
+        <h2>فرم تداخلات آماری</h2>
+        <p>درصورتی که تداخلی موجود نیست و فیلد نامشخص در بخش وضعیت پایه تحصیلی دارید بر روی گزینه "تبدیل گروهی وضعیت پایه تحصیلی سامانه" کلیک کنید تا تمامی پایه ها مجددا محاسبه شوند</p>
+    </div>
+    <div class="period-actions">
+        <div style="display: flex;align-items: center;margin-bottom: 10px;" >
+            <input 
+                    id="enduction_system_level_file"
+                    name="enduction_system_level_file" accept=".xls,.xlsx,.csv" type="file" 
+                    required 
+                />
+            <a 
+                href="{% url 'interferences_enduction_system_level_update_sample' %}"
+                style="padding: 4px 10px;background-color: coral; color: white;border-radius: 4px;" 
+            >
+                نمونه فایل اپلود
+            </a>
+        </div>
+        <label class="check-group" for="normalization" style="display: flex;align-items: center;justify-content: space-between;">
+            <span>نرمال سازی هوشمند</span>
+            <input type="checkbox" name="normalization" id="normalization"  />
+        </label>
+        <button id="button">بارگذاری اطلاعات پایه تحصیلی سامانه جامع ✨</button>
+    </div>
+</form>
+
+
 {% include 'components/interferences_replacsor.html' with collections=collections %}
+
+<script>
+    document.getElementById("button").addEventListener("click", function (e) {
+        const confirmed = confirm(
+            "آیا مطمئن هستید؟\n" +
+            "این عملیات به‌صورت گروهی انجام می‌شود و قابل بازگشت نیست."
+        );
+
+        if (!confirmed) {
+            e.preventDefault();
+        }
+    });
+</script>
 {% endblock %}

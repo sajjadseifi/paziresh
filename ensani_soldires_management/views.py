@@ -2508,15 +2508,14 @@ def soldiers_tatbigh_page(request):
         new_org_code = request.POST.get('new_org_code')
         gordan_id = request.POST.get('gordan_id')
         grohan_id = request.POST.get('grohan_id')
-        print(
-            soldier_id,
-            new_org_code,
-            gordan_id,
-            grohan_id,
-        )
+
         if soldier_id and new_org_code:
             try:
                 soldier = Soldier.objects.get(id=soldier_id)
+                if not soldier.has_been_accepted:
+                    messages.error(request, f"سرباز پذیرش نشده! شما مجاز به جابه جایی سرباز نیستید")
+                    return redirect(request.path + f"?battalion={selected_battalion}&group={selected_group}")
+                    
                 # گرفتن اشیاء مرتبط
                 t_gordan = battalion.objects.get(id=gordan_id)
                 t_gorohan = battalion_group.objects.get(id=grohan_id)
@@ -2533,7 +2532,7 @@ def soldiers_tatbigh_page(request):
         else:
             messages.error(request, "اطلاعات ناقص است.")
 
-    soldiers = Soldier.objects.all()
+    soldiers = Soldier.objects.filter()
     soldiers_in_battalion_group = (
         soldiers.annotate(
             code_gorhan_int=Cast('code_gorhan', IntegerField())
@@ -2564,6 +2563,27 @@ def soldiers_tatbigh_page(request):
     }
     return render(request, 'courses/soldiers_tatbigh_page.html', context)
 
+
+from django.shortcuts import redirect
+from django.contrib import messages
+
+def remove_soldier_from_tatbigh(request, pk):
+    if request.method == "POST":
+        try:
+            soldier = Soldier.objects.get(id=pk)
+            soldier.t_Gordan = None
+            soldier.t_battalion_group = None
+            soldier.code_gorhan_nahai = None
+            soldier.save()
+
+            messages.success(request, "سرباز با موفقیت از تطبیق حذف شد.")
+        except Soldier.DoesNotExist:
+            messages.error(request, "سرباز مورد نظر پیدا نشد.")
+        except Exception:
+            messages.error(request, "خطایی در حذف تطبیق سرباز رخ داد.")
+
+    # بازگشت دقیقاً به همان URL قبلی
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 from soldiers.constants import physical_condition_list ,Type_of_disease_list
 
