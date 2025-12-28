@@ -167,6 +167,12 @@ margin-top: 0;
         transform: none;
         box-shadow: none;
     }
+    .total-row {
+        background-color: #ffca3455;
+    }
+    .danger {
+        background-color: #db75ff17;
+    }
 </style>
 
 
@@ -261,25 +267,25 @@ margin-top: 0;
     <div class="col-lg-6 col-xs-12">
         <div class="card">
             <div class="card-body">
-                <table class="styled-table">
+                <table class="styled-table text-center">
                     <thead>
                     <tr>
                         <th>نام گردان</th>
                         <th>نام گروهان</th>
-                        {% comment %} <th>تعداد (تطبیق شده)</th> {% endcomment %}
-                        {% comment %} <th>تعداد (پذیرش)</th> {% endcomment %}
-                        <th>تعداد</th>
-                        {% comment %} <th>ظرفیت خالی</th> {% endcomment %}
+                        <th>پذیرش</th>
+                        <th>سازماندهی</th>
+                        <th>سازماندهی نشده</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% if list_btn  %}
                         {% for foo in list_btn %}
-                            <tr style="text-align: right;">
+                            <tr class="{{foo.class}}" style="text-align: right;">
                                 <td>{{ foo.gordan }}</td>
                                 <td>{{ foo.gorohan }}</td>
-                                {% comment %} <td>{{ foo.t_count|default:'0' }}</td> {% endcomment %}
                                 <td>{{ foo.count|default:'0' }}</td>
+                                <td>{{ foo.t_count|default:'0' }}</td>
+                                <td class="danger">{{ foo.tn_count|default:'0' }}</td>
                             </tr>
                         {% endfor %}
                     {% else %}
@@ -342,32 +348,29 @@ margin-top: 0;
         {% endwith %}    
         <div class="small-box" style="background: linear-gradient(135deg,  #6a11cb,#4aa1ff);">
             <div class="small-box">
-                <h1 class="title">قرارگاه سازندگی خاتم</h1>
+                <h1 class="title">وضعیت ارگان ها</h1>
                 <div class="icon" ><i class="fa fa-hand-grab-o"></i></div>
-                <h2 class="number">{{ garargah_sazandegi_khatam.present }}</h2>
+                <h2 class="number"></h2>
             </div>
             <div class="splitor-numbers-box">
                 <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>آمار کل</span>
-                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.all }}</span>
+                    <span>عادی</span>
+                    <span style="font-weight:bold; color:#000;">{{ organs.normal }}</span>
                 </p>
                 <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>پذیرش شده</span>
-                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.paziresh }}</span>
+                    <span>امریه دار</span>
+                    <span style="font-weight:bold; color:#000;">{{ organs.amriye }}</span>
                 </p>
-                 
+
                 <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>تجدید دوره</span>
-                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.tajdiddoreh }}</span>
-                </p>
-                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>معرفی به کمیسیون</span>
-                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.komisyon }}</span>
+                    <span>طرح خاتم</span>
+                    <span style="font-weight:bold; color:#000;">{{ organs.khatam }}</span>
                 </p>
                 <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>معرفی به کمیسیون شروع دوره</span>
-                    <span style="font-weight:bold; color:#000;">{{ garargah_sazandegi_khatam.shoro_komisyon }}</span>
-                </p>  
+                    <span>قرارگاه سازندگی خاتم</span>
+                    <span style="font-weight:bold; color:#000;">{{ organs.garargah_sazandegi_khatam }}</span>
+                </p>
+
             </div>
         </div>
     </div>

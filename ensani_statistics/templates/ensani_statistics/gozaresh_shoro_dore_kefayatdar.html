@@ -1,0 +1,230 @@
+{% extends 'shared/_PanelMain.html' %}
+{% load static %}
+
+
+{% block header %}
+    <style>
+
+        body *  {
+            font-family: 'Vazir';
+        }
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        /* ================= Status Cards ================= */
+        .tab-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tab-status li {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        }
+
+        .tab-status li strong:first-child {
+            font-size: 20px;
+            color: #64748b;
+        }
+
+        .tab-status li strong:last-child {
+            display: block;
+            margin-top: 6px;
+            font-size: 20px;
+            color: #020617;
+        }
+
+        /* ================= Actions ================= */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .a-link {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 6px 14px rgba(37,99,235,.25);
+        }
+
+        .a-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(37,99,235,.35);
+        }
+
+        /* ================= Table Wrapper ================= */
+        .report-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 10px;
+            background-color: white;
+            box-sizing: border-box;
+        }
+
+        /* ================= Table ================= */
+        table {
+            width: 100%;
+            border-spacing: 0;
+            font-size: 13.5px;
+            overflow: hidden;
+
+        }
+
+        thead th {
+            background: #f1f5f9;
+            padding: 14px 4px;
+            font-weight: 700;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding:6px 4px ;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:hover {
+            background: #eef2ff;
+        }
+
+        tbody td:nth-child(1) {
+            font-weight: 700;
+            color: #334155;
+        }
+
+    
+
+        tbody td:nth-child(6) {
+            font-weight: 700;
+            color: #065f46;
+        }
+
+        /* ================= Print ================= */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .actions,
+            .tab-status {
+                display: none !important;
+            }
+
+            .report-table-wrapper {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            thead th {
+                background: #e5e7eb !important;
+                color: #000;
+            }
+        }
+    </style>
+{% endblock %}
+
+
+
+{% block main %}
+
+    <h1 style="margin-top:0;display: flex;align-items: center;justify-content: space-between;">
+        <span style="flex: 1;text-align: center;">گزارش کفایت دار بسیج و خدمت قبلی</span>
+        <a class="a-link" href="?action=excel_report">گزارش اکسل</a>
+    </h1>
+
+    <ul class="tab-status">
+        <li>
+            <strong>کل کفایت دار</strong>
+            <strong>{{ soldiers|length }} نفر</strong>
+        </li>
+        <li>
+            <strong>بسیج</strong>
+            <strong>{{ Sufficiency_of_mobilizations|length }} نفر</strong>
+        </li>
+        <li>
+            <strong>خدمت قبلی</strong>
+            <strong>{{ Previous_service_record|length }} نفر</strong>
+        </li>
+    </ul>
+
+    {% comment %} <ul class="actions">
+        <li>
+            <a href="?action=excel">خروجی اکسل</a>
+        </li>
+        <li>
+            <a href="javascript:window.print()">چاپ گزارش</a>
+        </li>
+    </ul> {% endcomment %}
+
+    <div class="report-table-wrapper">
+        <table >
+            <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
+                    <th>نام پدر</th>
+                    <th>کد ملی</th>
+                    <th>امریه دارد (*)</th>
+                    <th>سازمان امریه</th>
+                    <th>وضعیت جسمانی</th>
+                    <th>نوع بیماری</th>
+                    <th>مقطع تحصیلی</th>
+                    <th>مدرک 2</th>
+                    <th>یگان خدمتی</th>
+                    <th>کفایت</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in soldiers %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td style="font-weight: bold;">{{ s.name|default:"" }}</td>
+                    <td style="font-weight: bold;">{{ s.family|default:"" }}</td>
+                    <td style="font-weight: bold;">{{ s.fathers_name|default:"" }}</td>
+                    <td style="font-weight: bold;">{{ s.National_Code }}</td>
+                    <td>{{ s.Amriye|yesno:'*,' }}</td>
+                    <td>{{ s.Amriye_organization }}</td>
+                    <td>{{ s.physical_condition|default:"" }}</td>
+                    <td>{{ s.Type_of_disease|default:"" }}</td>
+                    <td>{{ s.Grade|default:"" }}</td>
+                    <td>{{ s.Study_group|default:"" }}</td>
+                    <td>{{ s.unit_name|default:"" }}</td>
+                    <td>
+                        {{s.Previous_service_record|yesno:"خدمت قبلی,"}}
+                        {{s.Sufficiency_of_mobilization|yesno:"بسیج,"}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

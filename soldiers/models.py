@@ -6,6 +6,8 @@ from django_jalali.db import models as jmodels
 from django.utils import timezone
 
 class Soldier(models.Model):
+
+
     name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام')
     family = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام خانوادگی')
     fathers_name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام پدر')

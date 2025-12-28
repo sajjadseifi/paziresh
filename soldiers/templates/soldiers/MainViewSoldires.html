@@ -1,6 +1,18 @@
 {% extends 'shared/_PanelMain.html' %}
 
 {% block main %}
+    <style>
+        .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+            padding:4px 2px;
+            
+        }
+        
+        .btn-group .btn {
+            font-size: 12px;
+            padding:4px 6px;
+
+        }
+    </style>
     <section class="content">
         <div class="row">
             <div class="col-xs-12">
@@ -48,31 +60,27 @@
                         <table class="table table-hover">
                             <tbody>
                             <tr>
-                                <th>کد داخلی</th>
-                                <th>کد پذیرش</th>
-                                <th>کدملی</th>
+                                <th class="text-center">کد داخلی</th>
+                                <th class="text-center">کد پذیرش</th>
+                                <th class="text-center">کدملی</th>
                                 <th>نام</th>
                                 <th>نام خانوادگی</th>
+                                <th >گردان</th>
+                                <th class="text-center">گروهان</th>
                                 <th>تحصیلات</th>
-                                <th>گردان</th>
-                                <th>گروهان</th>
+                                <th>مقطع سامانه</th>
                                 <th>وضعیت پذیرش</th>
                                 <th>عملیات</th>
                             </tr>
                             {% for sodire in results %}
 
                                 <tr>
-                                    <td>{{ sodire.pk }}</td>
-                                    <td>{{ sodire.acceptance_code }}</td>
-                                    <td>{{ sodire.National_Code }}</td>
+                                    <td class="text-center">{{ sodire.pk }}</td>
+                                    <td class="text-center">{{ sodire.acceptance_code }}</td>
+                                    <td class="text-center">{{ sodire.National_Code }}</td>
                                     <td>{{ sodire.name }}</td>
                                     <td>{{ sodire.family }}</td>
-
-                                    <td>
-                                        <strong>سامانه : </strong> {{ sodire.educational_level_of_the_system }}
-                                        <br/>
-                                        <strong>پایه تحصیلی : </strong> {{ sodire.Grade }}
-                                    </td>
+                              
                                     {% if sodire.Gordan %}
                                         <th>{{ sodire.Gordan.name }}</th>
                                     {% else %}
@@ -83,11 +91,15 @@
                                     {% else %}
                                         <th></th>
                                     {% endif %}
+                                    <td>{{ sodire.Grade }}</td>
+                                    <td>{{ sodire.educational_level_of_the_system }}</td>
+                                    
                                     {% if sodire.has_been_accepted %}
-                                        <td><span class="label label-success">شده</span></td>
+                                        <td class="text-center"><span class="label label-success">شده</span></td>
                                     {% else %}
-                                        <td><span class="label label-danger">نشده</span></td>
+                                        <td class="text-center"><span class="label label-danger">نشده</span></td>
                                     {% endif %}
+                                    
                                     <td>
                                         <div class="btn-group">
                                             {% if sodire.has_been_accepted %}

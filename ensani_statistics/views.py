@@ -3326,3 +3326,150 @@ def interferences_yegan_tatbigh(request):
     }
 
     return render(request, 'interferences/interferences_yegan_tatbigh.html', context)
+
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.db.models import Q
+import openpyxl
+from openpyxl.utils import get_column_letter
+from ensaniapp_settings.models import EnsaniSettings
+
+def gozaresh_shoro_dore_amriye(request):
+    en = EnsaniSettings.objects.first()
+    soldiers = Soldier.objects.filter(Amriye=True).order_by('acceptance_code')
+    soldiers_f = []
+    for s in soldiers:
+        soldiers_f.append({
+            "ردیف": "-",  # بعداً در template با forloop.counter جایگزین می‌شود
+            "کد ملی": s.National_Code or "-",
+            "نام": s.name or "-",
+            "نام خانوادگی": s.family or "-",
+            "نام پدر": s.fathers_name or "-",
+            "عدد پذیرش": s.acceptance_code or "-",
+            "گردان": str(s.t_Gordan) if  en.tatbigh else str(s.Gordan) or "-",
+            "گروهان": str(s.t_battalion_group) if en.tatbigh else str(s.battalion_group) or "-",
+            "امریه دار (*)": "*" if s.Amriye else "",
+            "وضعیت جسمانی": s.physical_condition or "",
+            "نوع بیماری": s.Type_of_disease or "",
+            "مقطع تحصیلی": s.Grade or "",
+            "مقطع تحصیلی دقیق": s.Grade_precise or "",
+            "مقطع تحصیلی سامانه": s.educational_level_of_the_system or "",
+            "گروه تحصیلی": s.Study_group or "",
+            "تاهل": s.marital_status or "",
+            "مذهب": s.Religion or "",
+            "تاریخ تولد": s.Date_of_birth or "",
+            "محل تولد": s.place_of_birth or "",
+            "شماره موبایل": s.phone_number or "",
+            "شماره منزل": s.home_phone_number or "",
+            "تاریخ اعزام": s.Date_of_dispatch or "",
+            "نام استان": s.province_name or "",
+            "نام شهر": s.city_name or "",
+            "آدرس": s.Address or "",
+            "محل صدور": s.Place_of_Issue or "",
+            "قد": s.height or "",
+            "وزن": s.Weight or "",
+        })
+
+    if request.GET.get('action') == 'excel_report':
+        # ساخت Workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = f"گزارش امریه دوره {en.shomare_dore}"
+        ws.sheet_view.rightToLeft = True
+
+        # هدر
+        headers = list(soldiers_f[0].keys()) if soldiers_f else []
+        ws.append(headers)
+
+        # داده‌ها
+        for i, s in enumerate(soldiers_f, start=1):
+            row = [i] + list(s.values())[1:]  # جایگزینی ردیف با شمارنده
+            ws.append(row)
+        # تنظیم عرض ستون‌ها
+        for col in ws.columns:
+            max_length = max(len(str(cell.value or "")) for cell in col)
+            ws.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+
+        # پاسخ اکسل
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename="gozaresh_amriye.xlsx"'
+        wb.save(response)
+        return response    
+
+    context = { 
+        'soldiers':soldiers,
+    }
+    return render(request, 'ensani_statistics/gozaresh_shoro_dore_amriye.html', context)
+
+def gozaresh_shoro_dore_kefayatdar(request):
+    en = EnsaniSettings.objects.first()
+
+    soldiers = Soldier.objects.filter(
+        has_been_accepted=True
+    ).filter(
+        Q(Sufficiency_of_mobilization=True) | Q(Previous_service_record=True)
+    ).order_by('-Previous_service_record')
+
+    # ساخت لیست فرمت شده
+    soldiers_f = []
+    for s in soldiers:
+        soldiers_f.append({
+            "ردیف": "-",  # بعداً با شمارنده جایگزین می‌شود
+            "نام": s.name or "",
+            "نام خانوادگی": s.family or "",
+            "نام پدر": s.fathers_name or "",
+            "کد ملی": s.National_Code or "",
+            "امریه دار (*)": "*" if s.Amriye else "",
+            "سازمان امریه": s.Amriye_organization or "",
+            "وضعیت جسمانی": s.physical_condition or "",
+            "نوع بیماری": s.Type_of_disease or "",
+            "مقطع تحصیلی": s.Grade or "",
+            "مدرک 2": s.Study_group or "",
+            "یگان خدمتی": s.unit_name or "",
+            "کفایت": "{} {}".format(
+                "خدمت قبلی" if s.Previous_service_record else "",
+                "بسیج" if s.Sufficiency_of_mobilization else ""
+            ).strip()
+        })
+
+    if request.GET.get('action') == 'excel_report':
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = f"گزارش کفایت دوره {getattr(en, 'shomare_dore', '')}"
+        ws.sheet_view.rightToLeft = True  # راست‌چین
+
+        # هدر
+        headers = list(soldiers_f[0].keys()) if soldiers_f else []
+        ws.append(headers)
+
+        # داده‌ها
+        for i, s in enumerate(soldiers_f, start=1):
+            row = [i] + list(s.values())[1:]  # جایگزین کردن ردیف
+            ws.append(row)
+
+        # تنظیم عرض ستون‌ها
+        for col in ws.columns:
+            max_length = max(len(str(cell.value or "")) for cell in col)
+            ws.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename="gozaresh_kefayatdar.xlsx"'
+        wb.save(response)
+        return response
+
+    context = {
+        'soldiers': soldiers,
+        'en': en,
+    }
+
+    return render(
+        request,
+        'ensani_statistics/gozaresh_shoro_dore_kefayatdar.html',
+        context
+    )
+

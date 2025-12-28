@@ -41,44 +41,48 @@ class panel_home(LoginRequiredMixin, View):
             'tajdiddoreh' : CheckoutLetterModels.objects.filter(c_type="تجدید دوره",soldire__garargah_sazandegi_khatam=True).all().count()
         }
         
+        present_in_course =Soldier.objects.filter(has_been_accepted=True,in_coures=True)
+        organs  = {
+            'amriye' :present_in_course.filter(Amriye=True).count(),
+            'normal' :present_in_course.filter(Amriye=False,garargah_sazandegi_khatam=False).count(),
+            'khatam' :"-",
+            'garargah_sazandegi_khatam' :present_in_course.filter(garargah_sazandegi_khatam=True).count(),
+        }
         
-        if en.tatbigh is False:
-            list_btn = []
-            name_list = []
-            total_list = []
-            gordan = battalion.objects.filter().all().order_by('name')
-            print(gordan)
-            for iteam in gordan:
-                gorhan = battalion_group.objects.filter(gordan=iteam).order_by('name')
-                tt = b_soldire.filter(Gordan=iteam).all().count()
-                if tt != 0:
-                    total_list.append(tt)
-                    name_list.append(iteam.name)
-                for iteam in gorhan:
-                    t = b_soldire.filter(battalion_group=iteam).all().count()
-                    if t != 0:
-                        list_btn.append({
-                            'gordan': iteam.gordan.name, 
-                            'gorohan': iteam.name, 
-                            'count': t
-                        })
-        else:
-
-            list_btn = []
-            name_list = []
-            total_list = []
-            gordan = battalion.objects.filter().all().order_by('name')
-            for iteam in gordan:
-                
-                gorhan = battalion_group.objects.filter(gordan=iteam).order_by('name')
-                tt = b_soldire.filter(t_Gordan=iteam).all().count()
-                if tt != 0:
-                    total_list.append(tt)
-                    name_list.append(iteam.name)
-                for iteam in gorhan:
-                    t = b_soldire.filter(t_battalion_group=iteam).all().count()
-                    if t != 0:
-                        list_btn.append({'gordan': iteam.gordan.name, 'gorohan': iteam.name, 'count': t,'capacity': int(iteam.zarfiat) - t})
+        
+        list_btn = []
+        name_list = []
+        total_list = []
+        gordan = battalion.objects.filter().all().order_by('name')
+        for iteam in gordan:
+            gorhan = battalion_group.objects.filter(gordan=iteam).order_by('name')
+            tt = b_soldire.filter(Gordan=iteam).all().count()
+            t_g = b_soldire.filter(t_Gordan=iteam).all().count()
+            
+            if tt != 0 or t_g != 0:
+                total_list.append(tt)
+                name_list.append(iteam.name)
+            for iteam in gorhan:
+                t = b_soldire.filter(battalion_group=iteam).all().count()
+                t_t = b_soldire.filter(t_battalion_group=iteam).all().count()
+                t_tn = b_soldire.filter(battalion_group=iteam,t_battalion_group=None).all().count()
+                if t != 0:
+                    list_btn.append({
+                        'gordan': iteam.gordan.name, 
+                        'gorohan': iteam.name, 
+                        'count': t,
+                        't_count': t_t,
+                        'tn_count': t_tn,
+                    })
+        if len(list_btn) > 1:
+            list_btn.append({
+                'class':'total-row',
+                'gordan': 'مجموع', 
+                'gorohan': len(list_btn), 
+                'count': sum(lb['count'] for lb in list_btn),
+                't_count': sum(lb['t_count'] for lb in list_btn),
+                'tn_count': sum(lb['tn_count'] for lb in list_btn),
+            })
         today = timezone.localtime(timezone.now()).date()
         logs_today = ActivityLog.objects.filter(created_at__date=today).count()
         
@@ -99,6 +103,7 @@ class panel_home(LoginRequiredMixin, View):
             'shoro_komisyon':shoro_komisyon ,
             'previous':previous ,
             'tajdiddoreh':tajdiddoreh,
+            'organs':organs,
             'garargah_sazandegi_khatam':garargah_sazandegi_khatam
         }
         return render(request, 'ensani/panel_home_page.html', cx)

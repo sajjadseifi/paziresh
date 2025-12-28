@@ -2511,20 +2511,24 @@ def soldiers_tatbigh_page(request):
 
         if soldier_id and new_org_code:
             try:
-                soldier = Soldier.objects.get(id=soldier_id)
-                if not soldier.has_been_accepted:
-                    messages.error(request, f"سرباز پذیرش نشده! شما مجاز به جابه جایی سرباز نیستید")
-                    return redirect(request.path + f"?battalion={selected_battalion}&group={selected_group}")
-                    
-                # گرفتن اشیاء مرتبط
-                t_gordan = battalion.objects.get(id=gordan_id)
-                t_gorohan = battalion_group.objects.get(id=grohan_id)
-                # نسبت دادن اشیاء به فیلدهای سرباز
-                soldier.t_Gordan = t_gordan
-                soldier.t_battalion_group = t_gorohan
-                soldier.code_gorhan_nahai = new_org_code
+                with transaction.atomic():
+                    soldier = Soldier.objects.select_for_update().get(id=soldier_id)
+
+                    if not soldier.has_been_accepted:
+                        messages.error(
+                            request,
+                            "سرباز پذیرش نشده! شما مجاز به جابه‌جایی سرباز نیستید"
+                        )
+                        return redirect(request.path + f"?battalion={selected_battalion}&group={selected_group}")
+
+                    t_gordan = battalion.objects.get(id=gordan_id)
+                    t_gorohan = battalion_group.objects.get(id=grohan_id)
+
+                    soldier.t_Gordan = t_gordan
+                    soldier.t_battalion_group = t_gorohan
+                    soldier.code_gorhan_nahai = new_org_code
+                    soldier.save()
                 
-                soldier.save()
                 messages.success(request, f"تغییرات سرباز {soldier.name} با موفقیت ثبت شد.")
                 return redirect(request.path + f"?battalion={selected_battalion}&group={selected_group}")
             except Soldier.DoesNotExist:
@@ -2549,9 +2553,20 @@ def soldiers_tatbigh_page(request):
         .filter(t_battalion_group=selected_group)
         .order_by('code_gorhan_nahai_int', 'code_gorhan_int')
     )
+    
+    soldiers_no_t_battalion_group = (
+        soldiers_in_battalion_group.annotate(
+            code_gorhan_nahai_int=Cast('code_gorhan_nahai', IntegerField()),
+            code_gorhan_int=Cast('code_gorhan', IntegerField()),
+        )
+        .filter(t_battalion_group=None)
+        .order_by('code_gorhan_nahai_int', 'code_gorhan_int')
+    )
+    soldiers_pre_t = soldiers.filter(has_been_accepted=True,in_coures=True) 
     context = {
         'soldiers_in_battalion_group':soldiers_in_battalion_group,
         'soldiers_in_t_battalion_group':soldiers_in_t_battalion_group,
+        'soldiers_no_t_battalion_group':soldiers_no_t_battalion_group,
         'battalions': battalions_allowed,
         'groups': groups_allowed,
         'selected_battalion': str(selected_battalion),
@@ -2559,7 +2574,8 @@ def soldiers_tatbigh_page(request):
         'selected_group_name': str(selected_group),
         'selected_battalion_name': selected_battalion_obj.name if selected_battalion_obj else None,
         'selected_group_name': selected_group_obj.name if selected_group_obj else None,
-        'soldiers': soldiers
+        'soldiers': soldiers,
+        'soldiers_pre_t':soldiers_pre_t,
     }
     return render(request, 'courses/soldiers_tatbigh_page.html', context)
 
@@ -2763,6 +2779,8 @@ def get_soldier_by_national_code(request):
             "code_paziresh": soldier.code_paziresh or "—",
             "code_gorhan": soldier.code_gorhan or "—",
             "code_gorhan_nahai": soldier.code_gorhan_nahai or "—",
+            "fathers_name": soldier.fathers_name or "—",
+            "Grade": soldier.Grade or "—",
         }
         return JsonResponse(data)
     except Soldier.DoesNotExist:
