@@ -95,6 +95,8 @@
                         <li><a href="{% url 'moarefi_begordan_group_print' %}">چاپ معرفی به گردان گروهی</a></li>
                         <li><a href="{% url 'update_db_from_exel_paziresh_hazer_bekhdmat' %}">بروزرسانی پذیرش شده حاضر</a></li>
                         <li><a href="{% url 'update_db_from_exel_paziresh_shode' %}">بروزرسانی پذیرش شده ها</a></li>
+                        <li><a href="{% url 'mobilization_document_view' %}">اسناد کفایت دار</a></li>
+                    
                     </ul>
                 </li>
             {% endif %}
@@ -130,7 +132,6 @@
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی (xlsx)</a></li>
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi_xls' %}">ساختار سازی (xls)</a></li>
                         <li><a href="{% url 'import_bank_number_from_exel' %}">بارگزاری شماره حساب گروهی</a></li>
-                        <li><a href="{% url 'import_and_export_excel_maharat' %}">مهارت آموزی</a></li>
                     {% endif %}
                 </ul>
             </li>

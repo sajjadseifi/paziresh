@@ -81,12 +81,15 @@
 .soldier-table th, .soldier-table td {
     border: 1px solid #ddd;
     text-align: center;
-    padding: 6px 8px;
+    padding: 4px;
+    font-weight: bold;
+    font-size: 18px;
 }
 .soldier-table th {
     background-color: #1f3c88;
     color: #fff;
     cursor: pointer;
+    padding: 6px 4px;
     
 }
 .soldier-table tr:nth-child(even) { background-color: #f9f9f9; }
@@ -96,7 +99,7 @@
     padding: 3px 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
-    
+    font-weight: bold;
 }
 
 /* ===== Pagination ===== */
@@ -143,6 +146,10 @@
 .download-links a.titles { background: #5bc0de; }/* آبی روشن */
 .download-links a.all { background: #f0ad4e; }   /* نارنجی */
 .download-links a:hover { opacity: 0.85; }
+.select2-container .select2-selection--single {
+    height: 40px;
+    font-weight: bold;
+}
 </style>
 {% endblock %}
 
@@ -258,40 +265,36 @@
     <table class="soldier-table">
         <thead>
             <tr>
-                <th>ردیف</th>
-                <th data-sort="code_paziresh">کد پذیرش</th>
-                <th data-sort="Gordan">گردان/گروهان</th>
-                <th>کد سازمانی</th>
-                <th>کد ملی</th>
-                <th data-sort="name">نام و نام خانوادگی</th>
-                <th>مهارت اول</th>
-                <th>مهارت دوم</th>
+                <th colspan="1">ردیف</th>
+                <th colspan="1">کد ملی</th>
+                <th colspan="1">نام و نام خانوادگی</th>
+                <th colspan="1">گردان ( گروهان ) - کدسازمانی</th>
+                <th colspan="2">مهارت اول</th>
+                <th colspan="2">مهارت دوم</th>
             </tr>
         </thead>
         <tbody>
             {% for soldier in soldiers %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ soldier.code_paziresh }}</td>
-                <td>{{ soldier.t_Gordan }}-{{ soldier.t_battalion_group.name }}</td>
-                <td>{{ soldier.code_gorhan_nahai }}</td>
-                <td>{{ soldier.National_Code }}</td>
-                <td>{{ soldier.name }} {{ soldier.family }}</td>
-                <td>
+                <td colspan="1">{{ forloop.counter }}</td>
+                <td colspan="1">{{ soldier.name }} {{ soldier.family }}</td>
+                <td colspan="1">{{ soldier.National_Code }}</td>
+                <td colspan="1">{{ soldier.t_Gordan }} ( {{ soldier.t_battalion_group.name }} ) - {{ soldier.code_gorhan_nahai }}</td>
+                <td colspan="2">
                         <select 
                         {%if not permissions.dep.niru_ensani and not permissions.dep.gordan %} disabled {% endif %}
                         name="skill_1_{{ soldier.id }}" class="select2-textable">
-                            <option value="" {% if not soldier.skill_1_id %}selected{% endif %}>انتخاب مهارت</option>
+                            <option value="" {% if not soldier.skill_1_id %}selected{% endif %}>--- انتخاب مهارت ---</option>
                             {% for skill in skills %}
-                            <option value="{{ skill.title }}" {% if soldier.skill_1_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
+                                <option value="{{ skill.title }}" {% if soldier.skill_1_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
                             {% endfor %}
                         </select>
                </td>
-               <td>
+               <td colspan="2">
                   <select 
                     {%if not permissions.dep.niru_ensani and not permissions.dep.gordan %} disabled {% endif %}
                   name="skill_2_{{ soldier.id }}" class="select2-textable">
-                     <option value="" {% if not soldier.skill_2_id %}selected{% endif %}>انتخاب مهارت</option>
+                     <option value="" {% if not soldier.skill_2_id %}selected{% endif %}>--- انتخاب مهارت ---</option>
                      {% for skill in skills %}
                      <option value="{{ skill.title }}" {% if soldier.skill_2_id == skill.id %}selected{% endif %}>{{ skill.title }}</option>
                      {% endfor %}
@@ -315,8 +318,6 @@
     $(document).ready(function() {
         // Select2 قابل تایپ
         $('.select2-textable').select2({
-            tags: true,
-            placeholder: 'انتخاب یا تایپ مهارت جدید',
             width: '100%',
         });
 

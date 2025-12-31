@@ -430,51 +430,93 @@ def assign_view(request):
     }
     return render(request, f"{template_pages}/assign.html", context)
 
+from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
 @login_required
 @transaction.atomic
 def assign_create_manual(request):
-    if request.method == "POST":
-        # استخراج ID سربازها از کلیدهای فرم
-        soldier_ids = set()
-        for key in request.POST.keys():
-            if key.startswith("skill_1_") or key.startswith("skill_2_"):
-                try:
-                    soldier_id = int(key.split("_")[-1])
-                    soldier_ids.add(soldier_id)
-                except ValueError:
-                    continue
-
-        # گرفتن فقط سربازانی که در فرم آمده‌اند
-        soldiers = Soldier.objects.filter(id__in=soldier_ids)
-
-        def get_or_create_skill(title):
-            if not title:
-                return None
-            skill, _ = SlillTraining.objects.get_or_create(
-                title=title,
-                defaults={"category": "", "code": ""}
-            )
-            return skill
-
-        # ثبت مهارت‌ها برای هر سرباز
-        for soldier in soldiers:
-            skill_1_value = request.POST.get(f"skill_1_{soldier.id}", "").strip()
-            skill_2_value = request.POST.get(f"skill_2_{soldier.id}", "").strip()
-
-            soldier.skill_1 = get_or_create_skill(skill_1_value)
-            soldier.skill_2 = get_or_create_skill(skill_2_value)
-            soldier.save()
-
-        messages.success(request, "مهارت‌ها با موفقیت ثبت شدند.")
-
-        # 🟢 برگشت به همان صفحه (با query string)
-        next_url = request.META.get("HTTP_REFERER", None)
-        if next_url:
-            return redirect(next_url)
+    if request.method != "POST":
         return redirect("skills:assign")
 
-    # در حالت GET
-    return redirect("skills:assign")
+    # ===============================
+    # 1️⃣ استخراج ID سربازها
+    # ===============================
+    soldier_ids = {
+        int(key.split("_")[-1])
+        for key in request.POST.keys()
+        if key.startswith(("skill_1_", "skill_2_")) and key.split("_")[-1].isdigit()
+    }
+
+    if not soldier_ids:
+        messages.warning(request, "سربازی انتخاب نشده است.")
+        return redirect(request.META.get("HTTP_REFERER", "skills:assign"))
+
+    # ===============================
+    # 2️⃣ قفل سربازها (Row-level Lock)
+    # ===============================
+    soldiers = list(
+        Soldier.objects
+        .select_for_update()
+        .filter(id__in=soldier_ids)
+    )
+
+    # ===============================
+    # 3️⃣ جمع‌آوری مهارت‌ها (unique)
+    # ===============================
+    skill_titles = set()
+
+    for soldier in soldiers:
+        s1 = request.POST.get(f"skill_1_{soldier.id}", "").strip()
+        s2 = request.POST.get(f"skill_2_{soldier.id}", "").strip()
+        if s1:
+            skill_titles.add(s1)
+        if s2:
+            skill_titles.add(s2)
+
+    # ===============================
+    # 4️⃣ گرفتن مهارت‌های موجود
+    # ===============================
+    existing_skills = {
+        s.title: s
+        for s in SlillTraining.objects.filter(title__in=skill_titles)
+    }
+
+    # ===============================
+    # 5️⃣ ساخت مهارت‌های جدید (bulk_create)
+    # ===============================
+    new_skills = [
+        SlillTraining(title=title, category="", code="")
+        for title in skill_titles
+        if title not in existing_skills
+    ]
+
+    if new_skills:
+        SlillTraining.objects.bulk_create(new_skills)
+        # دوباره واکشی
+        for s in SlillTraining.objects.filter(title__in=skill_titles):
+            existing_skills[s.title] = s
+
+    # ===============================
+    # 6️⃣ ست کردن skill ها روی سربازها
+    # ===============================
+    for soldier in soldiers:
+        s1 = request.POST.get(f"skill_1_{soldier.id}", "").strip()
+        s2 = request.POST.get(f"skill_2_{soldier.id}", "").strip()
+
+        soldier.skill_1 = existing_skills.get(s1)
+        soldier.skill_2 = existing_skills.get(s2)
+
+    # ===============================
+    # 7️⃣ ذخیره گروهی
+    # ===============================
+    Soldier.objects.bulk_update(soldiers, ['skill_1', 'skill_2'])
+
+    messages.success(request, "مهارت‌ها با موفقیت ثبت شدند.")
+
+    return redirect(request.META.get("HTTP_REFERER", "skills:assign"))
 
 def assign_soldier_slills_manual():
    return redirect("skills:assign")

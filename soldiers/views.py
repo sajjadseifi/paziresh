@@ -1976,3 +1976,256 @@ def export_to_excel_bdone_madrak_tahsili(request):
     # تنظیم sheet به حالت راست به چپ
     worksheet.sheet_view.rightToLeft = True
     return response
+
+
+from django.conf import settings
+import os
+
+def get_mobilization_dir():
+    en = EnsaniSettings.objects.first()  # Singleton
+    dore = en.shomare_dore or 'unknown'
+    return os.path.join(
+        settings.MEDIA_ROOT,
+        'periods',
+        str(dore),
+        'mobilization'
+    )
+
+def load_mobilization_files():
+    base_dir = get_mobilization_dir()
+    if not os.path.exists(base_dir):
+        return []
+
+    return [
+        f for f in os.listdir(base_dir)
+        if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))
+    ]
+
+def get_linked_files():
+    files = Soldier.objects.exclude(
+        Sufficiency_of_mobilization_document=''
+    ).exclude(
+        Sufficiency_of_mobilization_document__isnull=True
+    )
+
+    result = {}
+    for s in files:
+        filename = os.path.basename(s.Sufficiency_of_mobilization_document.name)
+        result[filename] = s
+
+    return result  # {filename: soldier}
+
+from django.shortcuts import render
+import os
+import zipfile
+import uuid
+
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect
+from django.conf import settings
+def format_file_size(size_bytes):
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 ** 2:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 ** 2):.2f} MB"
+
+import os
+from django.conf import settings
+
+def mobilization_document_view(request):
+    all_files = load_mobilization_files()
+    linked_map = get_linked_files()
+
+    raw_files = []
+    linked_files = []
+
+    en = EnsaniSettings.objects.first()
+    shomare_dore = en.shomare_dore if en and en.shomare_dore else 'unknown'
+
+    base_dir = os.path.join(
+        settings.MEDIA_ROOT,
+        'periods',
+        shomare_dore,
+        'mobilization'
+    )
+
+    base_url = os.path.join(
+        settings.MEDIA_URL,
+        'periods',
+        shomare_dore,
+        'mobilization'
+    )
+
+    for filename in all_files:
+        file_path = os.path.join(base_dir, filename)
+
+        # اگر به هر دلیلی فایل وجود نداشت
+        if not os.path.exists(file_path):
+            continue
+
+        size = format_file_size(os.path.getsize(file_path))
+        url = os.path.join(base_url, filename)
+
+        if filename in linked_map:
+            linked_files.append({
+                'filename': filename,
+                'soldier': linked_map[filename],
+                'url': url,
+                'size': size,
+            })
+        else:
+            raw_files.append({
+                'filename': filename,
+                'url': url,
+                'size': size,
+            })
+
+    soldiers = Soldier.objects.all().order_by(
+        '-Previous_service_record',
+        '-Sufficiency_of_mobilization'
+    )
+
+    context = {
+        'raw_files': raw_files,
+        'linked_files': linked_files,
+        'soldiers': soldiers,
+    }
+
+    return render(
+        request,
+        'functionality/mobilization_document_view.html',
+        context
+    )
+
+
+
+def mobilization_document_upload(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid method')
+
+    zip_file = request.FILES.get('zip_file')
+    if not zip_file:
+        return HttpResponseBadRequest('ZIP file not provided')
+
+    # فقط zip مجاز است
+    if not zip_file.name.lower().endswith('.zip'):
+        return HttpResponseBadRequest('Only ZIP files are allowed')
+
+    en = EnsaniSettings.objects.first()
+    dore = en.shomare_dore if en and en.shomare_dore else 'unknown'
+
+    # مسیر نهایی
+    relative_path = os.path.join('periods', str(dore), 'mobilization')
+    base_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+    os.makedirs(base_path, exist_ok=True)
+
+    allowed_ext = ('.jpg', '.jpeg', '.png', '.webp')
+
+    with zipfile.ZipFile(zip_file) as z:
+        for member in z.namelist():
+
+            # جلوگیری از zip slip
+            if '..' in member or member.startswith('/'):
+                continue
+
+            if not member.lower().endswith(allowed_ext):
+                continue
+
+            ext = os.path.splitext(member)[1]
+            unique_name = f'{uuid.uuid4().hex}{ext}'
+            target_path = os.path.join(base_path, unique_name)
+
+            with z.open(member) as source, open(target_path, 'wb') as target:
+                target.write(source.read())
+
+    return redirect('mobilization_document_view')
+
+
+import os
+from django.conf import settings
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect
+
+@transaction.atomic
+def mobilization_document_assign(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid method')
+
+    filename = request.POST.get('filename')
+    soldier_id = request.POST.get('soldier_id')
+
+    if not filename or not soldier_id:
+        return HttpResponseBadRequest('اطلاعات ناقص است')
+
+    soldier = Soldier.objects.select_for_update().get(pk=soldier_id)
+    en = EnsaniSettings.objects.first()
+
+    dore = en.shomare_dore if en and en.shomare_dore else 'unknown'
+
+    # مسیر فایل روی دیسک
+    relative_path = os.path.join('periods',dore,'mobilization',filename)
+    full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+    if not os.path.exists(full_path):
+        return HttpResponseBadRequest('فایل مورد نظر وجود ندارد')
+
+    soldier.Sufficiency_of_mobilization_document.name = relative_path
+
+    soldier.save(update_fields=['Sufficiency_of_mobilization_document'])
+
+    return redirect('mobilization_document_view')
+
+
+@transaction.atomic
+def mobilization_document_unassign(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request')
+
+    soldier_ids = request.POST.getlist('soldier_ids[]')
+
+    if not soldier_ids:
+        return HttpResponseBadRequest('هیچ سربازی انتخاب نشده')
+
+    soldiers = Soldier.objects.select_for_update().filter(id__in=soldier_ids)
+
+    for soldier in soldiers:
+        soldier.Sufficiency_of_mobilization_document = None
+        soldier.save(update_fields=['Sufficiency_of_mobilization_document',])
+
+    return redirect('mobilization_document_view')
+
+@transaction.atomic
+def mobilization_document_delete(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request')
+
+    files = request.POST.getlist('files[]')
+
+    if not files:
+        return HttpResponseBadRequest('فایلی انتخاب نشده')
+
+    en = EnsaniSettings.objects.first()
+    dore = en.shomare_dore if en else 'unknown'
+
+    base_path = os.path.join(
+        settings.MEDIA_ROOT,
+        'periods',
+        str(dore),
+        'mobilization'
+    )
+
+    deleted = []
+
+    for filename in files:
+        # جلوگیری از path traversal
+        filename = os.path.basename(filename)
+
+        file_path = os.path.join(base_path, filename)
+
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            os.remove(file_path)
+            deleted.append(filename)
+
+    return redirect('mobilization_document_view')

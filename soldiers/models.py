@@ -4,7 +4,7 @@ from skills_training.models import SlillTraining,TechnicalVocational
 from battalions.models import battalion, battalion_group
 from django_jalali.db import models as jmodels
 from django.utils import timezone
-
+from ensaniapp_settings.models import mobilization_upload_path
 class Soldier(models.Model):
 
 
@@ -57,7 +57,14 @@ class Soldier(models.Model):
     garargah_sazandegi_khatam = models.BooleanField(default=False, verbose_name='قرارگاه سازندگی خاتم', null=True, blank=True)
     Amriye_organization = models.CharField(max_length=250, verbose_name='سازمان امریه', null=True, blank=True)
     
+    
     Sufficiency_of_mobilization = models.BooleanField(default=False, verbose_name='کفایت بسیج', blank=True, null=True)
+    Sufficiency_of_mobilization_document = models.ImageField(
+        upload_to=mobilization_upload_path,
+        verbose_name='سند کفایت بسیج',
+        blank=True,
+        null=True
+    )
     the_medical_commission = models.BooleanField(default=False, verbose_name='کمیسیون پزشکی', blank=True, null=True)
     has_been_accepted = models.BooleanField(default=False, verbose_name='پذیرش شده است', blank=True, null=True)
     acceptance_code = models.IntegerField(null=True, blank=True, verbose_name='کد پذیرش', unique=True)
@@ -135,7 +142,6 @@ class Soldier(models.Model):
 
     # 🔹 داده‌های متفرقه (مثلاً مشکلات یا ارزیابی‌ها)
     problems_data = models.JSONField(default=dict, blank=True,verbose_name="اطلاعات مشکلات")
-    
     
     def save_avatar(self, uploaded_file):
         """

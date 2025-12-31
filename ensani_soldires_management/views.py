@@ -2463,6 +2463,7 @@ from django.db.models import IntegerField
 from django.db.models.functions import Cast
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
+from accounts.context import user_access_context
 
 @csrf_protect
 @login_required
@@ -2563,6 +2564,16 @@ def soldiers_tatbigh_page(request):
         .order_by('code_gorhan_nahai_int', 'code_gorhan_int')
     )
     soldiers_pre_t = soldiers.filter(has_been_accepted=True,in_coures=True) 
+    ctx = user_access_context(request)
+    perms = ctx['permissions']
+    en = ctx['en']
+    # یا مستقیماً از context template استفاده کنید
+    access_edit = perms['dep'].get('niru_ensani', False)
+    if not access_edit:
+        access_edit = perms['dep'].get('gordan', False)
+        if en.tatbigh:
+            access_edit = False   
+    
     context = {
         'soldiers_in_battalion_group':soldiers_in_battalion_group,
         'soldiers_in_t_battalion_group':soldiers_in_t_battalion_group,
@@ -2576,6 +2587,7 @@ def soldiers_tatbigh_page(request):
         'selected_group_name': selected_group_obj.name if selected_group_obj else None,
         'soldiers': soldiers,
         'soldiers_pre_t':soldiers_pre_t,
+        'access_edit':access_edit
     }
     return render(request, 'courses/soldiers_tatbigh_page.html', context)
 

@@ -57,5 +57,6 @@ def user_access_context(request):
 
             permissions['dep'][key_access] = is_access
 
-    en = EnsaniSettings.objects.filter()
+    print(permissions)
+    en = EnsaniSettings.objects.first()
     return {'permissions': permissions,'en':en}

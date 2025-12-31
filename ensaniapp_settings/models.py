@@ -1,5 +1,8 @@
 from django.db import models
 from django_jalali.db import models as jmodels
+import os
+import uuid
+from django.conf import settings
 
 class EnsaniSettings(models.Model):
     # DORE
@@ -40,3 +43,52 @@ class EnsaniSettings(models.Model):
     class Meta:
         verbose_name = "تنظیمات"
         verbose_name_plural = "تنظیمات"
+        
+
+def period_upload_path(subdir: str):
+    def _path(instance, filename):
+        en = EnsaniSettings.objects.first()  # Singleton
+
+        relative_path = f'periods/{en.shomare_dore}/{subdir}'
+        full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+        # ساخت پوشه اگر وجود نداشت
+        os.makedirs(full_path, exist_ok=True)
+
+        return f'{relative_path}/{filename}'
+
+    return _path
+
+
+import os
+import uuid
+from django.conf import settings
+
+def mobilization_upload_path(instance, filename):
+    """
+    مسیر ذخیره فایل سند کفایت بسیج:
+
+    media/periods/{shomare_dore}/mobilization/{unique_filename}
+    """
+
+    # فقط هنگام save اجرا می‌شود، پس هیچ warning در import نمی‌دهد
+    en = getattr(instance, 'ensani_settings', None)
+    if en is None:
+        # fallback اگر instance فاقد ensani_settings باشد
+        dore = 'unknown'
+    else:
+        # اگر shomare_dore تهی باشد، unknown استفاده می‌شود
+        dore = getattr(en, 'shomare_dore', 'unknown') or 'unknown'
+
+    # مسیر نسبی
+    relative_path = os.path.join('periods', str(dore), 'mobilization')
+
+    # مسیر کامل روی دیسک
+    full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+    os.makedirs(full_path, exist_ok=True)  # ایجاد پوشه اگر وجود نداشت
+
+    # یونیک کردن نام فایل با uuid
+    ext = os.path.splitext(filename)[1]
+    unique_filename = f"{uuid.uuid4().hex}{ext}"
+
+    return os.path.join(relative_path, unique_filename)

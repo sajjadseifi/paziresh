@@ -4,6 +4,11 @@ from .models import Soldier
 
 @admin.register(Soldier)
 class SoldierAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['t_Gordan'].label = 'گردان نهایی'
+        form.base_fields['t_battalion_group'].label = 'گروهان نهایی'
+        return form
     list_display = (
         'acceptance_code',
         'name', 
@@ -51,7 +56,7 @@ class SoldierAdmin(admin.ModelAdmin):
                        'physical_condition', 'Type_of_disease', 'health_insurance_card')
         }),
         ('اعزام و یگان', {
-            'fields': ('Date_of_dispatch', 'Gordan', 'battalion_group', 'yegan_name','unit_name', 'unit_type',
+            'fields': ('Date_of_dispatch', 'Gordan', 'battalion_group','t_Gordan', 't_battalion_group', 'yegan_name','unit_name', 'unit_type',
                        'unit_address', 'unit_province', 'IsUnit')
         }),
         ('اطلاعات پذیرش', {

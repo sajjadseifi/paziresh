@@ -40,6 +40,12 @@ urlpatterns = [
          excel_change_gharargah_sazandegi_khatam_true_sample, 
          name='excel_change_gharargah_sazandegi_khatam_true_sample'
      ),
+     #     
+    path('mobilization/doc/view', mobilization_document_view, name='mobilization_document_view'),
+    path('mobilization/doc/assign', mobilization_document_assign, name='mobilization_document_assign'),
+    path('mobilization/doc/unassign', mobilization_document_unassign, name='mobilization_document_unassign'),
+    path('mobilization/doc/upload', mobilization_document_upload, name='mobilization_document_upload'),
+    path('mobilization/doc/delete', mobilization_document_delete, name='mobilization_document_delete'),
 
 
 

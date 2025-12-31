@@ -39,23 +39,23 @@ class CreateRegisterLetterFrom(forms.Form):
     )
     destination = forms.CharField(
         label='مقصد نامه',
-        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        widget=forms.TextInput(attrs={'class': "form-control", "rows": "5"}),
         required=False
     )
     destination_letter_number = forms.CharField(
         label='شماره نامه وارده',
-        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        widget=forms.TextInput(attrs={'class': "form-control", "rows": "5"}),
         required=False
     )
     destination_letter_date = forms.CharField(
         label='تاریخ نامه وارده',
-        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        widget=forms.TextInput(attrs={'class': "form-control", "rows": "5"}),
         required=False
     )
 
     in_come_submit_locations = forms.CharField(
         label='مبداء صادر کننده',
-        widget=forms.Textarea(attrs={'class': "form-control", "rows": "5"}),
+        widget=forms.TextInput(attrs={'class': "form-control", "rows": "5"}),
         required=False
     )
 
