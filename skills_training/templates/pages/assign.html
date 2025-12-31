@@ -266,9 +266,10 @@
         <thead>
             <tr>
                 <th colspan="1">ردیف</th>
-                <th colspan="1">کد ملی</th>
                 <th colspan="1">نام و نام خانوادگی</th>
-                <th colspan="1">گردان ( گروهان ) - کدسازمانی</th>
+                <th colspan="1">کد ملی</th>
+                <th colspan="1">گردان ( گروهان )</th>
+                <th colspan="1">کدسازمانی</th>
                 <th colspan="2">مهارت اول</th>
                 <th colspan="2">مهارت دوم</th>
             </tr>
@@ -279,7 +280,8 @@
                 <td colspan="1">{{ forloop.counter }}</td>
                 <td colspan="1">{{ soldier.name }} {{ soldier.family }}</td>
                 <td colspan="1">{{ soldier.National_Code }}</td>
-                <td colspan="1">{{ soldier.t_Gordan }} ( {{ soldier.t_battalion_group.name }} ) - {{ soldier.code_gorhan_nahai }}</td>
+                <td colspan="1">{{ soldier.t_Gordan }} ( {{ soldier.t_battalion_group.name }} ) </td>
+                <td colspan="1">{{ soldier.code_gorhan_nahai }}</td>
                 <td colspan="2">
                         <select 
                         {%if not permissions.dep.niru_ensani and not permissions.dep.gordan %} disabled {% endif %}

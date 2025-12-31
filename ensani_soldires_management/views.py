@@ -2338,28 +2338,64 @@ from .forms import SoldierProblemForm, SoldierFilterForm, PROBLEM_LABELS
 import openpyxl
 from django.http import HttpResponse
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from django.db import transaction
+from django.shortcuts import redirect
+from django.forms import formset_factory
 
+@transaction.atomic
 def soldiers_problems_update(request):
     SoldierProblemFormSet = formset_factory(SoldierProblemForm, extra=0)
 
-    if request.method == 'POST':
-        formset = SoldierProblemFormSet(request.POST)
-        if formset.is_valid():
-            for form in formset:
-                soldier_id = form.cleaned_data['soldier_id']
-                soldier = Soldier.objects.get(id=soldier_id)
+    if request.method != 'POST':
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
-                # ساخت دیکشنری از checkboxها
-                problems_dict = {field: form.cleaned_data.get(field, False) for field in PROBLEM_FIELDS}
+    formset = SoldierProblemFormSet(request.POST)
 
-                # ذخیره در فیلد JSON
-                soldier.problems_data = problems_dict
-                soldier.problems_data['description'] = form.cleaned_data.get('description', '')
-                
-                soldier.save()
-        else:
-            print("فرم‌ها معتبر نیستند!")
-            print(formset.errors)
+    if not formset.is_valid():
+        print(formset.errors)
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    # 1️⃣ جمع‌آوری IDها
+    soldier_ids = [
+        form.cleaned_data['soldier_id']
+        for form in formset
+    ]
+
+    # 2️⃣ گرفتن سربازها با قفل ردیفی
+    soldiers = (
+        Soldier.objects
+        .select_for_update()
+        .filter(id__in=soldier_ids)
+    )
+
+    soldiers_map = {s.id: s for s in soldiers}
+
+    updated_soldiers = []
+
+    # 3️⃣ اعمال تغییرات در حافظه
+    for form in formset:
+        soldier_id = form.cleaned_data['soldier_id']
+        soldier = soldiers_map.get(soldier_id)
+
+        if not soldier:
+            continue
+
+        problems_dict = {
+            field: form.cleaned_data.get(field, False)
+            for field in PROBLEM_FIELDS
+        }
+
+        problems_dict['description'] = form.cleaned_data.get('description', '')
+
+        soldier.problems_data = problems_dict
+        updated_soldiers.append(soldier)
+
+    # 4️⃣ ذخیره یک‌جا
+    if updated_soldiers:
+        Soldier.objects.bulk_update(
+            updated_soldiers,
+            ['problems_data']
+        )
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 

@@ -160,8 +160,9 @@ class SoldierProblemForm(forms.Form):
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'rows': 3,  # دو خط
-            'placeholder': 'توضیحات مشکلات سرباز را اینجا وارد کنید'
-        })
+            'placeholder': 'توضیحات مشکلات سرباز را اینجا وارد کنید',
+        }),
+        empty_value='',
     )
 from django import forms
 from soldiers.models import Soldier

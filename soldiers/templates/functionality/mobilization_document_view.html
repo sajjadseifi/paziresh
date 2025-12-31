@@ -38,6 +38,9 @@
   font-weight:600;
   border-bottom:1px solid var(--border);
   background:#f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .card-body{
@@ -204,7 +207,10 @@ input[type=file], select{
     </div>
   </form>
 
-  <div class="card-header">اسناد بارگذاری شده</div>
+  <div class="card-header">
+    <span>اسناد بارگذاری شده</span>
+    <span>({{raw_files|length}})</span>
+  </div>
   <div class="card-body">
     <div class="file-grid">
       {% for f in raw_files %}
@@ -290,7 +296,11 @@ input[type=file], select{
 
 <!-- ================= RIGHT : LINKED FILES ================= -->
 <div class="card">
-  <div class="card-header">اسناد انتساب شده</div>
+  <div class="card-header">
+    <span>اسناد انتساب شده</span>
+    <span>({{linked_files|length}})</span>
+
+  </div>
   <div class="card-body">
     <div class="file-grid">
       {% for f in linked_files %}

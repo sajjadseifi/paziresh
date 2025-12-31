@@ -141,6 +141,7 @@
         text-align: center;
         transition: all 0.3s ease;
         cursor: pointer;
+        display: block;
     }
     .upload-box:hover {
         background: #f5f3ff;
@@ -237,7 +238,7 @@
                            <div>{{ soldier.name }} {{ soldier.family }}</div>
                            <div>کدملی : <span style="font-weight:bold;">{{ soldier.National_Code }}</span></div>
                         </div>
-                        <span style="font-weight:bold;background:#eaeaea;padding:1px 4px;border-radius:2px;"><span style="font-size:11px;">کد سازمانی</span> : {{soldier.code_gorhan_nahai}} </span>
+                        <span style="font-weight:bold;background:#eaeaea;padding:2px 6px;border-radius:4px;"><span style="font-size:11px;">کد سازمانی</span> : {{soldier.code_gorhan_nahai}} </span>
                     </li>
                 {% empty %}
                     <p class="text-center text-muted mt-3">هیچ سربازی برای نمایش وجود ندارد.</p>
