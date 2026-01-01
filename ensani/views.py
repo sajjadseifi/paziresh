@@ -18,9 +18,10 @@ class panel_home(LoginRequiredMixin, View):
         amar_kole_hezer_bekhdmat = soldire.filter(willing_to_learn=True).all().count()
         amar_shoro_dore = soldire.filter(has_been_accepted=True, in_coures=True).all().count()
         amar_kole_paziresh_shode = Soldier.objects.filter(has_been_accepted=True).all().count()
-        tatbikh_nashode = Soldier.objects.filter(has_been_accepted=True, in_coures=True, the_medical_commission=False,
-                                                 Previous_service_record=False, Sufficiency_of_mobilization=False,
-                                                 tatbigh=False, IsCheckout=False).all().count()
+        tatbikh_nashode = amar_shoro_dore
+        # tatbikh_nashode = Soldier.objects.filter(has_been_accepted=True, in_coures=True, the_medical_commission=False,
+        #                                          Previous_service_record=False, Sufficiency_of_mobilization=False,
+        #                                          tatbigh=False, IsCheckout=False).all().count()
         total_tegan_khdmati_in_course = Soldier.objects.filter(has_been_accepted=True, willing_to_learn=True,
                                                                in_coures=True, IsCheckout=False,IsUnit=True).all().count()
         en = EnsaniSettings.objects.filter().first()
@@ -75,13 +76,19 @@ class panel_home(LoginRequiredMixin, View):
                         'tn_count': t_tn,
                     })
         if len(list_btn) > 1:
+            gordan = 'مجموع' 
+            gorohan = len(list_btn) 
+            count    = sum(lb['count'] for lb in list_btn)
+            t_count  = sum(lb['t_count'] for lb in list_btn)
+            tn_count = sum(lb['tn_count'] for lb in list_btn)
+            tatbikh_nashode =  tn_count
             list_btn.append({
-                'class':'total-row',
-                'gordan': 'مجموع', 
-                'gorohan': len(list_btn), 
-                'count': sum(lb['count'] for lb in list_btn),
-                't_count': sum(lb['t_count'] for lb in list_btn),
-                'tn_count': sum(lb['tn_count'] for lb in list_btn),
+                'class':'total-row', 
+                'gordan': gordan,  
+                'gorohan': gorohan,  
+                'count': count, 
+                't_count': t_count,
+                'tn_count': tn_count,
             })
         today = timezone.localtime(timezone.now()).date()
         logs_today = ActivityLog.objects.filter(created_at__date=today).count()

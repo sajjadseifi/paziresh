@@ -11,7 +11,7 @@ from .forms import *
 
 class MainViewBattalion(LoginRequiredMixin, View):
     def get(self, request):
-        gordan = battalion.objects.filter().all()
+        gordan = battalion.objects.all().order_by('-is_active','order')
         cx = {'gordan': gordan, }
         return render(request, 'battalions/gordan_list.html', cx)
 
@@ -67,7 +67,7 @@ class BattalionUpdate(LoginRequiredMixin, View):
 
 class MainViewBattalionGroup(LoginRequiredMixin, View):
     def get(self, request):
-        grohan = battalion_group.objects.filter().all()
+        grohan = battalion_group.objects.all().order_by('gordan','name')
         cx = {'grohan': grohan, }
         return render(request, 'battalions/grohan_list.html', cx)
 

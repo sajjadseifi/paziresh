@@ -1,39 +1,143 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
+{% block header %}
+<style>
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    .card-title {
+        text-align: center;
+        margin: 0;
+        padding: 4px 20px;
+        font-size: 28px;
+        border-right: 4px solid coral;
+        color: #9b401e;
+        font-weight: bold;
+    }
+    .card-header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .table th {
+        font-size: 16px;
+        padding: 10px 4px !important;
+        text-align: center;
 
-
-
-
+    }
+    html body table.table tr td {
+        padding: 6px !important ;
+        text-align: center;
+    }
+    .table thead {
+        border-bottom:2px solid #9b401e;
+        background-color: #ffb69b18;
+        border-radius: 10px !important;
+    }
+    .badge {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4px;
+        border-radius: 4px;
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+    }
+    .setting-item {
+        display: inline-block;
+        padding: 2px 4px;
+        border-radius: 3px;
+        background-color: #fafafa;
+        border: 1px solid #afafaf;
+        color: black;
+        font-size: 10px;
+        direction: ltr;
+    }
+    .setting-list {
+        gap: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        flex-wrap: wrap;
+    }
+    .btn-sm  {
+        font-size: 10px;
+    }
+    .col-up{
+        color: chartreuse;
+    }
+    .col-down{
+        color: crimson;
+    }
+</style>
+{% endblock %}
 {% block main %}
-    <section class="content">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">گردان ها</h3>
-
-                <div class="box-body no-padding">
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th>نام گردان</th>
-                            <th>تعداد سرباز</th>
-                            <th></th>
-                        </tr>
-                        {% for foo in gordan %}
-                            <tr>
-                                <td>{{ foo.name }}</td>
-                                <td><span class="badge bg-red">100</span></td>
-                                <td>
-                                    <a class="btn btn-app" href="{% url 'BattalionUpdate' pk=foo.pk %}">
-                                        <i class="fa fa-edit"></i> ویرایش
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.box-body -->
-            </div>
-        </div>
-    </section>
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">فهرست گردان های آموزشی</h1>
+        <a class="btn  btn-warning" href="{% url 'BattalionCreate'  %}">
+            ایجاد گردان جدید
+            <i class="fa fa-plus"></i> 
+        </a>
+    </div>
+    <div class="card-body no-padding">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>اولویت</th>
+                <th>نام گردان</th>
+                <th>فعال</th>
+                <th>عملیات</th>
+                <th>گروهان ها</th>
+                <th>سرباز قبل تطبیق</th>
+                <th>سرباز بعد تطبیق</th>
+                <th>افزایش/کاهش</th>
+            </tr>
+            {% for foo in gordan %}
+                <tr>
+                    <td>{{ foo.order }}</td>
+                    <td><strong>{{ foo.name }}</strong></td>
+                    <td class="{{foo.is_active|yesno:'text-success,text-danger'}}">
+                       <span>{{ foo.is_active|yesno:'بله,خیر' }}</span>
+                        {% if foo.is_active %}
+                            <i class="fa fa-check"></i>
+                       {% else %}
+                            <i class="fa fa-times"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-default" href="{% url 'BattalionUpdate' pk=foo.pk %}">
+                            ویرایش
+                            <i class="fa fa-edit"></i> 
+                        </a>
+                    </td>
+                     <td>
+                        <div class="setting-list">
+                            {% for g in foo.grohans %}
+                                <a href="{% url 'BattalionGroupUpdate' pk=foo.pk %}" class="setting-item">
+                                    <i class="fa fa-edit"></i> 
+                                    {{ g }}
+                                </a>
+                            {% empty %}
+                                <div class="text-muted text-center">گروهانی ثبت نشده</div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td><span >{{foo.soldiers_counts_before_tatbigh}}</span></td>
+                    <td><span >{{foo.soldiers_counts_after_tatbigh}}</span></td>
+                    <td class="col-{{foo.reduce_soldiers.reduce}}">
+                        <i class="fa fa-arrow-{{foo.reduce_soldiers.reduce}}"></i>
+                        <span>{{foo.reduce_soldiers.counts}}</span>
+                    </td>
+                    
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

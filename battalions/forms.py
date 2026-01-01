@@ -130,3 +130,10 @@ class BattalionGroupForm(forms.Form):
         label='معاف از رزم + گروه ب',
         required=False
     )
+    gharagah_sazandegi_khatam = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={'type': "checkbox", 'name': "gharagah_sazandegi_khatam", 'id': "gharagah_sazandegi_khatam"}
+        ),
+        label='قرارگاه سازندگی خاتم',
+        required=False
+    )

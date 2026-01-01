@@ -1,123 +1,188 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
+{% block header %}
+    <style>
+        .checkbox-list {
+            gap: 4px;
+        }
+        .checkbox-list  input[type=checkbox], .checkbox-list input[type=radio] {
+            margin:0 !important;
+        }
+        .checkbox-list  label {
+            background-color: #fefefefe;
+            border: 1px solid #afafaf;
+            border-radius: 6px;
+            margin: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        .form-input{
+            display: flex;
+        }
 
-
+        .form-input input, .form-input select {
+            flex: 3;
+            border-radius: 4px;
+            height: 36px;
+            margin: 0;
+        }
+        .form-input label {
+            flex: 2;
+            margin: 0;
+            padding: 0;
+        }
+        .form-grid {
+            gap: 10px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .setting-title {
+            margin: 0;
+            padding: 0;
+            color: chocolate;
+            border-right: 4px solid chocolate;
+            background-color: #ffebdd22;
+            padding: 10px 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .box-body {
+            padding:10px 20px !important;
+        }
+    </style>
+{% endblock %}
 {% block main %}
     <div class="box box-warning">
-        <div class="box-header with-border">
-            <h3 class="box-title">اطلاعات سرباز</h3>
-        </div>
+        <h3 style="font-weight: bold;" class="text-center">فرم گروهانی</h3>
         <!-- /.box-header -->
         <div class="box-body">
-            <form role="form" method="post">
+            <form role="form" method="post" class="row">
                 {% csrf_token %}
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.name.label }}
+                <div class="box-body col-xs-5" style="height: 100%;">
+                    <div class="form-grid" style="height: 100%;">
+                        <div class="form-input ">
+                            <label>{{ form.name.label }}</label>
                             {{ form.name }}
-
                         </div>
-                        <div class="col-xs-6">
-                            {{ form.gordan.label }}
+                        <div class="form-input ">
+                            <label>{{ form.gordan.label }}</label>
                             {{ form.gordan }}
-
                         </div>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.zarfiat.label }}
+                        <div class="form-input ">
+                            <label>{{ form.zarfiat.label }}</label>
                             {{ form.zarfiat }}
 
                         </div>
-                        <div class="col-xs-6">
-                            {{ form.order.label }}
+                        <div class="form-input ">
+                            <label>{{ form.order.label }}</label>
                             {{ form.order }}
                         </div>
+                        
+                        <div  class="checkbox-list ">
+                            <label>
+                                {{ form.takmilzarmit.label }}
+                                {{ form.takmilzarmit }}
+                            </label>
+                        </div>
+                        
+                        <div style="flex:1;" ></div>
+                        <div >
+                            <button style="width: 100%;" type="submit" class="btn btn-success ">ذخیره</button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="box-body">
-                    <div class="row">
+                <div class="box-body col-xs-7">
+                    <div class="row checkbox-list">
+                        <div class="col-xs-12">
+                            <h4 class="setting-title">وضعیت سلامت</h4>
+                        </div>
                         <div class="col-xs-3">
-                            {{ form.moafazrazm.label }}
-                            {{ form.moafazrazm }}
-
+                            <label>
+                                {{ form.moafazrazm.label }}
+                                {{ form.moafazrazm }}
+                            </label>
                         </div>
                         <div class="col-xs-3">
-                            {{ form.moafazrazm_gorehbe.label }}
-                            {{ form.moafazrazm_gorehbe }}
-
+                            <label>
+                                {{ form.moafazrazm_gorehbe.label }}
+                                {{ form.moafazrazm_gorehbe }}
+                            </label>
                         </div>
                         <div class="col-xs-3">
-                            {{ form.gorehbe.label }}
-                            {{ form.gorehbe }}
+                            <label>
+                                {{ form.gorehbe.label }}
+                                {{ form.gorehbe }}
+                            </label>
                         </div>
-                            <div class="col-xs-3">
-                            {{ form.salemm.label }}
-                            {{ form.salemm }}
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.salemm.label }}
+                                {{ form.salemm }}
+                            </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <h4 class="setting-title">مدرک تحصیلی</h4>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.zirediplom.label }}
+                                {{ form.zirediplom }}
+                            </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.diplom.label }}
+                                {{ form.diplom }}
+                            </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.ofghdiplom.label }}
+                                {{ form.ofghdiplom }}
+                            </label>
+                        </div>
+                          <div class="col-xs-3">
+                            <label>
+                                {{ form.lisans.label }}
+                                {{ form.lisans }}
+                            </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.ofghlisans.label }}
+                                {{ form.ofghlisans }}
+                            </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.doctra.label }}
+                                {{ form.doctra }}
+                            </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <h4 class="setting-title">مذهب  و دین</h4>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.shie.label }}
+                                {{ form.shie }}
+                            </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                {{ form.ahle_tasnon.label }}
+                                {{ form.ahle_tasnon }}
+                            </label>
                         </div>
                     </div>
                 </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form.zirediplom.label }}
-                            {{ form.zirediplom }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.diplom.label }}
-                            {{ form.diplom }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.ofghdiplom.label }}
-                            {{ form.ofghdiplom }}
-                        </div>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form.lisans.label }}
-                            {{ form.lisans }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.ofghlisans.label }}
-                            {{ form.ofghlisans }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.doctra.label }}
-                            {{ form.doctra }}
-                        </div>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form.shie.label }}
-                            {{ form.shie }}
-
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.ahle_tasnon.label }}
-                            {{ form.ahle_tasnon }}
-                        </div>
-                        <div class="col-xs-4">
-                            {{ form.takmilzarmit.label }}
-                            {{ form.takmilzarmit }}
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success pull-right">ایجاد</button>
             </form>
-
         </div>
-        <!-- /.box-body -->
     </div>
 {% endblock %}

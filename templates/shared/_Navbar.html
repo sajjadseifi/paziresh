@@ -2,10 +2,9 @@
 <style>
     .user-loggedin
     {
-        margin:5px 10px;
-        padding: 8px 14px;
+        padding: 8px ;
         color:white;
-        background:#ffffff22;
+        background:#ffffff11;
         border-radius:4px;
         display:flex;
         align-items:center;
@@ -59,7 +58,16 @@
                خروج <i class="fa fa-sign-out"></i> 
             </a>
         </p>
-        <form action="#" method="get" class="sidebar-form">
+        {% if request.user.is_staff %}
+            <a 
+                target="_blank"
+                style="text-align:center;display: block;margin: 4px 10px;padding:6px;background-color: #447766;color: white;border-radius: 4px;"
+                href="/admin/"
+            >
+                ورود به پنل کنترل ادمین
+            </a>
+        {% endif %}
+        {% comment %} <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
                 <input type="text" name="q" class="form-control" placeholder="جستجو">
                 <span class="input-group-btn">
@@ -68,7 +76,7 @@
                       </button>
                     </span>
             </div>
-        </form>
+        </form> {% endcomment %}
         <!-- /.search form -->
 
         <!-- Sidebar Menu -->
@@ -178,10 +186,10 @@
               </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'all-Battalion' %}">لیست گردان</a></li>
-                        <li><a href="{% url 'BattalionCreate' %}">ایجاد گردان</a></li>
-                        <li><a href="{% url 'MainViewBattalionGroup' %}">لیست گروهان</a></li>
-                        <li><a href="{% url 'CreateBattalionGroup' %}">ایجاد گروهان</a></li>
+                        <li><a href="{% url 'all-Battalion' %}">فهرست گردان ها</a></li>
+                        <li><a href="{% url 'BattalionCreate' %}">ایجاد گردان جدید</a></li>
+                        <li><a href="{% url 'MainViewBattalionGroup' %}">فهرست گروهان ها</a></li>
+                        <li><a href="{% url 'CreateBattalionGroup' %}">ایجاد گروهان جدید</a></li>
                     </ul>
                 </li>
             {% endif %}

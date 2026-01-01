@@ -1,7 +1,5 @@
 from django.db import models
-
-
-# Create your models here.
+from django.apps import apps
 
 
 class battalion(models.Model):
@@ -9,10 +7,35 @@ class battalion(models.Model):
     is_active = models.BooleanField(default=False, verbose_name='فعال/غیرفعال')
     order = models.IntegerField(null=True, blank=True, verbose_name='اولویت مرتب سازی')
 
+    
+    @property
+    def grohans(self):
+        return list(battalion_group.objects.filter(gordan=self))
+
+    @property
+    def soldiers_counts_after_tatbigh(self):
+        Soldier = apps.get_model('soldiers', 'Soldier')
+
+        return Soldier.objects.filter(t_Gordan__pk=self.pk).count()
+
+
+    @property
+    def soldiers_counts_before_tatbigh(self):
+        Soldier = apps.get_model('soldiers', 'Soldier')
+        
+        return Soldier.objects.filter(Gordan__pk=self.pk).count()
+
+    def reduce_soldiers(self):
+        diffrence = self.soldiers_counts_after_tatbigh - self.soldiers_counts_before_tatbigh
+        reduce ='up' if diffrence > 0 else 'down'  
+        counts = diffrence if reduce == 'up' else diffrence * -1
+        if counts == 0:
+            reduce =''
+        return {'counts' :counts,'reduce':reduce }
+        
     class Meta:
         verbose_name = "گردان"
         verbose_name_plural = "گردان ها"
-
 
 
     def __str__(self):
@@ -39,9 +62,10 @@ class battalion_group(models.Model):
     gorehbe = models.BooleanField(default=False, verbose_name='گروه ب')
     moafazrazm_gorehbe = models.BooleanField(default=False, verbose_name='معاف از رزم + گروه ب')
     zarfiat_total = models.CharField(max_length=250, verbose_name='ظرفیت گروهان کل', null=True, blank=True)
-
-
-
+    # new features
+    # gharagah_sazandegi_khatam = models.BooleanField(default=False,null=True, blank=True, verbose_name='قرارگاه سازندگی خاتم')
+    
+    
     class Meta:
         verbose_name = "گروهان"
         verbose_name_plural = "گروهان ها"
@@ -49,3 +73,26 @@ class battalion_group(models.Model):
     def __str__(self):
         return self.name + self.gordan.name
 
+    @property
+    def settings_list(self):
+        boolean_fields = [
+            'zirediplom',
+            'diplom',
+            'ofghdiplom',
+            'lisans',
+            'ofghlisans',
+            'doctra',
+            'shie',
+            'ahle_tasnon',
+            'salemm',
+            'moafazrazm',
+            'gorehbe',
+            'moafazrazm_gorehbe',
+        ]
+
+        active_settings = []
+        for field in boolean_fields:
+            if getattr(self, field):
+                active_settings.append(self._meta.get_field(field).verbose_name)
+
+        return active_settings
