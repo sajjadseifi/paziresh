@@ -43,3 +43,7 @@ def is_rank_access(access=None, item=''):
     if access is None:
         access = []
     return item in access
+
+@register.filter
+def located_code(value, tatbigh=False):
+    return value.located_code(tatbigh=tatbigh)

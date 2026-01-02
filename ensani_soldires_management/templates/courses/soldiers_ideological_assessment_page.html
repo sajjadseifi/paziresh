@@ -1,0 +1,325 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load filters %}
+
+{% block header %}
+<style>
+/* ---------- Base ---------- */
+body {
+    background: #f4f6f9;
+    font-size: 13px;
+}
+
+.row {
+    margin-left: -8px;
+    margin-right: -8px;
+}
+[class*="col-"] {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* ---------- Card ---------- */
+.card {
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.card-header {
+    background: #f9fafb;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 8px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.card-body {
+    padding: 12px;
+}
+
+/* ---------- Buttons ---------- */
+button {
+    background: #fff;
+    border: 1px solid #cfd8dc;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #3c8dbc;
+    color: #fff;
+    border-color: #3c8dbc;
+}
+
+/* ---------- Assessment list ---------- */
+.card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.card-item:last-child {
+    border-bottom: none;
+}
+
+.card-item strong {
+    color: #34495e;
+    font-size: 12px;
+}
+
+/* ---------- Table ---------- */
+.table {
+    background: #fff;
+}
+
+.table thead th {
+    background: #ecf0f5;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    font-size: 12px;
+}
+/* ---------- Table scroll ---------- */
+.table-wrapper {
+    display: block;
+    max-height: 65svh;       /* ارتفاع دلخواه */
+    overflow: hidden;         /* فقط عمودی اسکرول */
+    padding: 0 !important;
+}
+
+.table-fixed {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-fixed thead, .table-fixed tbody, .table-fixed tr {
+    display: block;
+}
+
+.table-fixed thead {
+    /* هدر ثابت بالای اسکرول */
+}
+
+.table-fixed tbody {
+    height: 60svh;          /* همون ارتفاع wrapper */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.table-fixed thead th {
+    height: 4svh;
+    font-size: 16px;
+}
+.table-fixed thead th, .table-fixed tbody td {
+    vertical-align: middle;
+    padding: 2px 4px;
+}
+
+.table-fixed tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-fixed thead tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+/* ---------- Score inputs ---------- */
+.input-score-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.input-score-group label {
+    font-size: 11px;
+    color: #555;
+    margin: 0;
+    font-weight: bold;
+}
+
+.input-score-group select {
+    min-width: 120px;
+}
+.input-score-group select,
+.input-score-group input {
+    height: 32px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    outline: 0 none;
+
+}
+
+.input-score {
+    min-width: 40px;
+}
+
+/* ---------- Guide ---------- */
+.score-hint {
+    padding-right: 18px;
+    font-size: 12px;
+    color: #555;
+}
+.score-hint li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+}
+
+/* ---------- Modal ---------- */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+}
+</style>
+{% endblock header %}
+
+{% block scores_content %}
+<div class="row">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="col-xs-3">
+
+        <!-- Battalion / Group -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">انتخاب گردان و گروهان</h3>
+            </div>
+            <div class="card-body">
+                {% include '../components/gordan_grohan_choice_form.html' %}
+            </div>
+        </div>
+
+        <!-- Assessments -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">ارزیاب‌ها</h3>
+                <button>ارزیاب جدید</button>
+            </div>
+            <div class="card-body">
+                <ul class="card-list">
+                    {% for ass in assessments %}
+                        <li class="card-item">
+                            <strong>{{ ass.fullname }}</strong>
+                            <div>
+                                <button>ویرایش</button>
+                                <form method="post" action="{% url 'soldiers_ideological_assessment_delete' %}" style="display:inline">
+                                    {% csrf_token %}
+                                    <button onclick="return onRemoveAssessment('{{ ass.fullname }}')">حذف</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="text-muted">هیچ ارزیابی ثبت نشده است</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="col-xs-9">
+
+        <!-- Guide -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">راهنما</h3>
+            </div>
+            <div class="card-body">
+                <ul class="score-hint">
+                    <li>ابتدا گردان و گروهان مورد نظر را انتخاب کنید.</li>
+                    <li>برای هر سرباز، ارزیاب مربوطه را مشخص نمایید.</li>
+                    <li>نمرات باید عددی و در بازه مجاز وارد شوند.</li>
+                    <li>در صورت تغییر گروهان، اطلاعات جدول به‌روزرسانی می‌شود.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">جدول گروهانی ارزیابی عقیدتی</h3>
+                <div style="flex: 1;"></div>
+                <button>ثبت و ذخیره</button>
+                <button>خروجی اکسل</button>
+                <button>چاپ</button>
+            </div>
+            <div class="card-body table-wrapper">
+                <table class="table table-fixed">
+                    <thead>
+                        <tr>
+                            <th colspan="1">کد ملی</th>
+                            <th colspan="1">نام و نام خانوادگی</th>
+                            <th colspan="1">گردان/گروهان/کد</th>
+                            <th colspan="2">شروع دوره</th>
+                            <th colspan="2">میان دوره</th>
+                            <th colspan="2">پایان دوره</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in soldiers %}
+                        <tr>
+                            <td colspan="1">{{ s.National_Code }}</td>
+                            <td colspan="1">{{ s.name }} {{ s.family }}</td>
+                            <td colspan="1">{{ s|located_code:en.tatbigh }}</td>
+
+                            {% for i in "123" %}
+                                <td colspan="2">
+                                    <div class="input-score-group">
+                                        <label>ارزیاب</label>
+                                        {% include '../components/assessments_select.html' with assessments=assessments %}
+                                        <label>نمره</label>
+                                        <input type="number" class="input-score" min="0" max="20">
+                                    </div>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal">
+    مودال افزودن / ویرایش ارزیاب
+</div>
+{% endblock %}
+
+{% block footer %}
+<script>
+function onRemoveAssessment(fullname) {
+    return confirm(`آیا از حذف ارزیاب ${fullname} مطمئن هستید؟`);
+}
+</script>
+{% endblock footer %}

@@ -64,13 +64,14 @@ urlpatterns = [
     path('courses/help/', soldiers_scores_help_page, name='soldiers_scores_help_page'),
     path('courses/scores/top-course/', top_soldiers_course_page, name='top_soldiers_course_page'),
     path('courses/scores/top-gordan/', top_soldiers_gordan_page, name='top_soldiers_gordan_page'),
+    path('courses/scores/ideological-assessment/', soldiers_ideological_assessment_page, name='soldiers_ideological_assessment_page'),
+    path('courses/scores/ideological-assessment/delete', soldiers_ideological_assessment_delete, name='soldiers_ideological_assessment_delete'),
     path('courses/tatbigh/', soldiers_tatbigh_page, name='soldiers_tatbigh_page'),
     path('courses/tatbigh/remove/<str:pk>', remove_soldier_from_tatbigh, name='remove_soldier_from_tatbigh'),
     path('courses/test-salamat-rawan/', test_salamat_rawan, name='test_salamat_rawan'),
     path('courses/test-salamat-ravan/action/<str:action>/soldier/<int:soldier_id>/',test_salamat_ravan_actions, name='test_salamat_ravan_actions'),
     path('courses/test-salamat-ravan/action/soldiers',test_salamat_ravan_actions, name='test_salamat_ravan_actions_soldiers'),
     path('api/soldier/national', get_soldier_by_national_code, name='api_get_soldier_by_national_code'),
-
      
 ]
 

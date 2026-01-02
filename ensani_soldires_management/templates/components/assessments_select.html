@@ -1,0 +1,5 @@
+<select name="assessments" class="select assessment-select">
+    {% for ass in assessments  %}
+        <option value="{{ass.id}}">{{ass.fullname}}</option>
+    {% endfor %}
+</select>

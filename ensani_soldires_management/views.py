@@ -2959,3 +2959,76 @@ def soldiers_avatar_page(request):
     return render(request, 'courses/soldiers_avatar_page.html', context)
 
 
+
+
+def soldiers_ideological_assessment_page(request):
+        # گرفتن گردان‌ها و گروهان‌هایی که کاربر اجازه مشاهده دارد
+    battalions_allowed = get_user_battalions(request.user)
+    groups_allowed = get_user_battalion_groups(request.user).select_related('gordan')  # select_related برای دسترسی به gordan.name
+
+
+    # گرفتن گردان انتخاب شده از GET یا پیش‌فرض
+    selected_battalion = request.GET.get('battalion')
+    if not selected_battalion and battalions_allowed.exists():
+        selected_battalion = str(battalions_allowed.first().id)
+
+    # گرفتن گروهان انتخاب شده از GET
+    selected_group = request.GET.get('group')
+
+    if groups_allowed.exists():
+        # بررسی اینکه گروهان انتخاب شده مربوط به گردان انتخاب شده هست یا نه
+        valid_group = groups_allowed.filter(id=int(selected_group), gordan_id=int(selected_battalion)).first() if selected_group else None
+
+        if valid_group:
+            # اگر گروهان انتخاب شده معتبر بود، همان را نگه دار
+            selected_group = str(valid_group.id)
+        else:
+            # اگر گروهان انتخاب شده معتبر نبود، اولین گروهان مربوط به گردان انتخابی
+            first_group_in_battalion = groups_allowed.filter(gordan_id=int(selected_battalion)).first()
+            if first_group_in_battalion:
+                selected_group = str(first_group_in_battalion.id)
+            else:
+                # اگر گردان هیچ گروهان نداشت، اولین گروهان موجود در کل گروهان‌ها
+                selected_group = str(groups_allowed.first().id)
+    
+    if selected_battalion:
+        selected_battalion_obj = battalions_allowed.filter(id=selected_battalion).first()
+
+    if selected_group:
+        selected_group_obj = groups_allowed.filter(id=selected_group).first()
+    
+    en = EnsaniSettings.objects.first()
+    soldiers = Soldier.objects.filter(has_been_accepted=True)
+    
+    if selected_group:
+        ann = {'code_gorhan_int': Cast('code_gorhan', IntegerField()) }
+        if en.tatbigh:
+            kw = {'battalion_group': selected_group}
+            order = ('code_gorhan_int',)
+        else:
+            ann['code_gorhan_nahai_int'] = Cast('code_gorhan_nahai', IntegerField())
+            kw = {'t_battalion_group': selected_group}
+            order = ('code_gorhan_nahai_int', 'code_gorhan_int')
+
+        soldiers = (
+            soldiers
+            .annotate(**ann)
+            .filter(**kw)
+            .order_by(*order)
+        )
+
+    context = {
+        'soldiers':soldiers,
+        'battalions': battalions_allowed,
+        'groups': groups_allowed,
+        'selected_battalion': str(selected_battalion),
+        'selected_group': str(selected_group),
+        'selected_group_name': str(selected_group),
+        'selected_battalion_name': selected_battalion_obj.name if selected_battalion_obj else None,
+        'selected_group_name': selected_group_obj.name if selected_group_obj else None,
+    }
+    return render(request, 'courses/soldiers_ideological_assessment_page.html', context)
+
+
+def soldiers_ideological_assessment_delete(request):
+    pass

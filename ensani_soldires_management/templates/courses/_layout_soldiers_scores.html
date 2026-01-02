@@ -93,21 +93,36 @@
             </li>
         {% endif %}
         {% if permissions.dep.farmandehi or  permissions.app.rank_scores %}
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
-               href="{% url 'soldiers_scores_page' %}">
-               <i class="fa fa-bar-chart"></i>
-               نمرات سربازان
-            </a>
-        </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
+                href="{% url 'soldiers_scores_page' %}">
+                <i class="fa fa-bar-chart"></i>
+                نمرات سربازان
+                </a>
+            </li>
         {% endif %}
-
+        {% if permissions.dep.farmandehi or  permissions.dep.aqidati %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_ideological_assessment_page' %}active{% endif %}"
+                href="{% url 'soldiers_ideological_assessment_page' %}">
+                <i class="fa fa-bar-chart"></i>
+                ارزیابی عقیدتی
+                </a>
+            </li>
+        {% endif %}
         {% if permissions.dep.farmandehi or permissions.dep.amoozesh %}
         <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
                href="{% url 'top_soldiers_course_page' %}">
                <i class="fa fa-trophy"></i>
                سربازان برتر در دوره
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
+               href="{% url 'top_soldiers_course_page' %}">
+               <i class="fa fa-trophy"></i>
+               نمره میدان تیر
             </a>
         </li>
         {% endif %}
