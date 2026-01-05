@@ -1,0 +1,592 @@
+{% extends './_layout_soldiers_scores.html' %}
+{% load filters %}
+
+{% block header %}
+<style>
+    /* ---------- Base ---------- */
+    body {
+        background: #f4f6f9;
+        font-size: 13px;
+    }
+
+    .row {
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+    [class*="col-"] {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    /* ---------- Card ---------- */
+    .card {
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+    }
+
+    .card-header {
+        background: #f9fafb;
+        border-bottom: 1px solid #e1e1e1;
+        padding: 8px 12px;
+        margin: 2px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .card-body {
+        padding:  6px;
+    }
+
+
+    .card-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .card-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .card-item:last-child {
+        border-bottom: none;
+    }
+
+    .card-item strong {
+        color: #34495e;
+        font-size: 12px;
+    }
+
+    /* ---------- Table ---------- */
+    .table {
+        background: #fff;
+    }
+
+    .table thead th {
+        background: #ecf0f5;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 12px;
+    }
+    /* ---------- Table scroll ---------- */
+    .table-wrapper {
+        display: block;
+        height: 78svh;       /* ارتفاع دلخواه */
+        overflow: hidden;         /* فقط عمودی اسکرول */
+        padding: 0 !important;
+    }
+
+    .table-fixed {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-fixed thead, .table-fixed tbody, .table-fixed tr {
+        display: block;
+    }
+
+    .table-fixed thead {
+        /* هدر ثابت بالای اسکرول */
+        padding-left: 12px;
+    }
+
+    .table-fixed tbody {
+        height: 70svh;          /* همون ارتفاع wrapper */
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .table-fixed thead th {
+        height: 4svh;
+        font-size: 12px;
+    }
+    .table-fixed thead th, .table-fixed tbody td {
+        vertical-align: middle;
+        padding:  4px !important;
+        text-align: center;
+    }
+
+    .table-fixed tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+  
+    .table-fixed thead tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        
+    }
+    /* ---------- Score inputs ---------- */
+    .input-score-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+    }
+    .input-score-group.chbox {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+        cursor: pointer;
+    }
+
+    .input-score-group label {
+        font-size: 11px;
+        color: #555;
+        margin: 0 !important;
+        font-weight: bold;
+        padding: 0 !important;
+    }
+
+    .input-score-group select {
+        width: 140px;
+        font-size: 10px;
+        line-height: 1;       /* فاصله بین خطوط */
+        height: auto;            /* ارتفاع خودش را با محتوا تنظیم کند */
+        white-space: normal;     /* اجازه شکستن متن به خط بعد */
+    }
+    .input-score-group input {
+        text-align: center;
+        font-size: 14px;
+        margin: 0 !important;
+
+    }
+    .input-score-group select,
+    .input-score-group input {
+        height: 36px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        outline: 0 none;
+    }
+    .input-score-group input[type="checkbox"] {
+       height: unset; 
+       width: 16px;
+       height: 16px;
+    }
+    .input-score-group input:read-only{
+        border: 0 none;
+        background-color: transparent;
+
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* اندازه و ترازدهی متن */
+    .input-score {
+        width: 36px;
+        text-align: center;
+    }
+
+    /* ---------- Guide ---------- */
+    .score-hint {
+        font-size: 13px;
+        color: #555;
+    }
+    .score-hint li {
+        line-height: 1.6;
+    }
+
+    /* ---------- Modal ---------- */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+    }
+    </style>
+    <style>
+    .custom-modal .modal-content {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        font-family: IRANSans, Tahoma, sans-serif;
+    }
+
+    .custom-modal .modal-header {
+        background: #2c3e50;
+        color: #fff;
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+
+    .custom-modal .modal-title {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .custom-modal .modal-body {
+        padding: 20px;
+    }
+
+    .custom-modal .modal-footer {
+        border-top: none;
+        padding: 15px 20px;
+        text-align: left;
+    }
+
+    .custom-modal .form-control {
+        border-radius: 6px;
+        height: 38px;
+    }
+
+    .custom-modal .btn-success {
+        background: #27ae60;
+        border: none;
+    }
+
+    .custom-modal .btn-success:hover {
+        background: #219150;
+    }
+
+    .custom-modal .close {
+        color: #fff;
+        opacity: .8;
+    }
+
+    .custom-modal .close:hover {
+        opacity: 1;
+    }
+</style>
+<style>
+    button {
+        background: #fff;
+        border: 1px solid #cfd8dc;
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: #333;
+    }
+    button.sm {
+        padding: 2px 4px;
+        font-size: 10px;
+    }
+    /* Purple */
+    button.purple {
+        background: #6f42c1;
+        border-color: #6f42c1;
+        color: #fff;
+    }
+    button.purple:hover {
+        background: #5936a2;
+        border-color: #5936a2;
+    }
+    /* Success */
+    button.success {
+        background: #28a745;
+        border-color: #28a745;
+        color: #fff;
+    }
+    button.success:hover {
+        background: #218838;
+        border-color: #218838;
+    }
+    /* Info */
+    button.info {
+        background: #17a2b8;
+        border-color: #17a2b8;
+        color: #fff;
+    }
+    button.info:hover {
+        background: #138496;
+        border-color: #138496;
+    }
+    /* Cyan */
+    button.cyan {
+        background: #00bcd4;
+        border-color: #00bcd4;
+        color: #fff;
+    }
+    button.cyan:hover {
+        background: #00a0b8;
+        border-color: #00a0b8;
+    }
+    /* Sky (Light Blue) */
+    button.sky {
+        background: #87ceeb;
+        border-color: #87ceeb;
+        color: #fff;
+    }
+    button.sky:hover {
+        background: #6ebfe0;
+        border-color: #6ebfe0;
+    }
+    /* Danger (Red) */
+    button.danger {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+    button.danger:hover {
+        background: #c82333;
+        border-color: #c82333;
+    }
+
+    /* Warning (Orange/Yellow) */
+    button.warning {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+    button.warning:hover {
+        background: #e0a800;
+        border-color: #e0a800;
+    }
+    /* Secondary (Gray) */
+    button.secondary {
+        background: #6c757d;
+        border-color: #6c757d;
+        color: #fff;
+    }
+    button.secondary:hover {
+        background: #5a6268;
+        border-color: #5a6268;
+    }
+    /* Light (White/Light Gray) */
+    button.light {
+        background: #f8f9fa;
+        border-color: #f8f9fa;
+        color: #212529;
+    }
+    button.light:hover {
+        background: #e2e6ea;
+        border-color: #e2e6ea;
+    }
+    /* Dark (Black) */
+    button.dark {
+        background: #343a40;
+        border-color: #343a40;
+        color: #fff;
+    }
+    button.dark:hover {
+        background: #23272b;
+        border-color: #23272b;
+    }
+    .training {
+        color:white;
+        padding: 2px 4px;
+        border-radius: 4px;
+        margin-top:10px;
+        font-size: 10px;
+        display: inline-block;
+    }
+    .training-no {
+        background-color: crimson;
+    }
+    .training-yes {
+        background-color: #218838;
+    }
+
+</style>
+
+{% endblock header %}
+
+{% block scores_content %}
+<div style="display: flex;gap: 4px;">
+    <div style="width: 360px;">
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">انتخاب گردان و گروهان</h3>
+            </div>
+            <div class="card-body size-sm">
+                {% include '../components/gordan_grohan_choice_form.html' %}
+            </div>
+        </div>
+         <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">خروجی و چاپ</h3>
+            </div>
+            <div class="card-body size-sm">
+                {% include 'components/nested_list.html'  %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">راهنما</h3>
+            </div>
+            <div class="card-body">
+                <ul class="score-hint list-unstyled">
+                    <li>ابتدا گردان و گروهان مورد نظر را انتخاب کنید.</li>
+                    <li>برای هر سرباز، ارزیاب مربوطه را مشخص نمایید.</li>
+                    <li>نمرات باید عددی و در بازه مجاز وارد شوند.</li>
+                    <li>در صورت تغییر گروهان، اطلاعات جدول به‌روزرسانی می‌شود.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div style="flex: 1;">
+        <!-- Table -->
+        <form class="card" method="POST" action="{% url 'soldiers_training_transcript_save' %}">
+            {% csrf_token %}
+            <div class="card-header">
+                <h3 class="card-title">جدول گروهانی کارنامه آموزشی</h3>
+                <div style="flex: 1;"></div>
+                <button type="submit" class="success">ثبت و ذخیره</button>
+            </div>
+            <div class="card-body table-wrapper">
+                <table class="table table-striped table-fixed">
+                    <thead >
+                        <tr >
+                            <th colspan="1">کد</th>
+                            <th colspan="6">فراگیر</th>
+                            <th colspan="10">تیراندازی</th>
+                            <th colspan="2">سلاح</th>
+                            <th colspan="2">تاکتیک</th>
+                            <th colspan="2">آمادگی جسمانی</th>
+                            <th colspan="2">آداب نظامی</th>
+                            <th colspan="2">معدل</th>
+                            <th colspan="2">کارنامه</th>
+                        </tr>
+                        <tr>
+                            <th colspan="1">سازمانی</th>
+                            <th colspan="3">اطلاعات فردی</th>
+                            <th colspan="3">کدملی</th>
+                            <th colspan="2">مرحله اول</th>
+                            <th colspan="2">مرحله دوم</th>
+                            <th colspan="2">مرحله سوم</th>
+                            <th colspan="2">مرحله چهارم</th>
+                            <th colspan="2">معدل</th>
+                            <th colspan="2">نوع</th>
+                            <th colspan="2">نمره</th>
+                            <th colspan="2">نمره</th>
+                            <th colspan="2">نمره</th>
+                            <th colspan="2">محاسبه</th>
+                            <th colspan="2">دارد/ندارد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in soldiers %}
+                        <tr
+                            data-id="{{s.id}}"
+                            data-national-code="{{s.National_Code}}"
+                            data-fullname="{{s.name}} {{s.name}}"
+
+                        >
+                            <td style="text-align: center;font-weight: bold;vertical-align: middle;font-size: 16px;" colspan="1">
+                                {% if en.tatbigh %}
+                                    <strong> {{s.code_gorhan_nahai}}</strong>     
+                                {% else %}
+                                    <strong> {{s.code_gorhan}}</strong>                                
+                                {% endif %} 
+                            </td>
+                            <td colspan="6">
+                                <div style="text-align: right;font-size: 14px;">
+                                    <strong>{{ s.name }} {{ s.family }}</strong>
+                                </div>
+                                <div style="display: flex;gap: 4px; justify-content: space-between;" class="layout-sm">
+                                    {% include 'components/soldier_status.html' with soldier=s %}
+                                    <span style="font-size: 11px;">{{ s.National_Code }}</span>
+                                </div>
+                            </td>
+                            {% if s.willing_to_learn %}
+                                {% for f in training_fields %}
+                                    <td colspan="2">
+                                        {% if f.static %}
+                                           {{f.value|default:'-'}}
+                                        {% elif f.readonly %}
+                                            {% include '../components/input-score-readonly.html'  with value=s.training_record|safe_attr:f.field %}
+                                        {% else %}
+                                            {% include '../components/input-score.html' with name=s.id|strval|add:"_"|add:f.field value=s.training_record|safe_attr:f.field %}
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            {% else %}
+                                {% for _ in training_fields %}
+                                    <th colspan="2" style="text-align:center;">-</th>
+                                {% endfor %}
+                            {% endif %}
+                            <td colspan="2">
+                                <span class="training training-{{s.training_record|yesno:'yes,no'}}">
+                                    {% if s.training_record %}دارد{% else %}ندارد{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade custom-modal" id="assessmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+
+            <form method="post" id="assessmentForm">
+                {% csrf_token %}
+                <input type="hidden" name="id" id="assessment-id">
+
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="closeAssessmentModal()">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="assessmentModalTitle"></h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>درجه</label>
+                        <input type="text" name="rank" id="assessment-rank" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>نام و نام خانوادگی</label>
+                        <input type="text" name="full_name" id="assessment-fullname" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">ذخیره</button>
+                    <button type="button" class="btn btn-default" onclick="closeAssessmentModal()">
+                        انصراف
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock footer %}

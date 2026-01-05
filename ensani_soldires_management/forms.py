@@ -209,3 +209,180 @@ class TestSalamatRavanForm(forms.Form):
         label='تاریخ آزمون',
         required=False
     )
+
+
+# forms.py
+from django import forms
+from .models import IdeologicalAssessment
+from django.core.exceptions import ValidationError
+from django.forms.forms import NON_FIELD_ERRORS
+
+class IdeologicalAssessmentForm(forms.ModelForm):
+    class Meta:
+        model = IdeologicalAssessment
+        fields = ['rank', 'full_name']
+
+
+class IdeologicalAssessmentBulkForm(forms.Form):
+    SCORE_FIELDS = {
+        "ideological_score_start",
+        "ideological_score",
+        "ideological_score_end",
+        "quran_memorization",
+    }
+
+    ASSESSMENT_FIELDS = {
+        "ideological_score_start_assessment",
+        "ideological_score_assessment",
+        "ideological_score_end_assessment",
+    }
+
+    CHECKBOX_FIELDS = {
+        "nahj_memorization",
+        "sajjadiya_memorization",
+    }
+
+    MAX_ASSESSOR_LENGTH = 255
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.soldier_ids = set()
+        self.cleaned_bulk_data = {}
+
+        if self.data:
+            self._extract_soldier_ids()
+
+    def _extract_soldier_ids(self):
+        """شناسایی آیدی سربازها از کلیدهای POST"""
+        for key in self.data.keys():
+            if "_" in key:
+                sid = key.split("_")[0]
+                if sid.isdigit():
+                    self.soldier_ids.add(int(sid))
+
+    def clean(self):
+        cleaned = {}
+        errors = []
+
+        for key, value in self.data.items():
+            if "_" not in key:
+                continue
+
+            sid_str, field = key.split("_", 1)
+            if not sid_str.isdigit():
+                continue
+            sid = int(sid_str)
+
+            # فیلدهای نمره‌ای → float
+            if field in self.SCORE_FIELDS:
+                try:
+                    cleaned.setdefault(sid, {})[field] = float(value or 0.0)
+                except (ValueError, TypeError):
+                    errors.append(f"{key}: نمره معتبر نیست")
+
+            # فیلدهای ارزیاب → رشته کوتاه
+            elif field in self.ASSESSMENT_FIELDS:
+                assessor = str(value).strip() if value else ""
+                if len(assessor) > self.MAX_ASSESSOR_LENGTH:
+                    errors.append(f"{key}: نام ارزیاب بیش از {self.MAX_ASSESSOR_LENGTH} کاراکتر است")
+                else:
+                    cleaned.setdefault(sid, {})[field] = assessor
+
+            # checkbox → True اگر وجود داشته باشد
+            elif field in self.CHECKBOX_FIELDS:
+                cleaned.setdefault(sid, {})[field] = True
+
+        # checkbox‌هایی که ارسال نشده → False
+        for sid in self.soldier_ids:
+            for field in self.CHECKBOX_FIELDS:
+                if field not in cleaned.get(sid, {}):
+                    cleaned.setdefault(sid, {})[field] = False
+
+        if errors:
+            raise ValidationError({forms.NON_FIELD_ERRORS: errors})
+
+        self.cleaned_bulk_data = cleaned
+        return cleaned
+
+
+
+
+class BulkDynamicForm(forms.Form):
+    INT_FIELDS = set()
+    FLOAT_FIELDS = set()
+    STRING_FIELDS = set()
+    CHECKBOX_FIELDS = set()
+    MAX_STRING_LENGTH = 255
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.soldier_ids = set()
+        self.cleaned_bulk_data = {}  # {sid: {field: value}}
+
+        if self.data:
+            self._extract_soldier_ids()
+
+    def _extract_soldier_ids(self):
+        for key in self.data.keys():
+            if "_" in key:
+                sid = key.split("_")[0]
+                if sid.isdigit():
+                    self.soldier_ids.add(int(sid))
+
+    def clean(self):
+        cleaned = {}
+        errors = []
+
+        for key, value in self.data.items():
+            if "_" not in key:
+                continue
+            sid_str, field = key.split("_", 1)
+            if not sid_str.isdigit():
+                continue
+            sid = int(sid_str)
+
+            # convert empty string to None
+            value = value if value not in ("", " ") else None
+
+            if field in self.INT_FIELDS:
+                if value is not None:
+                    try:
+                        cleaned.setdefault(sid, {})[field] = int(value)
+                    except (ValueError, TypeError):
+                        errors.append(f"{key}: مقدار صحیح معتبر نیست")
+                else:
+                    cleaned.setdefault(sid, {})[field] = None
+
+            elif field in self.FLOAT_FIELDS:
+                if value is not None:
+                    try:
+                        cleaned.setdefault(sid, {})[field] = float(value)
+                    except (ValueError, TypeError):
+                        errors.append(f"{key}: مقدار اعشاری معتبر نیست")
+                else:
+                    cleaned.setdefault(sid, {})[field] = None
+
+            elif field in self.STRING_FIELDS:
+                if value is not None:
+                    val = str(value).strip()
+                    if len(val) > self.MAX_STRING_LENGTH:
+                        errors.append(f"{key}: طول رشته بیش از {self.MAX_STRING_LENGTH} کاراکتر است")
+                    else:
+                        cleaned.setdefault(sid, {})[field] = val
+                else:
+                    cleaned.setdefault(sid, {})[field] = None
+
+            elif field in self.CHECKBOX_FIELDS:
+                cleaned.setdefault(sid, {})[field] = bool(value)
+
+        # checkbox هایی که ارسال نشده → False
+        for sid in self.soldier_ids:
+            for field in self.CHECKBOX_FIELDS:
+                if field not in cleaned.get(sid, {}):
+                    cleaned.setdefault(sid, {})[field] = False
+
+        if errors:
+            raise ValidationError({"__all__": errors})
+
+        self.cleaned_bulk_data = cleaned
+        return cleaned

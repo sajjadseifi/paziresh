@@ -30,6 +30,88 @@ logger = logging.getLogger(__name__)
 from django.http import HttpResponseServerError
 from .constatns import *
 
+from django.shortcuts import render,redirect
+from django.core.paginator import Paginator
+from django.urls import reverse
+from .access import get_user_battalions, get_user_battalion_groups,get_user_soldiers
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from .forms import TopSoldiersForm
+from .access import get_user_soldiers
+
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.forms import formset_factory
+from .forms import SoldierFilterForm, SoldierProblemForm, PROBLEM_FIELDS, PROBLEM_LABELS
+
+from django.forms import formset_factory
+from django.shortcuts import redirect, render
+from .forms import SoldierProblemForm, SoldierFilterForm, PROBLEM_LABELS
+import openpyxl
+from django.http import HttpResponse
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from django.db import transaction
+from django.shortcuts import redirect
+from django.forms import formset_factory
+import openpyxl
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from openpyxl.utils import get_column_letter
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.contrib import messages
+from soldiers.constants import physical_condition_list ,Type_of_disease_list
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import TestSalamatRavanForm
+from django.utils import timezone
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.utils import timezone
+
+from django.views.decorators.http import require_GET
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from soldiers.models import Soldier
+from django.utils import timezone
+from ensaniapp_settings.models import EnsaniSettings
+import zipfile, io, os, pandas as pd
+from django.http import HttpResponse
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.shortcuts import render
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
+from .forms import IdeologicalAssessmentBulkForm,BulkDynamicForm
+from .utils import get_battalion_group_context,get_filtered_soldiers
+from .models import SoldierTrainingRecord
+from django.http import HttpResponse
+from .models import Soldier
+from .utils import get_filtered_soldiers
+from core.excel import generate_excel
+from django.http import HttpResponse
+from .utils import get_filtered_soldiers
+from ensaniapp_settings.models import EnsaniSettings
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import IdeologicalAssessment
+from .forms import IdeologicalAssessmentForm
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
+from accounts.context import user_access_context
+
+
 def get_military_rank(education, score):
     """
     Determine military rank based on education level and score.
@@ -1970,15 +2052,6 @@ def export_to_excel_list_goili(request):
     return response
 
 
-from django.shortcuts import render,redirect
-from django.core.paginator import Paginator
-from django.urls import reverse
-from .access import get_user_battalions, get_user_battalion_groups,get_user_soldiers
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
-from .forms import TopSoldiersForm
-from .access import get_user_soldiers
-
 def send_rank_score_page(request):
     # همه سربازان مرتب بر اساس گردان و گروهان
     in_course_soldiers = Soldier.objects.filter(
@@ -2250,11 +2323,6 @@ def top_soldiers_gordan_page(request):
 def soldiers_scores_help_page(request):
     return render(request, 'courses/soldiers_scores_help.html')
 
-from django.shortcuts import render, redirect
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.forms import formset_factory
-from .forms import SoldierFilterForm, SoldierProblemForm, PROBLEM_FIELDS, PROBLEM_LABELS
 
 def soldiers_problems_page(request):
     user = request.user
@@ -2332,15 +2400,6 @@ def soldiers_problems_page(request):
     return render(request, 'courses/soldiers_problems_page.html', context)
 
 
-from django.forms import formset_factory
-from django.shortcuts import redirect, render
-from .forms import SoldierProblemForm, SoldierFilterForm, PROBLEM_LABELS
-import openpyxl
-from django.http import HttpResponse
-from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-from django.db import transaction
-from django.shortcuts import redirect
-from django.forms import formset_factory
 
 @transaction.atomic
 def soldiers_problems_update(request):
@@ -2399,10 +2458,6 @@ def soldiers_problems_update(request):
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-import openpyxl
-from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
-from openpyxl.utils import get_column_letter
-from django.http import HttpResponse
 
 def soldiers_problems_export_excel(request):
     user = request.user
@@ -2495,11 +2550,8 @@ def soldiers_problems_export_excel(request):
     response['Content-Disposition'] = 'attachment; filename=soldiers_problems.xlsx'
     wb.save(response)
     return response
-from django.db.models import IntegerField
-from django.db.models.functions import Cast
-from django.views.decorators.csrf import csrf_protect
-from django.contrib import messages
-from accounts.context import user_access_context
+
+
 
 @csrf_protect
 @login_required
@@ -2628,8 +2680,6 @@ def soldiers_tatbigh_page(request):
     return render(request, 'courses/soldiers_tatbigh_page.html', context)
 
 
-from django.shortcuts import redirect
-from django.contrib import messages
 
 def remove_soldier_from_tatbigh(request, pk):
     if request.method == "POST":
@@ -2649,18 +2699,6 @@ def remove_soldier_from_tatbigh(request, pk):
     # بازگشت دقیقاً به همان URL قبلی
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-from soldiers.constants import physical_condition_list ,Type_of_disease_list
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .forms import TestSalamatRavanForm
-from django.utils import timezone
-from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.utils import timezone
 
 @login_required
 def test_salamat_rawan(request):
@@ -2737,14 +2775,6 @@ def test_salamat_rawan(request):
 
     })
 
-
-from django.views.decorators.http import require_GET
-
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from soldiers.models import Soldier
-from django.utils import timezone
 
 
 
@@ -2834,15 +2864,6 @@ def get_soldier_by_national_code(request):
     except Soldier.DoesNotExist:
         return JsonResponse({"error": "سربازی با این کد ملی یافت نشد."}, status=404)
 
-from ensaniapp_settings.models import EnsaniSettings
-import zipfile, io, os, pandas as pd
-from django.http import HttpResponse
-from django.conf import settings
-from django.core.files.base import ContentFile
-from django.shortcuts import render
-from django.db.models import IntegerField
-from django.db.models.functions import Cast
-from django.contrib.auth.decorators import login_required
 
 
 @login_required
@@ -2960,75 +2981,294 @@ def soldiers_avatar_page(request):
 
 
 
+ideological_fields = [
+    {
+        "score": "ideological_score_start",
+        "assessment": "ideological_score_start_assessment",
+        "label": "شروع دوره"
+    },
+    {
+        "score": "ideological_score",
+        "assessment": "ideological_score_assessment",
+        "label": "میان دوره"
+    },
+    {
+        "score": "ideological_score_end",
+        "assessment": "ideological_score_end_assessment",
+        "label": "پایان دوره"
+    }
+]
+
+from .utils import get_battalion_group_context
 
 def soldiers_ideological_assessment_page(request):
-        # گرفتن گردان‌ها و گروهان‌هایی که کاربر اجازه مشاهده دارد
-    battalions_allowed = get_user_battalions(request.user)
-    groups_allowed = get_user_battalion_groups(request.user).select_related('gordan')  # select_related برای دسترسی به gordan.name
+    base_soldiers = Soldier.objects.filter(has_been_accepted=True)
 
+    context = get_battalion_group_context(request, base_soldiers)
 
-    # گرفتن گردان انتخاب شده از GET یا پیش‌فرض
-    selected_battalion = request.GET.get('battalion')
-    if not selected_battalion and battalions_allowed.exists():
-        selected_battalion = str(battalions_allowed.first().id)
-
-    # گرفتن گروهان انتخاب شده از GET
-    selected_group = request.GET.get('group')
-
-    if groups_allowed.exists():
-        # بررسی اینکه گروهان انتخاب شده مربوط به گردان انتخاب شده هست یا نه
-        valid_group = groups_allowed.filter(id=int(selected_group), gordan_id=int(selected_battalion)).first() if selected_group else None
-
-        if valid_group:
-            # اگر گروهان انتخاب شده معتبر بود، همان را نگه دار
-            selected_group = str(valid_group.id)
-        else:
-            # اگر گروهان انتخاب شده معتبر نبود، اولین گروهان مربوط به گردان انتخابی
-            first_group_in_battalion = groups_allowed.filter(gordan_id=int(selected_battalion)).first()
-            if first_group_in_battalion:
-                selected_group = str(first_group_in_battalion.id)
-            else:
-                # اگر گردان هیچ گروهان نداشت، اولین گروهان موجود در کل گروهان‌ها
-                selected_group = str(groups_allowed.first().id)
-    
-    if selected_battalion:
-        selected_battalion_obj = battalions_allowed.filter(id=selected_battalion).first()
-
-    if selected_group:
-        selected_group_obj = groups_allowed.filter(id=selected_group).first()
-    
-    en = EnsaniSettings.objects.first()
-    soldiers = Soldier.objects.filter(has_been_accepted=True)
-    
-    if selected_group:
-        ann = {'code_gorhan_int': Cast('code_gorhan', IntegerField()) }
-        if en.tatbigh:
-            kw = {'battalion_group': selected_group}
-            order = ('code_gorhan_int',)
-        else:
-            ann['code_gorhan_nahai_int'] = Cast('code_gorhan_nahai', IntegerField())
-            kw = {'t_battalion_group': selected_group}
-            order = ('code_gorhan_nahai_int', 'code_gorhan_int')
-
-        soldiers = (
-            soldiers
-            .annotate(**ann)
-            .filter(**kw)
-            .order_by(*order)
-        )
-
-    context = {
-        'soldiers':soldiers,
-        'battalions': battalions_allowed,
-        'groups': groups_allowed,
-        'selected_battalion': str(selected_battalion),
-        'selected_group': str(selected_group),
-        'selected_group_name': str(selected_group),
-        'selected_battalion_name': selected_battalion_obj.name if selected_battalion_obj else None,
-        'selected_group_name': selected_group_obj.name if selected_group_obj else None,
+    page_context ={
+        'assessments': IdeologicalAssessment.objects.all(),
+        'ideological_fields': ideological_fields,
     }
-    return render(request, 'courses/soldiers_ideological_assessment_page.html', context)
+    context.update(page_context)
+    template_name = 'courses/soldiers_ideological_assessment_page.html'
+    return render(request,template_name,context)
 
-
+    
 def soldiers_ideological_assessment_delete(request):
     pass
+
+
+def assessment_add(request):
+    if request.method == 'POST':
+        form = IdeologicalAssessmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'ارزیاب با موفقیت ثبت شد.')
+        else:
+            messages.error(request, 'اطلاعات وارد شده معتبر نیست.')
+
+    return redirect('soldiers_ideological_assessment_page')
+
+def assessment_edit(request, pk):
+    assessment = get_object_or_404(IdeologicalAssessment, pk=pk)
+
+    if request.method == 'POST':
+        form = IdeologicalAssessmentForm(request.POST, instance=assessment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'اطلاعات ارزیاب با موفقیت ویرایش شد.')
+        else:
+            messages.error(request, 'ویرایش انجام نشد. داده‌ها را بررسی کنید.')
+
+    return redirect('soldiers_ideological_assessment_page')
+
+def assessment_delete(request):
+    if request.method == 'POST':
+        assessment_id = request.POST.get('id')
+        assessment = get_object_or_404(IdeologicalAssessment, pk=assessment_id)
+        assessment.delete()
+        messages.warning(request, 'ارزیاب حذف شد.')
+
+    return redirect('soldiers_ideological_assessment_page')
+
+
+def soldiers_ideological_assessment_save(request):
+    if request.method != "POST":
+        return redirect('soldiers_ideological_assessment_page')
+
+    form = IdeologicalAssessmentBulkForm(request.POST)
+
+    if not form.is_valid():
+        print(form.errors)  # برای دیباگ
+        messages.error(request, "مقادیر ارزیابی نامعتبر هستند")
+        return redirect('soldiers_ideological_assessment_page')
+
+    with transaction.atomic():
+        soldiers = Soldier.objects.select_for_update().filter(id__in=form.cleaned_bulk_data.keys())
+        soldier_map = {s.id: s for s in soldiers}
+
+        for sid, data in form.cleaned_bulk_data.items():
+            soldier = soldier_map.get(sid)
+            if not soldier:
+                continue
+
+            for field, value in data.items():
+                # تبدیل مناسب انواع
+                if field in form.CHECKBOX_FIELDS:
+                    value = bool(value)
+                elif field in form.SCORE_FIELDS:
+                    try:
+                        value = float(value)
+                    except (ValueError, TypeError):
+                        value = 0.0
+                elif field in form.ASSESSMENT_FIELDS:
+                    value = value.strip() if value else None
+
+                setattr(soldier, field, value)
+
+        update_fields = list(form.SCORE_FIELDS | form.ASSESSMENT_FIELDS | form.CHECKBOX_FIELDS)
+        Soldier.objects.bulk_update(soldiers, update_fields)
+
+    messages.success(request, "ارزیابی‌ها با موفقیت ذخیره شد")
+    return redirect('soldiers_ideological_assessment_page')
+
+
+def soldiers_training_transcript_page(request):
+    base_soldiers = Soldier.objects.filter(has_been_accepted=True)
+
+    context = get_battalion_group_context(request, base_soldiers)
+
+    items = [
+        {
+            "title": "خروجی اکسل",
+            'base_url':'soldiers_training_transcript_export_excel',
+            "children": context['nodes'],
+        },
+        {
+            "title": "چاپ کارنامه",
+            'base_url':'soldiers_training_transcript_print',
+            "children": context['nodes'],
+        },
+        # {
+        #     "title": "چاپ فهرست",
+        #     'base_url':'',
+        #     'q':'#',
+        #     "children": context['nodes'],
+        # },
+    ]
+    # context.soldiers
+    page_context = {
+        'training_fields':SoldierTrainingRecord.training_fields(),
+        'items':items,
+        'parent_base_url': '',
+    }
+    context.update(page_context)
+    template_name = 'courses/soldiers_training_transcript_page.html'
+    return render(request,template_name,context)
+
+
+def soldiers_training_transcript_export_excel(request):
+    b = request.GET.get('b')
+    g = request.GET.get('g')
+
+    # گرفتن سربازان با رکورد آموزشی
+    soldiers_qs = Soldier.objects.filter(training_record__isnull=False).select_related('training_record')
+    soldiers = get_filtered_soldiers(soldiers_qs, battalion=b, group=g)
+
+    en = EnsaniSettings.objects.first()
+
+    # آماده‌سازی هدرها
+    headers = [
+        "نام",
+        "نام خانوادگی",
+        "نام پدر",
+        "کد ملی",
+        "گردان",
+        "گروهان",
+        "کد سازمانی",
+        "مرحله ۱ تیراندازی",
+        "مرحله ۲ تیراندازی",
+        "مرحله ۳ تیراندازی",
+        "مرحله ۴ تیراندازی",
+        "میانگین تیراندازی",
+        "نمره تاکتیک",
+        "آمادگی جسمانی",
+        "انضباط",
+        "میانگین نهایی",
+    ]
+
+    # آماده‌سازی داده‌ها
+    data = []
+    for s in soldiers:
+        if en.tatbigh:
+            g_name = s.t_Gordan.name if s.t_Gordan else ''
+            b_name = s.t_battalion_group.name if s.t_battalion_group else ''
+        else:
+            g_name = s.Gordan.name if s.Gordan else ''
+            b_name = s.battalion_group.name if s.battalion_group else ''
+
+        row = [
+            s.name,
+            s.family,
+            s.fathers_name,
+            s.National_Code,
+            g_name,
+            b_name,
+            s.current_code,
+            getattr(s.training_record, 'shooting_stage_1', ''),
+            getattr(s.training_record, 'shooting_stage_2', ''),
+            getattr(s.training_record, 'shooting_stage_3', ''),
+            getattr(s.training_record, 'shooting_stage_4', ''),
+            getattr(s.training_record, 'shooting_avg', ''),
+            getattr(s.training_record, 'tactic_score', ''),
+            getattr(s.training_record, 'physical_fitness_score', ''),
+            getattr(s.training_record, 'military_discipline_score', ''),
+            getattr(s.training_record, 'final_average', ''),
+        ]
+        data.append(row)
+
+    # استفاده از تابع generate_excel
+    return generate_excel(headers, data, filename="Soldiers_Training_Transcript")
+
+
+def soldiers_training_transcript_export_print(request):
+    pass
+
+def soldiers_training_transcript_print(request):
+    b = request.GET.get('b')
+    g = request.GET.get('g')
+    soldiers_qs = Soldier.objects.all()
+    soldiers = get_filtered_soldiers(soldiers_qs, battalion=b, group=g)
+    context = { 
+        "soldiers": soldiers, 
+        "b": b,  
+        "g": g,
+    }
+    return render(request, "courses/soldiers_training_transcript_print.html", context)
+
+
+def soldiers_training_transcript_save(request):
+    if request.method != 'POST':
+        return redirect(request.META.get('HTTP_REFERER', 'soldiers_training_transcript_page'))
+
+    form = BulkDynamicForm(data=request.POST)
+    form.INT_FIELDS = SoldierTrainingRecord.EDITABLE_FIELDS
+
+    if not form.is_valid():
+        return redirect('soldiers_training_transcript_page')
+
+    cleaned_data = form.cleaned_bulk_data
+    if not cleaned_data:
+        return redirect('soldiers_training_transcript_page')
+
+    soldier_ids = list(cleaned_data.keys())
+
+    # fetch کلی رکوردهای موجود
+    existing_records = SoldierTrainingRecord.objects.filter(
+        soldier_id__in=soldier_ids
+    ).select_related('soldier')
+
+    existing_map = {r.soldier_id: r for r in existing_records}
+
+    to_create = []
+    to_update = []
+    print(to_create,to_update)
+
+    with transaction.atomic():
+        for sid, fields in cleaned_data.items():
+            # فقط فیلدهای editable
+            update_data = {f: v for f, v in fields.items() if f in SoldierTrainingRecord.EDITABLE_FIELDS}
+            if not update_data:
+                continue  # رکورد خالی → skip
+
+            record = existing_map.get(sid)
+            if record:
+                # رکورد موجود → setattr
+                for f, v in update_data.items():
+                    setattr(record, f, v)
+                # محاسبه readonly ها
+                record.shooting_avg = record.calculate_shooting_avg()
+                record.final_average = record.calculate_final_average()
+                # اضافه کردن به لیست update
+                to_update.append(record)
+            else:
+                # رکورد جدید
+                temp = SoldierTrainingRecord(
+                    soldier_id=sid,
+                    **update_data
+                )
+                temp.shooting_avg = temp.calculate_shooting_avg()
+                temp.final_average = temp.calculate_final_average()
+                to_create.append(temp)
+
+        # bulk create برای رکوردهای جدید
+        if to_create:
+            SoldierTrainingRecord.objects.bulk_create(to_create)
+
+        # bulk update برای رکوردهای موجود
+        if to_update:
+            update_fields = SoldierTrainingRecord.EDITABLE_FIELDS + SoldierTrainingRecord.READONLY_FIELDS
+            SoldierTrainingRecord.objects.bulk_update(to_update, update_fields)
+
+    return redirect(request.META.get('HTTP_REFERER', 'soldiers_training_transcript_page'))

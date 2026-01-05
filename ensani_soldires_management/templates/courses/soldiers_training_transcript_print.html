@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>چاپ کارنامه آموزش</title>
+    <link rel="stylesheet" href="{% static 'dist/css/font.css' %}">
+    <style>
+        /* عمومی */
+        body {
+            direction: rtl;
+            font-family: 'B Nazanin', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+
+        .print-page {
+            width: 210mm;  /* عرض A5 landscape */
+            height: 148mm; /* ارتفاع A5 landscape */
+            page-break-after: always;
+            padding: 5mm;
+            box-sizing: border-box;
+            background: #fff;
+            margin: 2px;
+        } 
+        main.print-main {
+            border: 1px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px dashed #aaa;
+            padding: 10mm;
+            border-radius: 1mm;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        header.print-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        header.print-header h1 {
+            flex: 6;
+            text-align: center;
+            font-size: 18pt;
+            margin: 0;
+        }
+
+        header.print-header .header-left,
+        header.print-header .header-right {
+            flex: 2;
+            text-align: center;
+            font-size: 10pt;
+        }
+
+        section.print-info table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14pt;
+            margin-bottom: 8px;
+        }
+
+        section.print-info th,
+        section.print-info td {
+            border: 2px solid #000;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        section.print-info th {
+            background: #e0f0ff;
+        }
+      
+
+        section.print-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14pt;
+            text-align: center;
+        }
+
+        section.print-table th,
+        section.print-table td {
+            border: 2px solid #000;
+            padding: 5px;
+        }
+
+        section.print-table thead tr:first-child th {
+            background: #b0d4ff;
+        }
+
+        section.print-table thead tr:nth-child(2) th {
+            background: #d0e4ff;
+        }
+
+        .rotated {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap;
+            vertical-align: middle;
+            text-align: center;
+            padding: 5px 2px;
+        }
+
+        footer.print-footer {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        footer.print-footer .signature {
+            text-align: center;
+        }
+
+        footer.print-footer .signature h3 {
+            margin: 0;
+            font-size: 12pt;
+        }
+
+        footer.print-footer .signature p {
+            margin: 0;
+            font-size: 10pt;
+        }
+
+        @media print {
+            @page {
+                size: A5 landscape;
+                margin: 5mm; /* حداقل حاشیه پرینتر */
+            }
+
+            body {
+                background: none;
+            }
+      
+            .print-page {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+{% for s in soldiers %}
+<div class="print-page">
+    <main class="print-main">
+        <!-- Header -->
+        <header class="print-header">
+            <h1>«کارنامه نمرات دوره آموزش رزم مقدماتی سرباز»</h1>
+        </header>
+        <div style="flex: 1;"></div>
+        <!-- اطلاعات سرباز -->
+        <section class="print-info">
+            <table>
+                <tr>
+                    <th colspan="1">کد گردان و فراگیر</th>
+                    <td colspan="1">{{ s.current_code }}</td>
+                    <th colspan="1">نام و نام خانوادگی</th>
+                    <td colspan="3">{{ s.name }} {{ s.family }}</td>
+                </tr>
+                <tr>
+                    <th colspan="1">کد دوره</th>
+                    <td colspan="1">{{ en.shomare_dore }}</td>
+                    <th colspan="1">کدملی</th>
+                    <td colspan="1">{{ s.National_Code }}</td>
+                    <th colspan="1">فرزند</th>
+                    <td colspan="1">{{ s.fathers_name }}</td>
+                </tr>
+            </table>
+        </section>
+        <!-- جدول نمرات -->
+        <section class="print-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="5" class="rotated">تیراندازی</th>
+                        <th rowspan="2" class="rotated">نوع سلاح</th>
+                        <th rowspan="2" class="rotated">تاکتیک</th>
+                        <th rowspan="2" class="rotated">آمادگی جسمانی</th>
+                        <th rowspan="2" class="rotated">انضباط</th>
+                        <th rowspan="2" class="rotated">معدل نهایی</th>
+                    </tr>
+                    <tr>
+                        <th class="rotated">مرحله ۱</th>
+                        <th class="rotated">مرحله ۲</th>
+                        <th class="rotated">مرحله ۳</th>
+                        <th class="rotated">مرحله ۴</th>
+                        <th class="rotated">میانگین</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ s.training_record.shooting_stage_1|default:'-' }}</td>
+                        <td>{{ s.training_record.shooting_stage_2|default:'-' }}</td>
+                        <td>{{ s.training_record.shooting_stage_3|default:'-' }}</td>
+                        <td>{{ s.training_record.shooting_stage_4|default:'-' }}</td>
+                        <td>{{ s.training_record.shooting_avg|default:'-' }}</td>
+                        <td>{{ s.training_record.weapon_type|default:"کلاشینکف" }}</td>
+                        <td>{{ s.training_record.tactic_score|default:'-' }}</td>
+                        <td>{{ s.training_record.physical_fitness_score|default:'-' }}</td>
+                        <td>{{ s.training_record.military_discipline_score|default:'-' }}</td>
+                        <td>{{ s.training_record.final_average|default:'-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <div style="flex: 1;"></div>
+
+        <!-- Footer / امضاها -->
+        <footer class="print-footer">
+            <div class="signature">
+                <h3>سرهنگ دوم پاسدار قنبری نیاکی</h3>
+                <p>مسئول قسمت تربیت و آموزش</p>
+                <p>آموزشگاه رزم مقدماتی المهدی (عج الله)</p>
+            </div>
+            <div class="signature">
+                <h3>علی متولی طاهر</h3>
+                <p>فرمانده آموزشگاه رزم مقدماتی المهدی (عج الله)</p>
+                <p>نیروی زمینی سپاه</p>
+            </div>
+        </footer>
+    </main>
+</div>
+
+{% endfor %}
+
+</body>
+</html>

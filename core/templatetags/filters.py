@@ -47,3 +47,29 @@ def is_rank_access(access=None, item=''):
 @register.filter
 def located_code(value, tatbigh=False):
     return value.located_code(tatbigh=tatbigh)
+
+
+
+@register.filter
+def getattr_field(obj, attr):
+    return getattr(obj, attr, '')
+
+
+@register.filter
+def get_attr(obj, attr_name):
+    """دسترسی امن به attribute مدل بدون recursion"""
+    try:
+        return getattr(obj, attr_name)
+    except AttributeError:
+        return ''  # اگر فیلد نبود، مقدار پیش‌فرض
+    
+    
+@register.filter
+def safe_attr(obj, attr):
+    if obj is None:
+        return ''
+    return getattr(obj, attr, '')
+
+@register.filter
+def strval(value):
+    return str(value)

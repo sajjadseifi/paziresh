@@ -119,10 +119,18 @@
             </a>
         </li>
         <li class="nav-item">
+         <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_training_transcript_page' %}active{% endif %}"
+               href="{% url 'soldiers_training_transcript_page' %}">
+               <i class="fa fa-trophy"></i>
+               کارنامه آموزش
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
                href="{% url 'top_soldiers_course_page' %}">
                <i class="fa fa-trophy"></i>
-               نمره میدان تیر
+               نمره جنگ افزار
             </a>
         </li>
         {% endif %}

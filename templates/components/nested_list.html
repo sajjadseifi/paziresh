@@ -1,0 +1,145 @@
+<style>
+.menu-root,
+.submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+.menu-root {
+    position: relative;
+}
+
+/* آیتم‌ها */
+.menu-item {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    margin: 4px 0;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+/* لینک و عنوان */
+.menu-item > a,
+.menu-item > span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    text-decoration: none;
+    white-space: nowrap;
+    gap: 10px;
+}
+
+/* بخش متن */
+.menu-label,
+.menu-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* آیکون اصلی */
+.menu-icon {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* لینک‌دارها */
+.menu-item > a {
+    color: #2563eb;
+    font-weight: 500;
+}
+
+.menu-item > a .menu-icon {
+    color: #2563eb;
+}
+
+/* hover */
+.menu-item:hover {
+    background: #f9fafb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* زیرمنو */
+.submenu {
+    position: absolute;
+    top: 0;
+    right: calc(100% + 6px);
+    min-width: 220px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px);
+    padding: 10px;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    z-index: 1000;
+}
+
+/* نمایش زیرمنو */
+.menu-item.has-children:hover > .submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* فلش زیرمنو */
+.submenu-arrow {
+    font-size: 11px;
+    color: #9ca3af;
+    transition: transform 0.25s ease;
+}
+
+/* انیمیشن فلش */
+.menu-item.has-children:hover > a .submenu-arrow,
+.menu-item.has-children:hover > span .submenu-arrow {
+    transform: translateX(-3px);
+}
+</style>
+
+<ul class="menu-root">
+    {% for item in items %}
+        {# اگر item.base_url دارد استفاده کن، در غیر این صورت از parent_base_url بگیر #}
+        {% with current_base=item.base_url|default:parent_base_url %}
+        <li class="menu-item {% if item.children %}has-children{% endif %}">
+
+            {% if item.q %}
+                <a target="_blank" href="{% url current_base %}?{{ item.q }}">
+                    <span class="menu-label">
+                        <i class="fa fa-link menu-icon"></i>
+                        {{ item.title }}
+                    </span>
+
+                    {% if item.children %}
+                        <i class="fa fa-chevron-left submenu-arrow"></i>
+                    {% endif %}
+                </a>
+            {% else %}
+                <span class="menu-title">
+                    <i class="fa fa-folder menu-icon"></i>
+                    {{ item.title }}
+
+                    {% if item.children %}
+                        <i class="fa fa-chevron-left submenu-arrow"></i>
+                    {% endif %}
+                </span>
+            {% endif %}
+
+            {% if item.children %}
+                <ul class="submenu">
+                    {# include با parent_base_url=current_base برای انتقال به لایه پایین #}
+                    {% include 'components/nested_list.html' with items=item.children parent_base_url=current_base %}
+                </ul>
+            {% endif %}
+
+        </li>
+        {% endwith %}
+    {% endfor %}
+</ul>

@@ -122,43 +122,6 @@
     border-radius:4px;
 }
 
-/* badge سفارشی برای وضعیت سرباز */
-.badge-info-custom {
-    background-color: #17a2b8;
-    color: white;
-}
-.badge-success-custom {
-    background-color: #28a745;
-    color: white;
-}
-.badge-warning-custom {
-    background-color: #ffc107;
-    color: black;
-}
-.badge-primary-custom {
-    background-color: #007bff;
-    color: white;
-}
-.badge-secondary-custom {
-    background-color: #6c757d;
-    color: white;
-}
-.badge-dark-custom {
-    background-color: #343a40;
-    color: white;
-}
-.badge-orange-custom {
-    background-color: #ff9000;
-    color: white;
-}
-
-/* بهبود نمایش و padding */
-.badge {
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 0.9em;
-}
-
 </style>
 <style>
 .glass-modal {
@@ -290,30 +253,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     </form>
                      {% if soldier %}
-<p class="key-value">
-   <strong>وضعیت سرباز:</strong>
-   {% if soldier.has_been_accepted and soldier.willing_to_learn %}
-      <span class="badge badge-info-custom">🎓 درحال آموزش</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
-      <span class="badge badge-success-custom">✅ کفایت بسیج</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
-      <span class="badge badge-warning-custom">🏥 تجدید دوره کمیسیون</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
-      <span class="badge badge-primary-custom">🩺 کمیسیون پزشکی شروع دوره</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
-      <span class="badge badge-secondary-custom">🔄 تجدید دوره</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.Previous_service_record %}
-      <span class="badge badge-dark-custom">🛡️ خدمت قبلی</span>
-   {% endif %}
-   {% if soldier.has_been_accepted is False %}
-      <span class="badge badge-orange-custom">❌ پذیرش نشده</span>
-   {% endif %}
-</p>
+                        <p class="key-value">
+                            <strong>وضعیت سرباز:</strong>
+                            {% include 'components/soldier_status.html' with soldier=soldier %}
+                        </p>
 
                      {% endif %}
 

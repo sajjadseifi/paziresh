@@ -91,16 +91,16 @@ class Soldier(models.Model):
                                           null=True, blank=True,
                                           related_name='gorohan_after_tatbigh')
     
-        
+    
     code_paziresh = models.CharField(max_length=100, verbose_name='کدپذیرش', null=True, blank=True)
     code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True, blank=True,default="1")
     code_gorhan_nahai = models.IntegerField(verbose_name='کدگروهان علامی از گردان', null=True, blank=True)
     
     def located_code(self,tatbigh=False):
         if tatbigh:
-            return f'{self.t_Gordan} - {self.t_battalion_group.name} - {self.code_gorhan}'
+            return f'{self.t_battalion_group} - {self.code_gorhan}'
         
-        return f'{self.Gordan} - {self.battalion_group} - {self.code_gorhan_nahai}'
+        return f'{self.battalion_group} - {self.code_gorhan_nahai}'
     
     tarikh_paziresh = jmodels.jDateTimeField(null=True, verbose_name='تاریخ و زمان پذیرش', blank=True)
     IsCheckout = models.BooleanField(default=False, verbose_name='تسویه حساب', blank=True, null=True)
@@ -122,11 +122,11 @@ class Soldier(models.Model):
                                            verbose_name='سابقه عضو شورای پایگاه به ماه')  # سابقه عضو شورای پایگاه به ماه (1 نمره)
     
     ideological_score_start = models.FloatField(default=0, verbose_name='شروع دوره نمره عقیدتی')  
-    ideological_score_start_assessment = models.FloatField(default=0, verbose_name='ارزیاب شروع دوره نمره عقیدتی') 
     ideological_score = models.FloatField(default=0, verbose_name='نمره عقیدتی')  # نمره عقیدتی (1 نمره)
-    ideological_score_assessment = models.FloatField(default=0, verbose_name='ارزیاب نمره عقیدتی')  # نمره عقیدتی (1 نمره)
     ideological_score_end = models.FloatField(default=0, verbose_name='نمره عقیدتی پایان دوره')  
-    ideological_score_end_assessment = models.FloatField(default=0, verbose_name='ارزیاب نمره عقیدتی پایان دوره')  
+    ideological_score_start_assessment = models.CharField(max_length=255, blank=True, null=True, verbose_name='ارزیاب شروع دوره نمره عقیدتی') 
+    ideological_score_assessment = models.CharField(max_length=255, blank=True, null=True, verbose_name='ارزیاب نمره عقیدتی')  # نمره عقیدتی (1 نمره)
+    ideological_score_end_assessment = models.CharField(max_length=255, blank=True, null=True, verbose_name='ارزیاب نمره عقیدتی پایان دوره')  
     
     shooting_score = models.FloatField(default=0, verbose_name='نمره میدان تیر')  # نمره میدان تیر (2 نمره)
     global_awards = models.IntegerField(default=0, verbose_name='تعداد مقام جهانی')  # تعداد مقام جهانی

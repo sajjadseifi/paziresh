@@ -63,9 +63,14 @@
     justify-content: center;
     border: 1px solid #4f46e5;
 }
+
+.size-sm #battalion-form .form-check-label {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
 </style>
  <form method="get" id="battalion-form">
-    <h5 class="choice-title">انتخاب گردان</h5>
     <ul class="grid-2">
         {% for b in battalions %}
         <li>
@@ -74,7 +79,7 @@
         </li>
         {% endfor %}
     </ul>
-    <h5 class="choice-title">انتخاب گروهان</h5>
+    <hr style="margin: 5px;color: black;"/>
     <ul class="grid-2">
         {% for g in groups %}
             {% if g.gordan.id|stringformat:"s" == selected_battalion %}

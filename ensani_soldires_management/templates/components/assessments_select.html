@@ -1,5 +1,15 @@
-<select name="assessments" class="select assessment-select">
+<select 
+    data-selected="{{selected}}"
+    name="{{name}}" class="select assessment-select">
+    <option value="" >--- انتخاب ارزیاب ---</option>
     {% for ass in assessments  %}
-        <option value="{{ass.id}}">{{ass.fullname}}</option>
+        <option 
+            value="{{ass.rank}} {{ass.full_name}}" 
+            {% if selected ==  ass.rank|add:" "|add:ass.full_name  %}
+                selected
+            {% endif %}    
+        >
+        {{ass.rank}} {{ass.full_name}}
+    </option>
     {% endfor %}
 </select>

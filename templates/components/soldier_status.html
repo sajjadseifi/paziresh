@@ -1,0 +1,64 @@
+<style>
+/* badge سفارشی برای وضعیت سرباز */
+.badge-info-custom {
+    background-color: #17a2b8;
+    color: white;
+}
+.badge-success-custom {
+    background-color: #28a745;
+    color: white;
+}
+.badge-warning-custom {
+    background-color: #ffc107;
+    color: black;
+}
+.badge-primary-custom {
+    background-color: #007bff;
+    color: white;
+}
+.badge-secondary-custom {
+    background-color: #6c757d;
+    color: white;
+}
+.badge-dark-custom {
+    background-color: #343a40;
+    color: white;
+}
+.badge-orange-custom {
+    background-color: #ff9000;
+    color: white;
+}
+
+.badge {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+.layout-sm  .badge {
+    padding:  4px;
+    border-radius: 2px;
+    font-size: 0.8em;
+}
+</style>
+
+   {% if soldier.has_been_accepted and soldier.willing_to_learn %}
+      <span class="badge badge-info-custom">{{ico|default:"🎓"}} درحال آموزش</span>
+   {% endif %}
+   {% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
+      <span class="badge badge-success-custom">{{ico|default:"✅"}} کفایت بسیج</span>
+   {% endif %}
+   {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
+      <span class="badge badge-warning-custom">{{ico|default:"🏥"}} تجدید دوره کمیسیون</span>
+   {% endif %}
+   {% if soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
+      <span class="badge badge-primary-custom">{{ico|default:"🩺"}} کمیسیون پزشکی شروع دوره</span>
+   {% endif %}
+   {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
+      <span class="badge badge-secondary-custom">{{ico|default:"🔄"}} تجدید دوره</span>
+   {% endif %}
+   {% if soldier.has_been_accepted and soldier.Previous_service_record %}
+      <span class="badge badge-dark-custom">{{ico|default:"🛡️"}} خدمت قبلی</span>
+   {% endif %}
+   {% if soldier.has_been_accepted is False %}
+      <span class="badge badge-orange-custom">{{ico|default:"❌"}} پذیرش نشده</span>
+   {% endif %}

@@ -3,236 +3,452 @@
 
 {% block header %}
 <style>
-/* ---------- Base ---------- */
-body {
-    background: #f4f6f9;
-    font-size: 13px;
-}
+    /* ---------- Base ---------- */
+    body {
+        background: #f4f6f9;
+        font-size: 13px;
+    }
 
-.row {
-    margin-left: -8px;
-    margin-right: -8px;
-}
-[class*="col-"] {
-    padding-left: 8px;
-    padding-right: 8px;
-}
+    .row {
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+    [class*="col-"] {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
 
-/* ---------- Card ---------- */
-.card {
-    background: #fff;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-    margin-bottom: 12px;
-}
+    /* ---------- Card ---------- */
+    .card {
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+    }
 
-.card-header {
-    background: #f9fafb;
-    border-bottom: 1px solid #e1e1e1;
-    padding: 8px 12px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: space-between;
-}
+    .card-header {
+        background: #f9fafb;
+        border-bottom: 1px solid #e1e1e1;
+        padding: 8px 12px;
+        margin: 2px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+    }
 
-.card-title {
-    font-size: 13px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin: 0;
-}
+    .card-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0;
+    }
 
-.card-body {
-    padding: 12px;
-}
+    .card-body {
+        padding: 12px;
+    }
 
-/* ---------- Buttons ---------- */
-button {
-    background: #fff;
-    border: 1px solid #cfd8dc;
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-    transition: 0.2s;
-}
 
-button:hover {
-    background: #3c8dbc;
-    color: #fff;
-    border-color: #3c8dbc;
-}
+    .card-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-/* ---------- Assessment list ---------- */
-.card-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+    .card-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 10px;
+        font-weight: bold;
+    }
 
-.card-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid #eee;
-}
+    .card-item:last-child {
+        border-bottom: none;
+    }
 
-.card-item:last-child {
-    border-bottom: none;
-}
+    .card-item strong {
+        color: #34495e;
+        font-size: 12px;
+    }
 
-.card-item strong {
-    color: #34495e;
-    font-size: 12px;
-}
+    /* ---------- Table ---------- */
+    .table {
+        background: #fff;
+    }
 
-/* ---------- Table ---------- */
-.table {
-    background: #fff;
-}
+    .table thead th {
+        background: #ecf0f5;
+        font-size: 12px;
+        vertical-align: middle;
+    }
 
-.table thead th {
-    background: #ecf0f5;
-    font-size: 12px;
-    vertical-align: middle;
-}
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 12px;
+    }
+    /* ---------- Table scroll ---------- */
+    .table-wrapper {
+        display: block;
+        height: 78svh;       /* ارتفاع دلخواه */
+        overflow: hidden;         /* فقط عمودی اسکرول */
+        padding: 0 !important;
+    }
 
-.table tbody td {
-    vertical-align: middle;
-    font-size: 12px;
-}
-/* ---------- Table scroll ---------- */
-.table-wrapper {
-    display: block;
-    max-height: 65svh;       /* ارتفاع دلخواه */
-    overflow: hidden;         /* فقط عمودی اسکرول */
-    padding: 0 !important;
-}
+    .table-fixed {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-.table-fixed {
-    width: 100%;
-    border-collapse: collapse;
-}
+    .table-fixed thead, .table-fixed tbody, .table-fixed tr {
+        display: block;
+    }
 
-.table-fixed thead, .table-fixed tbody, .table-fixed tr {
-    display: block;
-}
+    .table-fixed thead {
+        /* هدر ثابت بالای اسکرول */
+    }
 
-.table-fixed thead {
-    /* هدر ثابت بالای اسکرول */
-}
+    .table-fixed tbody {
+        height: 70svh;          /* همون ارتفاع wrapper */
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .table-fixed thead th {
+        height: 4svh;
+        font-size: 12px;
+    }
+    .table-fixed thead th, .table-fixed tbody td {
+        vertical-align: middle;
+        padding:  4px !important;
+        text-align: center;
+    }
 
-.table-fixed tbody {
-    height: 60svh;          /* همون ارتفاع wrapper */
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-.table-fixed thead th {
-    height: 4svh;
-    font-size: 16px;
-}
-.table-fixed thead th, .table-fixed tbody td {
-    vertical-align: middle;
-    padding: 2px 4px;
-}
+    .table-fixed tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+  
+    .table-fixed thead tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        
+    }
+    /* ---------- Score inputs ---------- */
+    .input-score-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+    }
+    .input-score-group.chbox {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+        cursor: pointer;
+    }
 
-.table-fixed tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-}
+    .input-score-group label {
+        font-size: 11px;
+        color: #555;
+        margin: 0 !important;
+        font-weight: bold;
+        padding: 0 !important;
+    }
 
-.table-fixed thead tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-}
-/* ---------- Score inputs ---------- */
-.input-score-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+    .input-score-group select {
+        width: 140px;
+        font-size: 10px;
+        line-height: 1;       /* فاصله بین خطوط */
+        height: auto;            /* ارتفاع خودش را با محتوا تنظیم کند */
+        white-space: normal;     /* اجازه شکستن متن به خط بعد */
+    }
+    .input-score-group input {
+        text-align: center;
+        font-size: 14px;
+        margin: 0 !important;
 
-.input-score-group label {
-    font-size: 11px;
-    color: #555;
-    margin: 0;
-    font-weight: bold;
-}
+    }
+    .input-score-group select,
+    .input-score-group input {
+        height: 36px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        outline: 0 none;
+    }
+    .input-score-group input[type="checkbox"] {
+       height: unset; 
+       width: 16px;
+       height: 16px;
+    }
 
-.input-score-group select {
-    min-width: 120px;
-}
-.input-score-group select,
-.input-score-group input {
-    height: 32px;
-    font-size: 14px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    outline: 0 none;
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-}
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
 
-.input-score {
-    min-width: 40px;
-}
+    /* اندازه و ترازدهی متن */
+    .input-score {
+        width: 56px;
+        text-align: center;
+    }
 
-/* ---------- Guide ---------- */
-.score-hint {
-    padding-right: 18px;
-    font-size: 12px;
-    color: #555;
-}
-.score-hint li {
-    margin-bottom: 6px;
-    line-height: 1.6;
-}
+    /* ---------- Guide ---------- */
+    .score-hint {
+        padding-right: 8px;
+        font-size: 10px;
+        color: #555;
+    }
+    .score-hint li {
+        margin-bottom: 2px;
+        line-height: 1.6;
+    }
 
-/* ---------- Modal ---------- */
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-}
+    /* ---------- Modal ---------- */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+    }
+    </style>
+    <style>
+    .custom-modal .modal-content {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        font-family: IRANSans, Tahoma, sans-serif;
+    }
+
+    .custom-modal .modal-header {
+        background: #2c3e50;
+        color: #fff;
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+
+    .custom-modal .modal-title {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .custom-modal .modal-body {
+        padding: 20px;
+    }
+
+    .custom-modal .modal-footer {
+        border-top: none;
+        padding: 15px 20px;
+        text-align: left;
+    }
+
+    .custom-modal .form-control {
+        border-radius: 6px;
+        height: 38px;
+    }
+
+    .custom-modal .btn-success {
+        background: #27ae60;
+        border: none;
+    }
+
+    .custom-modal .btn-success:hover {
+        background: #219150;
+    }
+
+    .custom-modal .close {
+        color: #fff;
+        opacity: .8;
+    }
+
+    .custom-modal .close:hover {
+        opacity: 1;
+    }
 </style>
+<style>
+    button {
+        background: #fff;
+        border: 1px solid #cfd8dc;
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: #333;
+    }
+    button.sm {
+        padding: 2px 4px;
+        font-size: 10px;
+    }
+    /* Purple */
+    button.purple {
+        background: #6f42c1;
+        border-color: #6f42c1;
+        color: #fff;
+    }
+    button.purple:hover {
+        background: #5936a2;
+        border-color: #5936a2;
+    }
+    /* Success */
+    button.success {
+        background: #28a745;
+        border-color: #28a745;
+        color: #fff;
+    }
+    button.success:hover {
+        background: #218838;
+        border-color: #218838;
+    }
+    /* Info */
+    button.info {
+        background: #17a2b8;
+        border-color: #17a2b8;
+        color: #fff;
+    }
+    button.info:hover {
+        background: #138496;
+        border-color: #138496;
+    }
+    /* Cyan */
+    button.cyan {
+        background: #00bcd4;
+        border-color: #00bcd4;
+        color: #fff;
+    }
+    button.cyan:hover {
+        background: #00a0b8;
+        border-color: #00a0b8;
+    }
+    /* Sky (Light Blue) */
+    button.sky {
+        background: #87ceeb;
+        border-color: #87ceeb;
+        color: #fff;
+    }
+    button.sky:hover {
+        background: #6ebfe0;
+        border-color: #6ebfe0;
+    }
+    /* Danger (Red) */
+    button.danger {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+    button.danger:hover {
+        background: #c82333;
+        border-color: #c82333;
+    }
+
+    /* Warning (Orange/Yellow) */
+    button.warning {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+    button.warning:hover {
+        background: #e0a800;
+        border-color: #e0a800;
+    }
+    /* Secondary (Gray) */
+    button.secondary {
+        background: #6c757d;
+        border-color: #6c757d;
+        color: #fff;
+    }
+    button.secondary:hover {
+        background: #5a6268;
+        border-color: #5a6268;
+    }
+    /* Light (White/Light Gray) */
+    button.light {
+        background: #f8f9fa;
+        border-color: #f8f9fa;
+        color: #212529;
+    }
+    button.light:hover {
+        background: #e2e6ea;
+        border-color: #e2e6ea;
+    }
+    /* Dark (Black) */
+    button.dark {
+        background: #343a40;
+        border-color: #343a40;
+        color: #fff;
+    }
+    button.dark:hover {
+        background: #23272b;
+        border-color: #23272b;
+    }
+
+</style>
+
 {% endblock header %}
 
 {% block scores_content %}
-<div class="row">
-
-    <!-- LEFT SIDEBAR -->
-    <div class="col-xs-3">
-
-        <!-- Battalion / Group -->
+<div style="display: flex;gap: 4px;">
+    <div style="width: 300px;">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">راهنما</h3>
+            </div>
+            <div class="card-body">
+                <ul class="score-hint list-unstyled">
+                    <li>ابتدا گردان و گروهان مورد نظر را انتخاب کنید.</li>
+                    <li>برای هر سرباز، ارزیاب مربوطه را مشخص نمایید.</li>
+                    <li>نمرات باید عددی و در بازه مجاز وارد شوند.</li>
+                    <li>در صورت تغییر گروهان، اطلاعات جدول به‌روزرسانی می‌شود.</li>
+                </ul>
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">انتخاب گردان و گروهان</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body size-sm">
                 {% include '../components/gordan_grohan_choice_form.html' %}
             </div>
         </div>
-
-        <!-- Assessments -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">ارزیاب‌ها</h3>
-                <button>ارزیاب جدید</button>
+                <button class="sky" type="button" onclick="openAddAssessment()">
+                    ارزیاب جدید
+                </button>
             </div>
             <div class="card-body">
                 <ul class="card-list">
                     {% for ass in assessments %}
                         <li class="card-item">
-                            <strong>{{ ass.fullname }}</strong>
+                            <span >{{ ass.rank }} {{ ass.full_name }}</span>
                             <div>
-                                <button>ویرایش</button>
-                                <form method="post" action="{% url 'soldiers_ideological_assessment_delete' %}" style="display:inline">
+                                <button 
+                                    class="info sm"
+                                    type="button"
+                                    onclick="openEditAssessment('{{ ass.id }}', '{{ ass.rank }}', '{{ ass.full_name }}')"
+                                >
+                                    ویرایش
+                                </button>
+                                <form method="post"
+                                    action="{% url 'assessment_delete' %}"
+                                    style="display:inline">
                                     {% csrf_token %}
-                                    <button onclick="return onRemoveAssessment('{{ ass.fullname }}')">حذف</button>
+                                    <input type="hidden" name="id" value="{{ ass.id }}">
+                                    <button  class="danger sm" onclick="return onRemoveAssessment('{{ ass.full_name }}')">
+                                        حذف
+                                    </button>
                                 </form>
                             </div>
                         </li>
@@ -244,82 +460,211 @@ button:hover {
         </div>
 
     </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="col-xs-9">
-
-        <!-- Guide -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">راهنما</h3>
-            </div>
-            <div class="card-body">
-                <ul class="score-hint">
-                    <li>ابتدا گردان و گروهان مورد نظر را انتخاب کنید.</li>
-                    <li>برای هر سرباز، ارزیاب مربوطه را مشخص نمایید.</li>
-                    <li>نمرات باید عددی و در بازه مجاز وارد شوند.</li>
-                    <li>در صورت تغییر گروهان، اطلاعات جدول به‌روزرسانی می‌شود.</li>
-                </ul>
-            </div>
-        </div>
-
+    <div style="flex: 1;">
         <!-- Table -->
-        <div class="card">
+        <form class="card" method="POST" action="{% url 'soldiers_ideological_assessment_save' %}">
+            {% csrf_token %}
             <div class="card-header">
                 <h3 class="card-title">جدول گروهانی ارزیابی عقیدتی</h3>
                 <div style="flex: 1;"></div>
-                <button>ثبت و ذخیره</button>
-                <button>خروجی اکسل</button>
-                <button>چاپ</button>
+                <button type="submit" class="success">ثبت و ذخیره</button>
+                {% comment %} <button type="button" class="warning">خروجی اکسل</button> {% endcomment %}
+                {% comment %} <button type="button" class="purple">چاپ</button> {% endcomment %}
             </div>
             <div class="card-body table-wrapper">
-                <table class="table table-fixed">
-                    <thead>
-                        <tr>
-                            <th colspan="1">کد ملی</th>
-                            <th colspan="1">نام و نام خانوادگی</th>
-                            <th colspan="1">گردان/گروهان/کد</th>
-                            <th colspan="2">شروع دوره</th>
-                            <th colspan="2">میان دوره</th>
-                            <th colspan="2">پایان دوره</th>
+                <table class="table table-striped table-fixed">
+                    <thead >
+                        <tr style="text-align: center;">
+                            <th  rowspan="2" colspan="1">کد</th>
+                            <th rowspan="2" colspan="4">فراگیر</th>
+                            <th colspan="4">ارزیابی شروع دوره</th>
+                            <th colspan="4">ارزیابی میان دوره (درجه)</th>
+                            <th colspan="4">ارزیابی پایان دوره</th>
+                            <th colspan="5">حافظین (درجه)</th>
+                        </tr>
+                        <tr style="text-align: center;">
+                            <th colspan="1">سازمانی</th>
+                            <th colspan="2">اطلاعات فردی</th>
+                            <th colspan="2">کدملی</th>
+                            <th colspan="2">ارزیاب</th>
+                            <th colspan="2">نمره</th>
+                            <th colspan="2">ارزیاب</th>
+                            <th colspan="2">نمره</th>
+                            <th colspan="2">ارزیاب</th>
+                            <th colspan="2">نمره</th>
+                            <th colspan="3">تایید/رد</th>
+                            <th colspan="2">قرآن کریم (جز)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for s in soldiers %}
-                        <tr>
-                            <td colspan="1">{{ s.National_Code }}</td>
-                            <td colspan="1">{{ s.name }} {{ s.family }}</td>
-                            <td colspan="1">{{ s|located_code:en.tatbigh }}</td>
+                        <tr
+                            data-id="{{s.id}}"
+                            data-national-code="{{s.National_Code}}"
+                            data-fullname="{{s.name}} {{s.name}}"
 
-                            {% for i in "123" %}
-                                <td colspan="2">
-                                    <div class="input-score-group">
-                                        <label>ارزیاب</label>
-                                        {% include '../components/assessments_select.html' with assessments=assessments %}
-                                        <label>نمره</label>
-                                        <input type="number" class="input-score" min="0" max="20">
+                        >
+                            <td style="text-align: center;font-weight: bold;vertical-align: middle;font-size: 16px;" colspan="1">
+                                {% if en.tatbigh %}
+                                    <strong> {{s.code_gorhan_nahai}}</strong>     
+                                {% else %}
+                                    <strong> {{s.code_gorhan}}</strong>                                
+                                {% endif %} 
+                            </td>
+                            <td colspan="4">
+                                <div style="text-align: right;font-size: 14px;">
+                                    <strong>{{ s.name }} {{ s.family }}</strong>
+                                </div>
+                                <div style="display: flex;gap: 4px; justify-content: space-between;" class="layout-sm">
+                                    {% include 'components/soldier_status.html' with soldier=s %}
+                                    <span style="font-size: 11px;">{{ s.National_Code }}</span>
+                                </div>
+                            </td>
+                            
+                            {% for field in ideological_fields %}
+                            <td colspan="4">
+                                <div class="input-score-group">
+                                        {% with s.id|stringformat:"s" as sid %}
+                                            {% with sid|add:"_"|add:field.assessment as field_name %}
+                                                {% include "../components/assessments_select.html" with name=field_name selected=s|get_attr:field.assessment assessments=assessments %}
+                                            {% endwith %}
+                                        {% endwith %}
+                                        <input 
+                                            type="number"
+                                            name="{{s.id}}_{{ field.score }}"
+                                            class="input-score"
+                                            min="0"
+                                            max="20"
+                                            step="0.1"
+                                            value="{{ s|get_attr:field.score|default:'0' }}"
+                                        />
                                     </div>
                                 </td>
                             {% endfor %}
+                            <td colspan="3">
+                               <div class="input-score-group chbox">
+                                    <label for="{{s.id}}_nahj_memorization" >نهج البلاغه</label>
+                                    <input 
+                                        id="{{s.id}}_nahj_memorization" 
+                                        name="{{s.id}}_nahj_memorization" 
+                                        type="checkbox"
+                                        {% if s.nahj_memorization %}checked{% endif %} 
+                                    />
+                                </div>
+                                <div style="margin: 4px 0;"></div>
+                                <div class="input-score-group chbox">
+                                    <label for="{{s.id}}_sajjadiya_memorization">صحیفه سجادیه</label>
+                                    <input 
+                                        id="{{s.id}}_sajjadiya_memorization" 
+                                        name="{{s.id}}_sajjadiya_memorization" 
+                                        type="checkbox"
+                                        {% if s.sajjadiya_memorization %}checked{% endif %} 
+                                    />
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="input-score-group">                                        
+                                    <input 
+                                        name="{{s.id}}_quran_memorization"
+                                        id="{{s.id}}_quran_memorization"
+                                        type="number"
+                                        class="input-score"
+                                        min="0"
+                                        max="30"
+                                        value="{{s.quran_memorization|default:'0'}}"
+                                    />
+                                </div>
+                            </td>
+
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
-
+        </form>
     </div>
 </div>
 
-<div class="modal">
-    مودال افزودن / ویرایش ارزیاب
+<div class="modal fade custom-modal" id="assessmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+
+            <form method="post" id="assessmentForm">
+                {% csrf_token %}
+                <input type="hidden" name="id" id="assessment-id">
+
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="closeAssessmentModal()">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="assessmentModalTitle"></h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>درجه</label>
+                        <input type="text" name="rank" id="assessment-rank" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>نام و نام خانوادگی</label>
+                        <input type="text" name="full_name" id="assessment-fullname" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">ذخیره</button>
+                    <button type="button" class="btn btn-default" onclick="closeAssessmentModal()">
+                        انصراف
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 </div>
+
+
 {% endblock %}
 
 {% block footer %}
 <script>
-function onRemoveAssessment(fullname) {
-    return confirm(`آیا از حذف ارزیاب ${fullname} مطمئن هستید؟`);
-}
+    function onRemoveAssessment(fullname) {
+        return confirm('آیا از حذف ارزیاب ' + fullname + ' مطمئن هستید؟');
+    }
+
+    // باز کردن مودال خالی (افزودن)
+    function openAddAssessment() {
+        $('#assessmentModalTitle').text('ارزیاب جدید');
+        $('#assessmentForm').attr('action', "{% url 'assessment_add' %}");
+
+        $('#assessment-id').val('');
+        $('#assessment-rank').val('');
+        $('#assessment-fullname').val('');
+
+        $('#assessmentModal').modal('show');
+    }
+
+    // باز کردن مودال برای ویرایش
+    function openEditAssessment(id, rank, fullname) {
+        $('#assessmentModalTitle').text('ویرایش ارزیاب');
+        $('#assessmentForm').attr(
+            'action',
+            "{% url 'assessment_edit' 0 %}".replace('0', id)
+        );
+
+        $('#assessment-id').val(id);
+        $('#assessment-rank').val(rank);
+        $('#assessment-fullname').val(fullname);
+
+        $('#assessmentModal').modal('show');
+    }
+
+    // بستن مودال
+    function closeAssessmentModal() {
+        $('#assessmentModal').modal('hide');
+    }
 </script>
+
 {% endblock footer %}
