@@ -5,8 +5,11 @@ from battalions.models import battalion, battalion_group
 from django_jalali.db import models as jmodels
 from django.utils import timezone
 from ensaniapp_settings.models import mobilization_upload_path,EnsaniSettings
+from .constants import prolems_province_unit_list,PROBLEM_FIELDS,PROBLEM_LABELS,status_types
+
 
 class Soldier(models.Model):
+    status_type = models.CharField(null=True, blank=True, max_length=100, verbose_name='نوع وضعیت سرباز')
     name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام')
     family = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام خانوادگی')
     fathers_name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام پدر')
@@ -37,6 +40,9 @@ class Soldier(models.Model):
     Date_of_dispatch = models.CharField(null=True, blank=True, max_length=100, verbose_name='تاریخ اعزام')
     province_name = models.CharField(null=True, blank=True, max_length=150, verbose_name='نام استان')
     city_name = models.CharField(null=True, blank=True, max_length=150, verbose_name='نام شهر')
+    
+
+    
     Address = models.CharField(null=True, blank=True, max_length=250, verbose_name='ادرس')
     Place_of_Issue = models.CharField(null=True, blank=True, max_length=150, verbose_name='محل صدور')
     height = models.CharField(null=True, blank=True, max_length=10, verbose_name='قد')
@@ -91,7 +97,6 @@ class Soldier(models.Model):
                                           null=True, blank=True,
                                           related_name='gorohan_after_tatbigh')
     
-    
     code_paziresh = models.CharField(max_length=100, verbose_name='کدپذیرش', null=True, blank=True)
     code_gorhan = models.CharField(max_length=100, verbose_name='کدگروهان', null=True, blank=True,default="1")
     code_gorhan_nahai = models.IntegerField(verbose_name='کدگروهان علامی از گردان', null=True, blank=True)
@@ -113,13 +118,10 @@ class Soldier(models.Model):
     tatbigh = models.BooleanField(default=False, verbose_name='تطبیق شده/نشده')
     IsUnit = models.BooleanField(default=False, verbose_name='وضعیت یگان')
     bank_number = models.CharField(max_length=250, verbose_name='شماره حساب', null=True, blank=True)
-
     # فیلدهای مرتبط با امتیازات مختلف
     discipline_score = models.FloatField(default=0, verbose_name='انضباط')  # انضباط (2 نمره)
-    basij_experience = models.FloatField(default=0,
-                                         verbose_name='سابقه بسیج فعال به ماه')  # سابقه بسیج فعال به ماه (2 نمره)
-    council_experience = models.FloatField(default=0,
-                                           verbose_name='سابقه عضو شورای پایگاه به ماه')  # سابقه عضو شورای پایگاه به ماه (1 نمره)
+    basij_experience = models.FloatField(default=0, verbose_name='سابقه بسیج فعال به ماه')  # سابقه بسیج فعال به ماه (2 نمره)
+    council_experience = models.FloatField(default=0, verbose_name='سابقه عضو شورای پایگاه به ماه')  # سابقه عضو شورای پایگاه به ماه (1 نمره)
     
     ideological_score_start = models.FloatField(default=0, verbose_name='شروع دوره نمره عقیدتی')  
     ideological_score = models.FloatField(default=0, verbose_name='نمره عقیدتی')  # نمره عقیدتی (1 نمره)
@@ -146,7 +148,6 @@ class Soldier(models.Model):
     rank = models.CharField(max_length=100, blank=True, null=True, verbose_name='درجه محاسبه‌شده')  # درجه محاسبه‌شده
     yegan_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='اسم اصلی یگان')
     tajdid_dore_moarefi_shode = models.BooleanField(default=False, verbose_name='تجدید دوره معرفی شده؟')
-    
     # 🔹 مهارت اموزی
     skill_1 = models.ForeignKey(SlillTraining,null=True,blank=True,related_name="primary_soldiers",on_delete=models.SET_NULL,verbose_name="مهارت اول")
     skill_2 = models.ForeignKey(SlillTraining,null=True,blank=True,related_name="secondary_soldiers",on_delete=models.SET_NULL,verbose_name="مهارت دوم")
@@ -154,10 +155,66 @@ class Soldier(models.Model):
     technical_exam = models.ForeignKey(TechnicalVocational,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="آزمون فنی و حرفه‌ای")
     technical_exam_submit_datetime = models.DateTimeField(null=True,blank=True,verbose_name="تاریخ و زمان ثبت آزمون فنی و حرفه‌ای")
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, verbose_name="عکس سرباز")
-
     # 🔹 داده‌های متفرقه (مثلاً مشکلات یا ارزیابی‌ها)
     problems_data = models.JSONField(default=dict, blank=True,verbose_name="اطلاعات مشکلات")
+
+    problems_s = ''
+    problems_u = ''
     
+    @classmethod
+    def status_types_list(cls):
+        slist = []
+        for u in cls.valid_status_types():
+            slist.append(u)
+        for u in cls.unkhown_status_types():
+            slist.append(u)
+               
+        return slist
+    @classmethod
+    def status_types_options(cls):
+        options = []
+        
+        for u in cls.valid_status_types():
+            options.append((u,u))
+        for u in cls.unkhown_status_types():
+            options.append((u,u + ' ( تعریف نشده ) '))
+               
+        return options
+    @classmethod
+    def valid_status_types(cls):
+        return status_types
+    @classmethod
+    def unkhown_status_types(cls):
+        all_status_types =  cls.objects.values_list('status_type')
+        unique_all_status_types = map(lambda s: s[0], all_status_types)
+        unkhown_status_types = filter(lambda st: st not in status_types,unique_all_status_types)
+        return set(unkhown_status_types)
+        
+    @property
+    def problem_unit(self):
+        if self.city_name == 'تهران':
+            return 'سید الشهدا شهر ری'
+        
+        for prov,unit in prolems_province_unit_list:
+            if prov == self.province_name:
+                return unit 
+        
+        return '-'
+    
+    @property
+    def problems_str(self):
+        flages = []
+        for field in PROBLEM_FIELDS:
+            try:
+                if field == 'description':
+                    continue
+                if self.problems_data and self.problems_data.get(field, False):
+                    flages.append(PROBLEM_LABELS[field])
+            except:
+                flages.append('خطا')
+    
+        return " , ".join(flages)
+
     def save_avatar(self, uploaded_file):
         """
         ذخیره عکس سرباز با مسیر avatars/<شماره دوره>/<کد ملی>.<ext>
@@ -241,6 +298,7 @@ class Soldier(models.Model):
             'physical_condition_date_Inspection_test'
         ])
 
+        
     class Meta:
         verbose_name = "سرباز"
         verbose_name_plural = "سرباز ها"

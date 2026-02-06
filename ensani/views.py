@@ -43,13 +43,16 @@ class panel_home(LoginRequiredMixin, View):
         }
         
         present_in_course =Soldier.objects.filter(has_been_accepted=True,in_coures=True)
-        organs  = {
-            'amriye' :present_in_course.filter(Amriye=True).count(),
-            'normal' :present_in_course.filter(Amriye=False,garargah_sazandegi_khatam=False).count(),
-            'khatam' :"-",
-            'garargah_sazandegi_khatam' :present_in_course.filter(garargah_sazandegi_khatam=True).count(),
-        }
-        
+        # organs  = {
+        #     'amriye' :present_in_course.filter(Amriye=True).count(),
+        #     'normal' :present_in_course.filter(Amriye=False,garargah_sazandegi_khatam=False).count(),
+        #     'khatam' :"-",
+        #     'garargah_sazandegi_khatam' :present_in_course.filter(garargah_sazandegi_khatam=True).count(),
+        # }
+        organs = []
+        for stype in Soldier.status_types_list():
+            scount = Soldier.objects.filter(status_type=stype,has_been_accepted=True,in_coures=True).count()
+            organs.append({ 'label':stype, 'value':scount })
         
         list_btn = []
         name_list = []

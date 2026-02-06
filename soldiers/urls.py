@@ -28,7 +28,7 @@ urlpatterns = [
     path('sarbaz/update/update_db_from_exel_paziresh_shode',
          update_db_from_exel_paziresh_shode.as_view(),
          name='update_db_from_exel_paziresh_shode'),
-    path('soldire/search/paziresh/', soldier_search, name='soldier_search_paziresh'),
+    path('soldire/search/paziresh/', MainViewSoldires.as_view(), name='soldier_search_paziresh'),
     path('export_to_excel_bdone_madrak_tahsili', export_to_excel_bdone_madrak_tahsili, name='export_to_excel_bdone_madrak_tahsili'),
     path(
          'excel_change_gharargah_sazandegi_khatam_true', 

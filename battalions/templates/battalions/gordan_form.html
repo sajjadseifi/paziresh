@@ -1,36 +1,256 @@
 {% extends 'shared/_PanelMain.html' %}
 {% load static %}
 
-
 {% block main %}
-    <div class="box box-warning">
-        <div class="box-header with-border">
-            <h3 class="box-title">اطلاعات سرباز</h3>
+    <style>
+        .checkbox-list {
+            gap: 4px;
+        }
+        .checkbox-list  input[type=checkbox], .checkbox-list input[type=radio] {
+            margin:0 !important;
+        }
+        .checkbox-list  label {
+            background-color: #fefefefe;
+            border: 1px solid #afafaf;
+            border-radius: 6px;
+            margin: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .form-input{
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .form-input input, .form-input select {
+            flex: 3;
+            border-radius: 8px;
+            height: 36px;
+            padding:4px 20px;
+            margin: 0;
+            font-weight: bold;
+        }
+        .form-input label {
+            flex: 2;
+            margin: 0;
+            padding: 0;
+        }
+        .form-grid {
+            gap: 10px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .setting-title {
+            margin: 0;
+            padding: 0;
+            color: chocolate;
+            border-right: 6px solid chocolate;
+            background-color: #ffebdd22;
+            padding: 2px 10px;
+            font-weight: bold;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .box-body {
+            padding:10px 20px !important;
+        }
+        .checkbox-multiple {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+            gap: 2px 20px;
+        }
+        .checkbox-multiple > div {
+            min-width: 31%;
+        }
+        .checkbox-multiple.md2 > div {
+            min-width: 45%;
+        }
+        .checkbox-multiple.md3 > div {
+            min-width: 31%;
+        }
+        .checkbox-multiple.md4 > div {
+            min-width: 23%;
+        }
+        .checkbox-multiple.md5 > div {
+            min-width: 18%;
+        }
+        .checkbox-multiple > div > input {
+            margin: 0;
+        }
+        .checkbox-multiple > div > label {
+            display: flex;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: row-reverse;
+            min-width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .hint-card {
+            padding: 10px ;
+            border-radius: 10px;
+            background-color: #fff7e8;
+            border:1px solid chocolate;
+            color: black;
+            text-align: justify;
+            margin-bottom: 10px;
+        }
+        .hint-card p {
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+        }
+        .btn {
+            border-radius: 6px !important;
+        }
+        .row-inputs input {
+            width: 100%;
+            font-size: 14px;
+            padding: 6px 10px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px solid #acacac;
+            outline: 0 none;
+        }
+        .box-title {
+            font-weight: bold;
+        }
+        .box {
+            border-radius: 10px;
+        }
+        .hint-paragraph {
+            font-size: 12px;
+            padding: 4px;
+            margin: 0;
+        }
+    </style>
+    <div class="box">
+        <div style="display: flex;align-items: center;justify-content: space-between;" class="box-header with-border">
+            {% if new %}
+                <h3 class="box-title font-bold text-center">ایجاد گردان جدید</h3>
+            {% else %}
+                <h3 class="box-title font-bold text-center">مدیریت اطلاعات و تنظیمات گردان </h3>
+            {% endif %}
+            
+            <a class="btn  btn-primary" href="{% url 'all-Battalion'  %}">
+                <span>فهرست گردان ها</span>
+                <i class="fa fa-arrow-left"></i> 
+            </a>
+            <div style="flex: 1;"></div>
         </div>
-        <!-- /.box-header -->
         <div class="box-body">
-            <form role="form" method="post">
-                {% csrf_token %}
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{ form.name.label }}
-                            {{ form.name }}
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form.order.label }}
-                            {{ form.order }}
+            <div class="row">
+                <form role="form" method="post" class="col-xs-4">
+                    {% csrf_token %}
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-input">
+                                    <label>{{ form.name.label }}</label>
+                                    {{ form.name }}
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-input">
+                                    <label>{{ form.commander.label }}</label>
+                                    {{ form.commander }}
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-input">
+                                    <label>{{ form.order.label }}</label>
+                                    {{ form.order }}
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-input">
+                                    <label>{{ form.gcode.label }}</label>
+                                    {{ form.gcode }}
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="checkbox-list">
+                                    <label>
+                                        {{ form.is_active.label }}
+                                        {{ form.is_active }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <button type="submit" style="border-radius: 8px;" class="btn btn-success btn-block">
+                                    ذخیره
+                                    <i class="fa fa-save"></i> 
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="box-body">
-                    {{ form.is_active.label }}
-                    {{ form.is_active }}
-                </div>
-                <button type="submit" class="btn btn-success pull-right">ایجاد</button>
-            </form>
+                </form>
+                <div class="col-xs-8 " >
+                    <div style="border: 1px solid #efefef; background-color: #efefef55; padding: 10px; border-radius: 10px;">
+                        <div style="display: flex;align-items: center;justify-content: space-between;gap: 10px;" class="box-header with-border">
+                            <h3 class="box-title font-bold text-center">گروهان های این گردان</h3>
+                            <a class="btn " href="{% url 'MainViewBattalionGroup'  %}">
+                                <span>فهرست گروهان ها</span>
+                                <i class="fa fa-arrow-left"></i> 
+                            </a>
+                            <div style="flex: 1;"></div>
+                            {% if battalion %}
+                                <a class="btn  btn-success" href="{% url 'CreateBattalionGroup'  %}?battalion={{battalion.id}}">
+                                    <span>گروهان جدید</span>
+                                    <i class="fa fa-plus"></i> 
+                                </a>
+                            {% endif %}
 
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="order">اولیت</th>
+                                    <th>گروهان</th>
+                                    <th>فعال</th>
+                                    <th>ظرفیت (نفر)</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for g in grohans %}
+                                    <tr style="align-items: center;vertical-align: middle;">
+                                        <td class="order">{{g.order|default:""}}</td>
+                                        <td><strong>{{ g.name }}</strong></td>
+                                        <td><strong>{{ g.is_active|yesno:'بله,خیر' }}</strong></td>
+                                        <td><strong dir="ltr">{{g.zarfiat}}</strong></td>
+                                        <td>
+                                            <a 
+                                                class="btn btn-md btn-primary text-md" 
+                                                href="{% url 'BattalionGroupUpdate' pk=g.pk %}"
+                                            >
+                                                ویرایش<i class="fa fa-edit"></i> 
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.box-body -->
     </div>
 {% endblock %}

@@ -1,0 +1,98 @@
+<style>
+    .table>tbody>tr>td, 
+    .table>tbody>tr>th, 
+    .table>tfoot>tr>td, 
+    .table>tfoot>tr>th, 
+    .table>thead>tr>td, 
+    .table>thead>tr>th {
+        padding:4px ;
+        
+    }
+    
+    .btn-group .btn {
+        font-size: 12px;
+        padding:4px 6px;
+
+    }
+    .arrow-link-icon {
+        display: inline-block;
+        transform: rotate(135deg);
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .admin-link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+</style>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th class="text-center">کد داخلی</th>
+            <th class="text-center">برگه اعزام</th>
+            <th class="text-center">کد پذیرش</th>
+            <th style="background-color: #efefef;" class="text-center">کدملی</th>
+            <th style="background-color: #efefef;">نام</th>
+            <th style="background-color: #efefef;">نام خانوادگی</th>
+            <th >گردان اولیه</th>
+            <th>گروهان اولیه</th>
+            <th>تحصیلات</th>
+            <th>مقطع سامانه</th>
+            <th>وضعیت پذیرش</th>
+            <th>عملیات</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for s in soldiers %}
+        <tr>
+            <td class="text-center">
+                <a 
+                    title="لینک ورود به صفحه تغییرات ادمین برای سرباز"
+                    class="admin-link" 
+                    target="_blank" 
+                    href="/admin/soldiers/soldier/{{s.pk}}/change/"
+                >                                            
+                    <span>{{ s.pk }}</span>
+                    <span class="arrow-link-icon">
+                        <i class="fa fa-angle-left" ></i>
+                    </span>
+                </a>
+            </td>
+            <td class="text-center" style="font-size: 14px;">{{ s.status_type|default:'' }}</td>
+            <td class="text-center">{{ s.acceptance_code|default:'' }}</td>
+            <td style="font-weight: bold;background-color: #efefef;" class="text-center">{{ s.National_Code }}</td>
+            <td style="font-weight: bold;background-color: #efefef;">{{ s.name }}</td>
+            <td style="font-weight: bold;background-color: #efefef;">{{ s.family }}</td>
+    
+            {% if s.Gordan %}<th>{{ s.Gordan.name }}</th>{% else %}<th></th>{% endif %}
+            {% if s.Gordan %}<th>{{ s.battalion_group.name }}</th>{% else %}<th></th>{% endif %} 
+            <td style="font-size: 11px;">{{ s.Grade }}</td>
+            <td style="font-size: 11px;">{{ s.educational_level_of_the_system }}</td>
+            <td class="text-center">
+                <span class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
+                    {% if s.has_been_accepted %}شده{% else %}نشده{% endif %}
+                </span>
+            </td>
+            <td>
+                <div class="btn-group">
+                    {% if s.has_been_accepted %}
+                        <a href="{% url 'updatePaziresh' pk=s.National_Code %}" class="btn btn-default">ویرایش</a>
+                        <a href="" class="btn btn-default" disabled="True">ثبت پذیرش</a>
+                    {% else %}
+                        <a href="" class="btn btn-default" disabled="True">ویرایش</a>
+                        <a href="{% url 'get_sarbaz' pk=s.National_Code %}" class="btn btn-default">ثبت پذیرش</a>
+                    {% endif %}
+                    <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">ساتر</a>
+                    <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">معرفی گردان</a>
+                    <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{s.National_Code}}" class="btn btn-default">مشاهده</a>
+                    {# <a href="{% url 'soldire_details' code=s.National_Code %}"class="btn btn-default">مشاهده</a> #}
+                    {# <a href="{% url 'SoldireProfile' %}" class="btn btn-default">پذیرش</a> #}
+                </div>
+
+            </td>
+        </tr>
+
+    {% endfor %}
+    </tbody>
+</table>

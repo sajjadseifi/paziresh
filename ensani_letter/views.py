@@ -742,25 +742,27 @@ class CreateMoarefiLetter(LoginRequiredMixin, View):
     template = 'ensani_letter/create_moarefi_letter.html'
 
     def get(self, request):
-        soldire_list = []
-        g = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True).all()
-        for item in g:
-            moarefi_status = ""
-            if item.tajdid_dore_moarefi_shode is True:
-                moarefi_status = "معرفی شده"
-            else:
-                moarefi_status = "معرفی نشده "
-            soldire_list.append(
-                (item.National_Code, F"{item.name} {item.family}  - {item.National_Code} - {moarefi_status}"))
-        # دریافت لیست سربازان قابل انتخاب
-        soldire_list = []
-        soldiers = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True).all()
 
-        for soldier in soldiers:
-            moarefi_status = "معرفی شده" if soldier.tajdid_dore_moarefi_shode else "معرفی نشده"
-            soldire_list.append(
-                (soldier.National_Code, f"{soldier.name} {soldier.family} - {soldier.National_Code} - {moarefi_status}")
-            )
+        soldire_list = []
+        coms_letters = NormalLetterModels.objects.filter(
+            subject="معرفی به کمیسیون شروع دوره آموزشی",
+            soldire__the_medical_commission=True,
+            soldire__Amriye=False
+        ).all()
+        
+        # letters = MoarefiNormallLetter.objects.all()
+        
+        print(coms_letters)
+        for l in coms_letters:
+            if l and l.soldire:
+                s = l.soldire
+                moarefi_status = "معرفی شده" if s.tajdid_dore_moarefi_shode else "معرفی نشده"
+                soldire_list.append((s.National_Code, f"{s.name} {s.family} - {s.National_Code} - {moarefi_status} [کمیسیون شروع دوره]"))                   
+
+        soldiers = Soldier.objects.filter(has_been_accepted=True, IsCheckout=True,).all()
+        for s in soldiers:
+            moarefi_status = "معرفی شده" if s.tajdid_dore_moarefi_shode else "معرفی نشده"
+            soldire_list.append((s.National_Code, f"{s.name} {s.family} - {s.National_Code} - {moarefi_status}"))
 
         # مقداردهی فرم
         b_form = CreateMoarefiFrom()

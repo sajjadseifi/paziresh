@@ -1,9 +1,9 @@
 from django import forms
+from soldiers.constants import PROBLEM_FIELDS,PROBLEM_LABELS
 
 
 class FormUpdateGordan(forms.Form):
     file = forms.FileField()
-
 
 class Formjazbi(forms.Form):
     file = forms.FileField()
@@ -87,36 +87,6 @@ class TopSoldiersForm(forms.Form):
 
         return cleaned_data
     
-from django.forms import formset_factory
-
-PROBLEM_FIELDS = [
-    'father_veteran', 'child_under_coverage', 'father_under_coverage', 'mother_under_coverage',
-    'brother_under_coverage', 'sister_under_coverage', 'only_child', 'only_son', 'divorced_child',
-    'family_support', 'father_sick', 'mother_sick', 'father_disabled', 'father_deceased',
-    'mother_deceased', 'need_declared', 'married', 'has_child','description'
-]
-
-PROBLEM_LABELS = {
-    'father_veteran': 'پدر ایثارگر',
-    'child_under_coverage': 'فرد تحت پوشش',
-    'father_under_coverage': 'پدر تحت پوشش',
-    'mother_under_coverage': 'مادر تحت پوشش',
-    'brother_under_coverage': 'برادر تحت پوشش',
-    'sister_under_coverage': 'خواهر تحت پوشش',
-    'only_child': 'تک فرزند',
-    'only_son': 'تک فرزند ذکور',
-    'divorced_child': 'فرزند طلاق',
-    'family_support': 'کمک خرج خانواده',
-    'father_sick': 'پدر بیمار',
-    'mother_sick': 'مادر بیمار',
-    'father_disabled': 'پدر از کار افتاده',
-    'father_deceased': 'پدر متوفی',
-    'mother_deceased': 'مادر متوفی',
-    'need_declared': 'اعلام نیاز',
-    'married': 'متاهل',
-    'has_child': 'دارای فرزند',
-    'description': 'توضیحات'
-}
 
 class SoldierFilterForm(forms.Form):
     search = forms.CharField(
@@ -159,11 +129,14 @@ class SoldierProblemForm(forms.Form):
     description = forms.CharField(required=False, label='توضیحات',     
         widget=forms.Textarea(attrs={
             'class': 'form-control',
-            'rows': 3,  # دو خط
+            'rows': 2, 
+            'style':'resize:none;',
             'placeholder': 'توضیحات مشکلات سرباز را اینجا وارد کنید',
         }),
+        initial='',
         empty_value='',
     )
+    
 from django import forms
 from soldiers.models import Soldier
 from soldiers.constants import physical_condition_list, Type_of_disease_list

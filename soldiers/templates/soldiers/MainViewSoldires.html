@@ -2,140 +2,166 @@
 
 {% block main %}
     <style>
-        .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-            padding:4px 2px;
-            
+
+        .box-title {
+            font-weight: bold;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+        .form-group > label {
+            flex: 2;
         }
         
-        .btn-group .btn {
-            font-size: 12px;
-            padding:4px 6px;
-
+        .form-group > * {
+            flex: 3;
         }
-    </style>
-    <section class="content">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box">
-                    <div class="container mt-5">
-                        <h2 class="text-center">جستجوی سرباز</h2>
-                        <form method="GET" action="{% url 'soldier_search_paziresh' %}">
-                            <div class="row">
-                                <div class="form-group">
-                                    <label for="acceptance_code">عدد پذیرش</label>
-                                    <input type="text" class="form-control" id="acceptance_code" name="acceptance_code" placeholder="عدد پذیرش">
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="name">نام</label>
-                                        <input type="text" class="form-control" id="name" name="name"
-                                               placeholder="نام سرباز">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="family">نام خانوادگی</label>
-                                        <input type="text" class="form-control" id="family" name="family"
-                                               placeholder="نام خانوادگی">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="national_code">کد ملی</label>
-                                        <input type="text" class="form-control" id="national_code" name="national_code"
-                                               placeholder="کد ملی">
-                                    </div>
-                                </div>
+        .form-group > input,select {
+            border-radius: 6px;
+            padding: 2px 8px;
+            border: 1px solid #ccc;
+        }
+        .btn-search {
+            padding: 8px 40px !important;
+            border-radius: 10px;
+        }
+</style>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h4 class="box-title">فهرست پذیرش اولیه فراگیران</h4>
+            </div>
+            <div class="box-body">
+                <form method="GET">
+                    <div class="row">
+                        
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="acceptance_status">وضعیت پذیرش</label>
+                                <select id="acceptance_status" name="acceptance_status">
+                                    {% for value,label in acceptance_status_list  %}
+                                        <option value="{{value}}" {% if acceptance_status == value %}selected{% endif %}>
+                                            {{label}}
+                                        </option>
+                                    {% empty %}
+                                        <option value="" selected>همه</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary">جستجو</button>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="acceptance_code">عدد پذیرش</label>
+                                <input type="text" class="form-control" id="acceptance_code" name="acceptance_code" placeholder="عدد پذیرش" value="{{acceptance_code}}" >
                             </div>
-                        </form>
-
-                        <hr>
+                        </div>
+                         <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="national_code">کد ملی</label>
+                                <input type="text" class="form-control" id="national_code" name="national_code" placeholder="کد ملی" value="{{national_code}}">
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="status_type">وضعیت برگه اعزام</label>
+                                <select id="status_type" name="status_type">
+                                    <option class="status-type default" value="">همه</option>
+                                    <option class="status-type default" value="no">ندارد</option>
+                                    {% for status in status_types %}
+                                        <option class="status-type unkhown" value="{{status}}" {% if status == status_type %}selected{% endif %}>
+                                            {{status}}
+                                        </option>
+                                    {% endfor %}
+                                    {% for status in unkhown_status_types %}
+                                        <option class="status-type unkhown" value="{{status}}" {% if status == status_type %}selected{% endif %}>
+                                            {{status}} (تعریف نشده)
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="name">نام</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="نام سرباز" value="{{name}}">
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="family">نام خانوادگی</label>
+                                <input type="text" class="form-control" id="family" name="family" placeholder="نام خانوادگی" value="{{family}}">
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label for="national_code">گردان اولیه</label>
+                                <select id="gordan" name="gordan">
+                                    <option value="">نمایش همه</option>
+                                    <option value="no">ندارد</option>
+                                    {% for g in gordans %}
+                                        <option gordan-name="{{g.name}}" id="option_gordan_{{g.id}}" value="{{g.id}}">{{g.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="national_code">گروهان اولیه</label>
+                                <select name="group" id="battaliongroup">
+                                    <option value="">یک گردان انتخاب کنید.</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <!-- /.box-header -->
-                    <div class="box-body table-responsive no-padding">
-                        <table class="table table-hover">
-                            <tbody>
-                            <tr>
-                                <th class="text-center">کد داخلی</th>
-                                <th class="text-center">کد پذیرش</th>
-                                <th class="text-center">کدملی</th>
-                                <th>نام</th>
-                                <th>نام خانوادگی</th>
-                                <th >گردان</th>
-                                <th class="text-center">گروهان</th>
-                                <th>تحصیلات</th>
-                                <th>مقطع سامانه</th>
-                                <th>وضعیت پذیرش</th>
-                                <th>عملیات</th>
-                            </tr>
-                            {% for sodire in results %}
-
-                                <tr>
-                                    <td class="text-center">{{ sodire.pk }}</td>
-                                    <td class="text-center">{{ sodire.acceptance_code }}</td>
-                                    <td class="text-center">{{ sodire.National_Code }}</td>
-                                    <td>{{ sodire.name }}</td>
-                                    <td>{{ sodire.family }}</td>
-                              
-                                    {% if sodire.Gordan %}
-                                        <th>{{ sodire.Gordan.name }}</th>
-                                    {% else %}
-                                        <th></th>
-                                    {% endif %}
-                                    {% if sodire.Gordan %}
-                                        <th>{{ sodire.battalion_group.name }}</th>
-                                    {% else %}
-                                        <th></th>
-                                    {% endif %}
-                                    <td>{{ sodire.Grade }}</td>
-                                    <td>{{ sodire.educational_level_of_the_system }}</td>
-                                    
-                                    {% if sodire.has_been_accepted %}
-                                        <td class="text-center"><span class="label label-success">شده</span></td>
-                                    {% else %}
-                                        <td class="text-center"><span class="label label-danger">نشده</span></td>
-                                    {% endif %}
-                                    
-                                    <td>
-                                        <div class="btn-group">
-                                            {% if sodire.has_been_accepted %}
-                                                <a href="{% url 'updatePaziresh' pk=sodire.National_Code %}"
-                                                   class="btn btn-default">ویرایش</a>
-                                                <a href=""
-                                                   class="btn btn-default" disabled="True">ثبت پذیرش</a>
-                                            {% else %}
-                                                <a href=""
-                                                   class="btn btn-default" disabled="True">ویرایش</a>
-                                                <a href="{% url 'get_sarbaz' pk=sodire.National_Code %}"
-                                                   class="btn btn-default">ثبت پذیرش</a>
-                                            {% endif %}
-                                            <a href="{% url 'sater' pk=sodire.pk %}"
-                                               class="btn btn-default">ساتر</a>
-                                            <a href="{% url 'moarefibegordan' pk=sodire.pk %}"
-                                               class="btn btn-default">معرفی
-                                                گردان</a>
-                                            {% comment %} <a href="{% url 'soldire_details' code=sodire.National_Code %}"class="btn btn-default">مشاهده</a> {% endcomment %}
-                                            <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{sodire.National_Code}}" class="btn btn-default">مشاهده</a>
-
-                                               {#                                            <a href="{% url 'SoldireProfile' %}"#}
-                                            {#                                               class="btn btn-default">پذیرش</a>#}
-                                        </div>
-
-                                    </td>
-                                </tr>
-
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                    <div class="text-center">
+                        <button type="submit" class="btn-search btn btn-primary" >جستجو</button>
                     </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
+                </form>
             </div>
         </div>
-    </section>
+    </div>
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-body table-responsive no-padding">
+                {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+    <script>
+        document.getElementById('gordan').addEventListener('change', function () {
+            const gordanId = this.value;
+            const battalionGroup = document.getElementById('battaliongroup');
+            battalionGroup.innerHTML = `
+                <option value="">همه</option>
+                <option value="no">ندارد</option>
+            `;
+            if (!gordanId || gordanId == 'no'){
+                return
+            }
+            
+            const optionSelected = document.getElementById(`option_gordan_${gordanId}`)
+            const gordanName = optionSelected.getAttribute('gordan-name');
+
+            if (gordanName) {
+                const baseUrl = `{% url 'get_grohan_by_gordan_for_search' %}`
+                const qs = `gordan_name=${gordanName}`
+                const requestUrl = `${baseUrl}?${qs}`
+                fetch(requestUrl).then(response => response.json()).then(data => {
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.name;
+                        option.textContent = `گروهان ${item.name}`;
+                        battalionGroup.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
 {% endblock %}

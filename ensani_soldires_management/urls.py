@@ -61,6 +61,7 @@ urlpatterns = [
     path('courses/scores/', soldiers_scores_page, name='soldiers_scores_page'),
     path('courses/problems/update', soldiers_problems_update, name='soldiers_problems_update'),
     path('courses/scores/problems/export/excel', soldiers_problems_export_excel, name='soldiers_problems_export_excel'),
+    path('courses/scores/unit-problems/export/excel', unit_problems_export_excel, name='unit_problems_export_excel'),
     path('courses/help/', soldiers_scores_help_page, name='soldiers_scores_help_page'),
     path('courses/scores/top-course/', top_soldiers_course_page, name='top_soldiers_course_page'),
     path('courses/scores/top-gordan/', top_soldiers_gordan_page, name='top_soldiers_gordan_page'),
@@ -72,6 +73,8 @@ urlpatterns = [
     path('courses/scores/training-transcript/export/excel/', soldiers_training_transcript_export_excel, name='soldiers_training_transcript_export_excel'),
     path('courses/scores/training-transcript/export/print/', soldiers_training_transcript_export_print, name='soldiers_training_transcript_export_print'),
     path('courses/scores/training-transcript/print/',        soldiers_training_transcript_print, name='soldiers_training_transcript_print'),
+    path('courses/scores/weapon_score/',        weapon_score_page, name='weapon_score_page'),
+    
     path('courses/tatbigh/', soldiers_tatbigh_page, name='soldiers_tatbigh_page'),
     path('courses/tatbigh/remove/<str:pk>', remove_soldier_from_tatbigh, name='remove_soldier_from_tatbigh'),
     path('courses/test-salamat-rawan/', test_salamat_rawan, name='test_salamat_rawan'),
@@ -82,6 +85,7 @@ urlpatterns = [
     path('assessments/add/', assessment_add, name='assessment_add'),
     path('assessments/edit/<int:pk>/', assessment_edit, name='assessment_edit'),
     path('assessments/delete/', assessment_delete, name='assessment_delete'),
-    
+    path('quick/excel/soldiers', soldiers_quick_export_excel, name='soldiers_quick_export_excel'),
+    path('quick/excel/soldiers/kefayat', soldiers_kefayat_quick_export_excel, name='soldiers_kefayat_quick_export_excel'),
+    path('quick/excel/soldiers/healthy', soldiers_healthy_quick_export_excel, name='soldiers_healthy_quick_export_excel')   
 ]
-

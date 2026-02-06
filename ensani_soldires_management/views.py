@@ -86,7 +86,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import render
-from django.db.models import IntegerField
+from django.db.models import IntegerField,CharField
 from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -2323,7 +2323,63 @@ def top_soldiers_gordan_page(request):
 def soldiers_scores_help_page(request):
     return render(request, 'courses/soldiers_scores_help.html')
 
+from django.db.models import Max, Min,Value
+def unit_problems_export_excel(request):
+    soldiers = get_user_soldiers(request.user)
+    soldiers = soldiers.filter(in_coures=True, willing_to_learn=True)
+    soldiers = soldiers.order_by('t_Gordan__name', 't_battalion_group__name', 'code_gorhan_nahai')
 
+    data = []
+
+    for s in soldiers:
+        data.append({
+            'National_Code':s.National_Code,
+            'name':s.name,
+            'family':s.family,
+            'fathers_name':s.fathers_name,
+            'problems_str':s.problems_str,
+            'problem_unit':s.problem_unit,
+            'province_name':s.province_name,
+            'city_name':s.city_name,
+            't_Gordan':str(s.t_Gordan),
+            't_battalion_group':str(s.t_battalion_group),
+            'code_gorhan_nahai':s.code_gorhan_nahai,
+            'problems_str':s.problems_str,
+            'problem_unit':s.problem_unit,
+        })
+
+    df = pd.DataFrame(data)
+    
+    df.rename(columns=
+        {
+            'National_Code': 'کدملی',
+            'name': 'نام',
+            'family': 'نام خانوادگی',
+            'fathers_name': 'نام پدر',
+            'problem_unit':'محل پیشنهادی',
+            'problems_str':'مشکلات',
+            'province_name':'استان',
+            'city_name':'شهر',
+            't_Gordan__name':'گردان', 
+            't_battalion_group__name':'گروهان',
+            'code_gorhan_nahai':'کد سازمانی',
+        },
+        inplace=True
+    )
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=soldiers_problem_unit.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='فهرست سربازان')
+        worksheet = writer.sheets['فهرست سربازان']
+        worksheet.sheet_view.rightToLeft = True
+
+    worksheet.sheet_view.rightToLeft = True
+
+    return response
+
+           
 def soldiers_problems_page(request):
     user = request.user
 
@@ -2358,6 +2414,7 @@ def soldiers_problems_page(request):
             soldiers_qs = soldiers_qs.filter(t_Gordan_id=battalion_filter)
         if group_filter:
             soldiers_qs = soldiers_qs.filter(t_battalion_group_id=group_filter)
+
 
     # Pagination
     paginator = Paginator(soldiers_qs, 20)
@@ -2544,12 +2601,97 @@ def soldiers_problems_export_excel(request):
     ws.sheet_view.rightToLeft = True
 
     # پاسخ HTTP
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=soldiers_problems.xlsx'
     wb.save(response)
     return response
+
+def create_full_excel(soldiers,filename='سربازان'):
+
+    data = []
+    for s in soldiers:
+        data.append({
+            'acceptance_code':s.acceptance_code,
+            'National_Code':s.National_Code,
+            'name':s.name,
+            'family':s.family,
+            't_Gordan__name':str(s.t_Gordan.name if s.t_Gordan else ''),
+            't_battalion_group__name':str(s.t_battalion_group.name if s.t_battalion_group else ''),
+            'code_gorhan_nahai':s.code_gorhan_nahai,
+            'fathers_name':s.fathers_name,
+            'Gordan__name':  str(s.Gordan.name if s.Gordan else ''),
+            'battalion_group__name':str(s.battalion_group.name if s.battalion_group else ''),
+            'code_gorhan':s.code_gorhan,
+            'Amriye':s.Amriye,
+            'Amriye_organization':s.Amriye_organization,
+            'physical_condition':s.physical_condition,
+            'Type_of_disease':s.Type_of_disease,
+            'Grade':s.Grade,
+            'Grade_precise':s.Grade_precise,
+            'educational_level_of_the_system':s.educational_level_of_the_system,
+            'Study_group':s.Study_group,
+            'marital_status':s.marital_status,
+            'Religion':s.Religion,
+            'Date_of_birth':s.Date_of_birth,
+            'place_of_birth':s.place_of_birth,
+            'phone_number':s.phone_number,
+            'home_phone_number':s.home_phone_number,
+            'Date_of_dispatch':s.Date_of_dispatch,
+            'province_name':s.province_name,
+            'city_name':s.city_name,
+            'Address':s.Address,
+            'Place_of_Issue':s.Place_of_Issue,
+            'height':s.height,
+            'Weight':s.Weight,
+        })
+    df = pd.DataFrame(data)
+
+    df.rename(columns={
+        'National_Code': 'کدملی',
+        'name': 'نام',
+        'family': 'نام خانوادگی',
+        'fathers_name': 'نام پدر',
+        'acceptance_code': 'عدد پذیرش',
+        'Gordan__name': 'نام گردان اولیه',
+        'battalion_group__name': 'نام گروهان اولیه',
+        'code_gorhan': 'کد سازمانی',
+        't_Gordan__name': 'نام گردان',
+        't_battalion_group__name': 'نام گروهان',
+        'code_gorhan_nahai': 'کد سازمانی نهایی',
+        'Amriye': 'امریه دار',
+        'Amriye_organization': 'سازمان امریه',
+        'physical_condition': 'وضعیت جسمانی',
+        'Type_of_disease': 'نوع بیماری',
+        'Grade': 'مقطع تحصیلی',
+        'Grade_precise': 'مقطع تحصیلی دقیق',
+        'educational_level_of_the_system': 'مقطع تحصیلی سامانه',
+        'Study_group': 'گروه تحصیلی',
+        'marital_status': 'وضعیت تاهل',
+        'Religion': 'مذهب',
+        'Date_of_birth': 'تاریخ تولد',
+        'place_of_birth': 'محل تولد',
+        'phone_number': 'شماره موبایل',
+        'home_phone_number': 'شماره منزل',
+        'Date_of_dispatch': 'تاریخ اعزام',
+        'province_name': 'نام استان',
+        'city_name': 'نام شهر',
+        'Address': 'آدرس',
+        'Place_of_Issue': 'محل صدور',
+        'height': 'قد',
+        'Weight': 'وزن',
+    },inplace=True)
+
+    # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    # response['Content-Disposition'] = 'attachment; filename=soldiers.xlsx'
+
+    # with pd.ExcelWriter(response, engine='openpyxl') as writer:
+    #     df.to_excel(writer, index=False, sheet_name=filename)
+    #     worksheet = writer.sheets[filename]
+    #     worksheet.sheet_view.rightToLeft = True
+
+    # return response
+    return get_excel_response(df, 'soldiers')
+
 
 
 
@@ -2677,6 +2819,25 @@ def soldiers_tatbigh_page(request):
         'soldiers_pre_t':soldiers_pre_t,
         'access_edit':access_edit
     }
+    
+    if request.method == "GET":
+        tab    = request.GET.get('tab')
+        action = request.GET.get('action')
+        s = []
+        if tab =='before-tab':
+            s = soldiers_in_battalion_group
+        if tab == 'after-tab':
+            s = soldiers_in_t_battalion_group
+        if tab == 'notatbigh-tab':
+            s = soldiers_no_t_battalion_group
+
+
+        if action == 'exportPrint':
+            context = {'soldiers':s,'action':action,'tab':tab}
+            return render(request, 'courses/soldiers_tatbigh_print.html', context)
+        if action == 'exportExcel':
+            return create_full_excel(soldiers=s)
+    
     return render(request, 'courses/soldiers_tatbigh_page.html', context)
 
 
@@ -2864,13 +3025,13 @@ def get_soldier_by_national_code(request):
     except Soldier.DoesNotExist:
         return JsonResponse({"error": "سربازی با این کد ملی یافت نشد."}, status=404)
 
-
-
+import re
 @login_required
 def soldiers_avatar_page(request):
     # 🟦 دریافت گردان و گروهان‌های مجاز
     battalions_allowed = get_user_battalions(request.user)
     groups_allowed = get_user_battalion_groups(request.user).select_related('gordan')
+    en = EnsaniSettings.objects.first()
 
     selected_battalion = request.GET.get('battalion')
     if not selected_battalion and battalions_allowed.exists():
@@ -2899,49 +3060,72 @@ def soldiers_avatar_page(request):
         code_gorhan_nahai_int=Cast('code_gorhan_nahai', IntegerField()),
         code_gorhan_int=Cast('code_gorhan', IntegerField()),
     )
-
+    
     # وقتی کاربر فایل ZIP آپلود می‌کند
     if request.method == "POST" and request.FILES.get("zip_file"):
         uploaded_zip = request.FILES["zip_file"]
         results = []  # برای گزارش اکسل
+        action = request.POST.get('formats','')
+        
+        def organization_code_soldier(query_name=''):
+            query_name = query_name.strip()
+            query_name = query_name.replace('.', ' ')
+            query_name = query_name.replace('-', ' ')
+            query_name = query_name.replace('_', ' ')
+            group_code,code_gorhan = query_name.split(' ')
+            gordan  = group_code[0].strip()
+            gorohan = group_code[1].strip()
+            code_gorhan = code_gorhan.strip()
+            if en.tatbigh:
+                soldier =  Soldier.objects.filter(
+                    t_Gordan__gcode=gordan,
+                    t_battalion_group__name=gorohan,
+                    code_gorhan_nahai=code_gorhan
+                )
+            else:
+                soldier = Soldier.objects.filter(
+                    Gordan__gcode=gordan,
+                    battalion_group__name=gorohan,
+                    code_gorhan=code_gorhan
+                )
 
+            s = soldier.first()
+            print(s)
+            return s
         # باز کردن فایل ZIP
         with zipfile.ZipFile(uploaded_zip, "r") as z:
             for filename in z.namelist():
                 if filename.endswith(("/", "\\")):  # رد کردن پوشه‌ها
                     continue
-
+                
                 # استخراج نام فایل بدون پسوند (کد ملی)
-                national_code = os.path.splitext(os.path.basename(filename))[0]
+                query_name = os.path.splitext(os.path.basename(filename))[0]
                 file_data = z.read(filename)
                 file_obj = io.BytesIO(file_data)
                 file_obj.name = os.path.basename(filename)
-
                 try:
-                    soldier = Soldier.objects.get(National_Code=national_code)
+                    if action == 'organization_code':
+                        soldier = organization_code_soldier(query_name)
+                    elif action == 'paziresh_code':
+                        soldier = Soldier.objects.get(code_paziresh=query_name)
+                    else:
+                        soldier = Soldier.objects.get(National_Code=query_name)
                     
                     try:
-                        if not soldier in soldiers:
-                            results.append({
-                                "کد ملی": national_code,
-                                "وضعیت": "دسترسی غیر مجاز",
-                            })
+                        print(soldier)
+                        if not soldier:
+                            results.append({ "نام فایل": query_name, "وضعیت": "سرباز یافت نشد" })
+                        elif not soldier in soldiers:
+                            results.append({ "نام فایل": query_name, "وضعیت": "دسترسی غیر مجاز" })
                         else:
                             soldier.save_avatar(file_obj)
-                            results.append({
-                                "کد ملی": national_code,
-                                "وضعیت": "ذخیره شد",
-                            })
+                            results.append({ "نام فایل": query_name, "وضعیت": "ذخیره شد" })
                     except Exception as e:
-                        results.append({
-                            "کد ملی": national_code,
-                            "وضعیت": f"خطا در ذخیره‌سازی: {str(e)}",
-                        })
-                except Soldier.DoesNotExist:
-                    results.append({
-                        "کد ملی": national_code,
-                        "وضعیت": "کد ملی یافت نشد",
-                    })
+                        
+                        results.append({ "نام فایل": query_name, "وضعیت": f"خطا در ذخیره‌سازی: {str(e)}" })
+                except Soldier.DoesNotExist as e:
+                    print(e)
+                    results.append({ "نام فایل": query_name, "وضعیت": "کد ملی یافت نشد" })
 
         # ساخت DataFrame از نتایج
         df = pd.DataFrame(results)
@@ -2961,7 +3145,6 @@ def soldiers_avatar_page(request):
         response["Content-Disposition"] = 'attachment; filename="soldiers_report.xlsx"'
         return response
     
-    en = EnsaniSettings.objects.first()
 
     if en.tatbigh:
         soldiers = soldiers.filter(t_battalion_group=selected_group).order_by('code_gorhan_nahai_int', 'code_gorhan_int')
@@ -3093,6 +3276,11 @@ def soldiers_ideological_assessment_save(request):
     messages.success(request, "ارزیابی‌ها با موفقیت ذخیره شد")
     return redirect('soldiers_ideological_assessment_page')
 
+def weapon_score_page(request):
+    base_soldiers = Soldier.objects.filter(has_been_accepted=True)
+    context = get_battalion_group_context(request, base_soldiers)
+    template_name = 'courses/weapon_score_page.html'
+    return render(request,template_name,context)
 
 def soldiers_training_transcript_page(request):
     base_soldiers = Soldier.objects.filter(has_been_accepted=True)
@@ -3126,6 +3314,138 @@ def soldiers_training_transcript_page(request):
     context.update(page_context)
     template_name = 'courses/soldiers_training_transcript_page.html'
     return render(request,template_name,context)
+
+
+def quick_excel_soldiers(soldiers):
+    headers = [
+        'وضعیت سرباز',
+        'تسویه حساب',
+        "کد ملی",
+        "نام",
+        "نام خانوادگی",
+        "نام پدر",
+        'محل صدور',
+        'تاریخ تولد',
+        'محل تولد',
+        "وضعیت سلامت",
+        'کمیسیون پزشکی',
+        'امریه',
+        'سازمان امریه',
+        "گردان نهای",
+        "گروهان نهای",
+        "کد سازمانی نهای",
+        "گردان اولیه ",
+        "گروهان اولیه",
+        "کد سازمانی اولیه",
+        'مقطع تحصیلی',
+        'مقطع تحصیلی دقیق',
+        'مقطع تحصیلی سامانه',
+        'رشته تحصیلی',
+        'متاهل',
+        'مذهب',
+        'شماره تماس',
+        'شماره منزل',
+        'استان',
+        'شهر',
+        'آدرس'
+    ]
+
+    # آماده‌سازی داده‌ها
+    data = []
+    for s in soldiers:
+        # tatbigh no
+        g_name = s.Gordan.name if s.Gordan else ''
+        b_name = s.battalion_group.name if s.battalion_group else ''
+        # tatbigh
+        tg_name = s.t_Gordan.name if s.t_Gordan else ''
+        tb_name = s.t_battalion_group.name if s.t_battalion_group else ''
+        kf= "درحال اموزش"
+        if s.Sufficiency_of_mobilization: 
+            kf= "کفایت از بسیج"
+        if s.Previous_service_record:
+            kf= "خدمت دار قبلی"
+            
+        row = [
+            kf,
+            'بله' if s.IsCheckout else 'خیر',
+            s.National_Code,
+            s.name,
+            s.family,
+            s.fathers_name,
+            s.Place_of_Issue,
+            s.Date_of_birth,
+            s.physical_condition,
+            s.place_of_birth,
+            '*' if s.Amriye else '',
+            s.Amriye_organization,
+            s.the_medical_commission,
+            tg_name,
+            tb_name,
+            s.code_gorhan_nahai,
+            g_name,
+            b_name,
+            s.code_gorhan,
+            s.Grade,
+            s.Grade_precise,
+            s.educational_level_of_the_system,
+            s.Study_group,
+            s.marital_status,
+            s.Religion,
+            s.phone_number,
+            s.home_phone_number,
+            s.city_name,
+            s.province_name,
+            s.Address
+        ]
+        data.append(row)
+    # استفاده از تابع generate_excel
+    return generate_excel(headers, data, filename="Soldiers_Quick_Export")
+
+
+def soldiers_kefayat_quick_export_excel(request):
+    _type = request.GET.get('type')
+    
+    if  _type == "basij":    
+        soldiers = Soldier.objects.filter(Q(Sufficiency_of_mobilization=True))
+    elif _type == "khedmat_ghabli":
+        soldiers = Soldier.objects.filter(Q(Previous_service_record=True))
+    else  :
+        soldiers = Soldier.objects.filter(Q(Sufficiency_of_mobilization=True)|Q(Previous_service_record=True))
+
+    return quick_excel_soldiers(soldiers)
+
+
+
+def soldiers_quick_export_excel(request):
+    b = request.GET.get('b')
+    g = request.GET.get('g')
+    # گرفتن سربازان با رکورد آموزشی
+    soldiers_qs = Soldier.objects.all()
+    soldiers = get_filtered_soldiers(soldiers_qs, battalion=b, group=g)
+
+    return quick_excel_soldiers(soldiers)
+
+def soldiers_healthy_quick_export_excel(request):
+    b = request.GET.get('b')
+    g = request.GET.get('g')
+    physical_condition = request.GET.get('physical_condition','')
+    # گرفتن سربازان با رکورد آموزشی
+    soldiers_qs = Soldier.objects.all()
+    
+    if physical_condition == "healthy":
+        soldiers_qs = soldiers_qs.filter(physical_condition='سالم')
+    elif physical_condition == "moaf":
+        soldiers_qs = soldiers_qs.filter(physical_condition='معاف از رزم')
+    elif physical_condition == "grobe":
+        soldiers_qs = soldiers_qs.filter(Q(physical_condition='گروه ب')|Q(physical_condition='معاف+گروه ب'))
+    else:
+        soldiers_qs.filter(physical_condition='نامشخص')
+    
+    
+    soldiers = get_filtered_soldiers(soldiers_qs, battalion=b, group=g)
+    
+    return quick_excel_soldiers(soldiers)
+
 
 
 def soldiers_training_transcript_export_excel(request):

@@ -21,14 +21,28 @@ PERSIAN_MONTHS = [
 def jalali_datetime(value):
     if not value:
         return ""
-    return jdatetime.datetime.fromgregorian(datetime=value).strftime("%H:%M:%S %Y/%m/%d")
-
+    try:
+        return jdatetime.datetime.fromgregorian(datetime=value).strftime("%H:%M:%S %Y/%m/%d")
+    except:
+        return str(value)
 
 @register.filter
 def jalali_date(value):
-    if not value:
-        return ""
-    return jdatetime.datetime.fromgregorian(datetime=value).strftime("%Y/%m/%d")
+    
+    try:
+        return jdatetime.datetime.fromgregorian(datetime=value).strftime("%Y/%m/%d")
+    except:
+        pass
+    
+    return str(value)
+@register.filter
+def jalali_date_format(value):
+    try:
+        return jdatetime.datetime(value).strftime("%Y/%m/%d")
+    except:
+        pass
+    
+    return str(value)
 
 @register.filter
 def jalali_format(value):

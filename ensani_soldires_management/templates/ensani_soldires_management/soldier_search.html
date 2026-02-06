@@ -77,6 +77,14 @@
     }
     #form-g .form-group label { flex:2;}
     #form-g .form-group input,#form-g .form-group select {flex:3;}
+
+    .soldier-avatar-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 2px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
 </style>
 {% endblock %}
 
@@ -262,6 +270,7 @@
                 <thead>
                 <tr>
                     <th>ردیف</th>
+                    <th>تصویر</th>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
                     <th>کد ملی</th>
@@ -277,6 +286,13 @@
                 {% for soldier in results %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if soldier.avatar %}
+                                <img class="soldier-avatar-image" src="{{ soldier.avatar.url }}" alt="{{soldier.name}} {{soldier.family}}">
+                            {% else %}
+                                ندارد
+                            {% endif %}
+                        </td>
                         <td>{{ soldier.name }}</td>
                         <td>{{ soldier.family }}</td>
                         <td>{{ soldier.National_Code }}</td>
@@ -306,7 +322,7 @@
                         {% if soldier.has_been_accepted is False %}
                             <td style="background-color: #ff9000">پذیرش نشده</td>
                         {% endif %}
-                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i class="fa fa-eye"></i></a></td>
+                        <td><a href="{% url 'soldier_detail' %}?code={{soldier.National_Code}}"><i class="fa fa-eye"></i></a></td>
 
                     </tr>
                 {% endfor %}

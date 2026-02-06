@@ -9,10 +9,10 @@ def get_user_battalions(user):
     حتی اگر فقط به یک گروهان دسترسی داشته باشد، گردان مربوطه نیز داده می‌شود.
     """
     if not user.is_authenticated:
-        return battalion.objects.none()
+        return battalion.objects.none().order_by('gcode')
 
     if user.is_staff:
-        return battalion.objects.all()
+        return battalion.objects.all().order_by('gcode')
 
     # دسترسی مستقیم به گردان
     gordan_access = UserAccess.objects.filter(
@@ -37,7 +37,7 @@ def get_user_battalions(user):
     # ادغام دسترسی مستقیم و غیرمستقیم
     all_battalion_ids = list(set(battalion_ids + battalion_ids_from_groups))
 
-    return battalion.objects.filter(id__in=all_battalion_ids)
+    return battalion.objects.filter(id__in=all_battalion_ids).order_by('gcode')
 
 
 # 2️⃣ تابع دریافت گروهان‌ها بر اساس دسترسی کاربر
@@ -47,23 +47,23 @@ def get_user_battalion_groups(user):
     اگر کاربر به کل گردان دسترسی داشته باشد، گروهان‌های آن گردان نیز بازگردانده می‌شوند.
     """
     if not user.is_authenticated:
-        return battalion_group.objects.none()
+        return battalion_group.objects.none().order_by('name')
 
     if user.is_staff:
-        return battalion_group.objects.all()
+        return battalion_group.objects.all().order_by('name')
 
     # دسترسی مستقیم به گروهان
     group_access = UserAccess.objects.filter(user=user, access_name=AccessName.GROHAN_SOLDIERS.name)
     if group_access.filter(access_value='همه').exists():
-        return battalion_group.objects.all()
+        return battalion_group.objects.all().order_by('name')
 
     group_ids = [int(a.access_value) for a in group_access if a.access_value.isdigit()]
 
     # گروهان‌هایی که از گردان‌های مجاز هستند
     battalions_allowed = get_user_battalions(user)
-    groups_from_battalion = battalion_group.objects.filter(gordan__in=battalions_allowed)
+    groups_from_battalion = battalion_group.objects.filter(gordan__in=battalions_allowed).order_by('name')
 
-    return battalion_group.objects.filter(id__in=group_ids) | groups_from_battalion
+    return battalion_group.objects.filter(id__in=group_ids).order_by('name') | groups_from_battalion
 
 from ensaniapp_settings.models import EnsaniSettings
 # 3️⃣ تابع دریافت سربازان بر اساس دسترسی کاربر
@@ -94,3 +94,24 @@ def get_user_soldiers(user):
         ) | Soldier.objects.filter(
             battalion_group__in=battalion_groups_allowed
         )
+
+
+
+def battalion_and_groups_allowed(user):
+    battalions = get_user_battalions(user)
+    groups = get_user_battalion_groups(user).select_related('gordan').order_by('name')
+
+    return battalions,groups
+
+def create_access_tree(battalions_allowed,groups_allowed):
+    
+    nodes = [{ 'title':'همه گردان ها', 'q':f'b=all' }]
+    for b in battalions_allowed:
+        children = [{ 'title':'همه گروهان ها', 'q':f'b={b.id}&g=all' }]
+        for g in groups_allowed:
+            if g.gordan.id == b.id:
+                children.append({ 'title':f'گروهان {g.name}', 'q':f'g={g.id}' })
+        
+        nodes.append({ 'title':str(b),'q':f'b={b.id}','children': children })
+
+    return nodes

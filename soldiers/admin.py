@@ -19,6 +19,8 @@ class SoldierAdmin(admin.ModelAdmin):
         'Date_of_dispatch', 
         'Grade',
         'educational_level_of_the_system',
+        'province_name',
+        'city_name',
         'physical_condition',
         'has_been_accepted', 
         'IsCheckout'
@@ -48,8 +50,11 @@ class SoldierAdmin(admin.ModelAdmin):
     )
     fieldsets = (
         ('اطلاعات فردی', {
-            'fields': ('name', 'family', 'fathers_name', 'National_Code', 'Date_of_birth', 'place_of_birth',
-                       'Religion', 'marital_status', 'phone_number', 'home_phone_number', 'Address', 'Place_of_Issue')
+            'fields': (
+                'name', 'family', 'fathers_name', 'National_Code', 'Date_of_birth', 
+                'place_of_birth', 'province_name', 'city_name',
+                'Religion', 'marital_status', 'phone_number', 'home_phone_number', 'Address', 'Place_of_Issue'
+            )
         }),
         ('تحصیلی و پزشکی', {
             'fields': ('Grade', 'Grade_precise', 'educational_level_of_the_system', 'Study_group',

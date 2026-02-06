@@ -18,17 +18,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 14px;
         }
         .form-input{
             display: flex;
+            align-items: center;
         }
 
         .form-input input, .form-input select {
             flex: 3;
-            border-radius: 4px;
+            border-radius: 8px;
             height: 36px;
+            padding:4px 20px;
             margin: 0;
+            font-weight: bold;
         }
         .form-input label {
             flex: 2;
@@ -45,39 +48,149 @@
             margin: 0;
             padding: 0;
             color: chocolate;
-            border-right: 4px solid chocolate;
+            border-right: 6px solid chocolate;
             background-color: #ffebdd22;
-            padding: 10px 20px;
+            padding: 2px 10px;
             font-weight: bold;
             margin: 10px 0;
             border-radius: 4px;
         }
+        .box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
         .box-body {
             padding:10px 20px !important;
+        }
+        .checkbox-multiple {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+            gap: 2px 20px;
+        }
+        .checkbox-multiple > div {
+            min-width: 31%;
+        }
+        .checkbox-multiple.md2 > div {
+            min-width: 45%;
+        }
+        .checkbox-multiple.md3 > div {
+            min-width: 31%;
+        }
+        .checkbox-multiple.md4 > div {
+            min-width: 23%;
+        }
+        .checkbox-multiple.md5 > div {
+            min-width: 18%;
+        }
+        .checkbox-multiple > div > input {
+            margin: 0;
+        }
+        .checkbox-multiple > div > label {
+            display: flex;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: row-reverse;
+            min-width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .hint-card {
+            padding: 10px ;
+            border-radius: 10px;
+            background-color: #fff7e8;
+            border:1px solid chocolate;
+            color: black;
+            text-align: justify;
+            margin-bottom: 10px;
+        }
+        .hint-card p {
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+        }
+        .btn {
+            border-radius: 6px !important;
+        }
+        .row-inputs input {
+            width: 100%;
+            font-size: 14px;
+            padding: 6px 10px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px solid #acacac;
+            outline: 0 none;
+        }
+        .box-title {
+            font-weight: bold;
+        }
+        .box {
+            border-radius: 10px;
+        }
+        .hint-paragraph {
+            font-size: 12px;
+            padding: 4px;
+            margin: 0;
         }
     </style>
 {% endblock %}
 {% block main %}
     <div class="box box-warning">
-        <h3 style="font-weight: bold;" class="text-center">فرم گروهانی</h3>
-        <!-- /.box-header -->
+        <div class="box-header">
+            {% if new %}
+                <h3 class="box-title font-bold text-center">ایجاد گروهان و تنظیمات جدید</h3>
+            {% else %}
+                <h3 class="box-title font-bold text-center">فرم اطلاعات گروهان و تنظیمات مدیرتی پذیرش</h3>
+            {% endif %}
+            <a class="btn  btn-primary" href="{% url 'MainViewBattalionGroup'  %}">
+                <span>فهرست گروهان ها</span>
+                <i class="fa fa-arrow-left"></i> 
+            </a>
+            <div style="flex: 1;"></div>
+            <a onclick="selectAll()" class="btn btn-default" href="#">
+                <span>انتخاب همه</span>
+                <i class="fa fa-check"></i> 
+            </a>
+            <a onclick="unSelectAll()" class="btn btn-default" href="#">
+                <span>لغو انتخاب ها</span>
+                <i class="fa fa-square"></i> 
+            </a>
+
+        </div>
         <div class="box-body">
             <form role="form" method="post" class="row">
                 {% csrf_token %}
-                <div class="box-body col-xs-5" style="height: 100%;">
+                <div class=" col-xs-4" style="height: 100%;">
+                    <div class="hint-card">
+                        <p>با انتخاب تنظیمات مورد نظر در سمت چپ پذیرش فراگیر با توجه به اطلاعات سیستمی به صورت اتوماتیک انجام خواهد شد و به گروهان مورد نظر منتقل میشود.</p>
+                        <hr style="margin: 4px;padding: 0;border: 0.5px dashed chocolate;" />
+                        <p>
+                            <strong>موارد تعریف نشده :</strong>
+                            درصورتی که موارد تعریف نشده در بخش وضعیت برگه اعزام وجود دارد، امکان انتقال اتوماتیک وجود دارد اما شامل امکانات و ویژگی های خاصی در نرم افزار نیستند.
+                        </p>
+                    </div>
                     <div class="form-grid" style="height: 100%;">
-                        <div class="form-input ">
-                            <label>{{ form.name.label }}</label>
-                            {{ form.name }}
-                        </div>
                         <div class="form-input ">
                             <label>{{ form.gordan.label }}</label>
                             {{ form.gordan }}
                         </div>
                         <div class="form-input ">
+                            <label>{{ form.name.label }}</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="form-input ">
+                            <label>{{ form.commander.label }}</label>
+                            {{ form.commander }}
+                        </div>
+
+                        <div class="form-input ">
                             <label>{{ form.zarfiat.label }}</label>
                             {{ form.zarfiat }}
-
+                            
                         </div>
                         <div class="form-input ">
                             <label>{{ form.order.label }}</label>
@@ -89,38 +202,54 @@
                                 {{ form.takmilzarmit.label }}
                                 {{ form.takmilzarmit }}
                             </label>
+                            <p class="hint-paragraph"><strong>نکته :</strong> با فعال کردن تکمیل ظرفیت در پذیرش هوشمند لحاظ نخواهد شد.</p>
+                            <p class="hint-paragraph"><strong>نکته :</strong> امکان انتخاب گروهان وجود دارد.</p>
+
                         </div>
-                        
+                       
+                        <div  class="checkbox-list ">
+                            <label>
+                                {{ form.is_active.label }}
+                                {{ form.is_active }}
+                            </label>
+                            <p class="hint-paragraph"><strong>نکته :</strong> پذیرش هوشمند برای گروهان های فعال لحاظ خواهد شد.</p>
+                            <p class="hint-paragraph"><strong>نکته :</strong> امکان انتخاب گروهان وجود دارد.</p>
+                        </div>
                         <div style="flex:1;" ></div>
-                        <div >
-                            <button style="width: 100%;" type="submit" class="btn btn-success ">ذخیره</button>
+                        <div style="display: flex; align-items: center;gap: 10px;">
+                            <button style="flex: 1;" type="submit" class="btn btn-success btn-md">
+                                <span>ذخیره و ادامه</span>
+                                <i class="fa fa-save"></i> 
+                            </button>
+                         
                         </div>
                     </div>
                 </div>
-                <div class="box-body col-xs-7">
+                <div id="checkes-container" class="col-xs-8">
                     <div class="row checkbox-list">
+
                         <div class="col-xs-12">
                             <h4 class="setting-title">وضعیت سلامت</h4>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.moafazrazm.label }}
                                 {{ form.moafazrazm }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.moafazrazm_gorehbe.label }}
                                 {{ form.moafazrazm_gorehbe }}
                             </label>
-                        </div>
-                        <div class="col-xs-3">
+                        </div> 
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.gorehbe.label }}
                                 {{ form.gorehbe }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.salemm.label }}
                                 {{ form.salemm }}
@@ -129,37 +258,37 @@
                         <div class="col-xs-12">
                             <h4 class="setting-title">مدرک تحصیلی</h4>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.zirediplom.label }}
                                 {{ form.zirediplom }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.diplom.label }}
                                 {{ form.diplom }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.ofghdiplom.label }}
                                 {{ form.ofghdiplom }}
                             </label>
                         </div>
-                          <div class="col-xs-3">
+                          <div class="col-xs-4">
                             <label>
                                 {{ form.lisans.label }}
                                 {{ form.lisans }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.ofghlisans.label }}
                                 {{ form.ofghlisans }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.doctra.label }}
                                 {{ form.doctra }}
@@ -168,21 +297,105 @@
                         <div class="col-xs-12">
                             <h4 class="setting-title">مذهب  و دین</h4>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.shie.label }}
                                 {{ form.shie }}
                             </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <label>
                                 {{ form.ahle_tasnon.label }}
                                 {{ form.ahle_tasnon }}
                             </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <h4 class="setting-title">وضعیت برگه اعزام</h4>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="">
+                                {{ form.status_types }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    {% if bg %}
+        <form class="box box-primary" action="{% url 'save_battalion_group_batch' battalation_pk=bg.pk %}">
+            <div class="box-header">
+                <h3 class="box-title font-bold text-center">مدیریت دسته های گروهان</h3>
+                <a class="btn btn-success" href="#">
+                    <span>ذخیره و ادامه</span>
+                    <i class="fa fa-save"></i> 
+                </a>
+                <a class="btn btn-primary" href="{% url 'add_battalion_group_batch' battalation_pk=bg.pk %}?redirect_url={% url 'BattalionGroupUpdate' pk=bg.pk %}">
+                    <span>دسته جدید</span>
+                    <i class="fa fa-plus"></i> 
+                </a>
+                <div style="flex: 1;"></div>
+                <a class="btn btn-danger" href="{% url 'remove_all_battalion_group_batch' battalation_pk=bg.pk %}?redirect_url={% url 'BattalionGroupUpdate' pk=bg.pk %}">
+                    <span>حذف همه دسته ها</span>
+                    <i class="fa fa-trash"></i> 
+                </a>
+            </div>
+            <div class="box-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ردیف</th>
+                            <th>شماره دسته</th>
+                            <th>ارشد دسته</th>
+                            <th>شروع کد از</th>
+                            <th>تا پایان کد</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for batch in bg.batchs  %}
+                                <tr class="row-inputs">
+                                    <td class="text-center">{{forloop.counter}}</td>
+                                    <td><input name="name_{{batch.id}}" value="{{batch.name|default:''}}"/></td>
+                                    <td><input name="commander_{{batch.id}}" value="{{batch.commander|default:''}}"/></td>
+                                    <td><input name="batch_range_start_{{batch.id}}" value="{{batch.batch_range_start|default:'0'}}"/></td>
+                                    <td><input name="batch_range_end_{{batch.id}}" value="{{batch.batch_range_end|default:'0'}}"/></td>
+                                    <td>
+                                        <a class="btn btn-sm btn-danger" href="{% url 'remove_battalion_group_batch' pk=batch.pk %}?redirect_url={% url 'BattalionGroupUpdate' pk=bg.pk %}">
+                                            <span>حذف دسته</span>
+                                            <i class="fa fa-trash"></i> 
+                                        </a>
+                                    </td>
+                                </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    {% endif %}
+
 {% endblock %}
+
+{% block footer %}
+    <script>
+        const checkesContainer = document.getElementById('checkes-container')
+        const checkes = checkesContainer.querySelectorAll("input[type='checkbox']")
+        
+        function selectAll() {
+            checkes.forEach((c)=>c.checked = true)
+        } 
+        function unSelectAll() {
+            checkes.forEach((c)=>c.checked = false)
+        } 
+
+        function cleanForm() {
+            const order         = document.getElementById('order')  
+            const takmilzarmit  = document.getElementById('takmilzarmit')  
+            const zarfiat       = document.getElementById('zarfiat') 
+            order.value = '0'
+            zarfiat.value = '0'
+            takmilzarmit.checked = false
+        }
+    </script>
+
+{% endblock footer %}

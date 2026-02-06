@@ -34,10 +34,9 @@
         text-align: center;
     }
     .sep-nav-logo img {
-        width: 120px;
+        width: 60px;
     }
     .sep-nav-title {
-        font-weight: bold;
     }
     .main-sidebar {
         width: 280px;
@@ -49,6 +48,32 @@
         margin-right: 280px;
     }
 
+    a.admin-panel-link {
+        text-align:center;
+        margin: 4px 10px;
+        padding:10px ;
+        border: 2px solid skyblue;
+        background-color: #6495ed05;
+        color: skyblue !important;
+        border-radius: 8px;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    a.admin-panel-link:hover {
+        background-color: #6495ed20;
+    }
+    a.admin-panel-link .eslogo {
+        background-color: skyblue;
+        padding: 4px 8px;
+        border-radius: 8px;
+    }
+    a.admin-panel-link .eslogo img {
+        transform: scale(1.4);
+    }
 </style>
 <aside class="main-sidebar">
     <section style="flex: 1;overflow-y:auto ;" class="sidebar">
@@ -59,25 +84,15 @@
             </a>
         </p>
         {% if request.user.is_staff %}
-            <a 
-                target="_blank"
-                style="text-align:center;display: block;margin: 4px 10px;padding:6px;background-color: #447766;color: white;border-radius: 4px;"
-                href="/admin/"
-            >
-                ورود به پنل کنترل ادمین
+        <div>
+            <a  target="_blank" class="admin-panel-link" href="/admin/">
+                <span>پنل ادمین استقلال</span>
+                <span class="eslogo">
+                    <img src="{% static 'img/support/eslogo.png' %}" style="width: 16px; height: 16px;"/>
+                </span>
             </a>
+        </div>
         {% endif %}
-        {% comment %} <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="جستجو">
-                <span class="input-group-btn">
-                      <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i
-                              class="fa fa-search"></i>
-                      </button>
-                    </span>
-            </div>
-        </form> {% endcomment %}
-        <!-- /.search form -->
 
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu" data-widget="tree">
@@ -116,9 +131,9 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="{% url 'soldier_detail' %}">اطلاعات جامع سرباز</a></li>
-                    <li><a href="{% url 'all_soldire' %}">تمامی سربازان</a></li>
                     <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته</a></li>
+                    <li><a href="{% url 'soldier_detail' %}">اطلاعات جامع سرباز</a></li>
+                    <li><a href="{% url 'all_soldire' %}">فهرست سربازان پذیرش شده</a></li>
                     {% if request.user.is_staff == True %}
                         <li><a href="{% url 'poshe_nokhodi' %}">چاپ لیبل پوشه نخودی</a></li>
                         <li><a href="{% url 'exel_update_jazbi' %}">مدیریت جذبی ها</a></li>

@@ -124,7 +124,7 @@
     .soldier-item:hover {
         background: #f3f4f6;
     }
-    .soldier-item img {
+    .soldier-avatar-image {
         width: 45px;
         height: 45px;
         border-radius: 6px;
@@ -160,6 +160,34 @@
             width: 100%;
         }
     }
+    .radio-formats-item {
+        padding: 10px;
+        border: 1px solid #1c7b7e;
+        display: block;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #1c7b7e;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .radio-formats input[type='radio'] {
+        margin-top: 0;
+    }
+
+    .radio-formats .radio-title {
+        flex: 1;
+    }
+
+    .radio-formats .radio-sample {
+        font-size: 12px;
+        background-color: #666;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
 </style>
 
 <div class="tatbigh-container">
@@ -196,10 +224,29 @@
             <!-- 📦 دکمه آپلود ZIP -->
             <form  method="post" enctype="multipart/form-data" class="mt-4">
                 {% csrf_token %}
+                <h4 class="text-center">فرمت نام گذاری</h4>
+                <div class="radio-formats">
+                    <label class="radio-formats-item" for="organization_code">
+                        <input type="radio" id="organization_code" name="formats" value="organization_code" checked />
+                        <span class="radio-title">گردان گروهان [. یا _ یا -] کد سازمانی</span>
+                        <span dir="ltr" class="radio-sample">412-98.png نمونه</span>
+                    </label>
+                    <label class="radio-formats-item" for="national_code">
+                        <input type="radio" id="national_code" name="formats" value="national_code"  />
+                        <span class="radio-title" >کدملی</span>
+                        <span dir="ltr" class="radio-sample">2150604736.png  نمونه</span>
+                    </label>
+                    <label class="radio-formats-item" for="paziresh_code">
+                        <input type="radio" id="paziresh_code" name="formats" value="paziresh_code"  />
+                        <span class="radio-title">عدد پذیرش</span>
+                        <span dir="ltr" class="radio-sample">98.png نمونه</span>
+                    </label>
+                </div>
                 <label class="upload-box">
                     <input type="file" name="zip_file" accept=".zip" >
                     <span>📦 آپلود فایل ZIP تصاویر سربازان</span>
                 </label>
+
                 <button type="submit" class="btn btn-primary btn-block">⬆️ آپلود و ثبت تصاویر</button>
             </form>
             <div class="guide-box mt-3">
@@ -230,7 +277,7 @@
                 {% for soldier in soldiers %}
                     <li class="soldier-item">
                         {% if soldier.avatar %}
-                            <img src="{{ soldier.avatar.url }}" alt="{{soldier.name}} {{soldier.family}}">
+                            <img class="soldier-avatar-image" src="{{ soldier.avatar.url }}" alt="{{soldier.name}} {{soldier.family}}">
                         {% else %}
                             <div style="width:45px;height:45px;border-radius:6px;background-color:#ddd;display:flex;align-items:center;justify-content:center;font-size:10px;color:#666;">?</div>
                         {% endif %}

@@ -32,14 +32,18 @@
             border: 1px solid #00a78bff;
 
         }
+        .box-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+        }
 </style>
-<div class=" mt-4">
-    <!-- فرم کد ملی -->
-    <div class="row mb-4">
+    <div class="row">
         <div class="col-md-6">
             <div style="border-radius: 10px; border: 2px solid gray;" class="box p-3">
                 <div class="box-header with-border mb-2">
-                    <h3 style="text-align: center;font-weight: bold;margin-top: 10px;" >پذیرش سریع با کد ملی</h3>
+                    <h3 style="text-align: center;font-weight: bold;margin-top: 10px;" >پذیرش فوری با کد ملی</h3>
                 </div>
                 <form  method="post">
                     {% csrf_token %}
@@ -65,7 +69,21 @@
         <div class="col-md-6">
         </div>
     </div>
-    {% include "components/last_acceptance_soldiers.html" with soldiers=soldiers %}
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-head">
+                <h4>فهرست اخرین پذیرش ها</h4>
+                <a class="btn  btn-primary" href="{% url 'MainViewSoldires'  %}">
+                    <span>لیست کامل سربازان</span>
+                    <i class="fa fa-arrow-left"></i> 
+                </a>
+            </div>
+            <div class="box-body table-responsive no-padding">
+                {% include '../components/paziresh_soldiers_table.html' with soldiers=soldiers %}
+            </div>
+        </div>
+    </div>
+    {% comment %} {% include "components/last_acceptance_soldiers.html" with soldiers=soldiers %} {% endcomment %}
 <script>
     window.onload = function() {
         document.querySelector("#code_meli input").focus();

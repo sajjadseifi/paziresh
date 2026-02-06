@@ -178,6 +178,14 @@
   border-radius: 10px;
   padding: 6px 20px;
 }
+    .soldier-avatar-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
+
 </style>
 
 
@@ -253,10 +261,28 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     </form>
                      {% if soldier %}
-                        <p class="key-value">
-                            <strong>وضعیت سرباز:</strong>
-                            {% include 'components/soldier_status.html' with soldier=soldier %}
-                        </p>
+                        <div style="display: flex;gap: 4px;">
+                            <div>
+                                {% if soldier.avatar %}
+                                    <img class="soldier-avatar-image" src="{{ soldier.avatar.url }}" alt="{{soldier.name}} {{soldier.family}}">
+                                {% else %}
+                                    <div style="
+                                            width:80px;height:80px;border-radius:6px;background-color:#ddd;
+                                            display:flex;align-items:center;justify-content:center;font-size:10px;color:#666;
+                                    ">تصویر</div>
+                                {% endif %}
+                            </div>
+                            <div style="flex: 1;padding: 0 10px ;">
+                                <p class="key-value">
+                                    <strong>نوع اعزام : </strong>
+                                    <span>عادی</span>
+                                </p>
+                                <p class="key-value">
+                                    <strong>وضعیت آموزش:</strong>
+                                    {% include 'components/soldier_status.html' with soldier=soldier %}
+                                </p>
+                            </div>
+                        </div>
 
                      {% endif %}
 

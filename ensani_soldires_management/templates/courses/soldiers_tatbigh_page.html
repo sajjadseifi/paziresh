@@ -342,7 +342,7 @@
         background-color: #0e334c11;
     }
     .counter-badge {
-        padding: 4px 6px;
+        padding: 6px 10px;
         background-color: #3730a3;
         color: white;
         transition: 0.2s;
@@ -361,15 +361,73 @@
         padding:10px 20px;
         border-radius: 5px;
     }
+    .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 24px;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+    .btn-print {
+        background: linear-gradient(135deg, #e546a8ff, #f1637bff);
+    }
+    .action-btn:hover {
+        color: #fff;
+    }
+    .action-btn:active {
+        color: black;
+    }
+    .btn-excel {
+        background: linear-gradient(135deg, #065c26ff, #007a60ff);
+    }
+    .action-btn i {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    .action-btn:disabled {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+        opacity: 0.6;
+    }
+    .action-title {
+        font-weight: bold;
+        font-size: 14px;
+        color: gray;
+    }
+    .card-title {
+        margin: 0;
+        padding:0 0;
+        font-weight: bold;
+        font-size: 20px;
+        background-color: #efefef;
+        padding: 10px;
+        border-radius: 4px;
+    }
 </style>
-
 
 <div class="tatbigh-container">
     <!-- بخش توضیحات -->
     <div class="tatbigh-left">
         <div>
             <div class="card">
-                <h4 style="margin: 0;padding:0 0;font-weight: bold;font-size: 20px;background-color: #efefef;padding: 10px;border-radius: 4px;" class="text-center"><i class="fa fa-random"></i> تطبیق گردان و گروهان</h4>
+                <h4 style="" class="text-center">
+                    <i class="fa fa-random"></i> تطبیق گردان و گروهان
+                </h4>
                 <hr style="margin:10px 0;padding: 0;"/>
                 <div id="error-box" class="error-box"></div>
                 <div class="filter-box text-right">
@@ -394,6 +452,8 @@
                             {% endif %}
                         {% endfor %}
                     </ul>
+                    <input type="hidden" name="tab" id="tab-input" value="{{ request.GET.tab|default:'after-tab' }}">
+                    <input type="hidden" name="action" id="action-input" value="">
                 </form>
             </div>
             <h4><i class="fa fa-info-circle text-primary"></i> راهنما</h4>
@@ -499,29 +559,38 @@
                     </span>
                 </h1>
                 <div class="actions">
-                    <button>عملیات چاپ</button>
-                    <button>خروجی اکسل</button>
-                </div>
+                <h6 class="action-title">عملیات های <span id="tab-selected"></span></h6>
+                <button type="button" class="btn action-btn btn-print" data-action="exportPrint" id="printSelected">
+                    <i class="fa fa-print"></i>
+                    <span>چاپ</span>
+                </button>
+                <button type="button" class="btn action-btn btn-excel" data-action="exportExcel" id="exportSelected">
+                    <i class="fa fa-file-excel-o"></i>
+                    <span>خروجی اکسل</span>
+                </button>
+            </div>
            </div>
             <hr style="margin: 5px 0;"/>
             <div class="tabs-buttons-tatbig" >
                 <button class="tab-btn-tatbig active" data-tab="after-tab">
                     <span class="toggle-radio"></span>
-                    <span>فهرست سازماندهی </span>
+                    <span class="tab-title">فهرست سازماندهی </span>
                     <span class="counter-badge">{{soldiers_in_t_battalion_group|length}} نفر</span>
                 </button>
                 <button class="tab-btn-tatbig " data-tab="before-tab"> 
                     <span class="toggle-radio"></span>
-                    <span>فهرست پذیرش </span>
+                    <span class="tab-title">فهرست پذیرش </span>
                     <span class="counter-badge">{{soldiers_in_battalion_group|length}} نفر</span>
                 </button>
                 <button class="tab-btn-tatbig " data-tab="notatbigh-tab"> 
                     <span class="toggle-radio"></span>
-                    <span>فهرست تطبیق نشده </span>
+                    <span class="tab-title">فهرست تطبیق نشده </span>
                     <span class="counter-badge">{{soldiers_no_t_battalion_group|length}} نفر</span>
                 </button>
             </div>
+    
             <div class="tab-content-tatbig" id="before-tab">
+
                 <table class="tatbigh-table table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -632,16 +701,113 @@
         </div>
     </div>
 </div>
+<script>
+    /**
+    * تابع گرفتن گردان و گروهان انتخاب شده
+    /**
+    * گرفتن گردان و گروهان انتخاب‌شده و ترکیب مقدار label آنها
+    * @returns {Object|null} - { battalion: string, group: string, dataTitle: string } یا null اگر انتخاب نشده باشد
+    */
+    function getSelectedBattalionAndGroup() {
+        // گرفتن inputهای انتخاب‌شده
+        const selectedBattalion = document.querySelector('input[name="battalion"]:checked');
+        const selectedGroup = document.querySelector('input[name="group"]:checked');
+
+        if (!selectedBattalion || !selectedGroup) {
+            console.error("لطفاً ابتدا گردان و گروهان را انتخاب کنید.");
+            return null;
+        }
+
+        // گرفتن labelهای مرتبط با inputها
+        const battalionLabel = document.querySelector(`label[for="${selectedBattalion.id}"]`);
+        const groupLabel = document.querySelector(`label[for="${selectedGroup.id}"]`);
+
+        const battalionText = battalionLabel ? battalionLabel.textContent.trim() : '';
+        const groupText = groupLabel ? groupLabel.textContent.trim() : '';
+
+        return {
+            battalion: selectedBattalion.value,
+            group: selectedGroup.value,
+            dataTitle: `${battalionText} ، ${groupText}` // ترکیب دو label
+        };
+    }
+    const tabBtns = document.querySelectorAll('.tab-btn-tatbig');
+    const tabContents = document.querySelectorAll('.tab-content-tatbig');
+    const actionBtns = document.querySelectorAll('.action-btn');
+    const tabInput = document.getElementById('tab-input');
+    const actionInput = document.getElementById('action-input');
+    const tabSelected = document.getElementById('tab-selected');
+    const form = document.getElementById('battalion-form');
+
+    function activateTab(tabId, updateUrl = true) {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(tc => tc.classList.remove('active'));
+
+        const btn = document.querySelector(`.tab-btn-tatbig[data-tab="${tabId}"]`);
+        const content = document.getElementById(tabId);
+
+        if (!btn || !content) return;
+
+        btn.classList.add('active');
+        content.classList.add('active');
+        tabTitle = btn.querySelector('.tab-title')
+        if (tabTitle)
+        {
+            tabSelected.innerHTML = tabTitle.innerHTML
+        }
+        
+        
+        // sync با hidden inputs
+        if (tabInput) tabInput.value = tabId;
+        if (actionInput) actionInput.value = ''; // حالت عادی = مشاهده
+
+        // sync با URL
+        if (updateUrl) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', tabId);
+            url.searchParams.delete('action'); // مشاهده
+            window.history.pushState({}, '', url);
+        }
+    }
+
+    tabBtns.forEach((btn)=>{
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            activateTab(target, true);
+        });
+
+    })
+    // کلیک روی تب
+    actionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            if (actionInput) actionInput.value = action; 
+            form.submit();
+        });
+    });
+
+    // initial load از URL یا پیش‌فرض
+    document.addEventListener('DOMContentLoaded', () => {
+        // وقتی گردان یا گروهان انتخاب شد، فرم خودکار ارسال شود
+        form.addEventListener('change', function() {
+            form.submit();
+        });
+        const params = new URLSearchParams(window.location.search);
+        const tabFromUrl = params.get('tab') || (tabInput ? tabInput.value : null) || 'after-tab';
+
+        activateTab(tabFromUrl, false);
+
+        // اگر tab تو URL نبود → اضافه کن (استانداردسازی)
+        if (!params.has('tab')) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', tabFromUrl);
+            window.history.replaceState({}, '', url);
+        }
+    });
+</script>
 
 {% if access_edit %}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('battalion-form');
-            // وقتی گردان یا گروهان انتخاب شد، فرم خودکار ارسال شود
-            form.addEventListener('change', function() {
-                form.submit();
-            });
-        });
 
         document.addEventListener('DOMContentLoaded', function() {
             const input = document.getElementById('national-code');
@@ -752,45 +918,5 @@
     </script>
 {% endif %}
 
-<script>
-       /**
- * تابع گرفتن گردان و گروهان انتخاب شده
-/**
- * گرفتن گردان و گروهان انتخاب‌شده و ترکیب مقدار label آنها
- * @returns {Object|null} - { battalion: string, group: string, dataTitle: string } یا null اگر انتخاب نشده باشد
- */
-function getSelectedBattalionAndGroup() {
-    // گرفتن inputهای انتخاب‌شده
-    const selectedBattalion = document.querySelector('input[name="battalion"]:checked');
-    const selectedGroup = document.querySelector('input[name="group"]:checked');
 
-    if (!selectedBattalion || !selectedGroup) {
-        console.error("لطفاً ابتدا گردان و گروهان را انتخاب کنید.");
-        return null;
-    }
-
-    // گرفتن labelهای مرتبط با inputها
-    const battalionLabel = document.querySelector(`label[for="${selectedBattalion.id}"]`);
-    const groupLabel = document.querySelector(`label[for="${selectedGroup.id}"]`);
-
-    const battalionText = battalionLabel ? battalionLabel.textContent.trim() : '';
-    const groupText = groupLabel ? groupLabel.textContent.trim() : '';
-
-    return {
-        battalion: selectedBattalion.value,
-        group: selectedGroup.value,
-        dataTitle: `${battalionText} ، ${groupText}` // ترکیب دو label
-    };
-}
-    const tabBtns = document.querySelectorAll('.tab-btn-tatbig');
-    const tabContents = document.querySelectorAll('.tab-content-tatbig');
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.tab;
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            tabContents.forEach(tc => tc.classList.toggle('active', tc.id === target));
-        });
-    });
-</script>
 {% endblock %}

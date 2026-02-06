@@ -75,10 +75,10 @@
             <li><a href="{% url 'skills:technical_vocational' %}" class="{% if request.resolver_match.url_name == 'technical_vocational' %}active{% endif %}">فنی و حرفه ای</a></li>
         {% endif %}
         {% if permissions.dep.niru_ensani or permissions.dep.farmandehi  or permissions.dep.gordan %}
-            <li><a href="{% url 'skills:list' %}" class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}">مهارت‌ها</a></li>
+            <li><a href="{% url 'skills:list' %}" class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}">مهارت های سامانه</a></li>
         {% endif %}
         {% if permissions.dep.niru_ensani or permissions.dep.farmandehi  %}
-            <li><a href="{% url 'skills:certificates_hazard' %}" class="{% if request.resolver_match.url_name == 'certificates_hazard' %}active{% endif %}">مخاطرات</a></li>
+            <li><a href="{% url 'skills:certificates_hazard' %}" class="{% if request.resolver_match.url_name == 'certificates_hazard' %}active{% endif %}">مخاطرات | گواهی 4 گانه</a></li>
         {% endif %}
         {% if permissions.dep.niru_ensani or permissions.dep.gordan or permissions.dep.farmandehi %}
             <li><a href="{% url 'skills:assign' %}" class="{% if request.resolver_match.url_name == 'assign' %}active{% endif %}">مهارت سربازان</a></li>

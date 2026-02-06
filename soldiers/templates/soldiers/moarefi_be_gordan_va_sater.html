@@ -134,6 +134,10 @@
                 <a href="{% url 'CreatePaziresh' %}" class="btn btn-info pull-right">
                     <i class="fa fa-credit-card"></i> <span>پذیرش دستی</span> 
                 </a>
+                <a class="btn  btn-primary" href="{% url 'MainViewSoldires'  %}">
+                    <span>لیست کامل سربازان</span>
+                    <i class="fa fa-arrow-left"></i> 
+                </a>
                 <div style="flex: 1;"></div>
                 <div class="btn-group">
                     <a href="{% url 'updatePaziresh' pk=sarbaz.National_Code %}" class="btn btn-default">ویرایش</a>
@@ -143,8 +147,17 @@
                 </div>
         </div>
     </section>
-
-    {% include "components/last_acceptance_soldiers.html" with soldiers=soldiers %}
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h4>فهرست اخرین پذیرش ها</h4>
+            </div>
+            <div class="box-body table-responsive no-padding">
+                {% include '../components/paziresh_soldiers_table.html' with soldiers=soldiers %}
+            </div>
+        </div>
+    </div>
+    {% comment %} {% include "components/last_acceptance_soldiers.html" with soldiers=soldiers %} {% endcomment %}
 
 {% endblock %}
 

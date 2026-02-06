@@ -13,8 +13,9 @@
         margin: 0;
         padding: 4px 20px;
         font-size: 28px;
-        border-right: 4px solid coral;
-        color: #9b401e;
+        border-right: 6px solid black;
+        border-radius: 0 6px 6px 0 ;
+        color: black;
         font-weight: bold;
     }
     .card-header{
@@ -22,18 +23,21 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 20px;
+        gap: 10px;
     }
     .table th {
         font-size: 16px;
-        padding: 10px 4px !important;
+        color: white;
+        background-color: #9b401e;
     }
+    html body table.table tr td, 
     html body table.table tr td {
+        border-bottom:1px solid #9b401e44;
         padding: 6px !important ;
     }
+
     .table thead {
-        border-bottom:2px solid #9b401e;
         background-color: #ffb69b18;
-        border-radius: 10px !important;
     }
     .badge {
         display: flex;
@@ -52,7 +56,7 @@
         background-color: #fafafa;
         border: 1px solid #afafaf;
         color: black;
-        font-size: 10px;
+        font-size: 12px;
     }
     .setting-list {
         gap: 2px;
@@ -64,55 +68,129 @@
     .btn-sm  {
         font-size: 10px;
     }
+    .order {
+        text-align: center;
+        background-color: #9b401e44;
+        color: white;
+    }
+    .order.ordered {
+        background-color: #9b401e;
+
+    }
+    .gname {
+        border: 1px solid transparent;
+        background-color: #ececec;
+        color: black;
+        display: inline-block;
+        padding: 8px 10px;
+        border-radius: 3px;
+        font-size: 16px;
+        line-height: 10px;
+        margin: 0 4px;
+    }
+
+    .btn {
+        border-radius: 6px !important;
+    }
+    .fooname {
+        opacity: 0.5;
+    }
+    .fooname.is-active {
+        opacity: 1;
+    } 
 </style>
 {% endblock %}
 {% block main %}
     <div class="card">
         <div class="card-header">
             <h1 class="card-title">فهرست گروهان های آموزشی</h1>
+            <a class="btn  btn-primary" href="{% url 'all-Battalion'  %}">
+                <span>فهرست گردان ها</span>
+                <i class="fa fa-arrow-left"></i> 
+            </a>
+            <div style="flex: 1;"></div>
             <a class="btn  btn-warning" href="{% url 'CreateBattalionGroup'  %}">
                 ایجاد گروهان جدید
                 <i class="fa fa-plus"></i> 
             </a>
+            <form method="post" action="{% url 'MainViewBattalionGroup'  %}?action=cleanup">
+                {% csrf_token %}
+                 <button 
+                 title="پس از پاک سازی تنظیمات پیشفرض برای همه گروهان ها لحاظ خواهد شد"
+                 class="btn  btn-danger"  onclick="return confirm('پس از پاک سازی تنظیمات پیشفرض برای همه گروهان ها لحاظ خواهد شد')" >
+                    پاک سازی و پیشفرض تنظیمات
+                    <i class="fa fa-trash"></i> 
+                </button>
+            </form>
         </div>
         <div class="card-body no-padding">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>گردان / گروهان</th>
-                        <th>نام گروهان</th>
-                        <th>اولیت</th>
-                        <th>ظرفیت</th>
-                        <th>عملیات</th>
-                        <th>تنظیمات فعال</th>
+                        <th class="order">اولیت</th>
+                        <th>گردان</th>
+                        <th>گروهان</th>
+                        <th class="text-center">تعداد دسته</th>
+                        <th class="text-center">ظرفیت (نفر)</th>
+                        <th class="text-center">تکمیل (نفر)</th>
+                        <th class="text-center">خالی (نفر)</th>
+                        <th class="text-center">عملیات</th>
+                        <th>تنظیمات هوشمند</th>
                     </tr>
                 </thead>
                 <tbody>
-                
-                {% for foo in grohan %}
-                    <tr>
-                        <td><strong>{{ foo.gordan.name }}</strong></td>
-                        <td><strong>{{ foo.name }}</strong></td>
-                        <td>{{foo.order}}</td>
-                        <td><div dir="ltr" class="badge bg-red">{{ foo.zarfiat }}</div></td>
-                        <td>
-                            <a class="btn btn-sm btn-default text-sm" href="{% url 'BattalionGroupUpdate' pk=foo.pk %}">
-                                ویرایش
-                                <i class="fa fa-edit"></i> 
-                            </a>
-                        </td>
-                        <td >
-                            <div class="setting-list">
-                                {% for setting in foo.settings_list %}
-                                <span class="setting-item">{{ setting }}</span>
-                                {% empty %}
-                                <div class="text-muted text-center">تنظیمی فعال نیست</div>
-                                {% endfor %}
-                            </div>
-                        </td>
+                    {% for g in grohan %}
+                        <tr style="align-items: center;vertical-align: middle;">
+                            <td class="order {% if g.order %}ordered{% endif %}">{{g.order|default:""}}</td>
+                            <td style="min-width: 160px;">
+                                <strong style="display: inline-block;min-width: 100px;">{{ g.gordan.name }}</strong> 
+                                <div  style="font-size: 12px;margin-top: 2px;">{{g.commander}}</div>
+                            </td>
+                            <td>
+                                <div style="display: flex;align-items: center;">
+                                    <strong class="gname fooname {% if g.is_active %}bg-green is-active{% endif %}">{{ g.name }}</strong>
+                                    {% if  g.is_active %}
+                                        <span style="font-size: 10px;">فعال</span>
+                                    {% else %}
+                                        <span class="fooname" style="font-size: 10px;">غیرفعال</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <strong class="gname">{{g.batchs|length}}</strong>
+                            </td>
+                            <td  class="text-center">
+                                <strong dir="ltr" class="gname  font-bold">{{g.zarfiat}}</strong>
+                            </td>
+                            <td class="text-center {{g.takmilzarmit|yesno:'text-success,text-danger'}}">
+                                {% comment %} <span>{{ g.takmilzarmit|yesno:'بله,' }}</span> {% endcomment %}
+                                {% if g.takmilzarmit %}
+                                    <i class="fa fa-check"></i> 
+                                {% else %}
+                                    <strong dir="ltr" class="gname font-bold">{{g.fill_space}}</strong>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <strong dir="ltr" class="gname bg-red font-bold">{{g.free_space}}</strong>
+                            </td>
+                            <td class="text-center">
+                                <a class="btn btn-md btn-primary text-md" href="{% url 'BattalionGroupUpdate' pk=g.pk %}">
+                                    ویرایش
+                                    <i class="fa fa-edit"></i> 
+                                </a>
+                            </td>
+                            <td >
+                                <div class="setting-list">
+                                    {% for setting in g.settings_list %}
+                                        <span class="setting-item">{{ setting }}</span>
+                                    {% empty %}
+                                    <div class="text-muted text-center"></div>
+                                    {% endfor %}
+                                </div>
+                            </td>
 
-                    </tr>
-                {% endfor %}
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

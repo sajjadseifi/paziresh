@@ -3,7 +3,7 @@ import xlrd
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,resolve_url
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -18,12 +18,22 @@ from django.db import transaction, IntegrityError
 import openpyxl
 
 # all static data
-battalion_group_list = [(99999999, '')]
-g = battalion_group.objects.filter().all()
-for item in g:
-    battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
+def battalion_group_list_items():
+    items = [(99999999, '')]
+    g = battalion_group.objects.filter().order_by('gordan','name')
+    
+    for item in g:
+        label = F'گردان {item.gordan.name}, گروهان {item.name}'
+        if not item.is_active:
+            label = f'{label} (   غیرفعال   )'
+        elif item.takmilzarmit:
+            label = f'{label} (   تکمیل ظرفیت   )'
+        else:
+            label = f'{label} (   {item.free_space} نفر خالی  )'
+            
+        items.append((item.id, label))
 
-
+    return items
 # تولید کد پذیرش یکتا
 def generate_acceptance_code():
     code = sarbaz.objects.filter(has_been_accepted=True).count() + 1
@@ -108,6 +118,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
     template = 'soldiers/sabte_paziresh_view.html'
 
     def get(self, request, pk):
+
         soldire = sarbaz.objects.filter(National_Code=pk, has_been_accepted=False).first()
         if soldire is None:
             cx = {}
@@ -128,40 +139,37 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
-        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
 
+        form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
+        form_soldiers.initial['status_type'] = soldire.status_type
         # initial
         form_soldiers.initial['name'] = soldire.name
         form_soldiers.initial['family'] = soldire.family
         form_soldiers.initial['fathers_name'] = soldire.fathers_name
         form_soldiers.initial['National_Code'] = soldire.National_Code
-        form_soldiers.initial['physical_condition'] = get_id_of_list(physical_condition_list,
-                                                                     soldire.physical_condition)
+        form_soldiers.initial['physical_condition'] = get_id_of_list(physical_condition_list,soldire.physical_condition)
         form_soldiers.initial['Type_of_disease'] = get_id_of_list(Type_of_disease_list, soldire.Type_of_disease)
         form_soldiers.initial['health_insurance_card'] = soldire.health_insurance_card
         form_soldiers.initial['Relative_to_inclusive'] = soldire.Relative_to_inclusive
         form_soldiers.initial['Relative_to_inclusive_number'] = soldire.Relative_to_inclusive_number
+
+        for idx,label in educational_level_of_the_system_list:
+            if label == soldire.educational_level_of_the_system:
+                form_soldiers.initial['educational_level_of_the_system'] = idx
+                break
+            
         grade = 7
         for iteam in Grade_list:
             if iteam[1] == soldire.Grade:
                 grade = iteam[0]
-        t_grade = 0
 
         grade_p = 0
         for iteam in Grade_precise_list:
             if iteam[1] == soldire.Grade_precise:
                 grade_p = iteam[0]
+ 
         form_soldiers.initial['Grade_precise'] = grade_p
-
-        form_soldiers.initial['educational_level_of_the_system'] = ''
-        for elots in educational_level_of_the_system_list:
-            if elots[1].replace(" ", "").replace("\u200c", "").replace('ي',
-                                                                       'ی') == soldire.educational_level_of_the_system.replace(
-                " ", "").replace("\u200c", "").replace('ي', 'ی'):
-                form_soldiers.initial['Grade'] = (categorize_educational_level(elots[0]))[0]
-                form_soldiers.initial['educational_level_of_the_system'] = elots[0]
-                t_grade = (categorize_educational_level(elots[0]))[0]
-
         form_soldiers.initial['Study_group'] = soldire.Study_group
         if soldire.marital_status == 'مجرد':
             form_soldiers.initial['marital_status'] = 1
@@ -192,16 +200,16 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.initial['Place_of_Issue'] = soldire.Place_of_Issue
         form_soldiers.initial['height'] = soldire.height
         form_soldiers.initial['Weight'] = soldire.Weight
-        form_soldiers.initial['Renewal_of_the_previous_period'] = get_id_of_list(Renewal_of_the_previous_period_list,
-                                                                                 soldire.Renewal_of_the_previous_period)
+        form_soldiers.initial['Renewal_of_the_previous_period'] = get_id_of_list(Renewal_of_the_previous_period_list,soldire.Renewal_of_the_previous_period)
         form_soldiers.initial['Course_renewal_date'] = soldire.Course_renewal_date
-        form_soldiers.initial['Reason_for_renewing_the_course'] = get_id_of_list(Reason_for_renewing_the_course_list,
-                                                                                 soldire.Reason_for_renewing_the_course)
+        form_soldiers.initial['Reason_for_renewing_the_course'] = get_id_of_list(Reason_for_renewing_the_course_list, soldire.Reason_for_renewing_the_course)
         form_soldiers.initial['Renewal_of_the_previous_period_code'] = soldire.Renewal_of_the_previous_period_code
+        
         if soldire.Amriye is False:
             form_soldiers.initial['Amriye'] = 2
         else:
             form_soldiers.initial['Amriye'] = 1
+        
         form_soldiers.initial['Amriye_organization'] = get_id_of_list(Amriye_organization_lsit,
                                                                       soldire.Amriye_organization)
         form_soldiers.initial['Sufficiency_of_mobilization'] = get_id_of_list(Sufficiency_of_mobilization_list,
@@ -216,66 +224,50 @@ class sabte_paziresh(LoginRequiredMixin, View):
             form_soldiers.initial['Sutter'] = 3
         else:
             form_soldiers.initial['Sutter'] = 0
-        op = t_grade
-        zirediplom = False
-        diplom = False
-        ofghdiplom = False
-        lisans = False
-        ofghlisans = False
-        doctra = False
-        shie = False
-        ahle_tasnon = False
+        op = grade
         q_of_edu = []
         q_of_Religion = []
+        
         if op == 1:
-            zirediplom = True
-            q_of_edu.append(Q(zirediplom=zirediplom))
+            q_of_edu.append(Q(zirediplom=True))
         if op == 2:
-            diplom = True
-            q_of_edu.append(Q(diplom=diplom))
+            q_of_edu.append(Q(diplom=True))
         if op == 3:
-            ofghdiplom = True
-            q_of_edu.append(Q(ofghdiplom=ofghdiplom))
+            q_of_edu.append(Q(ofghdiplom=True))
         if op == 4:
-            lisans = True
-            q_of_edu.append(Q(lisans=lisans))
+            q_of_edu.append(Q(lisans=True))
         if op == 5:
-            ofghlisans = True
-            q_of_edu.append(Q(ofghlisans=ofghlisans))
+            q_of_edu.append(Q(ofghlisans=True))
         if op == 6:
-            doctra = True
-            q_of_edu.append(Q(doctra=doctra))
+            q_of_edu.append(Q(doctra=True))
 
         if soldire.Religion == "شیعه":
-            shie = True
-            q_of_Religion.append(Q(shie=shie))
+            q_of_Religion.append(Q(shie=True))
         if soldire.Religion == "اهل تسنن":
-            ahle_tasnon = True
-            q_of_Religion.append(Q(ahle_tasnon=ahle_tasnon))
+            q_of_Religion.append(Q(ahle_tasnon=True))
+            
         pc = 0
         for iteam in physical_condition_list:
             if iteam[1] == soldire.physical_condition:
                 pc = iteam[0]
-        salemm = False
-        moafazrazm = False
-        gorehbe = False
-        moafazrazm_gorehbe = False
+
         q_of_pc = []
         if pc == 1:
-            salemm = True
-            q_of_pc.append(Q(salemm=salemm))
+            q_of_pc.append(Q(salemm=True))
         if pc == 2:
-            moafazrazm = True
-            q_of_pc.append(Q(moafazrazm=moafazrazm))
+            q_of_pc.append(Q(moafazrazm=True))
         if pc == 3:
-            gorehbe = True
-            q_of_pc.append(Q(gorehbe=gorehbe))
+            q_of_pc.append(Q(gorehbe=True))
         if pc == 4:
-            moafazrazm_gorehbe = True
-            q_of_pc.append(Q(moafazrazm_gorehbe=moafazrazm_gorehbe))
+            q_of_pc.append(Q(moafazrazm_gorehbe=True))
+        
         bg = battalion_group.objects.filter(takmilzarmit=False).all()
-        bgl = bg.filter(q_of_edu[0],
-                        (q_of_Religion[0]), (q_of_pc[0])).order_by('order').first()
+        # وضعیت برگه اعزام
+        query_json = dict({f'status_types_data__{soldire.status_type}':True})
+        bg = bg.filter(q_of_edu[0], (q_of_Religion[0]), (q_of_pc[0]),Q(**query_json))
+        
+        bgl = bg.order_by('order').first()
+
         if bgl is None:
             form_soldiers.initial['battalion_group'] = 0
         else:
@@ -285,7 +277,6 @@ class sabte_paziresh(LoginRequiredMixin, View):
         return render(request, self.template, cx)
 
     def post(self, request, pk):
-
         soldire = sarbaz.objects.filter(National_Code=pk).first()
         if soldire is None:
             cx = {}
@@ -306,7 +297,9 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
-        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
+        form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
+        form_soldiers.initial['status_type'] = soldire.status_type
 
         # initial
         form_soldiers.initial['name'] = soldire.name
@@ -318,26 +311,17 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.initial['health_insurance_card'] = soldire.health_insurance_card
         form_soldiers.initial['Relative_to_inclusive'] = soldire.Relative_to_inclusive
         form_soldiers.initial['Relative_to_inclusive_number'] = soldire.Relative_to_inclusive_number
+        form_soldiers.initial['educational_level_of_the_system'] = soldire.educational_level_of_the_system
+        
         grade = 7
+        
         for iteam in Grade_list:
             if iteam[1] == soldire.Grade:
                 grade = iteam[0]
-        t_grade = 0
-
         grade_p = 0
         for iteam in Grade_precise_list:
             if iteam[1] == soldire.Grade_precise:
                 grade_p = iteam[0]
-        form_soldiers.initial['Grade_precise'] = grade_p
-
-        form_soldiers.initial['educational_level_of_the_system'] = ''
-        for elots in educational_level_of_the_system_list:
-            if elots[1].replace(" ", "").replace("\u200c", "").replace('ي',
-                                                                       'ی') == soldire.educational_level_of_the_system.replace(
-                " ", "").replace("\u200c", "").replace('ي', 'ی'):
-                form_soldiers.initial['Grade'] = (categorize_educational_level(elots[0]))[0]
-                form_soldiers.initial['educational_level_of_the_system'] = elots[0]
-                t_grade = (categorize_educational_level(elots[0]))[0]
 
         form_soldiers.initial['Study_group'] = soldire.Study_group
         if soldire.marital_status == 'مجرد':
@@ -388,7 +372,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
             form_soldiers.initial['Sutter'] = 3
         else:
             form_soldiers.initial['Sutter'] = 0
-        op = t_grade
+        op = grade
         zirediplom = False
         diplom = False
         ofghdiplom = False
@@ -445,17 +429,19 @@ class sabte_paziresh(LoginRequiredMixin, View):
         if pc == 4:
             moafazrazm_gorehbe = True
             q_of_pc.append(Q(moafazrazm_gorehbe=moafazrazm_gorehbe))
+            
         bg = battalion_group.objects.filter(takmilzarmit=False).all()
-        bgl = bg.filter(q_of_edu[0],
-                        (q_of_Religion[0]), (q_of_pc[0])).order_by('gordan__order').first()
+        
+        bgl = bg.filter(q_of_edu[0],(q_of_Religion[0]), (q_of_pc[0])).order_by('gordan__order').first()
+        
         if bgl is None:
             form_soldiers.initial['battalion_group'] = 0
         else:
             form_soldiers.initial['battalion_group'] = bgl.pk
 
-        if not form_soldiers.is_valid():
-            cx = {'form': form_soldiers}
-            return render(request, self.template, cx)
+        if not form_soldiers.is_valid() :
+            return redirect(request.path)
+
         name = form_soldiers.cleaned_data['name']
         family = form_soldiers.cleaned_data['family']
         fathers_name = form_soldiers.cleaned_data['fathers_name']
@@ -620,9 +606,13 @@ class sabte_paziresh(LoginRequiredMixin, View):
                             code_gorhan_list.append(int(item.code_gorhan))
                     if Sufficiency_of_mobilization == "خیر":
                         s.code_gorhan = max(code_gorhan_list) + 1
-                        b.zarfiat = int(b.zarfiat) - 1
-                        b.save()
+                        # b.zarfiat = int(b.zarfiat) - 1
+
                     s.save()
+                    if b.free_space < 1:
+                        b.takmilzarmit = True
+                        
+                    b.save()
                 break  # اگر ذخیره موفق بود، از حلقه خارج شویم
             except IntegrityError:
                 continue
@@ -633,7 +623,7 @@ class moarefi_be_gordan_va_sater(LoginRequiredMixin, View):
     template = 'soldiers/moarefi_be_gordan_va_sater.html'
 
     def get(self, request, pk):
-        soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:6]
+        soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:20]
         my_sarbaz = sarbaz.objects.filter(pk=pk).first()
         time = ""
         date = ""
@@ -695,11 +685,8 @@ class CreatePaziresh(LoginRequiredMixin, View):
     success_url = reverse_lazy('moarefi_be_gordan_va_sater')
 
     def get(self, request):
-        battalion_group_list = [(99999999, '')]
-        g = battalion_group.objects.filter().all()
-        for item in g:
-            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         form_soldiers = FormSoldiersCreate()
+        form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
         form_soldiers.fields['Religion'].choices = Religion_list
         form_soldiers.fields['province_name'].choices = province_name_list
         form_soldiers.fields['marital_status'].choices = marital_status_list
@@ -715,7 +702,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
-        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
         form_soldiers.initial['province_name'] = 0
         form_soldiers.initial['Religion'] = 0
         form_soldiers.initial['marital_status'] = 3
@@ -729,11 +716,9 @@ class CreatePaziresh(LoginRequiredMixin, View):
         return render(request, self.template, cx)
 
     def post(self, request):
-        battalion_group_list = [(99999999, '')]
-        g = battalion_group.objects.filter().all()
-        for item in g:
-            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
+
         form_soldiers = FormSoldiersCreate(request.POST, request.FILES or None)
+        form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
         form_soldiers.fields['Religion'].choices = Religion_list
         form_soldiers.fields['province_name'].choices = province_name_list
         form_soldiers.fields['marital_status'].choices = marital_status_list
@@ -749,7 +734,8 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
-        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
+        
         if not form_soldiers.is_valid():
             cx = {'form': form_soldiers}
             return render(request, self.template, cx)
@@ -915,9 +901,12 @@ class CreatePaziresh(LoginRequiredMixin, View):
                         if item.code_gorhan is not None:
                             code_gorhan_list.append(int(item.code_gorhan))
                             s.code_gorhan = max(code_gorhan_list) + 1
-                            b.zarfiat = int(b.zarfiat) - 1
-                            b.save()
+                            # b.zarfiat = int(b.zarfiat) - 1
                     s.save()
+                    
+                    if b.free_space < 1:
+                        b.takmilzarmit = True
+                    b.save()
                 break  # اگر ذخیره موفق بود، از حلقه خارج شویم
             except IntegrityError:
                 continue
@@ -954,10 +943,6 @@ def get_battalion_group(n):
 
 class UpdatePaziresh(LoginRequiredMixin, View):
     def get(self, request, pk):
-        battalion_group_list = [(99999999, '')]
-        g = battalion_group.objects.filter().all()
-        for item in g:
-            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         sb = sarbaz.objects.filter(National_Code=pk).first()
         form_soldiers = FormSoldiersUpdate()
         form_soldiers.fields['Religion'].choices = Religion_list
@@ -975,7 +960,9 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
-        form_soldiers.fields['battalion_group'].choices = battalion_group_list
+        form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
+        form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
+        form_soldiers.initial['status_type'] = sb.status_type
 
         # initial
         form_soldiers.initial['name'] = sb.name
@@ -1046,12 +1033,11 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         return render(request, 'soldiers/UpdatePazireshForm.html', cx)
 
     def post(self, request, pk):
-        battalion_group_list = [(99999999, '')]
-        g = battalion_group.objects.filter().all()
-        for item in g:
-            battalion_group_list.append((item.id, F'گردان :{item.gordan.name} گروهان :{item.name}'))
         form = FormSoldiersUpdate(request.POST, request.FILES or None)
         sb = sarbaz.objects.filter(National_Code=pk).first()
+        form.fields['status_type'].choices = Soldier.status_types_options()
+        form.initial['status_type'] = sb.status_type
+
         form.fields['Religion'].choices = Religion_list
         form.fields['province_name'].choices = province_name_list
         form.fields['marital_status'].choices = marital_status_list
@@ -1067,7 +1053,7 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form.fields['Renewal_of_the_previous_period'].choices = Renewal_of_the_previous_period_list
         form.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form.fields['Amriye_organization'].choices = Amriye_organization_lsit
-        form.fields['battalion_group'].choices = battalion_group_list
+        form.fields['battalion_group'].choices = battalion_group_list_items()
         form.initial['name'] = sb.name
         form.initial['family'] = sb.family
         form.initial['fathers_name'] = sb.fathers_name
@@ -1267,21 +1253,69 @@ class UpdatePaziresh(LoginRequiredMixin, View):
 
 class MainViewSoldires(LoginRequiredMixin, View):
     def get(self, request):
-        search = request.GET.get('table_search')
-        if search is None:
-            soldire = sarbaz.objects.filter().all()
-            cx = {'results': soldire}
-            return render(request, 'soldiers/MainViewSoldires.html', cx)
-        if str(search).find('ی'):
-            search_y = str(search).replace('ی', 'ي')
-        else:
-            search_y = search
+        search = request.GET.get('table_search','')
+        gordan = request.GET.get('gordan','')
+        group = request.GET.get('group','')
+        acceptance_status = request.GET.get('acceptance_status','')
+        status_type = request.GET.get('status_type','')
+        
+
+        
+        # if str(search).find('ی'):
+        #     search_y = str(search).replace('ی', 'ي')
+        # else:
+        search_y = search
+
 
         soldire = sarbaz.objects.filter(
-            Q(name__icontains=search) | Q(family__icontains=search) | Q(name__icontains=search_y) | Q(
-                family__icontains=search_y) |
-            Q(National_Code__icontains=search) | Q(id__icontains=search)).all()
-        cx = {'results': soldire}
+            Q(name__icontains=search)           | 
+            Q(family__icontains=search)         | 
+            Q(name__icontains=search_y)         | 
+            Q(family__icontains=search_y)       |
+            Q(National_Code__icontains=search)  | 
+            Q(id__icontains=search)
+        ).all()
+
+        if status_type:
+            soldire = soldire.filter(status_type=status_type)
+
+        if acceptance_status == 'acceptance':
+            soldire = soldire.filter(has_been_accepted=True)
+            
+        if acceptance_status == 'no_acceptance':
+            soldire = soldire.filter(has_been_accepted=False)
+        if acceptance_status == 'system':
+            soldire = soldire.filter(date_improt_type='سامانه',)
+        if acceptance_status == 'system_acceptance':
+            soldire = soldire.filter(date_improt_type='سامانه',has_been_accepted=True)
+        if acceptance_status == 'system_no_acceptance':
+            soldire = soldire.filter(date_improt_type='سامانه',has_been_accepted=False)
+        if acceptance_status == 'manual':
+            soldire = soldire.filter(date_improt_type='')
+        
+        if gordan:
+            soldire = soldire.filter(Gordan=gordan)
+        if group:
+            soldire = soldire.filter(battalion_group=group)
+
+        gordans = battalion.objects.all()
+
+        cx = {
+            # forms
+            'acceptance_status_list':acceptance_status_list,
+            'acceptance_status':acceptance_status,
+            'search':search,
+            'gordan':gordan,
+            'group':group,
+            'acceptance_status':acceptance_status,
+            'status_type':status_type,
+            'status_types':sarbaz.valid_status_types(),
+            'unkhown_status_types':sarbaz.unkhown_status_types(),
+            'gordans':gordans,
+            # 
+            'results': soldire
+        }
+        
         return render(request, 'soldiers/MainViewSoldires.html', cx)
 
 from .models import Soldier
@@ -1295,6 +1329,8 @@ def generate_grade_temp(educational_level_of_the_system):
             
     return temp
 
+from ensani_statistics.utils import DASH_REGEX,normalization_persian,smart_separation
+
 class exel_add_to_db(LoginRequiredMixin, View):
     def get(self, request):
         form = FormAddExelToDb()
@@ -1307,16 +1343,12 @@ class exel_add_to_db(LoginRequiredMixin, View):
         khatam_form = FormKhatamChecked()
     
         cx = {'form': form,'khatam_form':khatam_form}
-        action = request.POST.get('action')
+
         if form.is_valid():
             exel = request.FILES['file']
-
-            # Workbook را باز کنید
             workbook = xlrd.open_workbook(file_contents=exel.read())
-
             # شیت مورد نظر خود را انتخاب کنید (مثلاً شیت اول)
             sheet = workbook.sheet_by_index(0)
-
             # تعداد ردیف‌ها و ستون‌های شیت را بدست آورید
             num_rows = sheet.nrows
             num_cols = sheet.ncols
@@ -1331,70 +1363,80 @@ class exel_add_to_db(LoginRequiredMixin, View):
                 one_soldire_list = []
                 soldire = sarbaz()
                 for col_idx in range(num_cols):
-                    
-                    # مقدار سلول را بخوانید
+                    # # مقدار سلول را بخوانید
                     cell_value = sheet.cell_value(row_idx, col_idx)
-                    # مقدار دهی به لیست
-                    if str(cell_value).find('ي'):
-                        cell_value = str(cell_value).replace('ي', 'ی')
-                    if str(cell_value).find('ك'):
-                        cell_value = str(cell_value).replace('ك', 'ک')
-                    if str(cell_value).find('ك'):
-                        cell_value = str(cell_value).replace('ؤ', 'و')
+                    # # مقدار دهی به لیست
+                    # if str(cell_value).find('ي'):
+                    #     cell_value = str(cell_value).replace('ي', 'ی')
+                    # if str(cell_value).find('ك'):
+                    #     cell_value = str(cell_value).replace('ك', 'ک')
+                    # if str(cell_value).find('ك'):
+                    #     cell_value = str(cell_value).replace('ؤ', 'و')
+                    cell_value = normalization_persian(cell_value)
+                    
                     one_soldire_list.append(cell_value)
-                if not str(one_soldire_list[1]) == "null":
+                
+                has_national = not str(one_soldire_list[1]) == "null"
+                if has_national:
+                    soldire.status_type = str(one_soldire_list[0]) # flexible types of soldiers       
+                if has_national:
                     soldire.National_Code = str(one_soldire_list[1])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.name = str(one_soldire_list[2])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.family = str(one_soldire_list[3])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.fathers_name = str(one_soldire_list[4])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.place_of_birth = str(one_soldire_list[5])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Date_of_birth = str(one_soldire_list[6])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Place_of_Issue = str(one_soldire_list[7])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Religion = str(one_soldire_list[8])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.educational_level_of_the_system = str(one_soldire_list[9])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Study_group = str(one_soldire_list[10])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Date_of_dispatch = str(one_soldire_list[11])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.height = str(one_soldire_list[12])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Weight = str(one_soldire_list[13])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.province_name = str(one_soldire_list[14])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.city_name = str(one_soldire_list[15])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.Address = str(one_soldire_list[16])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.phone_number = str(one_soldire_list[17])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.home_phone_number = str(one_soldire_list[18])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.physical_condition = str(one_soldire_list[19])
-                if not str(one_soldire_list[1]) == "null":
+                if has_national:
                     soldire.marital_status = str(one_soldire_list[20])
                 soldire.willing_to_learn = False
                 soldire.Sutter = "مجوز دارد"
-                if not str(one_soldire_list[0]) == "null":
-                    op = str(one_soldire_list[0])
-                    if op == "پیام آور بهداشت":
-                        soldire.Amriye = True
-                    if op == "امریه دار":
-                        soldire.Amriye = True
-                temp = 0
-                for i in educational_level_of_the_system_list:
-                    if i[1].replace(" ", "").replace("\u200c", "") == one_soldire_list[9].replace(" ", "").replace(
-                            "\u200c", ""):
-                        temp = i[0]
+                
+                if soldire.status_type == "پیام آور بهداشت":
+                    soldire.Amriye = True
+                if soldire.status_type == "امریه دار":
+                    soldire.Amriye = True
+                if soldire.status_type == "قرارگاه سازندگی":
+                    soldire.garargah_sazandegi_khatam = True
+                        
+                # temp = 0
+                # for i in educational_level_of_the_system_list:
+                #     if i[1].replace(" ", "").replace("\u200c", "") == one_soldire_list[9].replace(" ", "").replace(
+                #             "\u200c", ""):
+                #         temp = i[0]
+                if form.cleaned_data['format_dagree']:
+                    soldire.educational_level_of_the_system = smart_separation(soldire.educational_level_of_the_system)
+                temp = generate_grade_temp(soldire.educational_level_of_the_system)
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
                 check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list[1])).first()
@@ -1407,6 +1449,7 @@ from django import forms
 from django.http import HttpResponse
 from openpyxl import Workbook
 import pandas as pd
+
 clabel = 'کدملی'
 def excel_change_gharargah_sazandegi_khatam_true_sample(request):
     wb = Workbook()

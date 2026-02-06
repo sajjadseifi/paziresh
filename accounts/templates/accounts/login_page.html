@@ -24,8 +24,8 @@
         .overlay {
             width: 100%;
             height: 100vh;
-            backdrop-filter: blur(6px);
-            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(3px);
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,7 +35,7 @@
         .login-card {
             width: 620px;
             padding: 40px 35px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(40, 40, 40, 0.8);
             border-radius: 18px;
             box-shadow: 0 8px 40px rgba(0,0,0,0.35);
             backdrop-filter: blur(18px);
@@ -64,16 +64,22 @@
         .logo-card {
             text-align: center;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
 
         .logo-card-image {
             background-color: rgba(255,255,255,0.75);
             border-radius: 12px;
             padding: 10px;
+            text-align: center;
+
         }
 
         .logo {
-            width: 140px;
+            width: 100px;
             filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
         }
 
@@ -85,7 +91,7 @@
 
         label {
             color: #e7e7e7;
-            font-size: 14px;
+            font-size: 18px;
             margin-bottom: 5px;
             display: block;
             font-weight: bold;
@@ -103,7 +109,7 @@
 
         .toggle-password {
             position: absolute;
-            right: 40px;
+            right: -40px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 18px;
@@ -117,7 +123,7 @@
         input {
             padding: 12px 40px 12px 12px;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 16px;
             border: 1px solid rgba(220,220,220,0.3);
             background: rgba(255,255,255,0.18);
             color: #fff;
@@ -126,10 +132,13 @@
             text-align: left;
             width: 100%;
             box-sizing: border-box;
+            text-align: left;
+            line-height: 16px;
         }
 
         input::placeholder {
             color: #ddd;
+            text-align: right;
         }
 
         input:focus {
@@ -163,9 +172,19 @@
             font-size: 18px;
         }
 
-        .version {
+        .app-version {
             display: inline-block;
             background-color: #ff8800;
+            color: white;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 4px;
+            margin: 15px auto 0;
+        }
+
+        .app-name {
+            display: inline-block;
+            background-color: #6200ffff;
             color: white;
             font-size: 12px;
             padding: 5px 12px;
@@ -178,32 +197,49 @@
         .organ-title {
             color: chartreuse;
             text-align: center;
+            font-size: 18px;
         }
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        @keyframes spin {
+        to { transform: rotate(360deg); }
+        }
+
     </style>
 </head>
 
 <body>
 
 <div class="overlay">
-
     <div class="login-card">
-        <h2 class="title">سامانه هوشمند و جامع رزم‌آموز</h2>
-        <h2 class="organ-title">پادگان آموزشی المهدی(عج) بابل</h2>
-        <hr style="border-color: rgba(255,255,255,0.15)">
-
-        <div class="login-content">
-
-            <!-- لوگو -->
-            <div class="logo-card">
-                <div class="logo-card-image">
-                    <img src="{% static 'img/Sepah.png' %}" class="logo">
-                </div>
-                <p style="margin-top: 10px; font-size: 15px;">نیروی زمینی سپاه</p>
-                <p style="margin-top: -10px; font-size: 14px;">جمهوری اسلامی ایران</p>
+        <div class="logo-card">
+            <div class="logo-card-image">
+                <img src="{% static 'img/Sepah.png' %}" class="logo">
             </div>
+            <p style="margin-top: 10px; font-size: 15px;">نیروی زمینی سپاه</p>
+            {% comment %} <p style="margin-top: -10px; font-size: 14px;">انفلاب اسلامی ایران</p> {% endcomment %}
+        </div>
+        <h2 class="title">سامانه پذیرش هوشمند رزم‌آموز</h2>
+        <h2 class="organ-title">آموزشگاه رزم مقدماتی المهدی (عج) نیروی زمینی سپاه</h2>
+        <hr style="border-color: rgba(255,255,255,0.15)">
+        <div class="login-content">
+            <!-- لوگو -->
 
             <!-- فرم -->
-            <form class="login-form" method="post">
+            <form id="loginForm" class="login-form" method="post">
                 {% csrf_token %}
 
                 <div class="form-group">
@@ -222,15 +258,18 @@
                         {{ login_form.password }}
                     </div>
                 </div>
-
-                <button type="submit" class="btn">ورود به سامانه</button>
+                <button type="submit" class="btn" id="submitBtn">
+                    <span class="btn-text">ورود به سامانه</span>
+                    <span class="spinner d-none"></span>
+                </button>
             </form>
 
         </div>
 
         <footer class="login-footer">
             <div style="text-align: center;">
-                <span class="version">نسخه 2.0.1</span>
+                <span class="app-name">سامانه {{app.name}}</span>
+                <span class="app-version">نسخه {{app.version}}</span>
             </div>
         </footer>
     </div>
@@ -249,6 +288,30 @@
         togglePassword.classList.toggle("fa-eye");
         togglePassword.classList.toggle("fa-eye-slash");
     });
+</script>
+<script>
+  const form = document.getElementById('loginForm');
+  const btn = document.getElementById('submitBtn');
+  const btnText = btn.querySelector('.btn-text');
+  const spinner = btn.querySelector('.spinner');
+
+  let isSubmitting = false;
+
+  form.addEventListener('submit', function (e) {
+    if (isSubmitting) return;
+
+    e.preventDefault(); // جلوی ارسال فوری رو بگیر
+    isSubmitting = true;
+
+    btn.disabled = true;
+    btnText.classList.add('d-none');
+    spinner.classList.remove('d-none');
+
+    // Delay 2 ثانیه‌ای نمایشی
+    setTimeout(() => {
+      form.submit(); // بعد از 2 ثانیه واقعاً بفرست سمت سرور
+    }, 200);
+  });
 </script>
 
 </body>

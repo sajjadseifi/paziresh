@@ -28,10 +28,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 6px 10px;
     text-decoration: none;
     white-space: nowrap;
-    gap: 10px;
+    gap: 6px;
 }
 
 /* بخش متن */
@@ -57,24 +57,20 @@
 .menu-item > a .menu-icon {
     color: #2563eb;
 }
-
 /* hover */
 .menu-item:hover {
     background: #f9fafb;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
-
 /* زیرمنو */
 .submenu {
     position: absolute;
     top: 0;
-    right: calc(100% + 6px);
-    min-width: 220px;
-
+    right: calc(100% + 2px);
+    min-width: 240px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-
     opacity: 0;
     visibility: hidden;
     transform: translateX(10px);
@@ -102,16 +98,42 @@
 .menu-item.has-children:hover > span .submenu-arrow {
     transform: translateX(-3px);
 }
+
+html body  .no-implment > *  {
+    opacity: 0.4 !important;
+    position: relative;
+}
+.no-implment::after{
+    position: absolute;
+    content: 'درحال توسعه...';
+    top: 100%;
+    right: 0;
+    transform: translateY(-10px);
+    transition: 0.3s;
+    visibility: hidden;
+    opacity: 0;
+    background-color: cornflowerblue;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    z-index: 1000000000;
+
+}
+.no-implment:hover::after {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(10px);
+}
 </style>
 
 <ul class="menu-root">
     {% for item in items %}
         {# اگر item.base_url دارد استفاده کن، در غیر این صورت از parent_base_url بگیر #}
         {% with current_base=item.base_url|default:parent_base_url %}
-        <li class="menu-item {% if item.children %}has-children{% endif %}">
-
-            {% if item.q %}
-                <a target="_blank" href="{% url current_base %}?{{ item.q }}">
+        <li class=" menu-item {% if item.children %}has-children{% endif %}">
+            {% if item.q and current_base %}
+                <a class="{{item.class}}" target="_blank" href="{% url current_base %}?{{ item.q }}">
                     <span class="menu-label">
                         <i class="fa fa-link menu-icon"></i>
                         {{ item.title }}
@@ -122,23 +144,21 @@
                     {% endif %}
                 </a>
             {% else %}
-                <span class="menu-title">
+                <span class="{{item.class}} menu-title">
                     <i class="fa fa-folder menu-icon"></i>
-                    {{ item.title }}
+                    <span>{{ item.title }}</span>
 
                     {% if item.children %}
                         <i class="fa fa-chevron-left submenu-arrow"></i>
                     {% endif %}
                 </span>
             {% endif %}
-
             {% if item.children %}
                 <ul class="submenu">
                     {# include با parent_base_url=current_base برای انتقال به لایه پایین #}
                     {% include 'components/nested_list.html' with items=item.children parent_base_url=current_base %}
                 </ul>
             {% endif %}
-
         </li>
         {% endwith %}
     {% endfor %}

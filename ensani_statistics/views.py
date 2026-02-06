@@ -2890,6 +2890,7 @@ from openpyxl import Workbook
 import pandas as pd
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from .utils import DASH_REGEX,normalization_persian,smart_separation
 clabel = 'کدملی'
 edlabel = 'وضعیت پایه تحصیلی سامانه معتبر'
 def interferences_enduction_system_level_update_sample(request):
@@ -2928,43 +2929,10 @@ def interferences_enduction_system_level_update_sample(request):
     wb.save(response)
     return response
 
-import re
-
-DASH_REGEX = r'[‐-‒–—−-]'
-
-def normalize_educational_level(value: str, normalization=True) -> str:
-    if not value:
-        return ""
-
-    value = str(value)
-
-    # 1️⃣ حروف عربی → فارسی
-    value = (
-        value.replace('ي', 'ی')
-             .replace('ك', 'ک')
-             .replace('ؤ', 'و')
-             .replace('أ', 'ا')
-             .replace('إ', 'ا')
-    )
-
-
-    if normalization:
-        # 2️⃣ حذف کاراکترهای مخفی
-        value = re.sub(r'[\u200c\u200f\u202a-\u202e]', '', value)
-
-        # 3️⃣ یکسان‌سازی فاصله‌ها
-        value = re.sub(r'\s+', ' ', value)
-        # 4️⃣ حذف هر چیزی بعد از اولین dash (هر نوع dash)
-        value = re.split(DASH_REGEX, value, maxsplit=1)[0]
-
-    # 5️⃣ تمیزکاری نهایی
-    return value.strip()
 
 def interferences_enduction_system_level_update(request):
     excel_file = request.FILES.get("enduction_system_level_file")
     normalization = request.POST.get('normalization',False)
-    print(excel_file)
-    print(normalization)
     
     if not excel_file:
         return redirect('interferences_enduction_info')
@@ -2977,12 +2945,13 @@ def interferences_enduction_system_level_update(request):
     soldiers = []
     for _, row in df.iterrows():
         national_code = str(row[clabel]).strip()
-        educational_level = normalize_educational_level(row[edlabel],normalization)
-
+        
+        educational_level = normalization_persian(row[edlabel])
+        if normalization:
+            educational_level = smart_separation(educational_level)
+            
         try:
-            print(national_code,educational_level)
             soldier = Soldier.objects.filter(National_Code=national_code).first()
-
             if soldier:
                 soldier.educational_level_of_the_system = educational_level
                 soldiers.append(soldier)
@@ -3149,7 +3118,6 @@ def interferences_vaziat_jasmani(request):
         real_changes = [c for c in changes if c["new"] and c["new"] != c["old"]]
         # فقط مواردی که مقدار جدید معتبر است
         valid_changes = [c for c in real_changes if c["new"] in condition_values]
-        print(changes,real_changes,valid_changes,condition_values)
         # ✅ حالا آپدیت رکوردهای مربوطه
         updated_count = 0
         for change in valid_changes:

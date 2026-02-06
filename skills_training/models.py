@@ -38,6 +38,8 @@ class HazardSettings(models.Model):
     certificate_date = models.DateField(verbose_name="تاریخ گواهی")
     start_date = models.DateField(verbose_name="تاریخ شروع دوره")
     end_date = models.DateField(verbose_name="تاریخ پایان دوره")
+    province = models.CharField(max_length=20, verbose_name="استان محل آموزش", blank=True, null=True)
+    city = models.CharField(max_length=20, verbose_name="شهر محل آموزش", blank=True, null=True)
 
     def __str__(self):
         return f"تنظیمات مخاطرات ({self.letter_number})"

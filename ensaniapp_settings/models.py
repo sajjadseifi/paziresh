@@ -3,6 +3,7 @@ from django_jalali.db import models as jmodels
 import os
 import uuid
 from django.conf import settings
+import datetime
 
 class EnsaniSettings(models.Model):
     # DORE
@@ -39,7 +40,11 @@ class EnsaniSettings(models.Model):
     emza_karshenas_manabe_ensani = models.ImageField(upload_to='images/', null=True, blank=True,verbose_name='امضای کارشناس منابع سرباز')
     emza_masole_niro_ensani = models.ImageField(upload_to='images/', null=True, blank=True,verbose_name='امضای مدیر نیروانسانی')
     emza_farmande = models.ImageField(upload_to='images/', null=True, blank=True,verbose_name='امضای فرمانده آموزشگاه')
-
+    
+    @property
+    def tarikh_sodor_karname(self):
+        return datetime.datetime.now()
+    
     class Meta:
         verbose_name = "تنظیمات"
         verbose_name_plural = "تنظیمات"

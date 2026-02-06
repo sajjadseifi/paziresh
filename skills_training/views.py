@@ -54,7 +54,7 @@ from django.contrib import messages
 from .models import SlillTraining  # نام مدل طبق پروژه شما
 from django.db import transaction
 import jdatetime
-from .forms import HazardSettingsForm
+from .forms import HazardSettingsForm,MONTH_CHOICES,PERSIAN_MONTHS
 from .models import HazardSettings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -773,62 +773,64 @@ class CreateOrUpdateHazardSettings(LoginRequiredMixin, View):
         hz = HazardSettings.objects.last()
         form = HazardSettingsForm()
 
-        persian_months = [
-            "فروردین", "اردیبهشت", "خرداد", "تیر",
-            "مرداد", "شهریور", "مهر", "آبان",
-            "آذر", "دی", "بهمن", "اسفند"
-        ]
+        def gregorian_to_shamsi(date):
+            if date:
+                return jdatetime.date.fromgregorian(date=date).strftime("%Y/%m/%d")
+            return ""
 
-        if hz is not None:
-            # تبدیل تاریخ‌های میلادی به شمسی
-            certificate_date_sh = jdatetime.date.fromgregorian(date=hz.certificate_date).strftime("%Y/%m/%d")
-            start_date_sh = jdatetime.date.fromgregorian(date=hz.start_date).strftime("%Y/%m/%d")
-            end_date_sh = jdatetime.date.fromgregorian(date=hz.end_date).strftime("%Y/%m/%d")
-
-            form.initial.update({
-                'certificate_date': certificate_date_sh,
+        if hz:
+            form.initial = {
+                'certificate_date': gregorian_to_shamsi(hz.certificate_date),
+                'start_date': gregorian_to_shamsi(hz.start_date),
+                'end_date': gregorian_to_shamsi(hz.end_date),
                 'letter_number': hz.letter_number,
                 'year': hz.year,
                 'month_name': hz.month_name,
                 'first_aid_hours': hz.first_aid_hours,
                 'hazard_preparedness_hours': hz.hazard_preparedness_hours,
-                'start_date': start_date_sh,
-                'end_date': end_date_sh,
-            })
+                'province': hz.province,
+                'city': hz.city,
+            }
         else:
-            # تاریخ شمسی امروز
-            now = jdatetime.date.today()
-            start_of_month = jdatetime.date(now.year, now.month, 1)
-            end_of_period = start_of_month + jdatetime.timedelta(days=4)
+            today = jdatetime.date.today()
+            start_of_period = jdatetime.date(today.year, today.month, 1)
+            end_of_period = start_of_period + jdatetime.timedelta(days=4)
 
-            form.initial.update({
-                'certificate_date': now.strftime("%Y/%m/%d"),
-                'year': now.year,
-                'month_name': persian_months[now.month - 1],
+            form.initial = {
+                'certificate_date': today.strftime("%Y/%m/%d"),
+                'start_date': start_of_period.strftime("%Y/%m/%d"),
+                'end_date': end_of_period.strftime("%Y/%m/%d"),
+                'year': today.year,
+                'month_name': PERSIAN_MONTHS[today.month - 1],
                 'first_aid_hours': 22,
                 'hazard_preparedness_hours': 8,
-                'start_date': start_of_month.strftime("%Y/%m/%d"),
-                'end_date': end_of_period.strftime("%Y/%m/%d"),
-            })
+                'province': '',
+                'city': '',
+            }
 
-        context = {'form': form, 'hazard': hz}
-        return render(request, f"{template_pages}/certificate_hazard.html", context)
+        return render(request, f"{template_pages}/certificate_hazard.html", {'form': form, 'hazard': hz})
+
 
     def post(self, request):
         hz = HazardSettings.objects.last()
-        form = HazardSettingsForm(request.POST or None)
-        form.clean()
+        form = HazardSettingsForm(request.POST)
+
+        print(form.data)
         if not form.is_valid():
-            return render(request, f"{template_pages}/certificate_hazard.html", {'form': form, 'hazard': hz})
+            return render(
+                request,
+                f"{template_pages}/certificate_hazard.html",
+                {
+                    'form': form,
+                    'hazard': hz
+                }
+            )
 
-        # دریافت داده‌ها و ذخیره در مدل
-        data = form.cleaned_data
         if hz is None:
-            hz = HazardSettings()
-
-        for key, value in data.items():
-            setattr(hz, key, value)
-        hz.save()
+            form.save()
+        else:
+            form = HazardSettingsForm(request.POST, instance=hz)
+            form.save()
 
         return redirect('skills:certificates_hazard')
 
@@ -873,6 +875,8 @@ def certificates_hazard_print(request):
             "hazard_preparedness_hours": hazard.hazard_preparedness_hours,
             "start_date": to_shamsi(hazard.start_date),
             "end_date": to_shamsi(hazard.end_date),
+            'province':hazard.province,
+            'city':hazard.city,
         }
 
     context = {

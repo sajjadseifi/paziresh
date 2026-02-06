@@ -27,17 +27,15 @@ from django.utils import timezone
 from django.shortcuts import render,redirect
 from django.core.paginator import Paginator
 from django.urls import reverse
-from .access import get_user_battalions, get_user_battalion_groups,get_user_soldiers
+from .access import get_user_battalions, get_user_battalion_groups,battalion_and_groups_allowed,create_access_tree
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from .forms import TopSoldiersForm
 from .access import get_user_soldiers
 
-
 def get_battalion_group_context(request, soldiers_qs):
-    battalions_allowed = get_user_battalions(request.user)
-    groups_allowed = get_user_battalion_groups(request.user).select_related('gordan').order_by('name')
-
+    battalions_allowed , groups_allowed = battalion_and_groups_allowed(request.user)
+    
     selected_battalion = request.GET.get('battalion')
     if not selected_battalion and battalions_allowed.exists():
         selected_battalion = str(battalions_allowed.first().id)
@@ -97,15 +95,7 @@ def get_battalion_group_context(request, soldiers_qs):
             .order_by(*order)
         )
 
-    nodes = [{ 'title':'همه گردان ها', 'q':f'b=all' }]
-    for b in battalions_allowed:
-        children = [{ 'title':'همه گروهان ها', 'q':f'b={b.id}&g=all' }]
-        for g in groups_allowed:
-            if g.gordan.id == b.id:
-                children.append({ 'title':f'گروهان {g.name}', 'q':f'g={g.id}' })
-        
-        nodes.append({ 'title':str(b),'q':f'b={b.id}','children': children })
-        
+    nodes = create_access_tree(battalions_allowed,groups_allowed)
     return {
         'soldiers': soldiers,
         'battalions': battalions_allowed,

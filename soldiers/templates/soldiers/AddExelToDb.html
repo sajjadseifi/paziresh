@@ -166,44 +166,26 @@
     <div class="row">
         <!-- فرم کامل -->
         <div class="col-md-4">
-            <div class="panel-card">
-                <div class="panel-title">
-                    <h3>بارگذاری اکسل (کامل)</h3>
-                </div>
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button class="btn-action wfull info" type="submit">
-                        بررسی فایل
-                    </button>
-                </form>
-                {% if result_all %}
-                    <div class="result-box success">
-                        <div>کل رکوردها: {{ result_all.total }}</div>
-                        <div>ثبت موفق: {{ result_all.success }}</div>
-                        <div>دارای خطا: {{ result_all.errors }}</div>
-                    </div>
-                {% endif %}
-            </div>
                 <div class="panel-card">
                     <div class="panel-title">
-                        <h3>فقط افراد جدید</h3>
+                        <h3>بارگذاری اکسل (کامل)</h3>
                     </div>
-                    <form method="post"  enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="new">
                         {{ form.as_p }}
                         <button class="btn-action wfull info" type="submit">
-                            بررسی افراد جدید
+                            بررسی فایل
                         </button>
                     </form>
-                    {% if result_new %}
-                        <div class="result-box warning">
-                            <div>افراد جدید ثبت شده: {{ result_new.inserted }}</div>
-                            <div>تکراری‌ها: {{ result_new.duplicate }}</div>
+                    {% if result_all %}
+                        <div class="result-box success">
+                            <div>کل رکوردها: {{ result_all.total }}</div>
+                            <div>ثبت موفق: {{ result_all.success }}</div>
+                            <div>دارای خطا: {{ result_all.errors }}</div>
                         </div>
                     {% endif %}
                 </div>
+
                 <div class="panel-card">
                     <div class="panel-title">
                         <h3>بروز رسانی گروهی وضعیت طرح قرارگاه سازندگی خاتم</h3>
@@ -256,7 +238,14 @@
                         <td>1</td>
                         <td>وضعیت</td>
                         <td>متنی</td>
-                        <td>وضعیت فعلی فرد</td>
+                        <td>
+                            وضعیت برگه اعزام فرد
+                            <code>عادی</code>
+                            <code>امریه دار</code>
+                            <code>پیام آور بهداشت</code>
+                            <code>طرح خاتم</code>
+                            <code>قرگاه سازندگی</code>
+                        </td>
                     </tr>
 
                     <tr>

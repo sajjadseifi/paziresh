@@ -348,29 +348,17 @@ margin-top: 0;
         {% endwith %}    
         <div class="small-box" style="background: linear-gradient(135deg,  #6a11cb,#4aa1ff);">
             <div class="small-box">
-                <h1 class="title">وضعیت ارگان ها</h1>
-                <div class="icon" ><i class="fa fa-hand-grab-o"></i></div>
+                <h1 class="title">نوع اعزام</h1>
+                <div class="icon" ><i class="fa fa-file-pdf-o"></i></div>
                 <h2 class="number"></h2>
             </div>
             <div class="splitor-numbers-box">
-                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>عادی</span>
-                    <span style="font-weight:bold; color:#000;">{{ organs.normal }}</span>
-                </p>
-                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>امریه دار</span>
-                    <span style="font-weight:bold; color:#000;">{{ organs.amriye }}</span>
-                </p>
-
-                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>طرح خاتم</span>
-                    <span style="font-weight:bold; color:#000;">{{ organs.khatam }}</span>
-                </p>
-                <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
-                    <span>قرارگاه سازندگی خاتم</span>
-                    <span style="font-weight:bold; color:#000;">{{ organs.garargah_sazandegi_khatam }}</span>
-                </p>
-
+                {% for org in organs %}
+                    <p style="margin:3px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>{{org.label}}</span>
+                        <span style="font-weight:bold; color:#000;">{{org.value}}</span>
+                    </p>
+                {% endfor %}
             </div>
         </div>
     </div>

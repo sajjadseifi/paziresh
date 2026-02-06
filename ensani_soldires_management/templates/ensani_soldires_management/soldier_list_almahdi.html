@@ -62,8 +62,7 @@
                         {% if soldier.has_been_accepted is False %}
                             <td style="background-color: #ff9000">پذیرش نشده</td>
                         {% endif %}
-                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i
-                                class="fa fa-eye"></i></a></td>
+                        <td><a  href="{% url 'soldier_detail' %}?code={{sodire.National_Code}}"><i class="fa fa-eye"></i></a></td>
 
                     </tr>
                 {% endfor %}

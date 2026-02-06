@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <title>چاپ گواهی‌ها</title>
+    <style>
+
+      @font-face {
+        font-family: 'B Koodak';
+        src: url('/static/dist/fonts/B Koodak Bold_0.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body {
+        font-family: 'B Koodak';
+
+        direction: rtl;
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+        display:flex;
+      }
+
+      .b-koodak {
+        font-family: 'B Koodak';
+        margin: 0 8px;
+        color:red;
+        font-size:18px;
+      }
+      
+      .certificate-header .b-koodak {
+        font-size:16px;
+      }
+      .certificate-footer  .b-koodak {
+        font-size:26px;
+      }
+
+      .page {
+        width: 210mm;
+        margin: 3mm;
+        padding: 10mm;
+        box-sizing: border-box;
+        background: #fff;
+        overflow: hidden;
+        position: relative;
+        page-break-after: always;
+        border: 1px dotted #aaa;
+        border-radius: 4px;
+      }
+
+      .certificate {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .certificate-section {
+        flex: 1;
+        border-radius: 20px;
+        border: 2px dashed #000;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+      }
+      .certificate .space {
+        padding: 10px;
+      }
+      .certificate-content {
+        flex: 1;
+        padding: 20px;
+        font-size: 16px;
+        text-align:justify;
+      }
+
+      .certificate-footer {
+        display: flex;
+        align-items: center;
+        padding: 20px 20px;
+        gap: 20px;
+      }
+
+      .certificate-footer .space {
+        flex: 1;
+      }
+
+      @media print {
+        .page {
+          box-shadow: none;
+          margin: 0;
+          padding: 10mm;
+          width: 100%;
+          page-break-after: always;
+          border: 1px dashed transparent;
+        }
+        .b-koodak {
+          color:black;
+        }
+        .manage {
+          display:none;
+        }
+      }
+
+      .certificate-signiture {
+        text-align: center;
+        display: flex;
+        align-items: center;
+      }
+
+      .signiture-box {
+        flex: 1;
+        position: relative;
+        font-size: 16px;
+      }
+
+      .signiture {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-40%, -35%);
+        width: 70%;
+      }
+
+      .certificate-header {
+        display: flex;
+        align-items: center;
+      }
+
+      .certificate-header .sepah-logo,
+      .certificate-header .letter {
+        flex: 1;
+      }
+
+      .certificate-header .letter {
+        display: flex;
+        justify-content: end;
+        flex-direction: column;
+        align-items: end;
+      }
+      .manage {
+        flex:1;
+        position:relative;
+      }
+      .sidebar {
+        position:absolute;
+      }
+            /* ====== تنظیمات سمت چپ ====== */
+      .sidebar {
+        background: #ffffff;
+        border-right: 2px solid #ddd;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 15px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .sidebar h2 {
+        font-family: 'B Koodak';
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .sidebar .info {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-family: 'B Koodak';
+        font-size: 15px;
+        color: #444;
+      }
+
+      .sidebar .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #007bff;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: 'B Koodak';
+        font-size: 16px;
+        text-decoration: none;
+        transition: 0.3s ease;
+      }
+
+      .sidebar .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+
+     .sidebar .btn.btn-green {
+        background: #28a745;
+      }
+
+    .sidebar  .btn.btn-orange {
+        background: #fd7e14;
+      }
+
+    .sidebar  .btn.btn-gray {
+        background: #6c757d;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="preview">
+        <div class="print page table-responsive">
+            <table class="table table-bordered table-hover table-custom">
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام</th>
+                        <th>نام خانوادگی</th>
+                        <th>کدملی</th>
+                        <th>کد سازمانی اولیه</th>
+                        <th>کد سازمانی نهایی</th>
+                    </tr>
+                </thead>
+                <tbody>                
+                    {% for s in soldiers %}
+                        <tr>
+                            <th>{{forloop.counter}}</th>
+                            <th>{{s.name}}</th>
+                            <th>{{s.family}}</th>
+                            <th dir="ltr">{{s.National_Code}}</th>
+                            <th dir="ltr">{{s.battalion_group}}-{{s.code_gorhan}}</th>
+                            <th dir="ltr">{{s.t_battalion_group}}-{{s.code_gorhan_nahai}}</th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <div class="manage">
+         <aside class="sidebar">
+        </aside>
+    </div>
+  </body>
+</html>

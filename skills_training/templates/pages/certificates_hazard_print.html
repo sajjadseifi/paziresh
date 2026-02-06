@@ -225,8 +225,15 @@
       }
       .niro-zamini {
         position:absolute;
-        top:65%;
-        right:6px;
+        top:70%;
+        right:8px;
+        font-size: 12px;
+      }
+      .letter-params {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
       }
     </style>
   </head>
@@ -245,11 +252,13 @@
                   <div class="niro-zamini">نیروی زمینی</div>
                 </div>
                 <div class="allah-logo">
-                  <img width="60px" src="{% static 'img/allah-placeholder.png' %}" alt="الله" />
+                  <img width="80px" src="{% static 'img/allah-placeholder.png' %}" alt="الله" />
                 </div>
                 <div class="letter">
-                  <span>شماره نامه: <span class="b-koodak">{{ hazard.letter_number }}</span></span>
-                  <span>تاریخ نامه: <span class="b-koodak">{{ hazard.certificate_date }}</span></span>
+                  <div>
+                    <span class="letter-params"><strong>شماره نامه : </strong> <span class="b-koodak">{{ hazard.letter_number }}</span></span>
+                    <span class="letter-params"><strong>تاریخ نامه : </strong> <span class="b-koodak">{{ hazard.certificate_date }}</span></span>
+                  </div>
                 </div>
               </header>
 
@@ -260,25 +269,28 @@
                 به شماره ملی <span class="b-koodak">{{ soldier.National_Code }}</span>،
                 متولد <span class="b-koodak">{{ soldier.Date_of_birth }}</span>،
                 با پایه خدمتی <span class="b-koodak">{{ soldier.Date_of_dispatch }}</span>؛  
-                در <span class="b-koodak">{{ hazard.month_name }}</span> سال 
+                در <span class="b-koodak">{{ hazard.month_name }} ماه</span> سال 
                 <span class="b-koodak">{{ hazard.year }}</span>  
                 در استان مازندران، شهرستان 
                 بابل،  
-                در آموزشگاه رزم مقدّماتی المهدی (عجل‌الله تعالی فرجه‌الشریف) نیروی زمینی سپاه؛  
+                در آموزشگاه رزم مقدّماتی المهدی 
+                <strong>(عجل‌الله تعالی فرجه‌الشریف)</strong>
+                نیروی زمینی سپاه؛  
                 آموزش و آزمون مهارت‌های ۴گانه عمومی  
-                (مهارت‌های زندگی، سواد رسانه‌ای و فضای مجازی، مباحث حقوقی و آشنایی با سواد مالی، اشتغال و کارآفرینی)  
+                <strong style="font-size: 16px;">(مهارت‌های زندگی، سواد رسانه‌ای و فضای مجازی، مباحث حقوقی و آشنایی با سواد مالی، اشتغال و کارآفرینی)</strong>
                 را با موفقیت به پایان رسانده است.
               </main>
               <footer class="certificate-signiture">
                 <div class="signiture-box">
                   <div>سرهنگ پاسدار رضا سروی</div>
                   <div>مسئول نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
-                  <img class="signiture" src="{% static 'img/farmandeh_niro_ensani.png' %}" alt="امضا" />
+                  {% if en.emza_masole_niro_ensani %}
+                    <img class="signiture" src="{{en.emza_masole_niro_ensani.url}}" alt="امضا" />
+                  {% endif %}
                 </div>
                 <div class="signiture-box">
                   <div>سرهنگ پاسدار علی متولی طاهر</div>
                   <div>فرمانده آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
-                  {% comment %} <img class="signiture" src="{% static 'img/farmandeh.png' %}" alt="امضا" /> {% endcomment %}
                 </div>
               </footer>
             </section>
@@ -294,11 +306,13 @@
                   <div class="niro-zamini">نیروی زمینی</div>
                 </div>
                 <div class="allah-logo">
-                  <img width="60px" src="{% static 'img/allah-placeholder.png' %}" alt="الله" />
+                  <img width="80px" src="{% static 'img/allah-placeholder.png' %}" alt="الله" />
                 </div>
                 <div class="letter">
-                  <span>شماره نامه: <span class="b-koodak">{{ hazard.letter_number }}</span></span>
-                  <span>تاریخ نامه: <span class="b-koodak">{{ hazard.certificate_date }}</span></span>
+                  <div>
+                    <span class="letter-params"><strong>شماره نامه : </strong> <span class="b-koodak">{{ hazard.letter_number }}</span></span>
+                    <span class="letter-params"><strong>تاریخ نامه : </strong> <span class="b-koodak">{{ hazard.certificate_date }}</span></span>
+                  </div>
                 </div>
               </header>
 
@@ -313,9 +327,11 @@
                 <span class="b-koodak">{{ hazard.hazard_preparedness_hours }}</span> ساعت  
                 از تاریخ <span class="b-koodak">{{ hazard.start_date }}</span> تا تاریخ 
                 <span class="b-koodak">{{ hazard.end_date }}</span>  
-                در استان <span class="b-koodak">{{ soldier.province_name }}</span>، شهرستان 
-                <span class="b-koodak">{{ soldier.city_name }}</span>،  
-                در آموزشگاه رزم مقدّماتی المهدی (عجل‌الله تعالی فرجه‌الشریف) نیروی زمینی سپاه  
+                در استان <span class="b-koodak">{{hazard.province}}</span>، شهرستان 
+                <span class="b-koodak">{{hazard.city}}</span>،  
+                در آموزشگاه رزم مقدّماتی المهدی 
+                <strong>(عجل‌الله تعالی فرجه‌الشریف)</strong>
+                نیروی زمینی سپاه  
                 با موفقیت به پایان رسانده است.
               </main>
 
@@ -323,12 +339,13 @@
                 <div class="signiture-box">
                   <div>سرهنگ پاسدار رضا سروی</div>
                   <div>مسئول نیروی انسانی آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
-                  <img class="signiture" src="{% static 'img/farmandeh_niro_ensani.png' %}" alt="امضا" />
+                  {% if en.emza_masole_niro_ensani %}
+                    <img class="signiture" src="{{en.emza_masole_niro_ensani.url}}" alt="امضا" />
+                  {% endif %}
                 </div>
                 <div class="signiture-box">
                   <div>سرهنگ پاسدار علی متولی طاهر</div>
                   <div>فرمانده آموزشگاه رزم مقدماتی المهدی (عج) بابل</div>
-                  {% comment %} <img class="signiture" src="{% static 'img/farmandeh.png' %}" alt="امضا" /> {% endcomment %}
                 </div>
               </footer>
             </section>
@@ -378,10 +395,16 @@
     ساعت آمادگی در برابر مخاطرات: <span class="b-koodak">{{ hazard.hazard_preparedness_hours }}</span>
   </div>
   <div>
-    شروع دوره: <span class="b-koodak">{{ hazard.start_date }}</span>
+    تاریخ شروع کلاس: <span class="b-koodak">{{ hazard.start_date }}</span>
   </div>
   <div>
-    پایان دوره: <span class="b-koodak">{{ hazard.end_date }}</span>
+    تاریخ پایان کلاس: <span class="b-koodak">{{ hazard.end_date }}</span>
+  </div>
+    <div>
+    استان: <span class="b-koodak">{{ hazard.province }}</span>
+  </div>
+  <div>
+    شهر: <span class="b-koodak">{{ hazard.city }}</span>
   </div>
 </div>
 

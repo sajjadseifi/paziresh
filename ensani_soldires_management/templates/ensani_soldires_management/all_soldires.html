@@ -34,8 +34,6 @@
                         <td>{{ soldier.marital_status }}</td>
                         <td>{{ soldier.Religion }}</td>
                         <td>{{ soldier.t_Gordan }}-{{ soldier.t_battalion_group.name }}-{{ soldier.code_gorhan_nahai }}</td>
-
-
                         {% if soldier.has_been_accepted and soldier.willing_to_learn %}
                             <td>درحال آموزش</td>
                         {% endif %}
@@ -51,9 +49,9 @@
                         {% if soldier.has_been_accepted and soldier.Previous_service_record is True %}
                             <td>کفایت از آموزش</td>
                         {% endif %}
-                        <td><a href="{% url 'soldire_details' code=soldier.National_Code %}"><i
-                                class="fa fa-eye"></i></a></td>
-
+                        <td>
+                            <a href="{% url 'soldier_detail' %}?code={{soldier.National_Code}}"> <i class="fa fa-eye"></i> </a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

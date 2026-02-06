@@ -29,7 +29,7 @@ class SoldierTrainingRecord(models.Model):
         'shooting_avg',
         'final_average',
     ]
-    WEAPON_TYPE = 'کلاشینکف'
+    WEAPON_TYPE = 'کلاشنیکف'
     @classmethod
     def training_fields(cls):
         orders = [

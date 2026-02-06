@@ -1,10 +1,18 @@
+import pandas as pd
 from django import forms
 from django.core.exceptions import ValidationError
-
 from soldiers.models import Soldier as sarbaz
+from soldiers.models import Soldier
+from django.db import transaction
 
 
 class FormSoldiers(forms.Form):
+    status_type = forms.ChoiceField(
+        widget=forms.Select(attrs={'id':'status_type','class': 'form-control select2'}),
+        label='وضعیت برگه سبز',
+        required=False,
+        initial='عادی',
+    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
         label='نام',
@@ -201,9 +209,7 @@ class FormSoldiers(forms.Form):
         required=False
     )
     battalion_group = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': "form-control"}
-        ),
+        widget=forms.Select(attrs={'class': "form-control"}),
         label='نام گروهان',
     )
     Relative_to_inclusive = forms.CharField(
@@ -216,8 +222,15 @@ class FormSoldiers(forms.Form):
         label='شماره تماس نسبت فراگیر',
         required=True,
     )
+    
 
 class FormSoldiersCreate(forms.Form):
+    status_type = forms.ChoiceField(
+        widget=forms.Select(attrs={'id':'status_type','class': 'form-control select2'}),
+        label='وضعیت برگه سبز',
+        required=False,
+        initial='عادی',
+    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
         label='نام',
@@ -441,6 +454,12 @@ class FormSoldiersCreate(forms.Form):
 
 
 class FormSoldiersUpdate(forms.Form):
+    status_type = forms.ChoiceField(
+        widget=forms.Select(attrs={'id':'status_type','class': 'form-control select2'}),
+        label='وضعیت برگه سبز',
+        required=False,
+        initial='عادی',
+    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
         label='نام',
@@ -679,10 +698,14 @@ class SarbazCodeMeli(forms.Form):
 
 class FormAddExelToDb(forms.Form):
     file = forms.FileField()
+    
+    format_dagree = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'type': "checkbox", 'name': "format_dagree", 'id': "format_dagree"}),
+        label='فرمت هوشمند مدرک تحصیلی',
+        required=False,
+        initial=False
+    )
 
-import pandas as pd
-from soldiers.models import Soldier
-from django.db import transaction
 
 class FormKhatamChecked(forms.Form):
     file = forms.FileField(label='انتخاب فایل اکسل')

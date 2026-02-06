@@ -11,147 +11,176 @@
 {% endblock %}
 
 {% block main %}
-<style>
-    /* 🎨 استایل تب‌ها */
-    .nav-tabs {
-        border-bottom: 2px solid #e2e8f0;
-    }
+    <style>
+        /* ===== Tabs Container ===== */
+        .nav-bar {
+            background: #0f172a; /* slate-900 */
+            border: 1px solid #1e293b;
+            padding: 0.8rem 1rem;
+            margin: 6px;
+            border-radius: 12px;
+        }
 
-    .nav-tabs .nav-link {
-        color: #555;
-        font-weight: 500;
-        border: none;
-        border-bottom: 3px solid transparent;
-        transition: all 0.25s ease;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+        /* ===== Tabs ===== */
+        .nav-tabs {
+            border-bottom: none;
+            gap: 1rem;
+            display: flex;
+            justify-content: start;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
 
-    .nav-tabs .nav-link:hover {
-        color: #007bff;
-        border-bottom: 3px solid rgba(0, 123, 255, 0.3);
-        background-color: rgba(0, 123, 255, 0.05);
-    }
+        /* ===== Tab Links ===== */
+        .nav-tabs .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 !important;
+            padding: 0.8rem 1.6rem;
+            border-radius: 0.7rem;
 
-    .nav-tabs .nav-link.active {
-        color: #0d6efd;
-        background-color: #f8f9fa;
-        border-bottom: 3px solid #0d6efd;
-        border-top-left-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
-        font-weight: 600;
-        box-shadow: 0 -2px 6px rgba(13, 110, 253, 0.1);
-    }
+            color: #cbd5f5; /* روشن ولی نه سفید */
+            font-weight: 500;
+            border: none;
+            font-size: 1.2rem;
 
-    .tab-content {
-        padding-top: 1rem;
-    }
-</style>
+            background: transparent;
+            transition: all 0.2s ease;
+        }
 
-<div class="mt-4">
+        /* Hover */
+        .nav-tabs .nav-link:hover {
+            background-color: #1e293b;
+            color: #60a5fa;
+        }
 
-    <!-- بخش تب‌ها -->
-    <ul class="nav nav-tabs mb-4 justify-content-center" dir="rtl">
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_help_page' %}active{% endif %}"
-               href="{% url 'soldiers_scores_help_page' %}">
-                <i class="fa fa-graduation-cap"></i>
-                سازماندهی
-            </a>
-        </li>
+        /* Active */
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+        }
 
-        {% if permissions.dep.farmandehi or permissions.dep.gorohan %}
+        /* Icon */
+        .nav-tabs .nav-link i {
+            font-size: 1.4rem;
+        }
+
+        /* ===== Content ===== */
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+
+        .content.container-fluid {
+            padding: 0;
+        }
+    </style>
+    <div>
+        <ul class="nav nav-tabs nav-bar justify-content-center" dir="rtl">
+
             <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_tatbigh_page' %}active{% endif %}"
-                href="{% url 'soldiers_tatbigh_page' %}">
-                    <i class="fa fa-users"></i>
-                    تطبیق گردان گروهانی
+                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_help_page' %}active{% endif %}"
+                href="{% url 'soldiers_scores_help_page' %}">
+                    <i class="fa fa-sitemap"></i>
+                    سازماندهی
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_avatar_page' %}active{% endif %}"
-                href="{% url 'soldiers_avatar_page' %}">
-                <i class="fa fa-"></i>
-                تصاویر سربازان
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
-                href="{% url 'top_soldiers_gordan_page' %}">
-                <i class="fa fa-star"></i>
-                سربازان نمونه در گردان
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
-                href="{% url 'soldiers_problems_page' %}">
-                <i class="fa fa-exclamation-triangle"></i>
-                مشکلات سربازان
-                </a>
-            </li>
-        {% endif %}
-        {% if permissions.dep.farmandehi or  permissions.app.rank_scores %}
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
-                href="{% url 'soldiers_scores_page' %}">
-                <i class="fa fa-bar-chart"></i>
-                نمرات سربازان
-                </a>
-            </li>
-        {% endif %}
-        {% if permissions.dep.farmandehi or  permissions.dep.aqidati %}
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_ideological_assessment_page' %}active{% endif %}"
-                href="{% url 'soldiers_ideological_assessment_page' %}">
-                <i class="fa fa-bar-chart"></i>
-                ارزیابی عقیدتی
-                </a>
-            </li>
-        {% endif %}
-        {% if permissions.dep.farmandehi or permissions.dep.amoozesh %}
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
-               href="{% url 'top_soldiers_course_page' %}">
-               <i class="fa fa-trophy"></i>
-               سربازان برتر در دوره
-            </a>
-        </li>
-        <li class="nav-item">
-         <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_training_transcript_page' %}active{% endif %}"
-               href="{% url 'soldiers_training_transcript_page' %}">
-               <i class="fa fa-trophy"></i>
-               کارنامه آموزش
-            </a>
-        </li>
 
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
-               href="{% url 'top_soldiers_course_page' %}">
-               <i class="fa fa-trophy"></i>
-               نمره جنگ افزار
-            </a>
-        </li>
-        {% endif %}
+            {% if permissions.dep.farmandehi or permissions.dep.gorohan %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_tatbigh_page' %}active{% endif %}"
+                    href="{% url 'soldiers_tatbigh_page' %}">
+                        <i class="fa fa-random"></i>
+                        تطبیق گردان گروهانی
+                    </a>
+                </li>
 
-     
-        {% if permissions.dep.farmandehi or  permissions.dep.behdari %}
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'test_salamat_rawan' %}active{% endif %}"
-                href="{% url 'test_salamat_rawan' %}">
-                    <i class="fa fa-heartbeat"></i>
-                    تست سلامت روان
-                </a>
-            </li>
-        {% endif %}
-    </ul>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_avatar_page' %}active{% endif %}"
+                    href="{% url 'soldiers_avatar_page' %}">
+                        <i class="fa fa-id-badge"></i>
+                        تصاویر سربازان
+                    </a>
+                </li>
 
-    <!-- محتوای هر تب -->
-    <div class="tab-content">
-        {% block scores_content %}
-        {% endblock %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_gordan_page' %}active{% endif %}"
+                    href="{% url 'top_soldiers_gordan_page' %}">
+                        <i class="fa fa-star"></i>
+                        سربازان نمونه در گردان
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_problems_page' %}active{% endif %}"
+                    href="{% url 'soldiers_problems_page' %}">
+                        <i class="fa fa-exclamation-circle"></i>
+                        مشکلات سربازان
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if permissions.dep.farmandehi or permissions.app.rank_scores %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_scores_page' %}active{% endif %}"
+                    href="{% url 'soldiers_scores_page' %}">
+                        <i class="fa fa-line-chart"></i>
+                        نمرات سربازان
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if permissions.dep.farmandehi or permissions.dep.aqidati %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_ideological_assessment_page' %}active{% endif %}"
+                    href="{% url 'soldiers_ideological_assessment_page' %}">
+                        <i class="fa fa-balance-scale"></i>
+                        ارزیابی عقیدتی
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if permissions.dep.farmandehi or permissions.dep.amoozesh %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'top_soldiers_course_page' %}active{% endif %}"
+                    href="{% url 'top_soldiers_course_page' %}">
+                        <i class="fa fa-trophy"></i>
+                        سربازان برتر در دوره
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'soldiers_training_transcript_page' %}active{% endif %}"
+                    href="{% url 'soldiers_training_transcript_page' %}">
+                        <i class="fa fa-file-text-o"></i>
+                        کارنامه آموزش
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'weapon_score_page' %}active{% endif %}"
+                    href="{% url 'weapon_score_page' %}">
+                        <i class="fa fa-crosshairs"></i>
+                        نمره جنگ افزار
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if permissions.dep.farmandehi or permissions.dep.behdari %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'test_salamat_rawan' %}active{% endif %}"
+                    href="{% url 'test_salamat_rawan' %}">
+                        <i class="fa fa-heartbeat"></i>
+                        تست سلامت روان
+                    </a>
+                </li>
+            {% endif %}
+
+        </ul>
+
+        <div class="tab-content">
+            {% block scores_content %}{% endblock %}
+        </div>
     </div>
-
-</div>
 {% endblock %}

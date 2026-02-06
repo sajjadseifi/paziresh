@@ -38,7 +38,7 @@
     }
 
     .card-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
         color: #2c3e50;
         margin: 0;
@@ -115,6 +115,7 @@
         height: 70svh;          /* همون ارتفاع wrapper */
         overflow-y: auto;
         overflow-x: hidden;
+        padding-bottom:60px ;
     }
     .table-fixed thead th {
         height: 4svh;
@@ -295,6 +296,14 @@
         padding: 2px 4px;
         font-size: 10px;
     }
+    button.md {
+        padding: 4px 6px;
+        font-size: 13px;
+    }
+    button.lg {
+        padding: 5px 8px;
+        font-size: 16px;
+    }
     /* Purple */
     button.purple {
         background: #6f42c1;
@@ -410,7 +419,13 @@
     .training-yes {
         background-color: #218838;
     }
-
+    .hint-box {
+        padding: 10px;
+        background-color: #c8233310;
+        color: darkred;
+        margin: 10px;
+        border-radius: 10px;
+    }
 </style>
 
 {% endblock header %}
@@ -432,7 +447,7 @@
                 <h3 class="card-title">خروجی و چاپ</h3>
             </div>
             <div class="card-body size-sm">
-                {% include 'components/nested_list.html'  %}
+                {% include 'components/nested_list.html' with items=items  %}
             </div>
         </div>
         <div class="card">
@@ -454,10 +469,14 @@
         <form class="card" method="POST" action="{% url 'soldiers_training_transcript_save' %}">
             {% csrf_token %}
             <div class="card-header">
-                <h3 class="card-title">جدول گروهانی کارنامه آموزشی</h3>
+                <h2 class="card-title">جدول گروهانی کارنامه آموزشی</h2>
                 <div style="flex: 1;"></div>
-                <button type="submit" class="success">ثبت و ذخیره</button>
+                <button type="submit" class="lg success">ثبت و ذخیره</button>
             </div>
+            <section class="hint-box">
+                <p>در حالت پیشفرض برای هیچ فراگیری کارنامه ثبت نشده است، با ثبت و ذخیره کارنامه به صورت اتوماتیک برای همه فراگیران در این فهرست ثبت خواهد شد.</p>
+                <p>پس از ثبت امکان چاپ کارنامه و خروجی اکسل از منوی سمت راست به صورت آبشاری برای گردان ها و گروهان ها قابل اجراست.</p>                
+            </section>
             <div class="card-body table-wrapper">
                 <table class="table table-striped table-fixed">
                     <thead >

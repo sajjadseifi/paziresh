@@ -2,26 +2,7 @@
 {% load static %}
 {% block header %}
 <style>
-    .card {
-        background-color: white;
-        border-radius: 10px;
-        padding: 20px;
-    }
-    .card-title {
-        text-align: center;
-        margin: 0;
-        padding: 4px 20px;
-        font-size: 28px;
-        border-right: 4px solid coral;
-        color: #9b401e;
-        font-weight: bold;
-    }
-    .card-header{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
+
     .table th {
         font-size: 16px;
         padding: 10px 4px !important;
@@ -73,14 +54,50 @@
     .col-down{
         color: crimson;
     }
+            .btn {
+            border-radius: 6px !important;
+        }
+    .grohan-item {
+        opacity: 0.4;
+    }
+    .grohan-item.is-active {
+        opacity: 1;
+    }
+        .card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    .card-title {
+        text-align: center;
+        margin: 0;
+        padding: 4px 20px;
+        font-size: 28px;
+        border-right: 6px solid black;
+        border-radius: 0 6px 6px 0 ;
+        color: black;
+        font-weight: bold;
+    }
+    .card-header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
 </style>
 {% endblock %}
 {% block main %}
 <div class="card">
     <div class="card-header">
         <h1 class="card-title">فهرست گردان های آموزشی</h1>
+        <a class="btn  btn-primary" href="{% url 'MainViewBattalionGroup'  %}">
+            <span>فهرست گروهان ها</span>
+            <i class="fa fa-arrow-left"></i> 
+        </a>
+        <div style="flex: 1;"></div>
         <a class="btn  btn-warning" href="{% url 'BattalionCreate'  %}">
-            ایجاد گردان جدید
+            <span>ایجاد گردان جدید</span>
             <i class="fa fa-plus"></i> 
         </a>
     </div>
@@ -89,36 +106,43 @@
             <tbody>
             <tr>
                 <th>اولویت</th>
-                <th>نام گردان</th>
+                <th class="text-right">نام گردان</th>
+                <th>کد گردانی</th>
                 <th>فعال</th>
                 <th>عملیات</th>
                 <th>گروهان ها</th>
                 <th>سرباز قبل تطبیق</th>
                 <th>سرباز بعد تطبیق</th>
-                <th>افزایش/کاهش</th>
             </tr>
-            {% for foo in gordan %}
+            {% for g in gordan %}
                 <tr>
-                    <td>{{ foo.order }}</td>
-                    <td><strong>{{ foo.name }}</strong></td>
-                    <td class="{{foo.is_active|yesno:'text-success,text-danger'}}">
-                       <span>{{ foo.is_active|yesno:'بله,خیر' }}</span>
-                        {% if foo.is_active %}
+                    <td>{{ g.order }}</td>
+                    <td  class="text-right">
+                        <strong>{{ g.name }}</strong>
+                        <div class="fooname" style="font-size: 12px;margin-top: 2px;">{{g.commander}}</div>
+                    </td>
+                    <td><strong>{{ g.gcode }}</strong></td>
+                    <td class="{{g.is_active|yesno:'text-success,text-danger'}}">
+                       {% comment %} <span>{{ g.is_active|yesno:'بله,خیر' }}</span> {% endcomment %}
+                        {% if g.is_active %}
                             <i class="fa fa-check"></i>
                        {% else %}
                             <i class="fa fa-times"></i>
                         {% endif %}
                     </td>
                     <td>
-                        <a class="btn btn-sm btn-default" href="{% url 'BattalionUpdate' pk=foo.pk %}">
+                        <a class="btn btn-primary" href="{% url 'BattalionUpdate' pk=g.pk %}">
                             ویرایش
-                            <i class="fa fa-edit"></i> 
+                            <i class="fa fa-edit"></i>
                         </a>
                     </td>
                      <td>
                         <div class="setting-list">
-                            {% for g in foo.grohans %}
-                                <a href="{% url 'BattalionGroupUpdate' pk=foo.pk %}" class="setting-item">
+                            {% for g in g.grohans %}
+                                <a 
+                                    href="{% url 'BattalionGroupUpdate' pk=g.pk %}" 
+                                    class="setting-item grohan-item {% if g.is_active %}is-active{% endif %}"
+                                    >
                                     <i class="fa fa-edit"></i> 
                                     {{ g }}
                                 </a>
@@ -127,13 +151,12 @@
                             {% endfor %}
                         </div>
                     </td>
-                    <td><span >{{foo.soldiers_counts_before_tatbigh}}</span></td>
-                    <td><span >{{foo.soldiers_counts_after_tatbigh}}</span></td>
-                    <td class="col-{{foo.reduce_soldiers.reduce}}">
-                        <i class="fa fa-arrow-{{foo.reduce_soldiers.reduce}}"></i>
-                        <span>{{foo.reduce_soldiers.counts}}</span>
-                    </td>
-                    
+                    <td><span >{{g.soldiers_counts_before_tatbigh}}</span></td>
+                    <td><span >{{g.soldiers_counts_after_tatbigh}}</span></td>
+                    {% comment %} <td class="col-{{g.reduce_soldiers.reduce}}">
+                        <i class="fa fa-arrow-{{g.reduce_soldiers.reduce}}"></i>
+                        <span>{{g.reduce_soldiers.counts}}</span>
+                    </td> {% endcomment %}
                 </tr>
             {% endfor %}
             </tbody>

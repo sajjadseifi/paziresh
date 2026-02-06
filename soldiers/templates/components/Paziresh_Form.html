@@ -17,7 +17,7 @@
             text-align: center;
             color:white;
             border-radius: 4px;
-            
+
         }
         .card-body-ui {
             display: flex;
@@ -31,8 +31,8 @@
             align-items: center;
         }
         .card-item-ui label {
-            flex: 2;
-            min-width: 140px;
+            flex: 1;
+            min-width: 100px;
             color: #00445fff;
             margin-bottom: 0;
             padding-bottom: 0;
@@ -59,10 +59,9 @@
         .card-item-ui input:focus,
         .card-item-ui select:focus,
         .card-item-ui textarea:focus {
-            background-color: #ffe0ef42;
-            color: #5f003bff;
-            border: 1px solid #a70067ff;
-
+            background-color: #0077a733;
+            color: #004474ff;
+            border: 1px solid #004474ff;
         }
         .card-item-error {
             color: brown;
@@ -267,6 +266,11 @@
                                 <h4 class="card-title-ui">
                                     شروع در دوره 
                                 </h4>
+                                
+                                <li class="card-item-ui">
+                                    <label>{{ form.status_type.label }}</label>
+                                    {{ form.status_type }}
+                                </li>
                                 <li class="card-item-ui">
                                     <label>{{ form.Sufficiency_of_mobilization.label }}</label>
                                     {{ form.Sufficiency_of_mobilization }}
