@@ -2272,3 +2272,97 @@ def mobilization_document_delete(request):
             deleted.append(filename)
 
     return redirect('mobilization_document_view')
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from django.db.models import Q
+from .models import Soldier
+from .serializer import SoldierFullSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.db.models import Q
+from .models import Soldier
+from .serializer import SoldierFullSerializer
+
+@api_view(['GET'])
+def soldiers_rest_api(request):
+
+    def str_to_bool(value):
+        return str(value).lower() in ["true", "1", "yes"]
+
+    soldiers = Soldier.objects.select_related(
+        "Gordan",
+        "battalion_group",
+        "t_Gordan",
+        "t_battalion_group",
+    ).all()
+
+    # -------- فیلترهای متنی --------
+    national_code = request.GET.get("national_code")
+    name = request.GET.get("name")
+    province = request.GET.get("province")
+    organization_type = request.GET.get("organization_type")
+    rank = request.GET.get("rank")
+    health_status = request.GET.get("health_status")
+
+    if national_code:
+        soldiers = soldiers.filter(National_Code=national_code)
+
+    if name:
+        soldiers = soldiers.filter(
+            Q(name__icontains=name) | Q(family__icontains=name)
+        )
+
+    if province:
+        soldiers = soldiers.filter(province_name=province)
+
+    if organization_type:
+        soldiers = soldiers.filter(organization_type=organization_type)
+
+    if rank:
+        soldiers = soldiers.filter(rank=rank)
+
+    if health_status:
+        soldiers = soldiers.filter(physical_condition=health_status)
+
+    # -------- فیلترهای بولین --------
+    accepted = request.GET.get("accepted")
+    in_course = request.GET.get("in_course")
+    tatbigh = request.GET.get("tatbigh")
+    checkout = request.GET.get("checkout")
+    amriye = request.GET.get("amriye")
+
+    if accepted is not None:
+        soldiers = soldiers.filter(has_been_accepted=str_to_bool(accepted))
+
+    if in_course is not None:
+        soldiers = soldiers.filter(in_coures=str_to_bool(in_course))
+
+    if tatbigh is not None:
+        soldiers = soldiers.filter(tatbigh=str_to_bool(tatbigh))
+
+    if checkout is not None:
+        soldiers = soldiers.filter(IsCheckout=str_to_bool(checkout))
+
+    if amriye is not None:
+        soldiers = soldiers.filter(Amriye=str_to_bool(amriye))
+
+    # -------- مرتب‌سازی --------
+    ordering = request.GET.get("ordering")
+    allowed_ordering = [
+        "tarikh_paziresh",
+        "-tarikh_paziresh",
+        "rank",
+        "-rank",
+        "Date_of_dispatch",
+        "-Date_of_dispatch",
+    ]
+
+    if ordering in allowed_ordering:
+        soldiers = soldiers.order_by(ordering)
+
+    # -------- Serialize و Return --------
+    serializer = SoldierFullSerializer(soldiers, many=True)
+    return Response(serializer.data)

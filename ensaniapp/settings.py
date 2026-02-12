@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_render_partial',
+    'rest_framework',
     'ensani',
     'soldiers',
     'skills_training',
@@ -50,7 +51,7 @@ INSTALLED_APPS = [
     'ensani_soldires_management',
     'ensani_backup',
     'help',
-    'core'
+    'core',
 ]
 
 MIDDLEWARE = [

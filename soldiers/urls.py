@@ -47,7 +47,5 @@ urlpatterns = [
     path('mobilization/doc/upload', mobilization_document_upload, name='mobilization_document_upload'),
     path('mobilization/doc/delete', mobilization_document_delete, name='mobilization_document_delete'),
 
-
-
-
+    path('api/rest/soldiers/',soldiers_rest_api,name='soldiers_rest_api')
 ]
