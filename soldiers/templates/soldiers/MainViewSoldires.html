@@ -2,13 +2,17 @@
 
 {% block main %}
     <style>
-
+        .box {
+            border-radius: 20px;
+            padding:  10px 20px;
+        }
         .box-title {
             font-weight: bold;
         }
         .form-group {
             display: flex;
             align-items: center;
+            margin: 2px 0;
         }
         .form-group > label {
             flex: 2;
@@ -16,6 +20,7 @@
         
         .form-group > * {
             flex: 3;
+            font-size: 12px;
         }
         .form-group > input,select {
             border-radius: 6px;
@@ -37,7 +42,7 @@
                 <form method="GET">
                     <div class="row">
                         
-                        <div class="col-xs-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="acceptance_status">وضعیت پذیرش</label>
                                 <select id="acceptance_status" name="acceptance_status">
@@ -51,19 +56,19 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="acceptance_code">عدد پذیرش</label>
                                 <input type="text" class="form-control" id="acceptance_code" name="acceptance_code" placeholder="عدد پذیرش" value="{{acceptance_code}}" >
                             </div>
                         </div>
-                         <div class="col-xs-4">
+                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="national_code">کد ملی</label>
                                 <input type="text" class="form-control" id="national_code" name="national_code" placeholder="کد ملی" value="{{national_code}}">
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="status_type">وضعیت برگه اعزام</label>
                                 <select id="status_type" name="status_type">
@@ -82,19 +87,19 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="name">نام</label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="نام سرباز" value="{{name}}">
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="family">نام خانوادگی</label>
                                 <input type="text" class="form-control" id="family" name="family" placeholder="نام خانوادگی" value="{{family}}">
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="national_code">گردان اولیه</label>
                                 <select id="gordan" name="gordan">
@@ -115,16 +120,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-center">
+                    
+                    <div style="margin-top: 10px;display: flex;align-items: center;">
+                        <div style="flex:1;">
+                            نتیجه {{results|length}} نفر یافت شد!
+                        </div>
                         <button type="submit" class="btn-search btn btn-primary" >جستجو</button>
+                        <div style="flex: 1;"></div>
                     </div>
+
                 </form>
             </div>
         </div>
     </div>
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-body table-responsive no-padding">
+            <div class="box-body table-responsive " style="max-height: 60svh;overflow-y: auto;">
                 {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
             </div>
         </div>

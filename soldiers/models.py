@@ -6,10 +6,11 @@ from django_jalali.db import models as jmodels
 from django.utils import timezone
 from ensaniapp_settings.models import mobilization_upload_path,EnsaniSettings
 from .constants import prolems_province_unit_list,PROBLEM_FIELDS,PROBLEM_LABELS,status_types
+from soldiers.utils import map_educational_level_to_grade,generate_grade_temp,educational_level_of_the_system_list,categorize_educational_level
 
 
 class Soldier(models.Model):
-    status_type = models.CharField(null=True, blank=True, max_length=100, verbose_name='نوع وضعیت سرباز')
+    status_type = models.CharField(null=True, blank=True,default='عادی', max_length=100, verbose_name='نوع وضعیت سرباز')
     name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام')
     family = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام خانوادگی')
     fathers_name = models.CharField(null=True, blank=True, max_length=100, verbose_name='نام پدر')
@@ -161,6 +162,22 @@ class Soldier(models.Model):
     problems_s = ''
     problems_u = ''
     
+    def save(self, *args, **kwargs):
+        if self.status_type == "پیام آور بهداشت":
+            self.Amriye = True
+        if self.status_type == "امریه دار":
+            self.Amriye = True
+        if self.status_type == "قرارگاه سازندگی":
+            self.garargah_sazandegi_khatam = True
+        print(self.status_type)
+        
+        # temp = generate_grade_temp(self.educational_level_of_the_system)
+        # if temp > 0:
+        #     self.Grade = categorize_educational_level(temp)[1]
+        #     self.Grade_precise = map_educational_level_to_grade(temp)[1]
+
+        # ذخیره واقعی مدل
+        super().save(*args, **kwargs)
     @classmethod
     def status_types_list(cls):
         slist = []
@@ -175,9 +192,9 @@ class Soldier(models.Model):
         options = []
         
         for u in cls.valid_status_types():
-            options.append((u,u))
+            options.append((u or '',u or 'نامشخص'))
         for u in cls.unkhown_status_types():
-            options.append((u,u + ' ( تعریف نشده ) '))
+            options.append((u or '',u or 'نامشخص' + ' ( تعریف نشده ) '))
                
         return options
     @classmethod

@@ -28,7 +28,7 @@ PROBLEM_LABELS = {
     'description': 'توضیحات'
 }
 status_types = ['عادی','امریه دار','طرح خاتم','قرارگاه سازندگی','پیام آور بهداشت']
-
+status_types_choices = [(st,st) for st in status_types]
 grade_precise_mapping = {
     'بی‌سواد': [],
     'نهضت سواد آموزی': [],

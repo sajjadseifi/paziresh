@@ -2760,7 +2760,6 @@ def interferences_index(request):
     nrm_Grade_list = normalize_list_values(Grade_list)
     nrm_physical_condition_list = normalize_list_values(physical_condition_list)
     nrm_unit_types = normalize_list([(0,item[2]) for item in LIST_YEGAN_BEKARGIRANDE])
-    print(nrm_Grade_list)
     vaziat_jasmani= Soldier.objects.exclude(physical_condition__in=nrm_physical_condition_list).count()
     yegan_khedmati= Soldier.objects.exclude(unit_type__in=nrm_unit_types).count()
     educational_level_of_the_system =Soldier.objects.exclude(educational_level_of_the_system__in=nrm_educational_levels).count()
@@ -2777,7 +2776,7 @@ def interferences_index(request):
     return render(request, 'interferences/interferences_index.html',{'counts':counts})
 
 
-from soldiers.views import map_educational_level_to_grade,generate_grade_temp,educational_level_of_the_system_list,categorize_educational_level
+from soldiers.utils import map_educational_level_to_grade,generate_grade_temp,educational_level_of_the_system_list,categorize_educational_level
 
 
 
@@ -2793,12 +2792,14 @@ def interferences_replaceor(request,collections):
             db_key = collect['key_in_soldier']
             valid_labels = normalize_list_values(collect['list'])
             
+            print(data.items())
             # استخراج تغییرات از POST
             for key, value in data.items():
                 if key.startswith(f"old_{action}_"):
                     idx = key.split("_")[-1]
                     old_value = value
                     new_value = data.get(f"new_{action}_{idx}", "").strip()
+                    print(new_value)
                     changes.append({"old": old_value, "new": new_value})
             # فیلتر فقط تغییرات واقعی
             real_changes = [c for c in changes if c["new"] and c["new"] != c["old"]]
@@ -2811,7 +2812,12 @@ def interferences_replaceor(request,collections):
                 old_val = change["old"]
                 new_val = change["new"]
                 update_data = {f"{db_key}":new_val}
-                affected = Soldier.objects.filter(**{f"{db_key}":old_val})
+
+                # زمانی که واقعا None داری مقدار زیر را به حالت 'None' عوض کنید.
+                if old_val == None:
+                    affected = Soldier.objects.filter(**{f"{db_key}__isnull":True})
+                else:
+                    affected = Soldier.objects.filter(**{f"{db_key}":old_val})
 
                 if  db_key == 'educational_level_of_the_system':
                     temp = generate_grade_temp(new_val)
@@ -3062,7 +3068,21 @@ def interferences_city_and_province(request):
 def interferences_base_information(request):
     nrm_marital_status_list = normalize_list(marital_status_list)
     nrm_Religion_list = normalize_list(Religion_list)
+    nrm_status_types = normalize_list(status_types_choices + [('','نامشخص')])
+    
     collections = [
+        {
+            'title':'برگه اعزام',
+            'small_titlle':'نوع سرابز',
+            'name':'status_type',
+            'action':'status_type',
+            'list':nrm_status_types,
+            'valid_labels':[],
+            'known_values':[],
+            'unknown_values':[],
+            'key_in_soldier':'status_type',
+            'color':'success',
+        },
         {
             'title':'دین و مذهب',
             'small_titlle':'مذهب',
@@ -3123,6 +3143,7 @@ def interferences_vaziat_jasmani(request):
         for change in valid_changes:
             old_val = change["old"]
             new_val = change["new"]
+            
             # برو سراغ سربازانی که وضعیت فعلیشون old_val هست
             affected = Soldier.objects.filter(physical_condition=old_val)
             count = affected.update(physical_condition=new_val)
