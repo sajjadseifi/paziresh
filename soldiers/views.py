@@ -1209,50 +1209,50 @@ class MainViewSoldires(LoginRequiredMixin, View):
         group = request.GET.get('group','')
         acceptance_status = request.GET.get('acceptance_status','')
         status_type = request.GET.get('status_type','')
+        status_type = request.GET.get('status_type','')
         
-
-        
-        # if str(search).find('ی'):
-        #     search_y = str(search).replace('ی', 'ي')
-        # else:
-        search_y = search
-
-
-        soldire = sarbaz.objects.filter(
-            Q(name__icontains=search)           | 
-            Q(family__icontains=search)         | 
-            Q(name__icontains=search_y)         | 
-            Q(family__icontains=search_y)       |
-            Q(National_Code__icontains=search)  | 
-            Q(id__icontains=search)
-        ).all()
-
+        name = request.GET.get('name')
+        family = request.GET.get('family')
+        national_code = request.GET.get('national_code')
+        acceptance_code = request.GET.get('acceptance_code')
+            
+        soldiers = sarbaz.objects.all()
+        if name:
+            soldire = soldiers.filter(name__icontains=name)
+        if family:
+            soldire = soldiers.filter(family__icontains=family)
+        if national_code:
+            soldiers = soldiers.filter(National_Code__icontains=national_code)
+        if acceptance_code:
+            soldiers = soldiers.filter(acceptance_code=acceptance_code)
+            
+            
         if status_type:
-            soldire = soldire.filter(status_type=status_type)
+            soldiers = soldiers.filter(status_type=status_type)
 
         if acceptance_status == 'acceptance':
-            soldire = soldire.filter(has_been_accepted=True)
+            soldiers = soldiers.filter(has_been_accepted=True)
             
         if acceptance_status == 'no_acceptance':
-            soldire = soldire.filter(has_been_accepted=False)
+            soldiers = soldiers.filter(has_been_accepted=False)
         if acceptance_status == 'system':
-            soldire = soldire.filter(date_improt_type='سامانه',)
+            soldiers = soldiers.filter(date_improt_type='سامانه',)
         if acceptance_status == 'system_acceptance':
-            soldire = soldire.filter(date_improt_type='سامانه',has_been_accepted=True)
+            soldiers = soldiers.filter(date_improt_type='سامانه',has_been_accepted=True)
         if acceptance_status == 'system_no_acceptance':
-            soldire = soldire.filter(date_improt_type='سامانه',has_been_accepted=False)
+            soldiers = soldiers.filter(date_improt_type='سامانه',has_been_accepted=False)
         if acceptance_status == 'manual':
-            soldire = soldire.filter(date_improt_type='')
+            soldiers = soldiers.filter(date_improt_type='')
         
         if gordan == 'no':
-            soldire = soldire.filter(Gordan__isnull=True)
+            soldiers = soldiers.filter(Gordan__isnull=True)
         elif gordan:
-            soldire = soldire.filter(Gordan=gordan)
+            soldiers = soldiers.filter(Gordan=gordan)
         
         if group == 'no':
-            soldire = soldire.filter(battalion_group__isnull=True)
+            soldiers = soldiers.filter(battalion_group__isnull=True)
         elif group:
-            soldire = soldire.filter(battalion_group=group)
+            soldiers = soldiers.filter(battalion_group=group)
 
         gordans = battalion.objects.all()
 
@@ -1269,7 +1269,7 @@ class MainViewSoldires(LoginRequiredMixin, View):
             'unkhown_status_types':sarbaz.unkhown_status_types(),
             'gordans':gordans,
             # 
-            'results': soldire
+            'results': soldiers
         }
         
         return render(request, 'soldiers/MainViewSoldires.html', cx)

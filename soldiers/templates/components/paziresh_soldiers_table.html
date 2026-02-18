@@ -2,9 +2,9 @@
     .table>tbody>tr>th, 
     .table>tfoot>tr>th, 
     .table>thead>tr>th {
-        padding: 12px;
+        padding: 12px 4px;
         font-size: 12px;
-        background-color: #cfcfcf;
+        background-color: #efefef;
     }
     .table>tbody>tr>td, 
     .table>tfoot>tr>td, 
@@ -35,12 +35,16 @@
         align-items: center;
         gap: 4px;
     }
+    .label {
+        padding: 4px;
+    }
+
 </style>
 <table class="table-mini table table-hover">
     <thead>
         <tr>
             {% comment %} <th class="text-center">کد داخلی</th> {% endcomment %}
-            <th class="text-center">ردیف</th>
+            <th class="text-center" style="width: 12px;">ردیف</th>
             <th>
                 <div style="display: flex;align-items: center;justify-content: space-between;">
                     <span>اطلاعات فردی</span>
@@ -50,7 +54,13 @@
             <th>وضعیت پذیرش</th>
             <th>عملیات</th>
 
-            <th class="text-center">اطلاعات اعزام</th>
+            <th class="text-center">
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span>اطلاعات اعزام</span>
+                    <span>وضعیت</span>
+                </div>
+
+            </th>
             {% comment %} <th class="text-center">کد پذیرش</th> {% endcomment %}
             <th>
                 <div style="display: flex;align-items: center;justify-content: space-between;">
@@ -121,7 +131,7 @@
                         <a href="{% url 'get_sarbaz' pk=s.National_Code %}" class="btn btn-default">ثبت پذیرش</a>
                     {% endif %}
                     <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">ساتر</a>
-                    <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">معرفی گردان</a>
+                    <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">معرفی به گردان</a>
                 </div>
                 <hr style="margin: 1px;"/>
                 <div class="btn-group">
@@ -146,8 +156,34 @@
                 </div>
 
             </td>
+            <td class="text-center" style="">
+                    <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                        <span>{{ s.status_type|default:'' }}</span>
+                        <span>ثبت : {{ s.date_improt_type|default:''}}</span>
+                    </div>
+              
+                    <div style="font-size: 11px; display: flex;align-items: center;justify-content: space-between;color: gray;">
+                        <span>اعزام : {{ s.Date_of_dispatch|default:''}}</span>
+                        {% if s.Renewal_of_the_previous_period %}
+                            <span class="label label-warning">تجدید دوره قبل</span>
+                        {% endif %}
+                    </div>
+                    <div style="display: flex;align-items: center;justify-content: start;color: gray;gap: 2px;flex-wrap: wrap;">
+                        <span class="label label-outline label-default">{{ s.physical_condition}}</span>
+                        {% if s.Sufficiency_of_mobilization %}
+                            <span class="label label-outline label-success">کفایت بسیج</span>
+                        {% endif %}
+                        {% if s.Previous_service_record %}
+                            <span class="label label-outline label-info">خدمت قبلی</span>
+                        {% endif %}
+                        {% if s.Amriye %}
+                            <span class="label label-outline label-purple">امریه دارد</span>
+                        {% endif %}
+                        
+                    </div>
+            </td>
 
-            <td class="text-center" style="font-size: 14px;">{{ s.status_type|default:'' }}</td>
+            
             <td>
                 <div style="display: flex;align-items: center;justify-content: space-between;">
                     {% if s.Gordan %}<span style="font-size: 11px;">{{ s.Gordan.name }}</span>

@@ -63,7 +63,7 @@ class Soldier(models.Model):
     garargah_sazandegi_khatam = models.BooleanField(default=False, verbose_name='قرارگاه سازندگی خاتم', null=True, blank=True)
     Amriye_organization = models.CharField(max_length=250, verbose_name='سازمان امریه', null=True, blank=True)
     
-    
+     
     Sufficiency_of_mobilization = models.BooleanField(default=False, verbose_name='کفایت بسیج', blank=True, null=True)
     Sufficiency_of_mobilization_document = models.ImageField(
         upload_to=mobilization_upload_path,
