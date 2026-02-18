@@ -35,13 +35,9 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-header with-border">
-                <h4 class="box-title">فهرست پذیرش اولیه فراگیران</h4>
-            </div>
             <div class="box-body">
                 <form method="GET">
                     <div class="row">
-                        
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="acceptance_status">وضعیت پذیرش</label>
@@ -121,22 +117,19 @@
                         </div>
                     </div>
                     
-                    <div style="margin-top: 10px;display: flex;align-items: center;">
-                        <div style="flex:1;">
-                            نتیجه {{results|length}} نفر یافت شد!
+                    <div style="margin: 10px;display: flex;align-items: center;">
+                        <div style="flex:1;display: flex;a;inset: center;gap: 20px;">
+                            <span class="box-title">فهرست پذیرش اولیه فراگیران</span>
+                            <span>نتیجه {{results|length}} نفر یافت شد!</span>
                         </div>
                         <button type="submit" class="btn-search btn btn-primary" >جستجو</button>
                         <div style="flex: 1;"></div>
                     </div>
 
                 </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-body table-responsive " style="max-height: 60svh;overflow-y: auto;">
-                {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
+                <div class="table-responsive " style="max-height: 70svh;overflow-y: auto;">
+                    {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
+                </div>
             </div>
         </div>
     </div>
