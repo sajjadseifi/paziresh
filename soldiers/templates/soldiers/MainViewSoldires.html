@@ -3,8 +3,8 @@
 {% block main %}
     <style>
         .box {
-            border-radius: 20px;
-            padding:  10px 20px;
+            border-radius: 10px;
+            padding: 0 !important;
         }
         .box-title {
             font-weight: bold;
@@ -28,13 +28,14 @@
             border: 1px solid #ccc;
         }
         .btn-search {
-            padding: 8px 40px !important;
-            border-radius: 10px;
+            border-radius: 4px;
+            padding: 6px 20px;
         }
 </style>
+
 <div class="row">
     <div class="col-xs-12">
-        <div class="box">
+        <div class="box box-primary">
             <div class="box-body">
                 <form method="GET">
                     <div class="row">
@@ -117,19 +118,84 @@
                         </div>
                     </div>
                     
-                    <div style="margin: 10px;display: flex;align-items: center;">
-                        <div style="flex:1;display: flex;a;inset: center;gap: 20px;">
-                            <span class="box-title">فهرست پذیرش اولیه فراگیران</span>
-                            <span>نتیجه {{results|length}} نفر یافت شد!</span>
+                    <div style="margin: 10px;gap: 5px; display: flex;align-items: center;">
+                        <span class="box-title">فهرست پذیرش فراگیران</span>
+                        <div style="flex: 1;">
+                            {% include '../components/paziresh_soldiers_table_pagination.html' with submitSearch=True %}
                         </div>
-                        <button type="submit" class="btn-search btn btn-primary" >جستجو</button>
-                        <div style="flex: 1;"></div>
+   
+                        {% comment %} <button type="submit" class="btn-search btn btn-primary" >
+                            <i class="fa fa-search"></i>
+                            جستجوی
+                        </button> {% endcomment %}
+                    </div>
+                    <div style="display: flex;align-items: center;justify-content: end;gap: 4px;">
+                            <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
+                                دریافت خروجی اکسل <i class="fa fa-download"></i> : 
+                            </span>
+                            <div class="btn-group" style="flex-wrap: wrap; ">
+                                <a href="{% url 'download_paziresh' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست پذیرش شده‌ها">
+                                    پذیرش شده <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                                <a href="{% url 'download_shoro_dore' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست شروع دوره">
+                                    شروع دوره <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                                <a href="{% url 'download_hezer' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست حاضرها">
+                                    حاضر <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                                <a href="{% url 'export_to_excel_list_elame_hozor' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست اعلام حضور">
+                                    اعلام حضور <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                                <a href="{% url 'download_tatbikh' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست تطبیق نشده‌ها">
+                                    تطبیق نشده <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                                <a href="{% url 'download_yegan' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست یگان خدمتی حاضر">
+                                    یگان خدمتی حاضر <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                                <a href="{% url 'download_kafiat' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست خارج از دوره">
+                                    خارج از دوره <i class="fa fa-file-excel-o"></i>
+                                </a>
+
+                            </div>
+                            <div style="flex: 1;"></div>
+                            <!-- گروه خروجی اکسل -->
+                            <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
+                                دریافت خروجی اکسل <i class="fa fa-download"></i> : 
+                            </span>
+                            <div class="btn-group" >
+                                <button type="button" class="btn btn-success btn-outline " disabled title="خروجی اکسل کل داده‌ها">
+                                    <i class="fa fa-file-excel-o"></i> نتیجه فیلتر
+                                </button>
+                                <button type="button" class="btn btn-success btn-outline" disabled title="خروجی اکسل جدول فیلتر شده">
+                                    <i class="fa fa-file-excel-o"></i> جستجو در جدول
+                                </button>
+                            </div>
+                            <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
+                                خروجی برای چاپ <i class="fa fa-print"></i> : 
+                            </span>
+                            <!-- گروه چاپ -->
+                            <div class="btn-group" >
+                                <button type="button" class="btn btn-danger btn-outline" disabled title="چاپ کل داده‌ها">
+                                    <i class="fa fa-print"></i> نتیجه فیلتر
+                                </button>
+                                <button type="button" class="btn btn-danger btn-outline" disabled title="چاپ جدول فیلتر شده">
+                                    <i class="fa fa-print"></i> جستجو در جدول
+                                </button>
+                            </div>
                     </div>
 
+
                 </form>
-                <div class="table-responsive " style="max-height: 70svh;overflow-y: auto;">
-                    {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
-                </div>
+            </div>
+     
+            <div class="table-responsive " style="height: 60svh;overflow-y: auto;">
+                {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
             </div>
         </div>
     </div>

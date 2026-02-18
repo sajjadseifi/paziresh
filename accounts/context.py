@@ -132,6 +132,7 @@ def user_access_context(request):
     return {
         'permissions': permissions,
         'en':en,
+        'setting':en,
         'quick_tree':quick_tree,
         'quick_tree_base_url':'',
         'app':{

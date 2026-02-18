@@ -73,3 +73,4 @@ def safe_attr(obj, attr):
 @register.filter
 def strval(value):
     return str(value)
+

@@ -40,25 +40,18 @@
     font-size: 0.8em;
 }
 </style>
-
-   {% if soldier.has_been_accepted and soldier.willing_to_learn %}
-      <span class="badge badge-info-custom">{{ico|default:"🎓"}} درحال آموزش</span>
-   {% endif %}
    {% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
       <span class="badge badge-success-custom">{{ico|default:"✅"}} کفایت بسیج</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
+   {% elif soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
       <span class="badge badge-warning-custom">{{ico|default:"🏥"}} تجدید دوره کمیسیون</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
+   {% elif soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
       <span class="badge badge-primary-custom">{{ico|default:"🩺"}} کمیسیون پزشکی شروع دوره</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
+   {% elif soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
       <span class="badge badge-secondary-custom">{{ico|default:"🔄"}} تجدید دوره</span>
-   {% endif %}
-   {% if soldier.has_been_accepted and soldier.Previous_service_record %}
+   {% elif soldier.has_been_accepted and soldier.Previous_service_record %}
       <span class="badge badge-dark-custom">{{ico|default:"🛡️"}} خدمت قبلی</span>
-   {% endif %}
-   {% if soldier.has_been_accepted is False %}
+   {% elif soldier.has_been_accepted and soldier.willing_to_learn %}
+      <span class="badge badge-info-custom">{{ico|default:"🎓"}} درحال آموزش</span>
+   {% elif soldier.has_been_accepted is False %}
       <span class="badge badge-orange-custom">{{ico|default:"❌"}} پذیرش نشده</span>
    {% endif %}

@@ -18,7 +18,12 @@
          padding: 12px 16px;
          box-shadow: inset 0 -2px 0 rgba(255,255,255,0.1);
       }
-
+    .card-header-custom.card-header-danger {
+         background: linear-gradient(90deg, #7b00ff 0%, #5600b3 100%);
+    }
+    .card-header-custom.card-header-default {
+        background: linear-gradient(90deg, #6c6c6c 0%, #585858 100%);
+    }
       .card-header-custom h4,
       .card-header-custom h5 {
          margin: 0;
@@ -37,12 +42,12 @@
       overflow:hidden;
     }
     .card-custom {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     .card-body {
-      padding: 20px;
+      padding: 10px 20px;
     }
     .info-icon {
         margin-right: 8px;
@@ -132,6 +137,9 @@
   box-shadow: 0 0 25px rgba(0,0,0,0.3);
   overflow: hidden;
 }
+.rank-img {
+    width: 40px;
+}
 .rank-num{
    flex:1;
    display:flex;
@@ -206,10 +214,17 @@
 }
 
 /* متن داخل کارت و key-value */
+.card-body > p > strong {
+    color: gray;
+    font-size: 12px;
+    font-weight: lighter;
+}
 .card-body > p,
 .key-value {
     font-size: 12px;
     display: flex;
+    font-weight: bold;
+    color: black !important;
     align-items: center;
     justify-content: space-between;
     margin: 2px 0; /* فاصله اضافی رو حذف می‌کنیم */
@@ -226,6 +241,29 @@
         gap: 10px; /* فاصله کمتر و مناسب موبایل */
     }
 }
+.select2-results__option {
+    padding: 10px 12px;
+    line-height: 1.6;
+}
+
+.select2-results__option > div {
+    white-space: normal !important;
+}
+.select2-container--default .select2-selection--single {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.select2-selection__rendered {
+    line-height: normal !important;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.card-line {
+    margin: 6px 0;
+}
+
 </style>
 
 
@@ -278,23 +316,30 @@ document.addEventListener("DOMContentLoaded", function () {
 {% endblock %}
 
 {% block main %}
-<div class=" mt-4">
+<div >
     <div class="row">
         <!-- ستون راست: انتخاب سرباز و ابزارها -->
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card card-custom">
-                <div class="card-header card-header-custom ">
+                <div class="card-header card-header-default card-header-custom ">
                     <h5>انتخاب سرباز</h5> 👤
                 </div>
                 <div class="card-body">
                     <form method="get" >
                         <div class="form-group mb-3">
-                            <label for="code">سرباز مورد نظر را انتخاب کنید:</label>
                             <select id="code" name="code" class="form-control select2" onchange="this.form.submit()">
                                 <option value="">-- انتخاب کنید --</option>
                                 {% for s in soldiers %}
-                                    <option value="{{ s.National_Code }}" {% if soldier and soldier.National_Code == s.National_Code %}selected{% endif %}>
-                                        {{ s.family }} {{ s.name }} - {{ s.National_Code }}
+                                    <option 
+                                        value="{{ s.National_Code }}"
+                                        data-name="{{ s.name }}"
+                                        data-family="{{ s.family }}"
+                                        data-fathers_name="{{ s.fathers_name }}"
+                                        data-national="{{ s.National_Code }}"
+                                        data-status="{% include 'components/soldier_status_text.html' with soldier=s %}"
+                                        {% if soldier and soldier.National_Code == s.National_Code %}selected{% endif %}
+                                    >
+                                        {{ s.name }} {{ s.family }}
                                     </option>
                                 {% endfor %}
                             </select>
@@ -330,7 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             {% if permissions.dep.niru_ensani and soldier %}
                <div class="card card-custom">
-                <div class="card-header card-header-custom ">
+                <div class="card-header card-header-default card-header-custom ">
                     <h5>عملیات سرباز</h5> ⚙️
                 </div>
 <div class="card-body" style="padding:15px;">
@@ -420,7 +465,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
 
         <!-- ستون چپ: جزئیات کامل -->
-        <div class="col-md-8 scroll-content">
+        <div class="col-md-9 scroll-content">
             {% if message %}
                            <div class="card card-custom">
                                  <div class="card-header card-header-custom ">
@@ -433,35 +478,14 @@ document.addEventListener("DOMContentLoaded", function () {
             {% elif soldier %}
                 <!-- کارت مشخصات فردی -->
                  <div class="row"> 
-                        <div class="col-md-8">
+                        <div class="col-md-4"> 
+
                             <div class="card card-custom">
-                                <div class="card-header card-header-custom ">
-                                    <h4>مشخصات فردی</h4>
-                                    <i class="fa fa fa-id-card"></i>
-                                </div>
-                                <div class="card-body col-2">
-                                    <p><strong>نام:</strong> {{ soldier.name }}</p>
-                                    <p><strong>نام پدر:</strong> {{ soldier.fathers_name }}</p>
-                                    <p><strong>محل تولد:</strong> {{ soldier.place_of_birth }}</p>
-                                    <p><strong>شماره موبایل:</strong> {{ soldier.phone_number }}</p>
-                                    <p><strong>مذهب:</strong> {{ soldier.Religion }}</p>
-                                    <p><strong>قد:</strong> {{ soldier.height }} سانتی‌متر</p>
-                                    <p><strong>شماره بستگان:</strong> {{ soldier.Relative_to_inclusive_number }}</p>
-                                    <p><strong>نام خانوادگی:</strong> {{ soldier.family }}</p>
-                                    <p><strong>کد ملی:</strong> {{ soldier.National_Code }}</p>
-                                    <p><strong>تاریخ تولد:</strong> {{ soldier.Date_of_birth }}</p>
-                                    <p><strong>تاهل:</strong> {{ soldier.marital_status }}</p>
-                                    <p><strong>وزن:</strong> {{ soldier.Weight }} کیلوگرم</p>
-                                    <p class="full"><strong>شماره حساب:</strong> {{ soldier.bank_number }}</p>
-                                    <p class="full"><strong>آدرس:</strong> {{ soldier.Address }}</p>
-                                </div>
-                            </div>    
-                            <div class="card card-custom">
-                                <div class="card-header card-header-custom text-center">
+                                <div class="card-header card-header-danger card-header-custom text-center">
                                     <h4>پذیرش فراگیر</h4> 
                                     <i class="fa fa-plus-circle"></i>
                                 </div>
-                                <div class="card-body col-2">
+                                <div class="card-body ">
                                         <p><strong> تاریخ پذیرش:</strong>  {{ soldier.tarikh_paziresh.date.year }}/{{ soldier.tarikh_paziresh.date.month }}/{{ soldier.tarikh_paziresh.date.day }}</p>
                                         <p></i><strong> زمان پذیرش:</strong> {{ soldier.tarikh_paziresh.time }}</p>
                                         <p><strong> پذیرش شده:</strong>
@@ -472,6 +496,71 @@ document.addEventListener("DOMContentLoaded", function () {
                             </div>
                             <div class="card card-custom">
                                 <div class="card-header card-header-custom ">
+                                    <h4>اطلاعات تحصیلی و پزشکی</h4>
+                                        <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <div class="card-body ">
+                                    <p><strong>مقطع تحصیلی:</strong>  <span class="label label-default label-outline">{{ soldier.Grade }}</span></p>
+                                    <p><strong>وضعیت جسمانی:</strong> <span class="label label-default label-outline">{{ soldier.physical_condition }}</span></p>
+                                    <p><strong>رشته تحصیلی:</strong> {{ soldier.Study_group }}</p>
+                                    <hr class="card-line"/>
+                                    <p><strong>دفترچه بیمه:</strong> </p>
+                                    <p><strong>نوع بیماری:</strong>  </p>
+                                </div>
+                            </div>
+                            <div class="card card-custom">
+                                <div class="card-header card-header-custom ">
+                                    <h4>اطلاعات سازمانی</h4> ⚔️
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>تاریخ اعزام:</strong> {{ soldier.Date_of_dispatch }}</p>
+                                    <p><strong>وضعیت امریه:</strong> {% if soldier.Amriye %}بله{% else %}خیر{% endif %}</p>
+                                    <p><strong>سازمان امریه:</strong> {{ soldier.Amriye_organization }}</p>
+                                    <hr class="card-line"/>
+                                    <p><strong>گردان اولیه:</strong> {{ soldier.Gordan.name }}</p>
+                                    <p><strong>گروهان اولیه:</strong> {{ soldier.battalion_group.name }}</p>
+                                    <p><strong>کد اولیه:</strong> {{ soldier.code_gorhan }}</p>
+                                    <hr class="card-line"/>
+                                    <p><strong>کمیسیون پزشکی:</strong> {% if soldier.the_medical_commission %}بله{% else %}خیر{% endif %}</p>
+                                    <p><strong>کفایت بسیج:</strong> {% if soldier.Sufficiency_of_mobilization %}بله{% else %}خیر{% endif %}</p>
+                                    <p><strong>جذب موفق:</strong> {% if soldier.Successful_recruitment %}بله{% else %}خیر{% endif %}</p>
+                                    <hr class="card-line"/>
+                                    <p><strong>گردان نهایی:</strong> {{ soldier.t_Gordan.name }}</p>
+                                    <p><strong>گروهان نهایی:</strong> {{ soldier.t_battalion_group.name }}</p>
+                                    <p><strong>کد سازمانی نهایی:</strong> {{ soldier.code_gorhan_nahai }}</p>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card card-custom">
+                                <div class="card-header card-header-custom ">
+                                    <h4>مشخصات فردی</h4>
+                                    <i class="fa fa fa-id-card"></i>
+                                </div>
+                                <div class="card-body col-2">
+                                    <p><strong>نام:</strong> {{ soldier.name }}</p>
+                                    <p><strong>نام خانوادگی:</strong> {{ soldier.family }}</p>
+                                    <p><strong>کد ملی:</strong> {{ soldier.National_Code }}</p>
+                                    <p><strong>نام پدر:</strong> {{ soldier.fathers_name }}</p>
+                                    <p><strong>مذهب:</strong> {{ soldier.Religion }}</p>
+                                    <p><strong>تاهل:</strong> {{ soldier.marital_status }}</p>
+                                    <hr class="full card-line"/>
+                                    <p><strong>تاریخ تولد:</strong> {{ soldier.Date_of_birth }}</p>
+                                    <p><strong>محل تولد:</strong> {{ soldier.place_of_birth }}</p>
+                                    <p><strong>قد:</strong> {{ soldier.height }} سانتی‌متر</p>
+                                    <p><strong>وزن:</strong> {{ soldier.Weight }} کیلوگرم</p>
+                                    <hr class="full card-line"/>
+                                    <p><strong>شماره موبایل:</strong> {{ soldier.phone_number }}</p>
+                                    <p><strong>شماره بستگان:</strong> {{ soldier.Relative_to_inclusive_number }}</p>
+                                    <p class="full"><strong>شماره حساب:</strong> {{ soldier.bank_number }}</p>
+                                    <p class="full"><strong>آدرس:</strong> {{ soldier.Address }}</p>
+                                </div>
+                            </div>    
+
+                            <div class="card card-custom">
+                                <div class="card-header card-header-custom ">
                                     <h4 style="flex: 1;">یگان بکارگیرنده </h4>
                                     <span style="margin: 0 10px;display: inline-block;" class="badge {% if soldier.IsUnit %}badge-success-custom{% else %}badge-warning-custom{% endif %}">
                                         {% if soldier.IsUnit %}تطبیق شده ✅{% else %}تطبیق نشده ❌{% endif %}
@@ -480,130 +569,53 @@ document.addEventListener("DOMContentLoaded", function () {
                                 </div>
                                 <div class="card-body">
                                     <p><strong>یگان خدمتی:</strong> {{ soldier.unit_name }}</p>
-                                    <p><strong>نوع یگان:</strong> {{ soldier.unit_type }}</p>
                                     <p><strong>نام اصلی یگان:</strong> {{ soldier.yegan_name }}</p>
+                                    <p><strong>نوع یگان:</strong> {{ soldier.unit_type }}</p>
+                                    <hr class="card-line"/>
                                     <p><strong>آدرس یگان:</strong> {{ soldier.unit_address }}</p>
                                     <p><strong>استان:</strong> {{ soldier.unit_province }}</p>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4"> 
-                            <!-- کارت تحصیلی و پزشکی -->
-                            <div class="card card-custom">
-                                    <div class="card-header card-header-custom ">
-                                        <h4>اطلاعات تحصیلی و پزشکی</h4>
-                                            <i class="fa fa-graduation-cap"></i>
-                                    </div>
-                                    <div class="card-body ">
-                                        <p><strong>مقطع تحصیلی:</strong> {{ soldier.Grade }}</p>
-                                        <p><strong>وضعیت جسمانی:</strong> {{ soldier.physical_condition }}</p>
-                                        <p><strong>دفترچه بیمه:</strong> {{ soldier.health_insurance_card }}</p>
-                                        <p><strong>رشته تحصیلی:</strong> {{ soldier.Study_group }}</p>
-                                        <p><strong>نوع بیماری:</strong> {{ soldier.Type_of_disease }}</p>
-                                    </div>
-                            </div>
-                            <div class="card card-custom">
-                                <div class="card-header card-header-custom ">
-                                    <h4>اطلاعات خدمت سربازی</h4> ⚔️
-                                </div>
-                                <div class="card-body">
-                                    <p><strong>تاریخ اعزام:</strong> {{ soldier.Date_of_dispatch }}</p>
-                                    <p><strong>وضعیت امریه:</strong> {% if soldier.Amriye %}بله{% else %}خیر{% endif %}</p>
-                                    <p><strong>سازمان امریه:</strong> {{ soldier.Amriye_organization }}</p>
-                                    <p><strong>گردان اولیه:</strong> {{ soldier.Gordan.name }}</p>
-                                    <p><strong>گروهان اولیه:</strong> {{ soldier.battalion_group.name }}</p>
-                                    <p><strong>کمیسیون پزشکی:</strong> {% if soldier.the_medical_commission %}بله{% else %}خیر{% endif %}</p>
-                                    <p><strong>کفایت بسیج:</strong> {% if soldier.Sufficiency_of_mobilization %}بله{% else %}خیر{% endif %}</p>
-                                    <p><strong>جذب موفق:</strong> {% if soldier.Successful_recruitment %}بله{% else %}خیر{% endif %}</p>
-                                    <p><strong>گردان نهایی:</strong> {{ soldier.t_Gordan.name }}</p>
-                                    <p><strong>گروهان نهایی:</strong> {{ soldier.t_battalion_group.name }}</p>
-                                    <p><strong>کد سازمانی نهایی:</strong> {{ soldier.code_gorhan_nahai }}</p>
-                                </div>
-                            </div>
-                          
-
-                        </div>
-                        <div class="col-md-12">
-
-                            <!-- کارت اطلاعات درجات -->
+                                                        <!-- کارت اطلاعات درجات -->
                             <div class="card card-custom">
                                 <div class="card-header card-header-custom text-center">
-                                <h4>اطلاعات درجه</h4> 🎖️ 
+                                    <h4>اطلاعات درجه</h4> 🎖️ 
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            {% if request.user.is_staff %}
-                                                <p><strong>انضباط:</strong> {{ soldier.discipline_score }}</p>
-                                                <p><strong>فعالیت در گردان:</strong> {{ soldier.battalion_activity }}</p>
-                                                <p><strong>نمونه گردان:</strong>{% if soldier.battalion_sample %} بله{% else %} خیر{% endif %}</p>
-                                                <p><strong>سابقه بسیج فعال (ماه):</strong> {{ soldier.basij_experience }}</p>
-                                                <p><strong>سابقه عضو شورای پایگاه (ماه):</strong> {{ soldier.council_experience }}</p>
-                                                <p><strong>کفایت بسیج:</strong> {{ soldier.basij_efficiency }}</p>
-                                                <p><strong>نمره عقیدتی:</strong> {{ soldier.ideological_score }}</p>
-                                                <p><strong>نمره میدان تیر:</strong> {{ soldier.shooting_score }}</p>
-                                                <p><strong>سه نفر برتر:</strong> {{ soldier.top_three }}</p>
-                                                <p><strong>نمره نهایی:</strong> {{ soldier.total_score }}</p>
-                                            {% endif %}
-                                            <p><strong>نوع درجه:</strong> {{ soldier.rank }}</p>
-                                        </div>
-                                        
-                                        <div class="col-md-6">
-                                            {% if request.user.is_staff %}
-                                                <p><strong>حافظ قرآن (جزء):</strong> {{ soldier.quran_memorization }}</p>
-                                                <p><strong>حافظ نهج البلاغه:</strong> {% if soldier.nahj_memorization %} بله {% else %} خیر {% endif %}</p>
-                                                <p><strong>حافظ صحیفه سجادیه:</strong> {% if soldier.sajjadiya_memorization %} بله {% else %} خیر {% endif %}</p>
-                                                <p><strong>تعداد مقام جهانی:</strong> {{ soldier.global_awards }}</p>
-                                                <p><strong>تعداد مقام کشوری:</strong> {{ soldier.national_awards }}</p>
-                                                <p><strong>تعداد مقام استانی:</strong> {{ soldier.provincial_awards }}</p>
-                                                <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
-                                                <p><strong>تعداد تالیفات:</strong> {{ soldier.publications }}</p>
-                                            {% endif %}
-                                                <p>
-                                                <strong>درجه:</strong> 
-                                                {% if soldier.rank == 'سرباز' %}
-                                                    <img src="{% static 'img/rank/1.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
-                                                        style="width: 40px">
-                                                {% elif soldier.rank == 'سرباز دوم' %}
-                                                    <img src="{% static 'img/rank/2.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
-                                                        style="width: 40px">
-                                                {% elif soldier.rank == 'سرباز یکم' %}
-                                                    <img src="{% static 'img/rank/3.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
-                                                        style="width: 40px">
-                                                {% elif soldier.rank == 'رزمیار' %}
-                                                    <img src="{% static 'img/rank/4.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
-                                                        style="width: 40px">
-                                                {% elif soldier.rank == 'رزم‌آور سوم' %}
-                                                    <img src="{% static 'img/rank/5.png' %}" alt="{{ soldier.rank }}"
-                                                        class="img-fluid" style="width: 40px">
-                                                {% elif soldier.rank == 'رزم‌آور دوم' %}
-                                                    <img src="{% static 'img/rank/6.png' %}" alt="{{ soldier.rank }}"
-                                                        class="img-fluid" style="width: 40px">
-                                                {% elif soldier.rank == 'رزم‌آور یکم' %}
-                                                    <img src="{% static 'img/rank/7.png' %}" alt="{{ soldier.rank }}"
-                                                        class="img-fluid" style="width: 40px">
-                                                {% elif soldier.rank == 'رزمدار دوم' %}
-                                                    <img src="{% static 'img/rank/8.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
-                                                        style="width: 40px">
-                                                {% elif soldier.rank == 'رزمدار یکم' %}
-                                                    <img src="{% static 'img/rank/9.png' %}" alt="{{ soldier.rank }}" class="img-fluid"
-                                                        style="width: 40px">
-                                                {% elif soldier.rank == 'ستوان سوم' %}
-                                                    <img src="{% static 'img/rank/10.png' %}" alt="{{ soldier.rank }}"
-                                                        class="img-fluid" style="width: 40px">
-                                                {% elif soldier.rank == 'ستوان دوم' %}
-                                                    <img src="{% static 'img/rank/11.png' %}" alt="{{ soldier.rank }}"
-                                                        class="img-fluid" style="width: 40px">
-                                                {% elif soldier.rank == 'ستوان یکم' %}
-                                                    <img src="{% static 'img/rank/12.png' %}" alt="{{ soldier.rank }}"
-                                                        class="img-fluid" style="width: 40px">
-                                                {% endif %}
-                                            </p>
-
-                                        </div>
-                                    </div>
+                                <div class="card-body col-2">
+                                        {% if request.user.is_staff %}
+                                            <p><strong>انضباط:</strong> {{ soldier.discipline_score }}</p>
+                                            <p><strong>فعالیت در گردان:</strong> {{ soldier.battalion_activity }}</p>
+                                            <p><strong>نمونه گردان:</strong>{% if soldier.battalion_sample %} بله{% else %} خیر{% endif %}</p>
+                                            <p><strong>سابقه بسیج فعال (ماه):</strong> {{ soldier.basij_experience }}</p>
+                                            <p><strong>سابقه عضو شورای پایگاه (ماه):</strong> {{ soldier.council_experience }}</p>
+                                            <p><strong>کفایت بسیج:</strong> {{ soldier.basij_efficiency }}</p>
+                                            <p><strong>نمره عقیدتی:</strong> {{ soldier.ideological_score }}</p>
+                                            <p><strong>نمره میدان تیر:</strong> {{ soldier.shooting_score }}</p>
+                                            <p><strong>سه نفر برتر:</strong> {{ soldier.top_three }}</p>
+                                            <p><strong>نمره نهایی:</strong> {{ soldier.total_score }}</p>
+                                        {% endif %}
+                                        <p><strong>نوع درجه:</strong> {{ soldier.rank }}</p>
+                                    
+                                        {% if request.user.is_staff %}
+                                            <p><strong>حافظ قرآن (جزء):</strong> {{ soldier.quran_memorization }}</p>
+                                            <p><strong>حافظ نهج البلاغه:</strong> {% if soldier.nahj_memorization %} بله {% else %} خیر {% endif %}</p>
+                                            <p><strong>حافظ صحیفه سجادیه:</strong> {% if soldier.sajjadiya_memorization %} بله {% else %} خیر {% endif %}</p>
+                                            <p><strong>تعداد مقام جهانی:</strong> {{ soldier.global_awards }}</p>
+                                            <p><strong>تعداد مقام کشوری:</strong> {{ soldier.national_awards }}</p>
+                                            <p><strong>تعداد مقام استانی:</strong> {{ soldier.provincial_awards }}</p>
+                                            <p><strong>تعداد مقالات جهانی:</strong> {{ soldier.global_articles }}</p>
+                                            <p><strong>تعداد تالیفات:</strong> {{ soldier.publications }}</p>
+                                        {% endif %}
+                                        <p>
+                                            <strong>درجه:</strong> 
+                                            {% include "components/soldier_rank_img.html" with soldier=soldier %}
+                                        </p>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="col-md-12">
+
 
                             <!-- کارت نامه‌ها -->
                             {% if normalLetter %}
@@ -701,59 +713,85 @@ document.addEventListener("DOMContentLoaded", function () {
 
 {% block footer %}
 <script>
-  $(document).ready(function(){
-   $('.select2').select2({
-         placeholder: 'انتخاب سرباز',
-         width:'100%',
-      });
-   });
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const oldInput = document.getElementById("old_rank");
-    const newInput = document.getElementById("new_rank");
-    const rankItems = document.querySelectorAll(".rank-item[data-access='True']");
-    const preview = document.getElementById("rank-preview");
-    const saveBtn = document.getElementById("saveRankBtn");
+    $(document).ready(function(){
+        function formatSoldier(option) {
+            if (!option.id) {
+                return option.text;
+            }
 
-    let selectedRank = null;
+            var name = $(option.element).data('name');
+            var family = $(option.element).data('family');
+            var fathers_name = $(option.element).data('fathers_name');
+            var national = $(option.element).data('national');
+            var status = $(option.element).data('status');
 
-    function selectRank(element) {
-        rankItems.forEach(i => i.classList.remove("active"));
-        element.classList.add("active");
-        selectedRank = element.getAttribute("data-rank-name");
-        const img = element.querySelector("img").getAttribute("src");
-        preview.style.display = "block";
-        newInput.value = selectedRank;
-    }
-
-    rankItems.forEach(item => {
-        item.addEventListener("click", function() {
-            if (this.style.pointerEvents === "none") return;
-            selectRank(this);
-        });
-    });
-
-$('#rankModal').on('shown.bs.modal', function () {
-    const currentRank = oldInput.value; // مقدار از input گرفته میشه
-    let matched = false;
-    rankItems.forEach(item => {
-       const itemRankName = item.getAttribute("data-rank-name")
-       console.log({currentRank,itemRankName})
-        if (itemRankName === currentRank) {
-            selectRank(item);
-            matched = true;
+            return $(`
+                <div style="text-align:right">
+                    <div style="font-weight:600">
+                        ${name} ${family} فرزند ${fathers_name}
+                    </div>
+                    <div style="font-size:12px;">
+                        کدملی : ${national} | وضعیت : ${status}
+                    </div>
+                </div>
+            `);
         }
+
+        $('.select2').select2({
+            placeholder: 'انتخاب سرباز',
+            width: '100%',
+            templateResult: formatSoldier,
+            templateSelection: formatSoldier,
+            escapeMarkup: function (markup) { return markup; }
+        });
+
     });
 
-    if (!matched) {
-        preview.style.display = "none";
-        newInput.value = "";
-    }
-});
+    document.addEventListener("DOMContentLoaded", function () {
+        const oldInput = document.getElementById("old_rank");
+        const newInput = document.getElementById("new_rank");
+        const rankItems = document.querySelectorAll(".rank-item[data-access='True']");
+        const preview = document.getElementById("rank-preview");
+        const saveBtn = document.getElementById("saveRankBtn");
 
- 
-});
+        let selectedRank = null;
+
+        function selectRank(element) {
+            rankItems.forEach(i => i.classList.remove("active"));
+            element.classList.add("active");
+            selectedRank = element.getAttribute("data-rank-name");
+            const img = element.querySelector("img").getAttribute("src");
+            preview.style.display = "block";
+            newInput.value = selectedRank;
+        }
+
+        rankItems.forEach(item => {
+            item.addEventListener("click", function() {
+                if (this.style.pointerEvents === "none") return;
+                selectRank(this);
+            });
+        });
+
+        $('#rankModal').on('shown.bs.modal', function () {
+            const currentRank = oldInput.value; // مقدار از input گرفته میشه
+            let matched = false;
+            rankItems.forEach(item => {
+            const itemRankName = item.getAttribute("data-rank-name")
+            console.log({currentRank,itemRankName})
+                if (itemRankName === currentRank) {
+                    selectRank(item);
+                    matched = true;
+                }
+            });
+
+            if (!matched) {
+                preview.style.display = "none";
+                newInput.value = "";
+            }
+        });
+
+    
+    });
 </script>
 
 

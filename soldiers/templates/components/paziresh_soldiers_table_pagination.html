@@ -1,0 +1,178 @@
+<div id="pagination-wrapper">
+    <div id="search-container">
+        <label>جستجو در جدول: <input type="text" id="table-search" placeholder="عبارت توصیفی..."></label>
+    </div>
+    {% if submitSearch %}
+        <button type="submit" class="btn-search btn btn-primary" >
+            جستجوی در فیلتر
+            <i class="fa fa-search"></i>
+        </button>
+    {% endif %}
+    <div id="page-info" class="badge"></div>
+
+    <div style="flex: 1;"></div>
+    <div id="client-pagination"></div>
+</div>
+
+<style>
+/* Wrapper کنترل‌ها */
+#pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 12px;
+}
+
+/* Search */
+#search-container label {
+    margin: 0;
+    padding: 4px 8px;
+    background-color: #f4f4f4;
+    border-radius: 4px;
+    font-size: 12px;
+}
+#search-container input {
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    outline: none;
+    border: 1px solid #aaa;
+    font-weight: normal;
+    min-width: 200px;
+}
+
+/* Info badge */
+#page-info {
+    font-size: 14px;
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding:  8px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Pagination */
+#client-pagination {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+#client-pagination button {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    min-width: 35px;
+}
+
+#client-pagination button.active {
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+}
+
+#client-pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#client-pagination span.ellipsis {
+    padding: 4px 6px;
+    min-width: 20px;
+    text-align: center;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const rowsPerPage = 20;
+    const table = document.querySelector("#paziresh_soldiers_table");
+    const tbody = table.querySelector(".box-items");
+    const loadingRow = tbody.querySelector(".box-loading");
+    const allRows = Array.from(tbody.querySelectorAll(".box-item"));
+    let filteredRows = [...allRows];
+    let currentPage = 1;
+
+    const paginationContainer = document.getElementById("client-pagination");
+    const pageInfo = document.getElementById("page-info");
+    const searchInput = document.getElementById("table-search");
+
+    function createPageButton(label, page, isActive=false, disabled=false) {
+        const btn = document.createElement("button");
+        btn.innerText = label;
+        btn.dataset.page = page;
+        if (isActive) btn.classList.add("active");
+        btn.disabled = disabled;
+        return btn;
+    }
+
+    function createEllipsis() {
+        const span = document.createElement("span");
+        span.className = "ellipsis";
+        span.innerText = "...";
+        return span;
+    }
+
+    function renderPage(page) {
+        if (loadingRow) loadingRow.remove();
+
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        allRows.forEach(row => row.style.display = "none");
+        filteredRows.slice(start, end).forEach(row => row.style.display = "");
+
+        pageInfo.innerText = `نمایش ردیف ${start+1} تا ${Math.min(end, filteredRows.length)} از ${filteredRows.length} نتیجه یافت شده`;
+
+        renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+        paginationContainer.innerHTML = "";
+
+        const prevBtn = createPageButton("« قبلی", "prev", false, currentPage === 1);
+        const nextBtn = createPageButton("بعدی »", "next", false, currentPage === totalPages);
+
+        paginationContainer.appendChild(prevBtn);
+
+        const pageButtons = [];
+        for (let i = 1; i <= totalPages; i++) {
+            if (i <= 3 || i > totalPages - 3 || Math.abs(i - currentPage) <= 1) {
+                pageButtons.push(createPageButton(i, i, i === currentPage));
+            } else if ((i === 4 && currentPage > 5) || (i === totalPages - 3 && currentPage < totalPages - 4)) {
+                pageButtons.push(createEllipsis());
+            }
+        }
+
+        pageButtons.forEach(btn => paginationContainer.appendChild(btn));
+        paginationContainer.appendChild(nextBtn);
+
+        // Event delegation
+        paginationContainer.querySelectorAll("button").forEach(btn => {
+            btn.onclick = () => {
+                if (btn.dataset.page === "prev" && currentPage > 1) currentPage--;
+                else if (btn.dataset.page === "next" && currentPage < totalPages) currentPage++;
+                else if (!isNaN(btn.dataset.page)) currentPage = parseInt(btn.dataset.page);
+                renderPage(currentPage);
+            };
+        });
+    }
+
+    // جستجو
+    searchInput.addEventListener("input", function() {
+        const term = this.value.trim().toLowerCase();
+        filteredRows = allRows.filter(row => row.innerText.toLowerCase().includes(term));
+        currentPage = 1;
+        renderPage(currentPage);
+    });
+
+    renderPage(currentPage);
+});
+</script>

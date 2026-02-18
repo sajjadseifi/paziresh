@@ -1,0 +1,15 @@
+{% if soldier.has_been_accepted and soldier.Sufficiency_of_mobilization %}
+    کفایت بسیج
+{% elif soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission %}
+    تجدید دوره کمیسیون
+{% elif soldier.has_been_accepted and soldier.IsCheckout is False and soldier.the_medical_commission %}
+    کمیسیون پزشکی شروع دوره
+{% elif soldier.has_been_accepted and soldier.IsCheckout and soldier.the_medical_commission is False %}
+    تجدید دوره
+{% elif soldier.has_been_accepted and soldier.Previous_service_record %}
+    خدمت قبلی
+{% elif soldier.has_been_accepted and soldier.willing_to_learn %}
+    درحال آموزش
+{% elif soldier.has_been_accepted is False %}
+    پذیرش نشده
+{% endif %}

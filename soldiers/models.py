@@ -7,6 +7,8 @@ from django.utils import timezone
 from ensaniapp_settings.models import mobilization_upload_path,EnsaniSettings
 from .constants import prolems_province_unit_list,PROBLEM_FIELDS,PROBLEM_LABELS,status_types
 from soldiers.utils import map_educational_level_to_grade,generate_grade_temp,educational_level_of_the_system_list,categorize_educational_level
+from django.templatetags.static import static
+from ensani_soldires_management.constatns import RANK_MAPPING
 
 
 class Soldier(models.Model):
@@ -315,6 +317,16 @@ class Soldier(models.Model):
             'physical_condition_date_Inspection_test'
         ])
 
+    @property
+    def rank_image_number(self):
+        return RANK_MAPPING.get(self.rank)
+
+    @property
+    def rank_image_url(self):
+        number = self.rank_image_number
+        if not number:
+            return None
+        return static(f"img/rank/{number}.png")
         
     class Meta:
         verbose_name = "سرباز"

@@ -4,7 +4,8 @@
     .table>thead>tr>th {
         padding: 12px 4px;
         font-size: 12px;
-        background-color: #efefef;
+        background-color: darkblue;
+        color: white;
     }
     .table>tbody>tr>td, 
     .table>tfoot>tr>td, 
@@ -13,6 +14,11 @@
         padding:4px ;
         
     }
+
+    .table > tbody > tr:nth-child(odd) {
+        background-color: #fafafa;
+    }
+
     .table-mini .btn.btn-default {
     } 
     .btn-group  {
@@ -36,14 +42,15 @@
         gap: 4px;
     }
     .label {
-        padding: 4px;
+        padding:3px 4px;
+        font-size: 11px;
+        margin: 2px;
     }
 
 </style>
-<table class="table-mini table table-hover">
+<table id="paziresh_soldiers_table" class="table-mini table table-hover">
     <thead>
         <tr>
-            {% comment %} <th class="text-center">کد داخلی</th> {% endcomment %}
             <th class="text-center" style="width: 12px;">ردیف</th>
             <th>
                 <div style="display: flex;align-items: center;justify-content: space-between;">
@@ -51,21 +58,23 @@
                     <span>کدملی</span>
                 </div>
             </th>
-            <th>وضعیت پذیرش</th>
+            <th>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span>وضعیت پذیرش</span>
+                    <span>کد پذیرش</span>
+                </div>
+            </th>
             <th>عملیات</th>
-
             <th class="text-center">
                 <div style="display: flex;align-items: center;justify-content: space-between;">
                     <span>اطلاعات اعزام</span>
-                    <span>وضعیت</span>
+                    <span>ثبت</span>
                 </div>
-
             </th>
-            {% comment %} <th class="text-center">کد پذیرش</th> {% endcomment %}
             <th>
                 <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>گردان اولیه</span>
-                    <span>گروهان اولیه</span>
+                    <span>موقعیت اولیه</span>
+                    <span>موقعیت سازماندهی</span>
                 </div>
             </th>
             <th>
@@ -77,89 +86,113 @@
 
         </tr>
     </thead>
-    <tbody>
+    <tbody class="box-items">
+    <tr class="box-loading">
+        <td colspan="20" style="text-align:center; padding:20px;">
+            در حال بارگذاری... <i class="fa fa-spinner fa-spin"></i>
+        </td>
+    </tr>
     {% for s in soldiers %}
-        <tr>
-            {% comment %} <td class="text-center">
-                <a 
-                    class="admin-link" 
-                    {% if request.user.is_staff %}
-                        target="_blank" 
-                        href="/admin/soldiers/soldier/{{s.pk}}/change/"
-                    {% endif %}                    
-                >                                            
-                    {% if request.user.is_staff %}
-                        <span class="arrow-link-icon" style="margin: 0;padding: 0;">
-                            <i class="fa fa-pencil-square" ></i>
-                        </span>
-                    {% endif %}                    
-                    <span>{{ s.pk }}</span>
-                </a>
-            </td> {% endcomment %}
-            <td class="text-center" style="padding: 20px;font-weight: bold;">{{forloop.counter}}</td>
-
-            <td style="background-color: #f4f4f4;">
+        <tr class="box-item" style="display: none;">
+            <td class="text-center" style="width: 12px;font-weight: bold;padding: 16px 0;">{{forloop.counter}}</td>
+            <td >
                 <strong style="font-weight: bold;">{{ s.name }} {{ s.family }}</strong>
                 <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
                     <span>فرزند {{s.fathers_name}}</span>
                     <button 
-                    onclick="onCopyToClipBoard('{{s.National_Code}}')"
-                    title="برای کپی کد ملی کلیک کنید."
-                    class="btn btn-default btn-xs">
-                        {{s.National_Code}}
+                        class="btn btn-default btn-xs"
+                        style="font-weight: bold;"
+                        onclick="onCopyToClipBoard('{{s.National_Code}}')"
+                        title="برای کپی کد ملی کلیک کنید."
+                    >
                         <i class="fa fa-copy"></i>
+                        {{s.National_Code}}
                     </button>
                 </div>
             </td>
             <td>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span style="font-size: 11px;">وضعیت</span>
-                    <span class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
-                        {% if s.has_been_accepted %}پذیرش شده{% else %}آماده پذیرش{% endif %}
-                    </span>
-                </div>
                 <div style="display: flex;align-items: center;justify-content: space-between; font-size: 11px;">
-                    <span style="color: gray;">کد پذیرش</span>
-                    <strong style="font-size: 12px;">{{ s.acceptance_code|default:'' }}</strong>
-                </div>
-            </td>
-            <td style="padding: 2px 4px;">
-                <div class="btn-group">
-                    {% if s.has_been_accepted %}
-                        <a href="" class="btn btn-default" disabled="True">ثبت پذیرش</a>
-                    {% else %}
-                        <a href="{% url 'get_sarbaz' pk=s.National_Code %}" class="btn btn-default">ثبت پذیرش</a>
+                    <span class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
+                        {% if s.has_been_accepted %}پذیرش شده ✅{% else %}پذیرش نشده ❌{% endif %}
+                    </span>
+                    <span style="flex: 1;"></span>
+                    {% if s.acceptance_code %}
+                        <button 
+                            style="font-size: 11px;font-weight: bold;"
+                            class="btn btn-default btn-xs"
+                            onclick="onCopyToClipBoard('{{s.acceptance_code}}')"
+                            title="برای کپی کد پذیرش کلیک کنید."
+                        >
+                            <i class="fa fa-copy"></i>
+                            {{ s.acceptance_code|default:'' }}
+                        </button>
                     {% endif %}
-                    <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">ساتر</a>
-                    <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">معرفی به گردان</a>
+
+                </div>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <div class="layout-sm">
+                        {% include "components/soldier_status.html" with soldier=s %}
+                    </div>
+                </div>       
+                
+            </td>
+            <td >
+                <div class="btn-group">
+                    <a class="btn btn-default" 
+                        {% if s.has_been_accepted %}
+                            disabled="True"
+                            href=""
+                        {% else %}
+                            href="{% url 'get_sarbaz' pk=s.National_Code %}"
+                        {% endif %}
+                    >
+                        ثبت پذیرش
+                        <i class="fa fa-plus"></i>
+                    </a>
+                    <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">
+                        ساتر
+                        <i class="fa fa-print"></i>
+                    </a>
+                    <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">
+                        معرفی به گردان
+                        <i class="fa fa-print"></i>
+                    </a>
                 </div>
                 <hr style="margin: 1px;"/>
                 <div class="btn-group">
-                    <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{s.National_Code}}" class="btn btn-default">مشاهده</a>
-                    {% if s.has_been_accepted %}
-                        <a href="{% url 'updatePaziresh' pk=s.National_Code %}" class="btn btn-default">ویرایش</a>
-                    {% else %}
-                        <a href="" class="btn btn-default" disabled="True">ویرایش</a>
-                    {% endif %}
+                    <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{s.National_Code}}" class="btn btn-default">
+                        مشاهده
+                        <i class="fa fa-eye" ></i>
+                    </a>
+                        <a 
+                            class="btn btn-default"
+                            {% if s.has_been_accepted %}
+                                disabled="True" href=""
+                            {% else %}
+                                href="{% url 'updatePaziresh' pk=s.National_Code %}" 
+                            {% endif %}
+                        >
+                            ویرایش
+                            <i class="fa fa-pencil" ></i>
+                        </a>
+
                     {% if request.user.is_staff %}
                     <a  
                         title="لینک ورود به صفحه تغییرات ادمین برای سرباز"
                         class="btn btn-default" 
                         target="_blank" href="/admin/soldiers/soldier/{{s.pk}}/change/"
                     >
-                        <span>ویرایش ادمین</span>
-                        <span class="arrow-link-icon" style="margin: 0;padding: 0;font-size: 10px;">
-                            <i class="fa fa-pencil-square" ></i>
-                        </span>
+                        <span>ویرایش در ادمین</span>
+                        <i class="fa fa-pencil-square" ></i>
                     </a>
                     {% endif %}  
                 </div>
 
             </td>
-            <td class="text-center" style="">
+            <td >
                     <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
-                        <span>{{ s.status_type|default:'' }}</span>
-                        <span>ثبت : {{ s.date_improt_type|default:''}}</span>
+                        <span>برگه : {{ s.status_type|default:'!' }}</span>
+                        <span>دیتا : {{ s.date_improt_type|default:'!'}}</span>
                     </div>
               
                     <div style="font-size: 11px; display: flex;align-items: center;justify-content: space-between;color: gray;">
@@ -169,7 +202,7 @@
                         {% endif %}
                     </div>
                     <div style="display: flex;align-items: center;justify-content: start;color: gray;gap: 2px;flex-wrap: wrap;">
-                        <span class="label label-outline label-default">{{ s.physical_condition}}</span>
+                        <span class="label label-outline label-default">سلامت : {{ s.physical_condition}}</span>
                         {% if s.Sufficiency_of_mobilization %}
                             <span class="label label-outline label-success">کفایت بسیج</span>
                         {% endif %}
@@ -185,40 +218,53 @@
 
             
             <td>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    {% if s.Gordan %}<span style="font-size: 11px;">{{ s.Gordan.name }}</span>
-                    {% elif s.has_been_accepted %}
-                        <span class="label label-danger">ندارد</span>
-                    {% endif %}
 
-                    {% if s.battalion_group %}
-                        <span style="font-size: 11px;">{{ s.battalion_group.name }}</span>
+                <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                    {% if s.Gordan %}<span style="">گردان : {{ s.Gordan.name }}</span>
                     {% elif s.has_been_accepted %}
-                        <span class="label label-danger">ندارد</span>
+                        <span class="label label-danger">گردان ندارد</span>
+                    {% endif %}
+                    {% if s.Gordan %}<span style="font-size: 11px;">گردان : {{ s.Gordan.name }}</span>
+                    {% elif s.has_been_accepted %}
+                        <span class="label label-danger">گردان ندارد</span>
+                    {% endif %}
+                </div>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    {% if s.battalion_group %}
+                        <span style="font-size: 11px;">گروهان : {{ s.battalion_group.name }}</span>
+                    {% elif s.has_been_accepted %}
+                        <span class="label label-danger">گروهان ندارد</span>
+                    {% endif %} 
+                    {% if s.battalion_group %}
+                        <span style="font-size: 11px;">گروهان : {{ s.battalion_group.name }}</span>
+                    {% elif s.has_been_accepted %}
+                        <span class="label label-danger">گروهان ندارد</span>
                     {% endif %} 
                 </div>
-
-                {% if s.battalion_group %}
-                    <div style="color: gray;font-size: 11px;">
-                        <span></span>
+                <div style="display: flex;align-items: center;justify-content: space-between;color: gray;font-size: 11px;font-size: 11px;">
+                        {% if s.battalion_group %}
                         <span style="color: gray;">کد : {{s.code_gorhan}}</span>
-                    </div>
-                {% endif %} 
+                    {% endif %} 
+                    {% if s.t_battalion_group %}
+                        <span style="color: gray;">کد نهایی : {{s.code_gorhan_nahai|default:""}}</span>
+                    {% endif %} 
+                </div>
             </td>
 
             <td style="font-size: 11px;">
                 <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>{{ s.Grade }} </span>
-                    <span class="">{{s.Study_group}}</span>
+                    <span>گروه تحصیلی : {{ s.Grade }}</span>
                 </div>
                 <div style="color: gray;">
-                    سامانه :  {{ s.educational_level_of_the_system }}
+                    سامانه جامع :  {{ s.educational_level_of_the_system }}
+                </div>
+                <div style="color: gray;">
+                    رشته تحصیلی :  {{ s.Study_group }}
                 </div>
             </td>
 
 
         </tr>
-
     {% endfor %}
     </tbody>
 </table>
