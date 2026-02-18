@@ -4,7 +4,7 @@ REM ======= Project directory (current location of this BAT file) =======
 SET PROJECT_DIR=%~dp0
 
 REM ======= Virtualenv path =======
-SET VENV_DIR=C:\repositroy\venvs\virtual
+SET VENV_DIR=C:\repositroy\venvs\prod-paziresh
 
 REM ======= Server settings =======
 SET PORT=8000

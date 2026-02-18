@@ -38,6 +38,10 @@
             justify-content: space-between;
             padding: 10px;
         }
+        .box {
+            border-radius: 20px;
+            padding:  10px 20px;
+        }
 </style>
     <div class="row">
         <div class="col-md-6">
@@ -72,9 +76,9 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-head">
-                <h4>فهرست اخرین پذیرش ها</h4>
-                <a class="btn  btn-primary" href="{% url 'MainViewSoldires'  %}">
-                    <span>لیست کامل سربازان</span>
+                <h4 style="font-weight: bold;">فهرست اخرین پذیرش ها</h4>
+                <a  href="{% url 'MainViewSoldires'  %}">
+                    <span>فهرست کامل سربازان</span>
                     <i class="fa fa-arrow-left"></i> 
                 </a>
             </div>

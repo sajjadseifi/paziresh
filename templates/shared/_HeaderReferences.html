@@ -25,3 +25,14 @@
             padding: 0 !important;
       }
 </style>
+
+<script>
+      const onCopyToClipBoard = async (text) => {
+            try {
+                  await navigator.clipboard.writeText(text);
+                  showToast(`متن "${text}" کپی شد`)
+            } catch (err) {
+                  showToast(`خطا در کپی متن!`,type="erorr")
+            }
+      };
+</script>

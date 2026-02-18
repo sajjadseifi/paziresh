@@ -1,17 +1,27 @@
 <style>
-    .table>tbody>tr>td, 
     .table>tbody>tr>th, 
-    .table>tfoot>tr>td, 
     .table>tfoot>tr>th, 
-    .table>thead>tr>td, 
     .table>thead>tr>th {
+        padding: 12px;
+        font-size: 12px;
+        background-color: #cfcfcf;
+    }
+    .table>tbody>tr>td, 
+    .table>tfoot>tr>td, 
+    .table>thead>tr>td 
+    {
         padding:4px ;
         
     }
-    
+    .table-mini .btn.btn-default {
+    } 
+    .btn-group  {
+        display: flex;
+    }
     .btn-group .btn {
-        font-size: 12px;
-        padding:4px 6px;
+        flex: 1;
+        font-size: 11px;
+        padding:4px;
 
     }
     .arrow-link-icon {
@@ -26,71 +36,151 @@
         gap: 4px;
     }
 </style>
-<table class="table table-hover">
+<table class="table-mini table table-hover">
     <thead>
         <tr>
-            <th class="text-center">کد داخلی</th>
-            <th class="text-center">برگه اعزام</th>
-            <th class="text-center">کد پذیرش</th>
-            <th style="background-color: #efefef;" class="text-center">کدملی</th>
-            <th style="background-color: #efefef;">نام</th>
-            <th style="background-color: #efefef;">نام خانوادگی</th>
-            <th >گردان اولیه</th>
-            <th>گروهان اولیه</th>
-            <th>تحصیلات</th>
-            <th>مقطع سامانه</th>
+            {% comment %} <th class="text-center">کد داخلی</th> {% endcomment %}
+            <th class="text-center">ردیف</th>
+            <th>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span>اطلاعات فردی</span>
+                    <span>کدملی</span>
+                </div>
+            </th>
             <th>وضعیت پذیرش</th>
             <th>عملیات</th>
+
+            <th class="text-center">اطلاعات اعزام</th>
+            {% comment %} <th class="text-center">کد پذیرش</th> {% endcomment %}
+            <th>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span>گردان اولیه</span>
+                    <span>گروهان اولیه</span>
+                </div>
+            </th>
+            <th>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span>تحصیلات </span>
+                    <span>رشته تحصیلی</span>
+                </div>
+            </th>
+
         </tr>
     </thead>
     <tbody>
     {% for s in soldiers %}
         <tr>
-            <td class="text-center">
+            {% comment %} <td class="text-center">
                 <a 
-                    title="لینک ورود به صفحه تغییرات ادمین برای سرباز"
                     class="admin-link" 
-                    target="_blank" 
-                    href="/admin/soldiers/soldier/{{s.pk}}/change/"
+                    {% if request.user.is_staff %}
+                        target="_blank" 
+                        href="/admin/soldiers/soldier/{{s.pk}}/change/"
+                    {% endif %}                    
                 >                                            
+                    {% if request.user.is_staff %}
+                        <span class="arrow-link-icon" style="margin: 0;padding: 0;">
+                            <i class="fa fa-pencil-square" ></i>
+                        </span>
+                    {% endif %}                    
                     <span>{{ s.pk }}</span>
-                    <span class="arrow-link-icon">
-                        <i class="fa fa-angle-left" ></i>
-                    </span>
                 </a>
-            </td>
-            <td class="text-center" style="font-size: 14px;">{{ s.status_type|default:'' }}</td>
-            <td class="text-center">{{ s.acceptance_code|default:'' }}</td>
-            <td style="font-weight: bold;background-color: #efefef;" class="text-center">{{ s.National_Code }}</td>
-            <td style="font-weight: bold;background-color: #efefef;">{{ s.name }}</td>
-            <td style="font-weight: bold;background-color: #efefef;">{{ s.family }}</td>
-    
-            {% if s.Gordan %}<th>{{ s.Gordan.name }}</th>{% else %}<th></th>{% endif %}
-            {% if s.Gordan %}<th>{{ s.battalion_group.name }}</th>{% else %}<th></th>{% endif %} 
-            <td style="font-size: 11px;">{{ s.Grade }}</td>
-            <td style="font-size: 11px;">{{ s.educational_level_of_the_system }}</td>
-            <td class="text-center">
-                <span class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
-                    {% if s.has_been_accepted %}شده{% else %}نشده{% endif %}
-                </span>
+            </td> {% endcomment %}
+            <td class="text-center" style="padding: 20px;font-weight: bold;">{{forloop.counter}}</td>
+
+            <td style="background-color: #f4f4f4;">
+                <strong style="font-weight: bold;">{{ s.name }} {{ s.family }}</strong>
+                <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                    <span>فرزند {{s.fathers_name}}</span>
+                    <button 
+                    onclick="onCopyToClipBoard('{{s.National_Code}}')"
+                    title="برای کپی کد ملی کلیک کنید."
+                    class="btn btn-default btn-xs">
+                        {{s.National_Code}}
+                        <i class="fa fa-copy"></i>
+                    </button>
+                </div>
             </td>
             <td>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span style="font-size: 11px;">وضعیت</span>
+                    <span class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
+                        {% if s.has_been_accepted %}پذیرش شده{% else %}آماده پذیرش{% endif %}
+                    </span>
+                </div>
+                <div style="display: flex;align-items: center;justify-content: space-between; font-size: 11px;">
+                    <span style="color: gray;">کد پذیرش</span>
+                    <strong style="font-size: 12px;">{{ s.acceptance_code|default:'' }}</strong>
+                </div>
+            </td>
+            <td style="padding: 2px 4px;">
                 <div class="btn-group">
                     {% if s.has_been_accepted %}
-                        <a href="{% url 'updatePaziresh' pk=s.National_Code %}" class="btn btn-default">ویرایش</a>
                         <a href="" class="btn btn-default" disabled="True">ثبت پذیرش</a>
                     {% else %}
-                        <a href="" class="btn btn-default" disabled="True">ویرایش</a>
                         <a href="{% url 'get_sarbaz' pk=s.National_Code %}" class="btn btn-default">ثبت پذیرش</a>
                     {% endif %}
                     <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">ساتر</a>
                     <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">معرفی گردان</a>
+                </div>
+                <hr style="margin: 1px;"/>
+                <div class="btn-group">
                     <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{s.National_Code}}" class="btn btn-default">مشاهده</a>
-                    {# <a href="{% url 'soldire_details' code=s.National_Code %}"class="btn btn-default">مشاهده</a> #}
-                    {# <a href="{% url 'SoldireProfile' %}" class="btn btn-default">پذیرش</a> #}
+                    {% if s.has_been_accepted %}
+                        <a href="{% url 'updatePaziresh' pk=s.National_Code %}" class="btn btn-default">ویرایش</a>
+                    {% else %}
+                        <a href="" class="btn btn-default" disabled="True">ویرایش</a>
+                    {% endif %}
+                    {% if request.user.is_staff %}
+                    <a  
+                        title="لینک ورود به صفحه تغییرات ادمین برای سرباز"
+                        class="btn btn-default" 
+                        target="_blank" href="/admin/soldiers/soldier/{{s.pk}}/change/"
+                    >
+                        <span>ویرایش ادمین</span>
+                        <span class="arrow-link-icon" style="margin: 0;padding: 0;font-size: 10px;">
+                            <i class="fa fa-pencil-square" ></i>
+                        </span>
+                    </a>
+                    {% endif %}  
                 </div>
 
             </td>
+
+            <td class="text-center" style="font-size: 14px;">{{ s.status_type|default:'' }}</td>
+            <td>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    {% if s.Gordan %}<span style="font-size: 11px;">{{ s.Gordan.name }}</span>
+                    {% elif s.has_been_accepted %}
+                        <span class="label label-danger">ندارد</span>
+                    {% endif %}
+
+                    {% if s.battalion_group %}
+                        <span style="font-size: 11px;">{{ s.battalion_group.name }}</span>
+                    {% elif s.has_been_accepted %}
+                        <span class="label label-danger">ندارد</span>
+                    {% endif %} 
+                </div>
+
+                {% if s.battalion_group %}
+                    <div style="color: gray;font-size: 11px;">
+                        <span></span>
+                        <span style="color: gray;">کد : {{s.code_gorhan}}</span>
+                    </div>
+                {% endif %} 
+            </td>
+
+            <td style="font-size: 11px;">
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+                    <span>{{ s.Grade }} </span>
+                    <span class="">{{s.Study_group}}</span>
+                </div>
+                <div style="color: gray;">
+                    سامانه :  {{ s.educational_level_of_the_system }}
+                </div>
+            </td>
+
+
         </tr>
 
     {% endfor %}

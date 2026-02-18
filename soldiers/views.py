@@ -65,7 +65,7 @@ def paziresh_code_meli(request, *args, **kwargs):
         code_meli = sarbaz_code_meli.cleaned_data.get('code_meli')
         return HttpResponseRedirect(reverse("get_sarbaz", args=[code_meli]))
 
-    soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:6]
+    soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:20]
     return render(request, 'soldiers/paziresh_idcode_view.html', context={
         'SarbazCodeMeli': sarbaz_code_meli,
         'soldiers':soldiers
@@ -370,23 +370,15 @@ class sabte_paziresh(LoginRequiredMixin, View):
         for iteam in physical_condition_list:
             if iteam[1] == soldire.physical_condition:
                 pc = iteam[0]
-        salemm = False
-        moafazrazm = False
-        gorehbe = False
-        moafazrazm_gorehbe = False
         q_of_pc = []
         if pc == 1:
-            salemm = True
-            q_of_pc.append(Q(salemm=salemm))
+            q_of_pc.append(Q(salemm=True))
         if pc == 2:
-            moafazrazm = True
-            q_of_pc.append(Q(moafazrazm=moafazrazm))
+            q_of_pc.append(Q(moafazrazm=True))
         if pc == 3:
-            gorehbe = True
-            q_of_pc.append(Q(gorehbe=gorehbe))
+            q_of_pc.append(Q(gorehbe=True))
         if pc == 4:
-            moafazrazm_gorehbe = True
-            q_of_pc.append(Q(moafazrazm_gorehbe=moafazrazm_gorehbe))
+            q_of_pc.append(Q(moafazrazm_gorehbe=True))
             
         bg = battalion_group.objects.filter(takmilzarmit=False).all()
         

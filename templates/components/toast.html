@@ -1,16 +1,47 @@
 
 <style>
-    .toast-success { background-color: #4caf50; }  /* سبز */
-    .toast-error { background-color: #f44336; }    /* قرمز */
-    .toast-warning { background-color: #ff9800; }  /* نارنجی */
-    .toast-info { background-color: #2196f3; }     /* آبی */
+    .toast-success { color: #4caf50; }  /* سبز */
+    .toast-error { color: #f44336; }    /* قرمز */
+    .toast-warning { color: #ff9800; }  /* نارنجی */
+    .toast-info { color: #2196f3; }     /* آبی */
+    .toast {
+        min-width: 250px;
+        padding: 12px 16px; 
+        border-radius: 8px; 
+        background-color: white;
+        border: 1px solid rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+        transition: opacity 0.5s;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(0);
+    }
+    .toast.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-100%);
+    }
+
+    #toast-container {
+
+        position: fixed; 
+        bottom: 0; 
+        left: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px; 
+        left: z-index: 9999;
+    }
 </style>
 
 <!-- components/toast.html -->
-<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+<div id="toast-container" >
     {% if messages %}
         {% for message in messages %}
-            <div class="toast toast-{{ message.tags }}" style="min-width: 250px; margin-bottom: 10px; padding: 12px 16px; border-radius: 8px; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.5s;">
+            <div class="toast toast-{{ message.tags }}" >
                 {{ message }}
             </div>
         {% endfor %}
@@ -18,11 +49,11 @@
 </div>
 
 <script>
-    /**
- * ایجاد و نمایش یک Toast
- * @param {string} message متن پیام
- * @param {string} type نوع پیام: success, error, warning, info
- * @param {number} duration مدت زمان نمایش به میلی‌ثانیه (اختیاری، پیش‌فرض 3000)
+/**
+     * ایجاد و نمایش یک Toast
+     * @param {string} message متن پیام
+     * @param {string} type نوع پیام: success, error, warning, info
+     * @param {number} duration مدت زمان نمایش به میلی‌ثانیه (اختیاری، پیش‌فرض 3000)
  */
 function showToast(message, type="info", duration=3000) {
     const container = document.getElementById("toast-container");
@@ -31,30 +62,24 @@ function showToast(message, type="info", duration=3000) {
     toast.textContent = message;
     container.appendChild(toast);
 
-    // نمایش با انیمیشن
-    setTimeout(() => {
-        toast.style.opacity = "1";
-        toast.style.transform = "translateX(0)";
-    }, 50);
-
-    // محو شدن و حذف بعد از مدت زمان
-    setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateX(100%)";
+    const show = () => toast.classList.add('show')
+    const hidden = () => {
+        toast.classList.remove('show') 
         setTimeout(() => toast.remove(), 500);
-    }, duration);
+    }
+    
+    // نمایش با انیمیشن
+    setTimeout(show, 50);
+    // محو شدن و حذف بعد از مدت زمان
+    setTimeout(hidden, duration);
 }
     document.addEventListener("DOMContentLoaded", function() {
         const toasts = document.querySelectorAll("#toast-container .toast");
         toasts.forEach((toast, index) => {
-            setTimeout(() => {
-                toast.style.opacity = 1; // نمایش
-            }, index * 200); // تاخیر کوچک برای پشت سر هم
-
-            setTimeout(() => {
-                toast.style.opacity = 0; // محو شدن
-                setTimeout(() => toast.remove(), 500);
-            }, 3000 + index * 200); // 3 ثانیه نمایش
+            // تاخیر کوچک برای پشت سر هم
+            setTimeout(show, index * 200); 
+            // 3 ثانیه نمایش
+            setTimeout(hidden, 3000 + index * 200); 
         });
     });
 </script>
