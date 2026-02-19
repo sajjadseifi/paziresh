@@ -1,4 +1,5 @@
 {% load static %}
+{% load filters %}
 <style>
     .table>tbody>tr>th, 
     .table>tfoot>tr>th, 
@@ -137,6 +138,10 @@
                                 <i class="fa fa-copy"></i>
                             </button>
                         </div>
+                        <div style="font-size: 11px;display: flex;align-items: center;justify-content: space-between;">
+                            <span>قد : {{s.Weight|strval|default:'!'}}</span>
+                            <span>وزن : {{s.height|strval|default:'!'}}</span>
+                        </div>
                     </td>
                     <td colspan="2">
                         <div style="display: flex;gap: 2px;font-size: 11px;flex-direction: column;">
@@ -147,7 +152,7 @@
                                     onclick="onCopyToClipBoard('{{s.acceptance_code}}')"
                                     title="برای کپی کد پذیرش کلیک کنید."
                                 >
-                                    کدپذیرش : {{ s.acceptance_code|default:'' }}
+                                    کدپذیرش : {{ s.acceptance_code|default:'!' }}
                                     <i class="fa fa-copy"></i>
                                 </button>
                             {% endif %}
@@ -157,6 +162,11 @@
                             <div class="layout-sm w-full">
                                 {% include "components/soldier_status.html" with soldier=s %}
                             </div>
+                            {% if s.has_been_accepted %}
+                                <span style="padding:4px;" class="label label-dark">
+                                    ساتر : {{s.Sutter|default:'!'}} 
+                                </span>
+                            {% endif %}
 
                         </div>
                     </td>
@@ -254,11 +264,11 @@
                                         {% endif %}
                                     </span>
                                 {% endif %}
-                                <span class="label label-outline label-default">سلامت : {{ s.physical_condition}}</span>
-                                <span class="label label-outline label-primary">مذهب : {{ s.Religion}}</span>
-                                <span class="label label-outline label-cyan">تاهل : {{ s.marital_status}}</span>
-                                <span class="label label-outline label-error">استان : {{ s.province_name}}</span>
-                                <span class="label label-outline label-orange">شهر : {{ s.city_name}}</span>
+                                <span class="label label-outline label-default">سلامت :  {{ s.physical_condition|default:'!'}}</span>
+                                <span class="label label-outline label-primary">مذهب :  {{ s.Religion|default:'!'}}</span>
+                                <span class="label label-outline label-cyan">تاهل :     {{ s.marital_status|default:'!'}}</span>
+                                <span class="label label-outline label-error">استان :   {{ s.province_name|default:'!'}}</span>
+                                <span class="label label-outline label-orange">شهر :    {{ s.city_name|default:'!'}}</span>
                                 
                             </div>
                     </td>
@@ -306,13 +316,13 @@
                     </td>
                     <td colspan="2" style="font-size: 10px;">
                         <div style="display: flex;align-items: center;justify-content: space-between;">
-                            <span>گروه تحصیلی : {{ s.Grade }}</span>
+                            <span>گروه تحصیلی : {{ s.Grade|default:'!' }}</span>
                         </div>
                         <div style="color: gray;">
-                            سامانه جامع :  {{ s.educational_level_of_the_system }}
+                            سامانه جامع :  {{ s.educational_level_of_the_system|default:'!' }}
                         </div>
                         <div style="color: gray;">
-                            رشته تحصیلی :  {{ s.Study_group }}
+                            رشته تحصیلی :  {{ s.Study_group|default:'!' }}
                         </div>
                     </td>
 

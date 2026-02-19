@@ -74,3 +74,4 @@ def safe_attr(obj, attr):
 def strval(value):
     return str(value)
 
+

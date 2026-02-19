@@ -77,7 +77,7 @@
     }
     .nav-line {
         margin: 1px 10px;
-        border-color: #ffffff55;
+        border-color: #ffffff44;
     }
     .app-info {
         display: flex;
@@ -128,9 +128,9 @@
               </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{% url 'sarbaz_codemeli' %}">پذیرش سرباز با کد ملی</a></li>
-                        <li><a href="{% url 'CreatePaziresh' %}">پذیرش دستی</a></li>
-                        <li><a href="{% url 'updatePazireshpage' %}">ویرایش پذیرشی</a></li>
+                        <li><a href="{% url 'sarbaz_codemeli' %}">پذیرش فوری (با کدملی)</a></li>
+                        <li><a href="{% url 'CreatePaziresh' %}">ثبت پذیرش (فرم دست نویس)</a></li>
+                        <li><a href="{% url 'updatePazireshpage' %}">ویرایش فوری (با کدملی)</a></li>
                         <hr class="nav-line"/>
                         <li><a href="{% url 'MainViewSoldires' %}" class="btn-download"> لیست کامل سربازها</a></li>
                         <li><a href="{% url 'interferences_index' %}">تداخل و بررسی سامانه</a></li>
@@ -139,11 +139,10 @@
                         <li><a href="{% url 'sater_group_print' %}">چاپ ساتر گروهی</a></li>
                         <li><a href="{% url 'moarefi_begordan_group_print' %}">چاپ معرفی به گردان گروهی</a></li>
                         <hr class="nav-line"/>
-                        <li><a href="{% url 'exel' %}">بارگذاری اکسل سامانه</a></li>
-                        <li><a href="{% url 'update_db_from_exel_paziresh_hazer_bekhdmat' %}">بروزرسانی پذیرش شده حاضر</a></li>
-                        <li><a href="{% url 'update_db_from_exel_paziresh_shode' %}">بروزرسانی پذیرش شده ها</a></li>
-                        <li><a href="{% url 'exel_update_number' %}">بارگذاری اکسل شماره تماس</a></li>
-                    
+                        <li><a href="{% url 'exel' %}">بارگزاری اکسل سامانه</a></li>
+                        <li><a href="{% url 'update_db_from_exel_paziresh_hazer_bekhdmat' %}">بارگزاری پذیرش شده حاضر</a></li>
+                        <li><a href="{% url 'update_db_from_exel_paziresh_shode' %}">بارگزاری پذیرش شده ها</a></li>
+                        <li><a href="{% url 'exel_update_number' %}">بارگزاری اکسل شماره تماس</a></li>
                     </ul>
                 </li>
             {% endif %}
@@ -155,30 +154,45 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته</a></li>
+                    <li><a href="{% url 'soldier_search' %}">جستجو پیشرفته سربازان</a></li>
                     <li><a href="{% url 'soldier_detail' %}">اطلاعات جامع سرباز</a></li>
-                    <li><a href="{% url 'all_soldire' %}">فهرست سربازان پذیرش شده</a></li>
+                    <li><a href="{% url 'all_soldire' %}">فهرست پذیرش شده</a></li>
+                    <hr class="nav-line"/>
                     {% if request.user.is_staff == True %}
+       
+                        <li><a style="font-size: 10px" href="{% url 'exel_update_yegan_khedmati' %}">بارگزاری گروهی یگان خدمتی</a></li>
+                        <li >
+                            <a style="font-size: 10px;" href="{% url 'update_db_from_exel_all_soldire_in_course' %}" >
+                                بارگزاری
+                                گروهی اطلاعات سربازان
+                                حاضر
+                            </a>
+                        </li>
+                        <li >
+                            <a style="font-size: 10px;" href="{% url 'update_db_from_exel_all_soldire_Sufficiency_of_mobilization' %}" >
+                                بارگزاری
+                                گروهی اطلاعات سربازان
+                                کفایت بسیح
+                            </a>
+                        </li>
+
+                        <li >
+                            <a style="font-size: 10px;" href="{% url 'update_db_from_exel_all_soldire_Previous_service_record' %}" >
+                                بارگزاری
+                                گروهی اطلاعات سربازان
+                                خدمت قبلی 
+                            </a>
+                        </li>
+                        <li >
+                            <a style="font-size: 10px;" href="{% url 'import_bank_number_from_exel' %}">بارگزاری شماره حساب گروهی</a>
+                        </li>
+                        <hr class="nav-line"/>
                         <li><a href="{% url 'poshe_nokhodi' %}">چاپ لیبل پوشه نخودی</a></li>
                         <li><a href="{% url 'exel_update_jazbi' %}">مدیریت جذبی ها</a></li>
                         <li><a href="{% url 'exel_update_gordan' %}">تطبیق گردان گروهی</a></li>
-                        <li><a href="{% url 'exel_update_yegan_khedmati' %}">بارگزاری گروهی یگان خدمتی</a></li>
-                      
-                        <li><a href="{% url 'update_db_from_exel_all_soldire_in_course' %}" style="font-size: 11px">بروزرسانی
-                            گروهی اطلاعات سربازان
-                            حاضر</a></li>
-                        <li><a href="{% url 'update_db_from_exel_all_soldire_Sufficiency_of_mobilization' %}"
-                               style="font-size: 10px">بروزرسانی
-                            گروهی اطلاعات سربازان
-                            کفایت بسیح</a></li>
-
-                        <li><a href="{% url 'update_db_from_exel_all_soldire_Previous_service_record' %}"
-                               style="font-size: 10px">بروزرسانی
-                            گروهی اطلاعات سربازان
-                            خدمت قبلی </a></li>
+                        <hr class="nav-line"/>
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi' %}">ساختار سازی (xlsx)</a></li>
                         <li><a href="{% url 'import_and_export_multiple_excel_sakhtar_sazi_xls' %}">ساختار سازی (xls)</a></li>
-                        <li><a href="{% url 'import_bank_number_from_exel' %}">بارگزاری شماره حساب گروهی</a></li>
                     {% endif %}
                 </ul>
             </li>
