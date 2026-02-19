@@ -13,6 +13,11 @@ class FormSoldiers(forms.Form):
         required=False,
         initial='عادی',
     )
+    date_improt_type = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
+        label='نوع ثبت',
+        required=False
+    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
         label='نام',
@@ -225,11 +230,17 @@ class FormSoldiers(forms.Form):
     
 
 class FormSoldiersCreate(forms.Form):
+    
     status_type = forms.ChoiceField(
         widget=forms.Select(attrs={'id':'status_type','class': 'form-control select2'}),
         label='وضعیت برگه سبز',
         required=False,
         initial='عادی',
+    )
+    date_improt_type = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
+        label='نوع ثبت',
+        required=False
     )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
@@ -459,6 +470,11 @@ class FormSoldiersUpdate(forms.Form):
         label='وضعیت برگه سبز',
         required=False,
         initial='عادی',
+    )
+    date_improt_type = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),
+        label='نوع ثبت',
+        required=False
     )
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'id': "name"}),

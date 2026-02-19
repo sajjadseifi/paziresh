@@ -8,6 +8,7 @@
         }
         .box-title {
             font-weight: bold;
+            font-size: 18px;
         }
         .form-group {
             display: flex;
@@ -38,8 +39,27 @@
         <div class="box box-primary">
             <div class="box-body">
                 <form method="GET">
+
                     <div class="row">
                         <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="national_code">کد ملی</label>
+                                <input type="text" class="form-control" id="national_code" name="national_code" placeholder="کد ملی" value="{{national_code}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">نام</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="نام سرباز" value="{{name}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="family">نام خانوادگی</label>
+                                <input type="text" class="form-control" id="family" name="family" placeholder="نام خانوادگی" value="{{family}}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="acceptance_code">عدد پذیرش</label>
+                                <input type="text" class="form-control" id="acceptance_code" name="acceptance_code" placeholder="عدد پذیرش" value="{{acceptance_code}}" >
+                            </div>
                             <div class="form-group">
                                 <label for="acceptance_status">وضعیت پذیرش</label>
                                 <select id="acceptance_status" name="acceptance_status">
@@ -52,20 +72,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="acceptance_code">عدد پذیرش</label>
-                                <input type="text" class="form-control" id="acceptance_code" name="acceptance_code" placeholder="عدد پذیرش" value="{{acceptance_code}}" >
-                            </div>
-                        </div>
-                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="national_code">کد ملی</label>
-                                <input type="text" class="form-control" id="national_code" name="national_code" placeholder="کد ملی" value="{{national_code}}">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
+
                             <div class="form-group">
                                 <label for="status_type">وضعیت برگه اعزام</label>
                                 <select id="status_type" name="status_type">
@@ -84,18 +91,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="name">نام</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="نام سرباز" value="{{name}}">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="family">نام خانوادگی</label>
-                                <input type="text" class="form-control" id="family" name="family" placeholder="نام خانوادگی" value="{{family}}">
-                            </div>
-                        </div>
+
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="national_code">گردان اولیه</label>
@@ -107,8 +103,6 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="national_code">گروهان اولیه</label>
                                 <select name="group" id="battaliongroup">
@@ -118,84 +112,82 @@
                         </div>
                     </div>
                     
-                    <div style="margin: 10px;gap: 5px; display: flex;align-items: center;">
+                    <div style="margin-top: 10px;gap: 5px; display: flex;align-items: center;">
                         <span class="box-title">فهرست پذیرش فراگیران</span>
                         <div style="flex: 1;">
                             {% include '../components/paziresh_soldiers_table_pagination.html' with submitSearch=True %}
                         </div>
-   
-                        {% comment %} <button type="submit" class="btn-search btn btn-primary" >
-                            <i class="fa fa-search"></i>
-                            جستجوی
-                        </button> {% endcomment %}
                     </div>
-                    <div style="display: flex;align-items: center;justify-content: end;gap: 4px;">
-                            <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
-                                دریافت خروجی اکسل <i class="fa fa-download"></i> : 
-                            </span>
-                            <div class="btn-group" style="flex-wrap: wrap; ">
-                                <a href="{% url 'download_paziresh' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست پذیرش شده‌ها">
-                                    پذیرش شده <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                                <a href="{% url 'download_shoro_dore' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست شروع دوره">
-                                    شروع دوره <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                                <a href="{% url 'download_hezer' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست حاضرها">
-                                    حاضر <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                                <a href="{% url 'export_to_excel_list_elame_hozor' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست اعلام حضور">
-                                    اعلام حضور <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                                <a href="{% url 'download_tatbikh' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست تطبیق نشده‌ها">
-                                    تطبیق نشده <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                                <a href="{% url 'download_yegan' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست یگان خدمتی حاضر">
-                                    یگان خدمتی حاضر <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                                <a href="{% url 'download_kafiat' %}" class="btn btn-success btn-outline" target="_blank" title="دانلود لیست خارج از دوره">
-                                    خارج از دوره <i class="fa fa-file-excel-o"></i>
-                                </a>
-
-                            </div>
-                            <div style="flex: 1;"></div>
-                            <!-- گروه خروجی اکسل -->
-                            <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
-                                دریافت خروجی اکسل <i class="fa fa-download"></i> : 
-                            </span>
-                            <div class="btn-group" >
-                                <button type="button" class="btn btn-success btn-outline " disabled title="خروجی اکسل کل داده‌ها">
-                                    <i class="fa fa-file-excel-o"></i> نتیجه فیلتر
-                                </button>
-                                <button type="button" class="btn btn-success btn-outline" disabled title="خروجی اکسل جدول فیلتر شده">
-                                    <i class="fa fa-file-excel-o"></i> جستجو در جدول
-                                </button>
-                            </div>
-                            <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
-                                خروجی برای چاپ <i class="fa fa-print"></i> : 
-                            </span>
-                            <!-- گروه چاپ -->
-                            <div class="btn-group" >
-                                <button type="button" class="btn btn-danger btn-outline" disabled title="چاپ کل داده‌ها">
-                                    <i class="fa fa-print"></i> نتیجه فیلتر
-                                </button>
-                                <button type="button" class="btn btn-danger btn-outline" disabled title="چاپ جدول فیلتر شده">
-                                    <i class="fa fa-print"></i> جستجو در جدول
-                                </button>
-                            </div>
+                    <div class="text-muted" style="font-size: 10px;">
+                        با جستجوی توصیفی در جدول میتواند هر متن دلخواهی در جدول زیر را  فیلتر کنید.
                     </div>
 
 
                 </form>
             </div>
      
-            <div class="table-responsive " style="height: 60svh;overflow-y: auto;">
+            <div style="height: 65svh;">
                 {% include '../components/paziresh_soldiers_table.html' with soldiers=results %}
+            </div>
+            <div class="panel-footer" style="display: flex;align-items: center;justify-content: end;gap: 4px;">
+                <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
+                    دریافت خروجی اکسل <i class="fa fa-download"></i> : 
+                </span>
+                <div class="btn-group" style="flex-wrap: wrap; ">
+                    <a href="{% url 'download_paziresh' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست پذیرش شده‌ها">
+                        پذیرش شده <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                    <a href="{% url 'download_shoro_dore' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست شروع دوره">
+                        شروع دوره <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                    <a href="{% url 'download_hezer' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست حاضرها">
+                        حاضر <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                    <a href="{% url 'export_to_excel_list_elame_hozor' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست اعلام حضور">
+                        اعلام حضور <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                    <a href="{% url 'download_tatbikh' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست تطبیق نشده‌ها">
+                        تطبیق نشده <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                    <a href="{% url 'download_yegan' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست یگان خدمتی حاضر">
+                        یگان خدمتی حاضر <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                    <a href="{% url 'download_kafiat' %}" class="btn btn-success btn-outline btn-sm" target="_blank" title="دانلود لیست خارج از دوره">
+                        خارج از دوره <i class="fa fa-file-excel-o"></i>
+                    </a>
+
+                </div>
+                <div style="flex: 1;"></div>
+                <!-- گروه خروجی اکسل -->
+                <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
+                    دریافت خروجی اکسل <i class="fa fa-download"></i> : 
+                </span>
+                <div class="btn-group" >
+                    <button type="button" class="btn btn-success btn-outline btn-sm " disabled title="خروجی اکسل کل داده‌ها">
+                        <i class="fa fa-file-excel-o"></i> نتیجه فیلتر
+                    </button>
+                    <button type="button" class="btn btn-success btn-outline btn-sm" disabled title="خروجی اکسل جدول فیلتر شده">
+                        <i class="fa fa-file-excel-o"></i> جستجو در جدول
+                    </button>
+                </div>
+                <span style="font-size: 12px;font-weight: lighter;" class="text-muted">
+                    خروجی برای چاپ <i class="fa fa-print"></i> : 
+                </span>
+                <!-- گروه چاپ -->
+                <div class="btn-group" >
+                    <button type="button" class="btn btn-danger btn-outline" disabled title="چاپ کل داده‌ها">
+                        <i class="fa fa-print"></i> نتیجه فیلتر
+                    </button>
+                    <button type="button" class="btn btn-danger btn-outline" disabled title="چاپ جدول فیلتر شده">
+                        <i class="fa fa-print"></i> جستجو در جدول
+                    </button>
+                </div>
             </div>
         </div>
     </div>

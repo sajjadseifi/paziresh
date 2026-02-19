@@ -1,3 +1,4 @@
+{% load static %}
 <style>
     .table>tbody>tr>th, 
     .table>tfoot>tr>th, 
@@ -11,7 +12,7 @@
     .table>tfoot>tr>td, 
     .table>thead>tr>td 
     {
-        padding:4px ;
+        padding:4px;
         
     }
 
@@ -26,8 +27,8 @@
     }
     .btn-group .btn {
         flex: 1;
-        font-size: 11px;
-        padding:4px;
+        font-size: 10px;
+        padding:4px 2px;
 
     }
     .arrow-link-icon {
@@ -42,229 +43,288 @@
         gap: 4px;
     }
     .label {
-        padding:3px 4px;
-        font-size: 11px;
-        margin: 2px;
+        padding:2px;
+        font-size: 10px;
+        margin: 1px;
     }
 
+.table-scroll-body {
+    height: calc(100%);              /* ارتفاع از والد می‌گیره */
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+/* جدول full width */
+.table-scroll-body table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* هدر ثابت */
+.table-scroll-body thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+/* هدر چسبنده */
+.table-scroll-body thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: darkblue; /* چون sticky هست باید بکگراند بدهی */
+    color: #fff;
+}
+.table-scroll-body tbody {
+    display: block;
+    height: calc(100%);   /* ارتفاع هدر کم شود */
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* هر ردیف مثل table رفتار کند */
+.table-scroll-body tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* اسکرول بار تمیز */
+.table-scroll-body tbody::-webkit-scrollbar {
+    width: 6px;
+}
+.table-scroll-body tbody::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+
 </style>
-<table id="paziresh_soldiers_table" class="table-mini table table-hover">
-    <thead>
-        <tr>
-            <th class="text-center" style="width: 12px;">ردیف</th>
-            <th>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>اطلاعات فردی</span>
-                    <span>کدملی</span>
-                </div>
-            </th>
-            <th>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>وضعیت پذیرش</span>
-                    <span>کد پذیرش</span>
-                </div>
-            </th>
-            <th>عملیات</th>
-            <th class="text-center">
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>اطلاعات اعزام</span>
-                    <span>ثبت</span>
-                </div>
-            </th>
-            <th>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>موقعیت اولیه</span>
-                    <span>موقعیت سازماندهی</span>
-                </div>
-            </th>
-            <th>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>تحصیلات </span>
-                    <span>رشته تحصیلی</span>
-                </div>
-            </th>
+<div class="table-scroll-body">
+    <table id="paziresh_soldiers_table" class="table-mini table table-hover">
+        <thead>
+            <tr>
+                <th colspan="1" class="text-center" >ردیف</th>
+                <th colspan="3">اطلاعات فردی</th>
+                <th colspan="2">پذیرش</th>
+                <th colspan="3">عملیات</th>
+                <th colspan="4">اطلاعات اعزام</th>
+                <th colspan="2">موقعیت اولیه</th>
+                <th colspan="2">موقعیت سازماندهی</th>
+                <th colspan="2">تحصیلات</th>
 
-        </tr>
-    </thead>
-    <tbody class="box-items">
-    <tr class="box-loading">
-        <td colspan="20" style="text-align:center; padding:20px;">
-            در حال بارگذاری... <i class="fa fa-spinner fa-spin"></i>
-        </td>
-    </tr>
-    {% for s in soldiers %}
-        <tr class="box-item" style="display: none;">
-            <td class="text-center" style="width: 12px;font-weight: bold;padding: 16px 0;">{{forloop.counter}}</td>
-            <td >
-                <strong style="font-weight: bold;">{{ s.name }} {{ s.family }}</strong>
-                <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
-                    <span>فرزند {{s.fathers_name}}</span>
-                    <button 
-                        class="btn btn-default btn-xs"
-                        style="font-weight: bold;"
-                        onclick="onCopyToClipBoard('{{s.National_Code}}')"
-                        title="برای کپی کد ملی کلیک کنید."
+            </tr>
+        </thead>
+        <tbody class="box-items">
+            <tr class="box-loading">
+                <td colspan="8" style="text-align:center; padding:20px;">
+                    در حال بارگذاری... <i class="fa fa-spinner fa-spin"></i>
+                </td>
+            </tr>
+            {% for s in soldiers %}
+                <tr class="box-item" style="display: none;">
+                    <td colspan="1" class="text-center" style="font-weight: bold;padding: 20px 0;">{{forloop.counter}}</td>
+                    <td colspan="3" 
+                            title="{{ s.full_biography }}"
                     >
-                        <i class="fa fa-copy"></i>
-                        {{s.National_Code}}
-                    </button>
-                </div>
-            </td>
-            <td>
-                <div style="display: flex;align-items: center;justify-content: space-between; font-size: 11px;">
-                    <span class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
-                        {% if s.has_been_accepted %}پذیرش شده ✅{% else %}پذیرش نشده ❌{% endif %}
-                    </span>
-                    <span style="flex: 1;"></span>
-                    {% if s.acceptance_code %}
-                        <button 
-                            style="font-size: 11px;font-weight: bold;"
-                            class="btn btn-default btn-xs"
-                            onclick="onCopyToClipBoard('{{s.acceptance_code}}')"
-                            title="برای کپی کد پذیرش کلیک کنید."
-                        >
-                            <i class="fa fa-copy"></i>
-                            {{ s.acceptance_code|default:'' }}
-                        </button>
-                    {% endif %}
-
-                </div>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <div class="layout-sm">
-                        {% include "components/soldier_status.html" with soldier=s %}
-                    </div>
-                </div>       
-                
-            </td>
-            <td >
-                <div class="btn-group">
-                    <a class="btn btn-default" 
-                        {% if s.has_been_accepted %}
-                            disabled="True"
-                            href=""
-                        {% else %}
-                            href="{% url 'get_sarbaz' pk=s.National_Code %}"
-                        {% endif %}
-                    >
-                        ثبت پذیرش
-                        <i class="fa fa-plus"></i>
-                    </a>
-                    <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">
-                        ساتر
-                        <i class="fa fa-print"></i>
-                    </a>
-                    <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">
-                        معرفی به گردان
-                        <i class="fa fa-print"></i>
-                    </a>
-                </div>
-                <hr style="margin: 1px;"/>
-                <div class="btn-group">
-                    <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{s.National_Code}}" class="btn btn-default">
-                        مشاهده
-                        <i class="fa fa-eye" ></i>
-                    </a>
-                        <a 
-                            class="btn btn-default"
-                            {% if s.has_been_accepted %}
-                                disabled="True" href=""
-                            {% else %}
-                                href="{% url 'updatePaziresh' pk=s.National_Code %}" 
+                        <strong style="font-weight: bold;font-size: 12px;">{{ s.name }} {{ s.family }}</strong>
+                        <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                            <span>فرزند {{s.fathers_name}}</span>
+                            <button 
+                                class="btn btn-default btn-xs"
+                                style="font-weight: bold;font-size: 10px;"
+                                onclick="onCopyToClipBoard('{{s.National_Code}}')"
+                                title="برای کپی کد ملی کلیک کنید."
+                            >
+                                کدملی : {{s.National_Code}}
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div style="display: flex;gap: 2px;font-size: 11px;flex-direction: column;">
+                            {% if s.acceptance_code %}
+                                <button 
+                                    style="font-size: 10px;font-weight: bold;"
+                                    class="btn btn-default btn-xs"
+                                    onclick="onCopyToClipBoard('{{s.acceptance_code}}')"
+                                    title="برای کپی کد پذیرش کلیک کنید."
+                                >
+                                    کدپذیرش : {{ s.acceptance_code|default:'' }}
+                                    <i class="fa fa-copy"></i>
+                                </button>
                             {% endif %}
-                        >
-                            ویرایش
-                            <i class="fa fa-pencil" ></i>
-                        </a>
+                            <span style="padding:4px;" class="label label-{% if s.has_been_accepted %}success {% else %}danger{% endif %}">
+                                {% if s.has_been_accepted %}پذیرش شده{% else %}پذیرش نشده{% endif %}
+                            </span>
+                            <div class="layout-sm w-full">
+                                {% include "components/soldier_status.html" with soldier=s %}
+                            </div>
 
-                    {% if request.user.is_staff %}
-                    <a  
-                        title="لینک ورود به صفحه تغییرات ادمین برای سرباز"
-                        class="btn btn-default" 
-                        target="_blank" href="/admin/soldiers/soldier/{{s.pk}}/change/"
-                    >
-                        <span>ویرایش در ادمین</span>
-                        <i class="fa fa-pencil-square" ></i>
-                    </a>
-                    {% endif %}  
-                </div>
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        <div class="btn-group">
+                            <a class="btn btn-default" 
+                                {% if s.has_been_accepted %}
+                                    disabled="True"
+                                    href=""
+                                {% else %}
+                                    href="{% url 'get_sarbaz' pk=s.National_Code %}"
+                                {% endif %}
+                            >
+                                ثبت پذیرش
+                                <i class="fa fa-plus"></i>
+                            </a>
+                            <a href="{% url 'sater' pk=s.pk %}" class="btn btn-default">
+                                ساتر
+                                <i class="fa fa-print"></i>
+                            </a>
+                            <a href="{% url 'moarefibegordan' pk=s.pk %}" class="btn btn-default">
+                                معرفی به گردان
+                                <i class="fa fa-print"></i>
+                            </a>
+                        </div>
+                        <hr style="margin: 1px;"/>
+                        <div class="btn-group">
+                            <a  class="btn btn-default" href="{% url 'soldier_detail' %}?code={{s.National_Code}}" class="btn btn-default">
+                                مشاهده
+                                <i class="fa fa-eye" ></i>
+                            </a>
+                                <a 
+                                    class="btn btn-default"
+                                    {% if s.has_been_accepted %}
+                                        href="{% url 'updatePaziresh' pk=s.National_Code %}" 
+                                    {% else %}
+                                        disabled="True" href=""
+                                    {% endif %}
+                                >
+                                    ویرایش
+                                    <i class="fa fa-pencil" ></i>
+                                </a>
 
-            </td>
-            <td >
-                    <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
-                        <span>برگه : {{ s.status_type|default:'!' }}</span>
-                        <span>دیتا : {{ s.date_improt_type|default:'!'}}</span>
-                    </div>
-              
-                    <div style="font-size: 11px; display: flex;align-items: center;justify-content: space-between;color: gray;">
-                        <span>اعزام : {{ s.Date_of_dispatch|default:''}}</span>
-                        {% if s.Renewal_of_the_previous_period %}
-                            <span class="label label-warning">تجدید دوره قبل</span>
-                        {% endif %}
-                    </div>
-                    <div style="display: flex;align-items: center;justify-content: start;color: gray;gap: 2px;flex-wrap: wrap;">
-                        <span class="label label-outline label-default">سلامت : {{ s.physical_condition}}</span>
-                        {% if s.Sufficiency_of_mobilization %}
-                            <span class="label label-outline label-success">کفایت بسیج</span>
-                        {% endif %}
-                        {% if s.Previous_service_record %}
-                            <span class="label label-outline label-info">خدمت قبلی</span>
-                        {% endif %}
-                        {% if s.Amriye %}
-                            <span class="label label-outline label-purple">امریه دارد</span>
-                        {% endif %}
-                        
-                    </div>
-            </td>
+                            {% if request.user.is_staff %}
+                            <a  
+                                title="لینک ورود به صفحه تغییرات ادمین برای سرباز"
+                                class="btn btn-default" 
+                                target="_blank" href="/admin/soldiers/soldier/{{s.pk}}/change/"
+                            >
+                                <span>ویرایش در ادمین</span>
+                                <i class="fa fa-pencil-square" ></i>
+                            </a>
+                            {% endif %}  
+                        </div>
 
-            
-            <td>
+                    </td>
+                    <td colspan="4">
+                            <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                                <span>برگه : {{ s.status_type|default:'!' }}</span>
+                                <span>دیتا : {{ s.date_improt_type|default:'!'}}</span>
+                            </div>
+                    
+                            <div style="font-size: 11px; display: flex;align-items: center;justify-content: space-between;color: gray;">
+                                <span>اعزام : {{ s.Date_of_dispatch|default:''}}</span>
+                                {% if s.Renewal_of_the_previous_period %}
+                                    <span 
+                                        style="padding: 4px;cursor: pointer;"
+                                        title="
+                                            علت تجدید دوره: {{ s.Reason_for_renewing_the_course|default:'---' }}
+                                            وضعیت تجدید دوره: {{ s.Renewal_of_the_previous_period|default:'---' }}
+                                            کد تجدید دوره: {{ s.Renewal_of_the_previous_period_code|default:'---' }}
+                                            تاریخ تجدید دوره قبل: {{ s.Course_renewal_date|default:'---' }}
+                                        "
+                                        class="label label-warning"
+                                    >
+                                        تجدید دوره قبل
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div style="display: flex;align-items: center;justify-content: start;color: gray;gap: 1px;flex-wrap: wrap;">
+                                {% if s.Amriye %}
+                                    <span class="label label-outline label-purple" 
+                                    {% if s.Amriye_organization %}
+                                        title="سازمان امریه : {{s.Amriye_organization}}"
+                                    {% else %}    
+                                        title="سازمان امریه ندارد!"
+                                    {% endif %}    
 
-                <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
-                    {% if s.Gordan %}<span style="">گردان : {{ s.Gordan.name }}</span>
-                    {% elif s.has_been_accepted %}
-                        <span class="label label-danger">گردان ندارد</span>
-                    {% endif %}
-                    {% if s.Gordan %}<span style="font-size: 11px;">گردان : {{ s.Gordan.name }}</span>
-                    {% elif s.has_been_accepted %}
-                        <span class="label label-danger">گردان ندارد</span>
-                    {% endif %}
-                </div>
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    {% if s.battalion_group %}
-                        <span style="font-size: 11px;">گروهان : {{ s.battalion_group.name }}</span>
-                    {% elif s.has_been_accepted %}
-                        <span class="label label-danger">گروهان ندارد</span>
-                    {% endif %} 
-                    {% if s.battalion_group %}
-                        <span style="font-size: 11px;">گروهان : {{ s.battalion_group.name }}</span>
-                    {% elif s.has_been_accepted %}
-                        <span class="label label-danger">گروهان ندارد</span>
-                    {% endif %} 
-                </div>
-                <div style="display: flex;align-items: center;justify-content: space-between;color: gray;font-size: 11px;font-size: 11px;">
-                        {% if s.battalion_group %}
-                        <span style="color: gray;">کد : {{s.code_gorhan}}</span>
-                    {% endif %} 
-                    {% if s.t_battalion_group %}
-                        <span style="color: gray;">کد نهایی : {{s.code_gorhan_nahai|default:""}}</span>
-                    {% endif %} 
-                </div>
-            </td>
+                                    >
+                                        امریه دارد 
+                                        {% if s.Amriye_organization %}
+                                            <i class="fa fa-check text-success"></i>
+                                        {% else %}
+                                            <span class="text-red">!</span>
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                                <span class="label label-outline label-default">سلامت : {{ s.physical_condition}}</span>
+                                <span class="label label-outline label-primary">مذهب : {{ s.Religion}}</span>
+                                <span class="label label-outline label-cyan">تاهل : {{ s.marital_status}}</span>
+                                <span class="label label-outline label-error">استان : {{ s.province_name}}</span>
+                                <span class="label label-outline label-orange">شهر : {{ s.city_name}}</span>
+                                
+                            </div>
+                    </td>
+                    <td colspan="2">
 
-            <td style="font-size: 11px;">
-                <div style="display: flex;align-items: center;justify-content: space-between;">
-                    <span>گروه تحصیلی : {{ s.Grade }}</span>
-                </div>
-                <div style="color: gray;">
-                    سامانه جامع :  {{ s.educational_level_of_the_system }}
-                </div>
-                <div style="color: gray;">
-                    رشته تحصیلی :  {{ s.Study_group }}
-                </div>
-            </td>
+                        <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                            {% if s.Gordan %}<span style="">گردان : {{ s.Gordan.name }}</span>
+                            {% elif s.has_been_accepted %}
+                                <span class="label label-danger">گردان ندارد</span>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex;align-items: center;justify-content: space-between;">
+                            {% if s.battalion_group %}
+                                <span style="font-size: 11px;">گروهان : {{ s.battalion_group.name }}</span>
+                            {% elif s.has_been_accepted %}
+                                <span class="label label-danger">گروهان ندارد</span>
+                            {% endif %} 
+                        </div>
+                        <div style="display: flex;align-items: center;justify-content: space-between;color: gray;font-size: 11px;font-size: 11px;">
+                            {% if s.battalion_group %}
+                                <span style="color: gray;">کد سازمانی : {{s.code_gorhan}}</span>
+                            {% endif %} 
+                        </div>
+                    </td>
+                    <td colspan="2">
+
+                        <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                            {% if s.t_Gordan %}<span style="font-size: 11px;">گردان : {{ s.t_Gordan.name }}</span>
+                            {% elif s.has_been_accepted %}
+                                <span class="label label-danger">گردان ندارد</span>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex;align-items: center;justify-content: space-between;">
+                            {% if s.t_battalion_group %}
+                                <span style="font-size: 11px;">گروهان : {{ s.t_battalion_group.name }}</span>
+                            {% elif s.has_been_accepted %}
+                                <span class="label label-danger">گروهان ندارد</span>
+                            {% endif %} 
+                        </div>
+                        <div style="display: flex;align-items: center;justify-content: space-between;color: gray;font-size: 11px;font-size: 11px;">
+                            {% if s.t_battalion_group %}
+                                <span style="color: gray;">کد نهایی : {{s.code_gorhan_nahai|default:""}}</span>
+                            {% endif %} 
+                        </div>
+                    </td>
+                    <td colspan="2" style="font-size: 10px;">
+                        <div style="display: flex;align-items: center;justify-content: space-between;">
+                            <span>گروه تحصیلی : {{ s.Grade }}</span>
+                        </div>
+                        <div style="color: gray;">
+                            سامانه جامع :  {{ s.educational_level_of_the_system }}
+                        </div>
+                        <div style="color: gray;">
+                            رشته تحصیلی :  {{ s.Study_group }}
+                        </div>
+                    </td>
 
 
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+</script>

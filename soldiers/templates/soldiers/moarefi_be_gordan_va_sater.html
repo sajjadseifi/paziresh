@@ -149,8 +149,15 @@
     </section>
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-header">
-                <h4>فهرست اخرین پذیرش ها</h4>
+            <div class="box-head" style="padding: 0 20px;">
+                <h4 style="font-weight: bold;">فهرست اخرین پذیرش ها</h4>
+                <a  href="{% url 'MainViewSoldires'  %}">
+                    <span>فهرست کامل سربازان</span>
+                    <i class="fa fa-arrow-left"></i> 
+                </a>
+            </div>
+            <div class="box-head" style="padding: 20px;">
+                {% include '../components/paziresh_soldiers_table_pagination.html' with submitSearch=True %}
             </div>
             <div class="box-body table-responsive no-padding">
                 {% include '../components/paziresh_soldiers_table.html' with soldiers=soldiers %}

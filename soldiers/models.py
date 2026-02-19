@@ -44,7 +44,6 @@ class Soldier(models.Model):
     province_name = models.CharField(null=True, blank=True, max_length=150, verbose_name='نام استان')
     city_name = models.CharField(null=True, blank=True, max_length=150, verbose_name='نام شهر')
     
-
     
     Address = models.CharField(null=True, blank=True, max_length=250, verbose_name='ادرس')
     Place_of_Issue = models.CharField(null=True, blank=True, max_length=150, verbose_name='محل صدور')
@@ -164,6 +163,40 @@ class Soldier(models.Model):
     problems_s = ''
     problems_u = ''
     
+    @property
+    def full_biography(self):
+        try:
+            return (
+                "================= اطلاعات هویتی =================\n"
+                f"نام و نام خانوادگی: {self.name or '-'} {self.family or '-'}\n"
+                f"نام پدر: {self.fathers_name or '-'}\n"
+                f"کد ملی: {self.National_Code or '-'}\n"
+                f"تاریخ تولد: {self.Date_of_birth or '-'}\n"
+                f"محل تولد: {self.place_of_birth or '-'}\n"
+                f"وضعیت تأهل: {self.marital_status or '-'}\n"
+                f"مذهب: {self.Religion or '-'}\n"
+                "================= اطلاعات تماس =================\n"
+                f"موبایل: {self.phone_number or '-'}\n"
+                f"استان / شهر: {self.province_name or '-'} / {self.city_name or '-'}\n"
+                "================= وضعیت خدمتی =================\n"
+                f"یگان: {self.unit_name or '-'} ({self.unit_type or '-'})\n"
+                f"آدرس یگان: {self.unit_address or '-'}\n"
+                f"تسویه حساب: {'بله' if self.IsCheckout else 'خیر'}\n"
+                "================= وضعیت پزشکی =================\n"
+                f"تست سلامت روان: {self.physical_condition_test or '-'}\n"
+                f"نوع بیماری: {self.Type_of_disease or '-'}\n"
+                f"کمیسیون پزشکی: {'دارد' if self.the_medical_commission else 'ندارد'}\n"
+                "================= امتیازات =================\n"
+                f"امتیاز کل: {self.total_score}\n"
+                f"درجه: {self.rank or '-'}\n"
+                "================= سوابق و ویژه =================\n"
+                f"تاریخ تجدید دوره: {self.Course_renewal_date or '-'}\n"
+                f"سابقه خدمت قبلی: {'دارد' if self.Previous_service_record else 'ندارد'}\n"
+                f"جذب موفق: {'بله' if self.Successful_recruitment else 'خیر'}\n"
+            )
+        except Exception:
+            return "خطا در بارگذاری اطلاعات"
+
     def save(self, *args, **kwargs):
         if self.status_type == "پیام آور بهداشت":
             self.Amriye = True

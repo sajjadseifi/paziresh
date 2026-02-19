@@ -65,7 +65,7 @@ def paziresh_code_meli(request, *args, **kwargs):
         code_meli = sarbaz_code_meli.cleaned_data.get('code_meli')
         return HttpResponseRedirect(reverse("get_sarbaz", args=[code_meli]))
 
-    soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:20]
+    soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:50]
     return render(request, 'soldiers/paziresh_idcode_view.html', context={
         'SarbazCodeMeli': sarbaz_code_meli,
         'soldiers':soldiers
@@ -101,6 +101,8 @@ class sabte_paziresh(LoginRequiredMixin, View):
 
         form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
         form_soldiers.initial['status_type'] = soldire.status_type
+        form_soldiers.initial['date_improt_type'] = soldire.date_improt_type
+        
         # initial
         form_soldiers.initial['name'] = soldire.name
         form_soldiers.initial['family'] = soldire.family
@@ -258,6 +260,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
         form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
         form_soldiers.initial['status_type'] = soldire.status_type
+        form_soldiers.initial['date_improt_type'] = soldire.date_improt_type
 
         # initial
         form_soldiers.initial['name'] = soldire.name
@@ -392,6 +395,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         if not form_soldiers.is_valid() :
             return redirect(request.path)
 
+
         name = form_soldiers.cleaned_data['name']
         family = form_soldiers.cleaned_data['family']
         fathers_name = form_soldiers.cleaned_data['fathers_name']
@@ -481,10 +485,14 @@ class sabte_paziresh(LoginRequiredMixin, View):
             if iteam[0] == int(Sutter_id):
                 Sutter = iteam[1]
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
+        status_type = form_soldiers.cleaned_data['status_type']
+        date_improt_type = form_soldiers.cleaned_data['date_improt_type']
         while True:
             try:
                 with transaction.atomic():
                     s = soldire
+                    s.status_type = status_type
+                    s.date_improt_type = date_improt_type
                     s.name = name
                     s.family = family
                     s.Relative_to_inclusive = Relative_to_inclusive
@@ -574,7 +582,7 @@ class moarefi_be_gordan_va_sater(LoginRequiredMixin, View):
     template = 'soldiers/moarefi_be_gordan_va_sater.html'
 
     def get(self, request, pk):
-        soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:20]
+        soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:50]
         my_sarbaz = sarbaz.objects.filter(pk=pk).first()
         time = ""
         date = ""
@@ -663,6 +671,8 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.initial['Type_of_disease'] = 0
         form_soldiers.initial['Amriye'] = 2
         form_soldiers.initial['Sufficiency_of_mobilization'] = 0
+        form_soldiers.initial['date_improt_type'] = 'دست نویس'
+    
         cx = {'form': form_soldiers}
         return render(request, self.template, cx)
 
@@ -686,6 +696,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
         form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
+        form_soldiers.initial['date_improt_type'] = 'دست نویس'
         
         if not form_soldiers.is_valid():
             cx = {'form': form_soldiers}
@@ -779,13 +790,17 @@ class CreatePaziresh(LoginRequiredMixin, View):
                 Sutter = iteam[1]
         Relative_to_inclusive = form_soldiers.cleaned_data['Relative_to_inclusive']
         Relative_to_inclusive_number = form_soldiers.cleaned_data['Relative_to_inclusive_number']
-
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
+
+        status_type = form_soldiers.cleaned_data['status_type']
+        date_improt_type = form_soldiers.cleaned_data['date_improt_type']
 
         while True:
             try:
                 with transaction.atomic():
                     s = sarbaz()
+                    s.status_type = status_type
+                    s.date_improt_type = date_improt_type
                     s.name = name
                     s.family = family
                     s.fathers_name = fathers_name
@@ -913,9 +928,10 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form_soldiers.fields['Amriye_organization'].choices = Amriye_organization_lsit
         form_soldiers.fields['battalion_group'].choices = battalion_group_list_items()
         form_soldiers.fields['status_type'].choices = Soldier.status_types_options()
-        form_soldiers.initial['status_type'] = sb.status_type
 
         # initial
+        form_soldiers.initial['status_type'] = sb.status_type
+        form_soldiers.initial['date_improt_type'] = sb.date_improt_type
         form_soldiers.initial['name'] = sb.name
         form_soldiers.initial['family'] = sb.family
         form_soldiers.initial['fathers_name'] = sb.fathers_name
@@ -987,7 +1003,7 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form = FormSoldiersUpdate(request.POST, request.FILES or None)
         sb = sarbaz.objects.filter(National_Code=pk).first()
         form.fields['status_type'].choices = Soldier.status_types_options()
-        form.initial['status_type'] = sb.status_type
+
 
         form.fields['Religion'].choices = Religion_list
         form.fields['province_name'].choices = province_name_list
@@ -1005,6 +1021,9 @@ class UpdatePaziresh(LoginRequiredMixin, View):
         form.fields['educational_level_of_the_system'].choices = educational_level_of_the_system_list
         form.fields['Amriye_organization'].choices = Amriye_organization_lsit
         form.fields['battalion_group'].choices = battalion_group_list_items()
+        
+        form.initial['status_type'] = sb.status_type
+        form.initial['date_improt_type'] = sb.date_improt_type
         form.initial['name'] = sb.name
         form.initial['family'] = sb.family
         form.initial['fathers_name'] = sb.fathers_name
@@ -1138,7 +1157,13 @@ class UpdatePaziresh(LoginRequiredMixin, View):
             if iteam[0] == int(Sutter_id):
                 Sutter = iteam[1]
         f_battalion_group = form.cleaned_data['battalion_group']
+        
+        status_type = form.cleaned_data['status_type']
+        date_improt_type = form.cleaned_data['date_improt_type']
+        sb.status_type = status_type
+        sb.date_improt_type = date_improt_type
         sb.name = name
+        
         sb.family = family
         sb.fathers_name = fathers_name
         sb.National_Code = National_Code
@@ -2228,97 +2253,3 @@ def mobilization_document_delete(request):
             deleted.append(filename)
 
     return redirect('mobilization_document_view')
-
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from django.db.models import Q
-from .models import Soldier
-from .serializer import SoldierFullSerializer
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.db.models import Q
-from .models import Soldier
-from .serializer import SoldierFullSerializer
-
-@api_view(['GET'])
-def soldiers_rest_api(request):
-
-    def str_to_bool(value):
-        return str(value).lower() in ["true", "1", "yes"]
-
-    soldiers = Soldier.objects.select_related(
-        "Gordan",
-        "battalion_group",
-        "t_Gordan",
-        "t_battalion_group",
-    ).all()
-
-    # -------- فیلترهای متنی --------
-    national_code = request.GET.get("national_code")
-    name = request.GET.get("name")
-    province = request.GET.get("province")
-    organization_type = request.GET.get("organization_type")
-    rank = request.GET.get("rank")
-    health_status = request.GET.get("health_status")
-
-    if national_code:
-        soldiers = soldiers.filter(National_Code=national_code)
-
-    if name:
-        soldiers = soldiers.filter(
-            Q(name__icontains=name) | Q(family__icontains=name)
-        )
-
-    if province:
-        soldiers = soldiers.filter(province_name=province)
-
-    if organization_type:
-        soldiers = soldiers.filter(organization_type=organization_type)
-
-    if rank:
-        soldiers = soldiers.filter(rank=rank)
-
-    if health_status:
-        soldiers = soldiers.filter(physical_condition=health_status)
-
-    # -------- فیلترهای بولین --------
-    accepted = request.GET.get("accepted")
-    in_course = request.GET.get("in_course")
-    tatbigh = request.GET.get("tatbigh")
-    checkout = request.GET.get("checkout")
-    amriye = request.GET.get("amriye")
-
-    if accepted is not None:
-        soldiers = soldiers.filter(has_been_accepted=str_to_bool(accepted))
-
-    if in_course is not None:
-        soldiers = soldiers.filter(in_coures=str_to_bool(in_course))
-
-    if tatbigh is not None:
-        soldiers = soldiers.filter(tatbigh=str_to_bool(tatbigh))
-
-    if checkout is not None:
-        soldiers = soldiers.filter(IsCheckout=str_to_bool(checkout))
-
-    if amriye is not None:
-        soldiers = soldiers.filter(Amriye=str_to_bool(amriye))
-
-    # -------- مرتب‌سازی --------
-    ordering = request.GET.get("ordering")
-    allowed_ordering = [
-        "tarikh_paziresh",
-        "-tarikh_paziresh",
-        "rank",
-        "-rank",
-        "Date_of_dispatch",
-        "-Date_of_dispatch",
-    ]
-
-    if ordering in allowed_ordering:
-        soldiers = soldiers.order_by(ordering)
-
-    # -------- Serialize و Return --------
-    serializer = SoldierFullSerializer(soldiers, many=True)
-    return Response(serializer.data)

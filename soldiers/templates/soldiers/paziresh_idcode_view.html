@@ -82,6 +82,9 @@
                     <i class="fa fa-arrow-left"></i> 
                 </a>
             </div>
+            <div>
+                {% include '../components/paziresh_soldiers_table_pagination.html' with submitSearch=True %}
+            </div>
             <div class="box-body table-responsive no-padding">
                 {% include '../components/paziresh_soldiers_table.html' with soldiers=soldiers %}
             </div>
