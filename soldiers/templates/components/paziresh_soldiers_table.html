@@ -122,11 +122,9 @@
             {% for s in soldiers %}
                 <tr class="box-item" style="display: none;">
                     <td colspan="1" class="text-center" style="font-weight: bold;padding: 20px 0;">{{forloop.counter}}</td>
-                    <td colspan="3" 
-                            title="{{ s.full_biography }}"
-                    >
-                        <strong style="font-weight: bold;font-size: 12px;">{{ s.name }} {{ s.family }}</strong>
-                        <div style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
+                    <td colspan="3" >
+                        <strong title="{{ s.full_biography }}" style="font-weight: bold;font-size: 12px;cursor: help;">{{ s.name }} {{ s.family }}</strong>
+                        <div  style="display: flex;align-items: center;justify-content: space-between;font-size: 11px;">
                             <span>فرزند {{s.fathers_name}}</span>
                             <button 
                                 class="btn btn-default btn-xs"
