@@ -70,12 +70,16 @@
 </style>
 
 <header class="main-header" >
-        {% comment %} <!-- Logo -->
+    <div class="flex:1;">
+        {% include "./app_bar.html"  %}
+    </div>
+    {% comment %} {% if request.user.is_staff %}
+    {% else %}
         <a href="{% url 'home_page' %}" class="logo">
             <span class="logo-mini">رزم‌آموز</span>
             <span class="logo-lg"><b>رزم‌آموز المهدی(عج)</b></span>
-        </a> {% endcomment %}
-        {% comment %} <nav style="display:none;flex:1;margin-right:0;" class="navbar navbar-static-top"> 
+        </a>
+        <nav style="margin-right:0;" class="navbar navbar-static-top"> 
             <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"></a>
             <div class="navbar-buttons" style="display:flex; gap:10px; align-items:center;justify-content:end;padding:0 10px;height:100%;">
                 <div style="padding: 0 10px;position: relative;z-index: 9999999999999;">
@@ -130,8 +134,7 @@
                     </a>
                 {% endif %}
             </div>
-        </nav> {% endcomment %}
-        <div class="flex:1;">
-            {% include "./app_bar.html"  %}
-        </div>
+        </nav> 
+    {% endif %} {% endcomment %}
+
 </header>

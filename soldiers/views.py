@@ -66,9 +66,19 @@ def paziresh_code_meli(request, *args, **kwargs):
         return HttpResponseRedirect(reverse("get_sarbaz", args=[code_meli]))
 
     soldiers = sarbaz.objects.filter(acceptance_code__isnull=False).order_by('-acceptance_code')[:50]
+    saterForm = FormSaterGroup()
+    saterForm.fields['type'].choices = [
+        (1, "عادی"),
+        (2, "کفایت دار بسیج"),
+        (3, "امریه دار (مامور)"),
+        (4, "کفایت دار خدمت قبلی")
+    ]
+    moarefiForm = FormMoarefiGroup()
     return render(request, 'soldiers/paziresh_idcode_view.html', context={
         'SarbazCodeMeli': sarbaz_code_meli,
-        'soldiers':soldiers
+        'soldiers':soldiers,
+        'saterForm':saterForm,
+        'moarefiForm':moarefiForm
     })
 
 
@@ -1598,9 +1608,9 @@ def sater_group_print(request):
         form = FormSaterGroup()
         form.fields['type'].choices = [
             (1, "عادی"),
-            (2, "کفایت بسیج"),
-            (3, "امریه داره"),
-            (4, "خدمت قبلی")
+            (2, "کفایت دار بسیج"),
+            (3, "امریه دار (مامور)"),
+            (4, "کفایت دار خدمت قبلی")
         ]
         return render(request, 'soldiers/sater_group_selector.html', {'form': form})
 
@@ -1608,15 +1618,15 @@ def sater_group_print(request):
         form = FormSaterGroup(request.POST, request.FILES or None)
         form.fields['type'].choices = [
             (1, "عادی"),
-            (2, "کفایت بسیج"),
-            (3, "امریه داره"),
-            (4, "خدمت قبلی")
+            (2, "کفایت دار بسیج"),
+            (3, "امریه دار (مامور)"),
+            (4, "کفایت دار خدمت قبلی")
         ]
         if not form.is_valid():
             return render(request, 'soldiers/sater_group_selector.html', {'form': form})
 
         start = int(form.cleaned_data['start'])
-        end = int(form.cleaned_data['end'])
+        end = int(form.cleaned_data['end'])+ 1
         type = int(form.cleaned_data['type'])
         en = EnsaniSettings.objects.first()
 
@@ -1679,7 +1689,7 @@ def moarefi_group_print(request):
                 'form': form,
             }
             return render(request, 'soldiers/moarefi_group_selector.html', context)
-        start = int(form.cleaned_data['start']) + 1
+        start = int(form.cleaned_data['start'])
         end = int(form.cleaned_data['end']) + 1
 
         sarbazha = sarbaz.objects.filter(Sufficiency_of_mobilization=False, in_coures=True,

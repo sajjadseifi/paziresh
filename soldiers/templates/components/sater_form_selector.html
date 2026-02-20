@@ -1,0 +1,31 @@
+    <form action="{% url 'sater_group_print' %}" target="_blank"  method="post">
+        {% csrf_token %}
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-3">
+                    <div class="form-group form-group-linear">
+                        {{ form.start.label }}
+                        {{ form.start }}
+                        <span style='color: red'>{{ form.start.errors }}</span>
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="form-group form-group-linear">
+                        {{ form.end.label }}
+                        {{ form.end }}
+                        <span style='color: red'>{{ form.end.errors }}</span>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group form-group-linear">
+                        {{ form.type.label }}
+                        {{ form.type }}
+                        <span style='color: red'>{{ form.type.errors }}</span>
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <button type="submit" class="btn btn-success">چاپ</button>
+                </div>
+            </div>
+        </div>
+    </form>

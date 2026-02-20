@@ -17,8 +17,9 @@
         
     }
 
-    .table > tbody > tr:nth-child(odd) {
-        background-color: #fafafa;
+    .table > tbody > tr {
+        margin: 4px 0;
+        border: 1px solid black !important;
     }
 
     .table-mini .btn.btn-default {
@@ -185,7 +186,7 @@
                             {% if s.has_been_accepted %}
                                 <p class="item-key-value">
                                     <span>ساتر :</span> 
-                                    <strong class="label label-sm label-dark">{{s.Sutter|default:'!'}} </strong>
+                                    <strong class="label label-sm label-orange">{{s.Sutter|default:'!'}} </strong>
                                 </p>
                                 <p class="item-key-value">
                                     <span></span> 

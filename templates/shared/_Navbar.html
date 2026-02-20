@@ -25,7 +25,7 @@
     }
     .main-sidebar {
         padding-top: 120px;
-        height: calc(100vh - 100px);
+        height: calc(100vh - 120px);
         max-height: calc(100vh - 100px);
         display: flex;
         flex-direction: column;
@@ -124,7 +124,7 @@
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu" data-widget="tree">
             <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="{% url 'home_page' %}"><i class="fa fa-home"></i> <span>صفحه اصلی</span></a>
+            <li class="active"><a href="{% url 'home_page' %}"><i class="fa fa-home"></i> <span>صفحه اصلی (کارپوشه)</span></a>
             </li>
             {% if request.user.is_staff == True %}
                 <li class="treeview {% if not setting.tatbigh %}active{% endif %}">

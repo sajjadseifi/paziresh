@@ -3,12 +3,11 @@
 
 <style>
 .smart-menu-container {
-    // margin-right: var(--sidebar-width);
     padding: 4px 10px ;
     background: linear-gradient(135deg,#1b1f24,#111417);
     border-radius: 0 0 12px 12px;
     border: 1px solid #2f3a44;
-    box-shadow: 0 10px 40px rgba(0,0,0,.5);
+    box-shadow: 0 10px 40px rgba(0,0,0,.3);
 }
 
 .smart-menu {
@@ -236,11 +235,18 @@
 .smart-label {
     font-size: 10px;
     display: inline-block;
-    max-width: 48px;
+    width: 52px;
     color: #efefef;
-    padding:  8px 4px;
+    padding: 8px 6px;
+    margin: 4px;
     text-align: right;
 }
+{% if not request.user.is_staff %}
+    .smart-label {
+        width: max-content;
+    }
+{% endif %}
+
 .smart-label::after {
     content: :' : ';
 }
@@ -267,7 +273,7 @@
         <div class="app-side-wide" style="display: flex;align-items: center;justify-content: space-between;">
             <a class="task-link sky {% active_link 'home_page' %}" href="{% url 'home_page' %}">
                 <i class="fa fa-th-large"></i>
-                <span>کارتابل</span>
+                <span>کارپوشه</span>
             </a>
             {% if request.user.is_staff %}
                 <a  
@@ -301,6 +307,7 @@
         </div> {% endcomment %}
         <div style="flex: 1;"></div>
         <div class="task-box">
+            {% if request.user.is_staff %}
             <a class="task-link orange {% active_link 'backup_database' %}" href="{% url 'backup_database' %}">
                 <span>دریافت پایگاه داده</span>
                 <i class="fa fa-download"></i>
@@ -309,26 +316,32 @@
                 <span>بارگزاری پایگاه داده</span>
                 <i class="fa fa-upload"></i>
             </a>
+            {% endif %}
+
             <a  class="task-link {% active_link 'data_app' %}"  href="{% url 'data_app' %}">
                 <span>بانک اطلاعات و دریافت خروجی</span>
                 <i class="fa fa-file-archive-o"></i>
             </a>
-            <a class="task-link  {% active_link 'activity_logs' %}" href="{% url 'activity_logs' %}">
-                <span class="task-count">{{ logs_today|default:"0" }}</span>
-                <span>لاگ سیستم</span>
-                <i class="fa fa-arrow-left"></i>
-            </a>
-            <a class="task-link {% active_link 'interferences_index' %}" href="{% url 'interferences_index' %}">
-                <span class="task-count">{{ logs_today|default:"0" }}</span>
-                <span>تداخل اماری </span>
-                <i class="fa fa-arrow-left"></i>
-            </a>
+            {% if request.user.is_staff %}
+                <a class="task-link  {% active_link 'activity_logs' %}" href="{% url 'activity_logs' %}">
+                    <span class="task-count">{{ logs_today|default:"0" }}</span>
+                    <span>لاگ سیستم</span>
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <a class="task-link {% active_link 'interferences_index' %}" href="{% url 'interferences_index' %}">
+                    <span class="task-count">{{ logs_today|default:"0" }}</span>
+                    <span>تداخل اماری </span>
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+            {% endif %}
+
         </div>
     </div>
 </div>
 
 <script>
 /* ===== MENU DATA (JSON) ===== */
+{% if request.user.is_staff %}
 const menuData = [
     'مدیریت نرم افزار',
     {
@@ -357,7 +370,6 @@ const menuData = [
             href : "{% url 'amar_avalie_samane' %}",
             icon : 'fa-table',
             tooltip : 'جهت بررسی جدول آماری تفکیک شده فراگیران جهت تقسیم بندی و گردان ها و گروهان ها بر روی پیوند کنید.',
-
         },{
             title : 'پذیرش فوری',
             href : "{% url 'MainViewBattalionGroup' %}",
@@ -396,23 +408,18 @@ const menuData = [
                 noArrow : true,
 
             },
-
         ]
     },
     {
         icon: "fa-print",
         title: "چاپ برگه",
-        subTitle: "معرفی گروهی",
+        subTitle: "ساتر",
         staffOnly: true,
+        url:"{% url 'sater_group_print' %}",
         taskLinks:[{
-            title : 'به ساتر',
-            href : "{% url 'sater_group_print' %}",
-            tooltip : '',
-        },{
-           title : 'به گردان',
+           title : 'معرفی به گردان',
            href : "{% url 'moarefi_begordan_group_print' %}",
            tooltip : '',
-           
         }]
     },
     {
@@ -500,6 +507,51 @@ const menuData = [
         }]
     },
 ];
+{% else %}
+const menuData = [
+    'مدیریت دوره',
+    {
+         url : "{% url 'amar_avalie_samane' %}",
+        icon : 'fa-table',
+        title : 'آمار اولیه',
+        subTitle: "سامانه",
+    },
+    {
+        url: "{% url 'soldier_search' %}",
+        icon: "fa-search",
+        title: "جستجوی پیشرفته",
+        subTitle: "همه سرباز ها",
+    },
+    'شروع دوره',
+    {
+         url : "{% url 'amar_avalie_samane' %}",
+        icon : 'fa-table',
+        title : 'پذیرش شده',
+        subTitle: "فهرست",
+    },
+    {
+        icon: "fa-refresh",
+        title: "سازماندهی",
+        subTitle: "تطبیق",
+        url:"{% url 'soldiers_tatbigh_page' %}",
+    },
+    {% if permissions.dep.farmandehi or permissions.dep.gorohan %}
+        'سازماندهی سرباز',
+        {
+            url: "{% url 'soldiers_problems_page' %}",
+            icon: "fa-question",
+            title: "مشکلات",
+            subTitle: "سربازان",
+        },
+        {
+            url: "{% url 'skills:assign' %}",
+            icon: "fa-graduation-cap",
+            title: "مهارت اول",
+            subTitle: "مهارت دوم",
+        },
+    {% endif %}
+];
+{% endif %}
 
 
 

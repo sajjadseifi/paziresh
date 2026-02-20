@@ -813,7 +813,7 @@ class FormSaterGroup(forms.Form):
         widget=forms.Select(
             attrs={'class': "form-control"}
         ),
-        label='نوع ساتر',
+        label='نوع',
         required=False
     )
 
