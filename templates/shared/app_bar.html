@@ -1,0 +1,596 @@
+{% load static %}
+{% load tags %}
+
+<style>
+.smart-menu-container {
+    // margin-right: var(--sidebar-width);
+    padding: 4px 10px ;
+    background: linear-gradient(135deg,#1b1f24,#111417);
+    border-radius: 0 0 12px 12px;
+    border: 1px solid #2f3a44;
+    box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+
+.smart-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-top:2px ;
+}
+
+.smart-menu-item {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 6px;
+    padding:  8px 10px;
+    border-radius: 8px;
+    background: linear-gradient(135deg,#232a31,#1a2026);
+    border: 1px solid #2d3842;
+    color: #cfd8df;
+    text-decoration: none;
+    transition: all .25s ease;
+    position: relative;
+    overflow: hidden;
+
+}
+
+.smart-menu-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg,transparent,rgba(0,255,200,.15),transparent);
+    opacity: 0;
+    transition: .3s;
+}
+
+.smart-menu-item:hover::after {
+    opacity: 1;
+}
+
+.smart-menu-item:hover {
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0,255,200,.25);
+}
+
+.smart-menu-item i {
+    font-size: 16px;
+    color: #00ffd0;
+}
+
+.smart-menu-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    line-height: 1.3;
+    flex: 1;
+}
+
+
+
+/* ACTIVE LINK */
+.smart-menu-item.active {
+    border-color: #00ffd0;
+    background: linear-gradient(135deg,#1e3535,#162626);
+}
+
+.smart-warning.active,.smart-warning.bordered {
+    border-color: #ffc400 !important;
+}
+
+.smart-warning,.smart-warning i {
+    color: #ffc400 !important;
+}
+.smart-success.active,.smart-success.bordered {
+    border-color: #03ed6b !important;
+}
+
+.smart-success,.smart-success i {
+    color: #03ed6b !important;
+}
+.smart-danger.active ,.smart-danger.bordered{
+    border-color: #ff0076 !important;
+}
+
+.smart-danger,.smart-danger i {
+    color: #ff0076 !important;
+}
+/* DISABLED */
+.smart-disabled {
+    opacity: .45;
+    filter: grayscale(.6);
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+/* COMING SOON */
+.smart-comingsoon {
+    position: relative;
+    opacity: .7;
+}
+
+.smart-comingsoon::before {
+    content: "Coming Soon";
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    font-size: 9px;
+    background: #ff4d6d;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.4);
+}
+
+/* OPTIONAL HOVER BLOCK */
+.smart-comingsoon:hover {
+    box-shadow: none !important;
+}
+.smart-menu-hint {
+    color: gray;
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+}
+.app-bar-brand {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: transparent;
+    padding: 6px 8px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: 0.2s;
+
+}
+.app-bar-brand:hover {
+    background-color: #ffffff11;
+}
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    aspect-ratio: 1/1;
+    background-color: #ffffff22;
+    border-radius: 6px;
+    padding: 6px;
+    box-sizing: border-box;
+
+}
+.image-logo {
+    width: 100%;
+    height: 100%;
+}
+.brand-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.brand-title {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    color :#eda503;
+}
+.brand-subtitle {
+    font-size: 12px;
+    color :#bdbdbd;
+    margin: 0;
+    padding: 0;
+}
+
+.task-box {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 ;
+}
+.task-link {
+    display: inline-block;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #00ffd0 !important;
+    background-color: #ffffff00;
+    padding: 6px 8px !important;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+.task-link:hover  {
+    background-color: #ffffff22;
+}
+.task-link.disabled {
+    opacity: 0.3;
+}
+.task-link.no-glass {
+    padding: 0 !important;
+    background-color: transparent !important;
+}
+.task-link.sky { color: #68b8ff !important; }
+.task-link.orange { color: orange !important; }
+.task-link.chocolate { color: chocolate !important; }
+.task-link.success { color: #03ed6b  !important; }
+
+.task-link.fill.sky { background-color: #68b8ff !important;color: white; }
+
+.task-link .task-count {
+    height: 16px;
+    display: block;
+    min-width: 16px;
+    box-sizing: border-box;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    background-color: #ffffff33;
+    font-size: 12px;
+}
+.app-side-wide {
+    width: var(--sidebar-width);
+    padding: 0 ;
+    box-sizing: border-box;
+}
+.smart-label {
+    font-size: 10px;
+    display: inline-block;
+    max-width: 48px;
+    color: #efefef;
+    padding:  8px 4px;
+    text-align: right;
+}
+.smart-label::after {
+    content: :' : ';
+}
+</style>
+
+<div class="smart-menu-container">
+    <div style="display: flex;align-items: center; gap: 10px;">
+        <div class="app-side-wide ">
+            <div class="app-bar-brand">
+                <div class="brand-logo">
+                    <img class="image-logo" src="{% static 'img/app/logo.png' %}" />
+                </div>
+                <div class="brand-info">
+                    <h1 class="brand-title">سامانه هوشمند سپهر</h1>
+                    <div style="display: flex;align-items: center;justify-content: space-between;">
+                        <h2 class="brand-subtitle">رزم آموز المهدی (عج)</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="smartMenu" style="flex: 1;" class="smart-menu"></div>
+    </div>
+    <div style="display: flex;align-items: center;justify-content: space-between;margin-top: 2px;">
+        <div class="app-side-wide" style="display: flex;align-items: center;justify-content: space-between;">
+            <a class="task-link sky {% active_link 'home_page' %}" href="{% url 'home_page' %}">
+                <i class="fa fa-th-large"></i>
+                <span>کارتابل</span>
+            </a>
+            {% if request.user.is_staff %}
+                <a  
+                    class="task-link sky "
+                    title="برای مشاهده اطلاعات کامل از نرم افزار رمز آموز المهدی کلیک کنید." 
+                    href="/admin/"
+                >
+                    <span style="background-color: #68b8ff;padding:0 2px;border-radius: 4px;">
+                        <img src="{% static 'img/support/eslogo.png' %}" style="width: 8px; height: 8px;"/>
+                    </span>
+                    <span>مدیریت ادمین</span>
+                </a>
+            {% endif %}
+            <span style="flex: 1;"></span>
+            <a class="task-link  {% active_link 'support' %}" href="{% url 'support' %}">
+                <span>درباره سامانه</span>
+                <i class="fa fa-arrow-left"></i>
+            </a>
+
+        </div>
+        <p class="smart-menu-hint" >
+            <span class="smart-menu-hint app-side-wide" style="padding: 0 8px;font-size: 10px;"></span>
+
+            پذیرش و سازماندهی فراگیران | جهت تسریع عملیات ها در منابع سرباز موارد به ترتیب فرایند در زمان پذیرش نیرو چینش شده است.
+        </p>
+        {% comment %} <div class="task-box" style="margin: 0 4px;">
+            <a  class="task-link sky {% active_link 'data_app' %}"  href="{% url 'data_app' %}">
+                <span>راهنمای شروع دوره</span>
+                <i class="fa fa-question"></i>
+            </a>
+        </div> {% endcomment %}
+        <div style="flex: 1;"></div>
+        <div class="task-box">
+            <a class="task-link orange {% active_link 'backup_database' %}" href="{% url 'backup_database' %}">
+                <span>دریافت پایگاه داده</span>
+                <i class="fa fa-download"></i>
+            </a>
+            <a class="task-link orange {% active_link 'restore_database' %}" href="{% url 'restore_database' %}">
+                <span>بارگزاری پایگاه داده</span>
+                <i class="fa fa-upload"></i>
+            </a>
+            <a  class="task-link {% active_link 'data_app' %}"  href="{% url 'data_app' %}">
+                <span>دریافت خروجی اطلاعات</span>
+                <i class="fa fa-file-archive-o"></i>
+            </a>
+            <a class="task-link  {% active_link 'activity_logs' %}" href="{% url 'activity_logs' %}">
+                <span class="task-count">{{ logs_today|default:"0" }}</span>
+                <span>لاگ سیستم</span>
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <a class="task-link {% active_link 'interferences_index' %}" href="{% url 'interferences_index' %}">
+                <span class="task-count">{{ logs_today|default:"0" }}</span>
+                <span>تداخل اماری </span>
+                <i class="fa fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== MENU DATA (JSON) ===== */
+const menuData = [
+    'مدیریت نرم افزار',
+    {
+        url: "{% url 'CreateOrUpdateSettings' %}",
+        icon: "fa-cog",
+        title: "تنظیمات سیستم",
+        subTitle: "اطلاعات دوره",
+        staffOnly: false,
+        taskComplet:false,
+        taskProccess:'1/4',
+        taskLinks:[{
+            title : 'راهنمای شروع دوره',
+            href : "{% url 'data_app' %}",
+            icon : 'fa-question',
+            noArrow:true,
+        }]
+    },
+    {
+        url: "{% url 'exel' %}",
+        icon: "fa-file-excel-o",
+        title: "بارگزاری اطلاعات اکسل",
+        subTitle: "فهرست سامانه جامع",
+        staffOnly: false,
+        taskLinks:[{
+            title : 'آمار اولیه',
+            href : "{% url 'amar_avalie_samane' %}",
+            icon : 'fa-table',
+            tooltip : 'جهت بررسی جدول آماری تفکیک شده فراگیران جهت تقسیم بندی و گردان ها و گروهان ها بر روی پیوند کنید.',
+
+        },{
+            title : 'پذیرش فوری',
+            href : "{% url 'MainViewBattalionGroup' %}",
+            icon :'fa-cogs',
+            tooltip : 'جهت پذیرش به صورت هوشمند وانتخاب اتوماتیک گردان و گروهان ها بر روی پیوند کلیک کنید.',
+        }],
+    },
+    {
+        url: "{% url 'MainViewSoldires' %}",
+        icon: "fa-list",
+        title: "فهرست پذیرش",
+        subTitle: "همه سرباز ها",
+        staffOnly: false,
+        taskLinks:[{
+            title : 'پذیرش شده',
+            href : "{% url 'MainViewSoldires' %}?acceptance_status=acceptance",
+            tooltip : 'برای مشاهده فهرست پذیرش های انجام شده توسط منابع سرباز - نیروی انسانی بر روی پیوند کلیک کنید.',
+            icon:'fa-check',
+        },]
+    },
+    'space',
+    'فرایند پذیرش',
+    {
+        url: "{% url 'sarbaz_codemeli' %}",
+        icon: "fa-id-card",
+        title: "ثبت پذیرش",
+        subTitle: "فوری با با کدملی",
+        staffOnly: true,
+        special : 'success',
+        taskLinks:[
+            {
+                title: "پذیرش با فرم دست نویس",
+                href : "{% url 'CreatePaziresh' %}",
+                icon :'fa-plus',
+                color : 'success',
+                noArrow : true,
+
+            },
+
+        ]
+    },
+    {
+        icon: "fa-print",
+        title: "چاپ برگه",
+        subTitle: "معرفی گروهی",
+        staffOnly: true,
+        taskLinks:[{
+            title : 'به ساتر',
+            href : "{% url 'sater_group_print' %}",
+            tooltip : '',
+        },{
+           title : 'به گردان',
+           href : "{% url 'moarefi_begordan_group_print' %}",
+           tooltip : '',
+           
+        }]
+    },
+    {
+        icon: "fa-refresh",
+        title: "سازماندهی",
+        subTitle: "تطبیق",
+        staffOnly: true,
+        url:"{% url 'soldiers_tatbigh_page' %}",
+        taskLinks:[{
+            title : 'دسته',
+            icon:'fa-cogs',
+            tooltip : '',
+            noArrow : true,
+        },{
+            title : 'تصاویر',
+            tooltip : '',
+            icon:'fa-image',
+            noArrow : true,
+
+        }]
+    },
+    {
+        icon: "fa-cloud-upload",
+        title: "بارگزاری",
+        subTitle: "گروهی",
+        staffOnly: true,
+        taskLinks:[{
+            title : 'شماره حساب',
+            href : "{% url 'import_bank_number_from_exel' %}",
+            icon:'fa-cloud-upload',
+            tooltip : '',
+            noArrow : true,
+
+        },{
+            title : 'شماره تماس',
+            href : "{% url 'exel_update_number' %}",
+            tooltip : '',
+            icon:'fa-cloud-upload',
+            noArrow : true,
+
+        }]
+    },
+    'space',
+    'سامانه جامع',
+    {
+        url: "{% url 'mobilization_document_view' %}",
+        icon: "fa-file-text",
+        title: "کفایت آموزش",
+        subTitle: "اسناد",
+        staffOnly: true,
+        taskLinks:[{
+            title : 'خروجی مدارک',
+            href : "{% url 'export_to_excel_list_elame_hozor' %}",
+            icon :'fa-file-zip-o',
+            tooltip : '',
+            noArrow:true,
+        }]
+    },
+    {
+        url: "{% url 'soldiers_problems_page' %}",
+        icon: "fa-file-text",
+        title: "مشکلات سربازان",
+        subTitle: "اسناد",
+        staffOnly: true,
+        taskLinks:[{
+            title : 'خروجی برای تقسیم',
+            href : "{% url 'unit_problems_export_excel' %}",
+            icon :'fa-file-excel-o',
+            tooltip : '',
+            noArrow:true,
+        }]
+    },
+    {
+        url: "{% url 'skills:technical_vocational' %}",
+        icon: "fa-graduation-cap",
+        title: "مهارت آموزی",
+        subTitle: "فنی و حرفه ای",
+        staffOnly: true,
+        taskLinks:[{
+            title : 'خروجی برای سامانه',
+            href : "{% url 'skills:technical_vocational_export_zip' %}",
+            icon :'fa-file-zip-o',
+            tooltip : '',
+            noArrow:true,
+        }]
+    },
+];
+
+
+
+/* ===== RENDER MENU ===== */
+
+const isStaff = {{ request.user.is_staff|yesno:"true,false" }};
+const container = document.getElementById("smartMenu");
+const currentUrl = window.location.pathname;
+
+const createTaskListItem = (link)=>{
+    const a = document.createElement('a')
+    const iconHtml = link.icon  ? `<i class="fa ${link.icon}"></i>` : ''
+    const arrowIcon = link.noArrow  ? '': `<i class="fa ${link.arrow || 'fa-arrow-left'}"></i>`
+    a.innerHTML = `
+        ${arrowIcon}
+        <span>${link.title}</span>
+        ${iconHtml}
+    `
+    a.classList.add('task-link','no-glass',link.color || 'sky')
+    a.style.margin = '4px 4px 0';
+    const disabled = link.disabled || !link.href
+    a.target = '_blank'
+    a.setAttribute('disabled',disabled)
+    a.setAttribute('data-url',link.href)
+    a.title = link.tooltip || 'برای مشاهده بر روی پیوند کلیک کنید.'
+    if (!disabled) a.href = link.href
+    else {
+        a.classList.add('disabled',disabled)
+        a.title = 'پیوند مروبطه غیر فعال است.'
+    }  
+    
+
+    return a
+}
+const createAppMenuItem =(item)=>{ 
+        const itemElement = document.createElement('div')
+        
+        if(item == 'space'){
+            itemElement.style.flex='1';
+            return itemElement
+        }
+        if(typeof item == 'string'){
+            itemElement.classList.add('smart-label')
+            itemElement.innerHTML = item;
+            return itemElement
+        }
+
+        const a = document.createElement("a");
+        a.href = item.disabled || item.comingSoon ? "javascript:void(0)" : item.url;
+
+        a.className = `smart-menu-item`;
+
+        a.classList.add("smart-"+item.special);
+        a.classList.add(item.class);
+        
+        if (item.disabled) a.classList.add("smart-disabled");
+        if (item.comingSoon) a.classList.add("smart-comingsoon");
+
+        if (!item.disabled && !item.comingSoon) {
+            if (currentUrl === new URL(item.url, window.location.origin).pathname) {
+                a.classList.add("active");
+            }
+        }
+        icon = item.iconElement ? item.iconElement:  `<i class="fa ${item.icon}"></i>`
+
+
+        a.innerHTML = `
+            ${icon}
+            <div class="smart-menu-text">
+                <span>${item.title}</span>
+                <span>${item.subTitle}</span>
+            </div>
+        `;
+        itemElement.appendChild(a)
+        if (item.taskLinks && Array.isArray(item.taskLinks)){
+            const taskBox = document.createElement('div') 
+            taskBox.classList.add('task-box')
+            taskBox.style.padding = '2px 0 0';
+            for(const taskLink of item.taskLinks){
+                const taskElement = createTaskListItem(taskLink)
+                taskBox.appendChild(taskElement)
+            }
+            itemElement.appendChild(taskBox)
+            
+        }
+
+    return itemElement
+}
+const perminatedData = menuData.filter(item => !item.staffOnly || isStaff)
+perminatedData.forEach(item => {
+    const element = createAppMenuItem(item)
+    if(element) container.appendChild(element);
+});
+</script>

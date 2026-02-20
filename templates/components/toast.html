@@ -1,20 +1,20 @@
 
 <style>
-    .toast-success { color: #4caf50; }  /* سبز */
-    .toast-error { color: #f44336; }    /* قرمز */
-    .toast-warning { color: #ff9800; }  /* نارنجی */
-    .toast-info { color: #2196f3; }     /* آبی */
+    .toast-success { background-color: #4caf50; }  /* سبز */
+    .toast-error {   background-color: #f44336; }    /* قرمز */
+    .toast-warning { background-color: #ff9800; }  /* نارنجی */
+    .toast-info { background-color: #2196f3; }     /* آبی */
     .toast {
         min-width: 250px;
         padding: 12px 16px; 
         border-radius: 8px; 
-        background-color: white;
         border: 1px solid rgba(0,0,0,0.2);
         box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
         transition: opacity 0.5s;
         opacity: 0;
         visibility: hidden;
         transform: translateY(0);
+        color: white;
     }
     .toast.show {
         opacity: 1;
@@ -55,6 +55,11 @@
      * @param {string} type نوع پیام: success, error, warning, info
      * @param {number} duration مدت زمان نمایش به میلی‌ثانیه (اختیاری، پیش‌فرض 3000)
  */
+    const show = (toast) => toast.classList.add('show')
+    const hidden = (toast) => {
+        toast.classList.remove('show') 
+        setTimeout(() => toast.remove(), 500);
+    }
 function showToast(message, type="info", duration=3000) {
     const container = document.getElementById("toast-container");
     const toast = document.createElement("div");
@@ -62,24 +67,20 @@ function showToast(message, type="info", duration=3000) {
     toast.textContent = message;
     container.appendChild(toast);
 
-    const show = () => toast.classList.add('show')
-    const hidden = () => {
-        toast.classList.remove('show') 
-        setTimeout(() => toast.remove(), 500);
-    }
+
     
     // نمایش با انیمیشن
-    setTimeout(show, 50);
+    setTimeout(()=>show(toast), 50);
     // محو شدن و حذف بعد از مدت زمان
-    setTimeout(hidden, duration);
+    setTimeout(()=>hidden(toast), duration);
 }
-    document.addEventListener("DOMContentLoaded", function() {
-        const toasts = document.querySelectorAll("#toast-container .toast");
-        toasts.forEach((toast, index) => {
-            // تاخیر کوچک برای پشت سر هم
-            setTimeout(show, index * 200); 
-            // 3 ثانیه نمایش
-            setTimeout(hidden, 3000 + index * 200); 
-        });
+document.addEventListener("DOMContentLoaded", function() {
+    const toasts = document.querySelectorAll("#toast-container .toast");
+    toasts.forEach((toast, index) => {
+        // تاخیر کوچک برای پشت سر هم
+        setTimeout(()=>show(toast), index * 200); 
+        // 3 ثانیه نمایش
+        setTimeout(()=>hidden(toast), 3000 + index * 200); 
     });
+});
 </script>

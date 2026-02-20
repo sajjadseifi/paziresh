@@ -1,131 +1,80 @@
+{% load tags %}
 <style>
-/* عنوان با گرادینت و انیمیشن */
-h1 {
-    color:#126b57;
-    font-size: 1.6em;
-    font-weight: 700;
-    padding:0;
-    margin:0;
-    padding-bottom: 16px;
-}
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
-}
-
-/* تب‌ها کارت‌مانند، انیمیشنی و رنگی */
-.tab-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.tab-nav a {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 15px;
-    text-decoration: none;
-    border-radius: 8px 8px 0 0;
-    background: #f7f9fc;
-color: #126b57; 
-    font-weight: 500;
-    font-size: 0.9em;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transform: translateY(0);
-    font-weight:bold;
-}
-
-.tab-nav a i {
-    font-size: 1.1em;
-    transition: all 0.3s ease;
-}
-
-/* حالت hover */
-.tab-nav a:hover {
-    background: #158269;
-    color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-
-.tab-nav a:hover i {
-    color: #fff;
-    transform: scale(1.2);
-}
- 
-
-/* حالت فعال */
-.tab-nav a.active {
-    background: #28c2a0;
-    color: #fff;
-    font-weight: 600;
-    border-bottom: 2px solid #1a9d80;
-}
-
-.tab-nav a.active i {
-    color: #fff;
-    transform: scale(1.1);
-}
-.box-tabs {
-    display:flex;
-    align-items:center;
-    gap:30px;
-    border-bottom:4px solid #126b57;
-}
-.nav-title {
-    padding: 10px;
-    margin:0 0 5px;
-    background-color: #126b581e;
-    border-right: 4px solid #126b57;
-    border-radius: 10px;
-}
 </style>
-<div class="box-tabs">
-    <div>
-        <h1 class="nav-title">فهرست</h1>
-        <div class="tab-nav">
-            <a href="{% url 'AllNormalLetter' %}" class="{% if request.resolver_match.url_name == 'AllNormalLetter' %}active{% endif %}">
-                <i class="fa fa-credit-card"></i> نامه های عادی
-            </a>
-            <a href="{% url 'AllCheckoutLetter' %}" class="{% if request.resolver_match.url_name == 'AllCheckoutLetter' %}active{% endif %}">
-                <i class="fa fa-handshake-o"></i> تسویه حساب ها
-            </a>
-            <a href="{% url 'AllRawLetters' %}" class="{% if request.resolver_match.url_name == 'AllRawLetters' %}active{% endif %}">
-                <i class="fa fa-handshake-o"></i> نامه های خام
-            </a>
-        </div>
+{% load static %}
+
+<div class="app-navbar">
+        <div>
+        <h4 class="nav-title">ثبت نامه در پذیرش دوره</h4>
+        <ul class="nav-links">
+            <li>
+                <a href="{% url 'CreateTrainingInquiryLetter' %}" class="{% active_link 'CreateTrainingInquiryLetter' %}">
+                    <i class="fa fa-search"></i> استعلام آموزش
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'CreateBeforeCourseCommissionLetter' %}" class="{% active_link 'CreateBeforeCourseCommissionLetter' %}">
+                    <i class="fa fa-user-md"></i> کمیسیون قبل دوره
+                </a>
+            </li>
+        </ul>
     </div>
-    <div>
-        <h1 class="nav-title">ایجاد نامه جدید</h1>
-        <div class="tab-nav">
-            <a href="{% url 'CreateCheckoutLetter' %}" class="{% if request.resolver_match.url_name == 'CreateCheckoutLetter' %}active{% endif %}">
-                <i class="fa fa-credit-card"></i> تسویه حساب
-            </a>
-            <a href="{% url 'CreateTrainingInquiryLetter' %}" class="{% if request.resolver_match.url_name == 'CreateTrainingInquiryLetter' %}active{% endif %}">
-                <i class="fa fa-search"></i> استعلام آموزش
-            </a>
-            <a href="{% url 'CreateBeforeCourseCommissionLetter' %}" class="{% if request.resolver_match.url_name == 'CreateBeforeCourseCommissionLetter' %}active{% endif %}">
-                <i class="fa fa-user-md"></i> کمیسیون قبل دوره
-            </a>
-            <a href="{% url 'CreateRegisterLetter' %}" class="{% if request.resolver_match.url_name == 'CreateRegisterLetter' %}active{% endif %}">
-                <i class="fa fa-id-card"></i> گواهی عضویت
-            </a>
-            <a href="{% url 'CreateFarajaLetter' %}" class="{% if request.resolver_match.url_name == 'CreateFarajaLetter' %}active{% endif %}">
-                <i class="fa fa-university"></i> تسویه فراجا
-            </a>
-            <a href="{% url 'CreaterunawayLetter' %}" class="{% if request.resolver_match.url_name == 'CreaterunawayLetter' %}active{% endif %}">
-                <i class="fa fa-male"></i> نامه فرار
-            </a>
-            <a href="{% url 'CreateMoarefiLetter' %}" class="{% if request.resolver_match.url_name == 'CreateMoarefiLetter' %}active{% endif %}">
-                <i class="fa fa-handshake-o"></i> نامه معرفی
-            </a>
-                <a href="{% url 'CreateRawLetter' %}" class="{% if request.resolver_match.url_name == 'CreateRawLetter' %}active{% endif %}">
-                <i class="fa fa-handshake-o"></i> نامه خام
-            </a>
-        </div>
+    <div >
+        <h4 class="nav-title">فهرست نامه ها</h4>
+        <ul class="nav-links">
+            <li>
+                <a href="{% url 'AllNormalLetter' %}"  class="{% active_link 'AllNormalLetter' %}">
+                    <i class="fa fa-credit-card"></i> نامه های عادی
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'AllCheckoutLetter' %}"  class="{% active_link 'AllCheckoutLetter' %}">
+                    <i class="fa fa-handshake-o"></i> تسویه حساب ها
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'AllRawLetters' %}"  class="{% active_link 'AllRawLetters' %}">
+                    <i class="fa fa-handshake-o"></i> نامه های خام
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div style="flex: 1;">
+        <h4 class="nav-title">ثبت نامه در حین دوره</h4>
+        <ul class="nav-links">
+            <li>
+                <a href="{% url 'CreateCheckoutLetter' %}" class="{% active_link 'CreateCheckoutLetter' %}">
+                    <i class="fa fa-credit-card"></i> تسویه حساب
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'CreateRegisterLetter' %}" class="{% active_link 'CreateRegisterLetter' %}">
+                    <i class="fa fa-id-card"></i> گواهی عضویت
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'CreateFarajaLetter' %}" class="{% active_link 'CreateFarajaLetter' %}">
+                    <i class="fa fa-university"></i> تسویه فراجا
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'CreaterunawayLetter' %}" class="{% active_link 'CreaterunawayLetter' %}">
+                    <i class="fa fa-male"></i> نامه فرار
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'CreateMoarefiLetter' %}" class="{% active_link 'CreateMoarefiLetter' %}">
+                    <i class="fa fa-handshake-o"></i> نامه معرفی
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'CreateRawLetter' %}" class="{% active_link 'CreateRawLetter' %}">
+                    <i class="fa fa-handshake-o"></i> نامه خام
+                </a>
+            </li>
+        </ul>
     </div>
 
 </div>

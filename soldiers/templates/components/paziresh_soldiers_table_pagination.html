@@ -1,6 +1,11 @@
 <div id="pagination-wrapper">
-    <div id="search-container">
-        <label>جستجو در جدول: <input type="text" id="table-search" placeholder="عبارت توصیفی..."></label>
+    <div>
+        <div id="search-container">
+            <label>جستجو در جدول: <input type="text" id="table-search" placeholder="عبارت توصیفی..."></label>
+        </div>
+        <div class="text-muted" style="font-size: 10px;margin-top: 4px;text-align: left;">
+            با جستجوی توصیفی در جدول میتواند هر متن دلخواهی در جدول زیر را  فیلتر کنید.
+        </div>
     </div>
     {% if submitSearch %}
         <button type="submit" class="btn-search btn btn-primary" >
@@ -8,10 +13,12 @@
             <i class="fa fa-search"></i>
         </button>
     {% endif %}
-    <div id="page-info" class="badge"></div>
 
     <div style="flex: 1;"></div>
-    <div id="client-pagination"></div>
+    <div>
+        <div id="client-pagination"></div>
+        <div id="page-info" class="badge"></div>
+    </div>
 </div>
 
 <style>
@@ -28,17 +35,18 @@
 /* Search */
 #search-container label {
     margin: 0;
-    padding: 4px 8px;
+    padding: 4px 8px 4px 4px;
     background-color: #f4f4f4;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 10px;
 }
 #search-container input {
     padding: 6px 8px;
+    margin-right: 4px;
     border-radius: 4px;
     font-size: 12px;
     outline: none;
-    border: 1px solid #aaa;
+    border: none;
     font-weight: normal;
     min-width: 200px;
 }
@@ -51,8 +59,9 @@
     color: crimson;
     padding:  8px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
     white-space: nowrap;
+    margin-top: 10px;
 }
 
 /* Pagination */
@@ -91,7 +100,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const rowsPerPage = 20;
+    const rowsPerPage = 10;
     const table = document.querySelector("#paziresh_soldiers_table");
     const tbody = table.querySelector(".box-items");
     const loadingRow = tbody.querySelector(".box-loading");
@@ -129,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function() {
         allRows.forEach(row => row.style.display = "none");
         filteredRows.slice(start, end).forEach(row => row.style.display = "");
 
-        pageInfo.innerText = `نمایش ردیف ${start+1} تا ${Math.min(end, filteredRows.length)} از ${filteredRows.length} نتیجه یافت شده`;
+        pageInfo.innerText = `نمایش ردیف ( ${start+1} تا ${Math.min(end, filteredRows.length)} ) از « ${filteredRows.length} » نتیجه جستجو در جدول`;
 
         renderPagination(totalPages);
     }

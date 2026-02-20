@@ -24,16 +24,7 @@ class Printer:
         pre = f"[{timestamp}] {prefix}\t" if prefix else f"[{timestamp}]\t\t"
         print(f"{Printer.COLORS.get(color,'')}{pre}{msg}{Printer.COLORS['reset']}")
 
-# =====================
-# تابع اجرای دستورات
-# =====================
-def run_command(cmd_list):
-    """اجرای یک دستور به عنوان subprocess"""
-    try:
-        subprocess.run(cmd_list, check=True)
-    except subprocess.CalledProcessError as e:
-        Printer.print(f"Command failed: {e}", "red", "ERROR")
-        sys.exit(1)
+
 
 # =====================
 # سوئیچ‌ها و فایل env
@@ -46,6 +37,30 @@ ENV_MAP = {
     "--pre-deploy": ".env.prod",
     "--test": ".env.test"
 }
+
+# =====================
+# help
+# =====================
+Printer.print("\nUsage: python devops.py [OPTIONS]\n", "white")
+Printer.print("Options:", "cyan")
+Printer.print("  --dev          Load .env.dev and runserver automatically", "white")
+Printer.print("  --prod         Load .env.prod and run production tasks", "white")
+Printer.print("  --test         Load .env.test and run test tasks", "white")
+Printer.print("  --deploy       Load .env.prod and run collectstatic", "white")
+Printer.print("  --pre-deploy   Load .env.prod and run collectstatic + migrate", "white")
+Printer.print("  --cmd CMD      Run a custom Django command CMD", "white")
+Printer.print("  --help         Show this help message", "white")
+# =====================
+# تابع اجرای دستورات
+# =====================
+def run_command(cmd_list):
+    """اجرای یک دستور به عنوان subprocess"""
+    try:
+        subprocess.run(cmd_list, check=True)
+    except subprocess.CalledProcessError as e:
+        Printer.print(f"Command failed: {e}", "red", "ERROR")
+        sys.exit(1)
+
 
 for flag, env_file in ENV_MAP.items():
     if flag in sys.argv:
@@ -79,7 +94,6 @@ else:
 # مقادیر کلیدی
 # =====================
 DEBUG = os.getenv("DEBUG", "True")
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*")
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*")
 APP_SETTINGS =  os.getenv("APP_SETTINGS", "")
 
@@ -141,16 +155,5 @@ elif MODE == "pre-deploy":
     run_command([sys.executable, MANAGE_PY, "migrate"])
     sys.exit(0)
 
-# =====================
-# help
-# =====================
-Printer.print("\nUsage: python devops.py [OPTIONS]\n", "white")
-Printer.print("Options:", "cyan")
-Printer.print("  --dev          Load .env.dev and runserver automatically", "white")
-Printer.print("  --prod         Load .env.prod and run production tasks", "white")
-Printer.print("  --test         Load .env.test and run test tasks", "white")
-Printer.print("  --deploy       Load .env.prod and run collectstatic", "white")
-Printer.print("  --pre-deploy   Load .env.prod and run collectstatic + migrate", "white")
-Printer.print("  --cmd CMD      Run a custom Django command CMD", "white")
-Printer.print("  --help         Show this help message", "white")
+
 sys.exit(0)

@@ -1242,6 +1242,9 @@ class MainViewSoldires(LoginRequiredMixin, View):
         acceptance_code = request.GET.get('acceptance_code')
             
         soldiers = sarbaz.objects.all()
+        all_counts = soldiers.count() 
+        
+        
         if name:
             soldire = soldiers.filter(name__icontains=name)
         if family:
@@ -1280,6 +1283,7 @@ class MainViewSoldires(LoginRequiredMixin, View):
             soldiers = soldiers.filter(battalion_group=group)
 
         gordans = battalion.objects.all()
+        result_counts = soldiers.count() 
 
         cx = {
             # forms
@@ -1294,7 +1298,9 @@ class MainViewSoldires(LoginRequiredMixin, View):
             'unkhown_status_types':sarbaz.unkhown_status_types(),
             'gordans':gordans,
             # 
-            'results': soldiers
+            'results': soldiers,
+            'result_counts': result_counts,
+            'all_counts':all_counts,
         }
         
         return render(request, 'soldiers/MainViewSoldires.html', cx)
@@ -1324,7 +1330,9 @@ class exel_add_to_db(LoginRequiredMixin, View):
         khatam_form = FormKhatamChecked()
     
         cx = {'form': form,'khatam_form':khatam_form}
-
+        updated_counts = 0
+        add_count = 0
+        skipped_count = 0
         if form.is_valid():
             exel = request.FILES['file']
             workbook = xlrd.open_workbook(file_contents=exel.read())
@@ -1342,10 +1350,11 @@ class exel_add_to_db(LoginRequiredMixin, View):
                 #         continue
                 
                 one_soldire_list = []
-                soldire = sarbaz()
+                
                 for col_idx in range(num_cols):
                     # # مقدار سلول را بخوانید
                     cell_value = sheet.cell_value(row_idx, col_idx)
+                    cell_value = normalization_persian(cell_value)
                     # # مقدار دهی به لیست
                     # if str(cell_value).find('ي'):
                     #     cell_value = str(cell_value).replace('ي', 'ی')
@@ -1353,11 +1362,23 @@ class exel_add_to_db(LoginRequiredMixin, View):
                     #     cell_value = str(cell_value).replace('ك', 'ک')
                     # if str(cell_value).find('ك'):
                     #     cell_value = str(cell_value).replace('ؤ', 'و')
-                    cell_value = normalization_persian(cell_value)
-                    
                     one_soldire_list.append(cell_value)
                 
                 has_national = not str(one_soldire_list[1]) == "null"
+                check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list[1])).first()
+                if check_soldire:
+                    if not form.cleaned_data['can_edit']:
+                        skipped_count += 1
+                        continue
+                    soldire = check_soldire
+                    updated_counts += 1
+                else:
+                    if not form.cleaned_data['can_add']:
+                        skipped_count += 1
+                        continue
+                    add_count += 1
+                    soldire = sarbaz()
+                
                 if has_national:
                     soldire.status_type = str(one_soldire_list[0]) # flexible types of soldiers       
                 if has_national:
@@ -1416,14 +1437,20 @@ class exel_add_to_db(LoginRequiredMixin, View):
                 #             "\u200c", ""):
                 #         temp = i[0]
                 if form.cleaned_data['format_dagree']:
-                    soldire.educational_level_of_the_system = smart_separation(soldire.educational_level_of_the_system)
+                    soldire.educational_level_of_the_system = smart_separation(soldire.educational_level_of_the_system) 
+                    if not soldire.Study_group:
+                        soldire.Study_group = soldire.educational_level_of_the_system
+                        
                 temp = generate_grade_temp(soldire.educational_level_of_the_system)
                 soldire.Grade = categorize_educational_level(temp)[1]
                 soldire.Grade_precise = map_educational_level_to_grade(temp)[1]
-                check_soldire = sarbaz.objects.filter(National_Code=str(one_soldire_list[1])).first()
                 soldire.date_improt_type = "سامانه"
-                if check_soldire is None:
-                    soldire.save()
+                soldire.save()
+                        
+
+            print(f'ایجاد : {add_count} ، ویرایش : {updated_counts} ، نایده گرفته : {skipped_count}')
+            messages.info(request,f'ایجاد : {add_count} ، ویرایش : {updated_counts} ، نایده گرفته : {skipped_count}')
+
         return render(request, 'soldiers/AddExelToDb.html', cx)
 
 from django import forms
@@ -1958,6 +1985,7 @@ def soldier_search(request):
     if acceptance_code:
         soldiers = soldiers.filter(acceptance_code=acceptance_code)
 
+    
     context = {
         'results': soldiers,
     }

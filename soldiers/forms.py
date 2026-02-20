@@ -719,7 +719,23 @@ class FormAddExelToDb(forms.Form):
         widget=forms.CheckboxInput(attrs={'type': "checkbox", 'name': "format_dagree", 'id': "format_dagree"}),
         label='فرمت هوشمند مدرک تحصیلی',
         required=False,
-        initial=False
+        initial=True,
+        help_text='درصورتی که این قابلیت فعال باشد محتوای متنی ستون تحصیلات به دو بخش گروه تحصیلی و رشته تحصیلی تفکیک خواهد شد.'
+    )
+
+    can_add = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'type': "checkbox", 'name': "can_add", 'id': "can_add"}),
+        label='امکان ایجاد دارد؟',
+        required=False,
+        initial=True,
+        help_text='درصورت فعال بودن این گزینه امکان افزودن داده جدید با توجه به کدملی وجود خواهد داشت'
+    )
+    can_edit = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'type': "checkbox", 'name': "can_edit", 'id': "can_edit"}),
+        label='امکان ویرایش دارد',
+        required=False,
+        initial=True,
+        help_text='در صورت فعال بودن گزینه ویرایش برای سرباز با توجه به کد ملی انجام خواهد شد.'
     )
 
 

@@ -1,14 +1,17 @@
 {% load static %}
 <style>
+
     .user-loggedin
     {
-        padding: 8px ;
+        padding: 8px;
         color:white;
         background:#ffffff11;
         border-radius:4px;
         display:flex;
         align-items:center;
         justify-content:space-between;
+        font-size: 12px;
+        margin: 0;
     }
     .logout-btn {
         background:#ff3342;
@@ -21,6 +24,7 @@
         color:white;
     }
     .main-sidebar {
+        padding-top: 120px;
         height: calc(100vh - 100px);
         max-height: calc(100vh - 100px);
         display: flex;
@@ -37,23 +41,27 @@
         width: 60px;
     }
     .sep-nav-title {
+        color: #cfcfcf;
+        text-align: center;
         font-size: 10px;
+        padding:10px;
+        margin: 0;
     }
     .main-sidebar {
-        width: 280px;
+        width: var(--sidebar-width);
     }
     .main-header .logo  {
-        width: 280px;
+        width: var(--sidebar-width);
     }
     .content-wrapper, .main-footer {
-        margin-right: 280px;
+        margin-right: var(--sidebar-width);
     }
 
     a.admin-panel-link {
         text-align:center;
-        margin: 4px 10px;
-        padding:10px ;
-        border: 2px solid skyblue;
+        margin: 4px;
+        padding:4px 10px;
+        border: 1px solid skyblue;
         background-color: #6495ed05;
         color: skyblue !important;
         border-radius: 8px;
@@ -62,7 +70,7 @@
         align-items: center;
         justify-content: space-between;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 14px;
     }
     a.admin-panel-link:hover {
         background-color: #6495ed20;
@@ -95,16 +103,14 @@
 
     .app-info-contnet {
     }
+    .main-sidebar .sidebar-menu li a {
+        font-size: 12px;
+    }
 </style>
 <aside class="main-sidebar">
     <section style="flex: 1;overflow-y:auto ;" class="sidebar">
-        <p class="user-loggedin">
-            <span class="user-status">{{ request.user.first_name }} {{ request.user.last_name }}</span>
-            <a style="color:white;" href="{% url 'logout' %}"  class="header-icon logout-btn">
-               خروج <i class="fa fa-sign-out"></i> 
-            </a>
-        </p>
-        {% if request.user.is_staff %}
+
+        {% if request.user.is_staff and False %}
         <div>
             <a  target="_blank" class="admin-panel-link" href="/admin/">
                 <span>پنل ادمین استقلال</span>
@@ -277,8 +283,6 @@
               </span>
                 </a>
                 <ul class="treeview-menu">
-              
-
                     <li><a href="{% url 'amar' %}">افراد حاضر به خدمت</a></li>
                     <li><a href="{% url 'gordanvgorhan' %}">آمار گردان و گروهان</a></li>
                     <li><a href="{% url 'amar_shoro_doreh' %}">آمار شروع دوره</a></li>
@@ -307,14 +311,13 @@
             </li>
         </ul>
     </section>
-    <div>
-        <div class="app-info">
-            <div class="app-info-logo">
-                <img class="sepah-logo" src="{% static 'img/Sepah.png' %}"/>
-            </div>
-            <div class="app-info-content">
-                <span class="sep-nav-title">نیروی زمینی سپاه</span>
-            </div>
-        </div>
+    <div style="padding: 0 10px;margin: 0;">
+        <p class="user-loggedin">
+            <span class="user-status">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+            <a style="color:white;" href="{% url 'logout' %}"  class="header-icon logout-btn">
+               خروج <i class="fa fa-sign-out"></i> 
+            </a>
+        </p>
+        <p class="sep-nav-title">نیروی زمینی سپاه</p>
     </div>
 </aside>

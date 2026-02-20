@@ -194,24 +194,6 @@
         object-fit: cover;
         border: 1px solid #ddd;
     }
-/* ستون‌ها */
-.col-2 {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5%;
-}
-
-/* هر آیتم داخل ستون */
-.col-2 > * {
-    flex: 1 1 45%; /* حداقل 45% عرض، ولی می‌تونه کوچک‌تر یا بزرگ‌تر بشه */
-    width: 45%;
-    box-sizing: border-box;
-}
-.col-2 > .full {
-    flex: 1 1 95%; /* حداقل 45% عرض، ولی می‌تونه کوچک‌تر یا بزرگ‌تر بشه */
-    width: 95%;
-}
 
 /* متن داخل کارت و key-value */
 .card-body > p > strong {
@@ -231,16 +213,7 @@
     word-break: break-word; /* جلوگیری از شکستن layout با متن طولانی */
 }
 
-/* ریسپانسیو برای موبایل */
-@media (max-width: 768px) {
-    .col-2 > * {
-        flex: 1 1 100%; /* روی موبایل هر آیتم تمام عرض باشه */
-        max-width: 100%;
-    }
-    .col-2 {
-        gap: 10px; /* فاصله کمتر و مناسب موبایل */
-    }
-}
+
 .select2-results__option {
     padding: 10px 12px;
     line-height: 1.6;

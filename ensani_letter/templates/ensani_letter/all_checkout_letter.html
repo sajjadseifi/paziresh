@@ -92,14 +92,16 @@
   .card-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
   }
   .card-item {
     border-radius: 10px;
     border: 1px solid #e0e0e0;
-    padding: 12px 15px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    padding: 8px 15px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.04);
     background: white;
+    display: flex;
+    gap: 20px;
   }
   .card-header {
     display: flex;
@@ -126,7 +128,7 @@
     min-width: 90px;
     height: 30px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 11px !important;
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
@@ -139,41 +141,47 @@
     background: #f0f0f0;
     color: #333;
   }
-  .status-approved {
-    background: #28a745;
-    color: white;
+  .text-approved {
+    color: #28a745 !important;
   }
-  .status-rejected {
-    background: #dc3545;
-    color: white;
+  .text-rejected {
+    color: #dc3545 !important;
   }
-  .status-pending {
-    background: #ffc107;
-    color: #333;
+  .text-pending {
+    color: #ffc107 !important;
   }
   .date {
-    font-size: 13px;
+    font-size: 11px !important;
     color: #555;
   }
 
   /* Content */
+  .card-content p {
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
   .card-content {
     display: flex;
+    flex-direction: column;
+    justify-content: start;
     flex-wrap: wrap;
-    gap: 15px;
-    font-size: 14px;
+    gap: 5px;
+    font-size: 12px;
     color: #333;
-    margin-bottom: 12px;
     line-height: 1.6;
   }
   .card-content div {
     flex: 1;
-    min-width: 150px;
     font-weight: bold;
   }
   .card-content span {
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: bold;
+    font-size: 12px;
   }
 
   /* Actions */
@@ -188,11 +196,13 @@
   }
   .action-btn {
     display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 14px;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
     font-weight: bold;
     color: white !important;
     text-decoration: none;
@@ -205,11 +215,8 @@
   .action-btn i {
     transition: transform 0.3s ease;
   }
-  .action-btn:hover i {
-    transform: rotate(15deg) scale(1.2);
-  }
+
   .action-btn:hover {
-    transform: translateY(-3px) scale(1.05);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   }
   .print-btn {
@@ -305,6 +312,29 @@
     }
 }
 
+q.link-forward { 
+  gap:6px; padding:0;color:red; font-weight:600; font-size:0.95em;  text-decoration:none;
+}
+.card-item-w300 {
+  min-width: 300px;
+}
+.card-item-w140 {
+  min-width: 140px;
+}
+.card-item-w200 {
+  min-width: 200px;
+}
+.type-badge.type-danger {
+  background:crimson !important;
+}
+.item-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
 </style>
 {% include '../layout/NavCreateLetterForm.html' %}
 
@@ -332,7 +362,7 @@
     </a>
 
     <a href="{% url 'CreateCheckoutLetter' %}" class="add-btn">➕ ثبت نامه جدید</a>
-</div>
+  </div>
   </div>
 
   <div class="count-badges">
@@ -343,70 +373,81 @@
   <!-- Cards List -->
   <div class="card-list">
     {% for c in all_checkout_letter %}
-    <div class="card-item">
-      <div class="card-header">
-        <div class="header-left">
-          <span style="min-width:200px;" class="type-badge">{{ c.c_type }}</span>
-          {% if c.status == "تایید شده" %}
-          <span style="min-width:200px;" class="status status-approved">وضعیت : {{ c.status }}</span>
-          {% elif c.status == "رد شده" %}
-          <span style="min-width:200px;" class="status status-rejected">وضعیت : {{ c.status }}</span>
-          {% else %}
-          <span style="min-width:200px;" class="status status-pending">وضعیت : {{ c.status }}</span>
-          {% endif %}
-        </div>
-        <div class="header-right">
-          <span class="number-badge">شماره: {{ c.number }}</span>
-          <span class="date">📅 {{ c.create_time.date }}</span>
-        </div>
-      </div>
-
-      <div class="card-content">
-        <div>
-          نام و نام خانوادگی:
-          <span>{{ c.soldire.name }} {{ c.soldire.family }}</span>
-        </div>
-        <div>کد ملی: <span>{{ c.soldire.National_Code }}</span></div>
-        <div style="flex: 1">توضیحات: <span>{{ c.description }}</span></div>
-      </div>
-
-      <div class="card-actions">
-        <div>
-            {% if c.c_type == "کمیسیون پزشکی" and  c.status == "تایید" %}
-                  <a href="#" class="action-btn disabled-btn">
-                      <i class="fa fa-ban"></i> کمیسیون ثبت و تایید شد
-                  </a>
+      <div class="card-item">
+            <div class="card-content item-counter" >
+                {{forloop.counter}}
+            </div>  
+            <div class="card-content card-item-w300" >
+                <div style="display:flex;align-items: center;gap: 4px;">
+                  <span style="flex: 1;" class="number-badge">شماره: {{ c.number }}</span>
+                  <span style="flex: 1;" class="type-badge {% if c.c_type == "تجدید دوره" %}type-danger{% endif %}">{{ c.c_type }}</span>
+                </div>
+                <div style="display:flex;align-items: center;gap: 4px;justify-content: space-between;">
+                  <p style="flex: 1;">تاریخ ثبت : <span >{{ c.create_time.date }}</span></p>
                   {%if c.letter %}
-                    <a  target="_blank" href="{% url 'PrintCheckoutCommissionLetter' pk=c.letter.pk %}" style="gap:6px; padding:0;color:red; font-weight:600; font-size:0.95em;  text-decoration:none;">
-                        <i class="fa fa-reply"></i> نامه کمیسیون : {{ c.letter.number }}
+                    <a  class="link-forward" style="flex: 1;" target="_blank" href="{% url 'PrintCheckoutCommissionLetter' pk=c.letter.pk %}" >
+                      <i class="fa fa-reply"></i> نامه معرفی 
+                      {% comment %} : {{ c.letter.number }} {% endcomment %}
                     </a>
+                  {% else %}
+                    <span style="flex: 1;"></span>
                   {% endif %}
-            {% endif %}
-        </div>
-        <div >
-        <a
-          href="{% url 'PrintCheckoutLetter' pk=c.pk %}"
-          class="action-btn print-btn"
-          ><i class="fa fa-print"></i> تسویه حساب</a
-        >
-      {% if c.c_type == "کمیسیون پزشکی" and   c.status != "تایید"  %}
-              <a href="{% url 'CreateCommissionLetter' pk=c.number %}" class="action-btn commission-btn">
-                  <i class="fa fa-edit"></i> ثبت کمیسیون
-              </a>
-      {% endif %}
+                </div>
+            </div>
+            <div class="card-content card-item-w200">
+                <p>
+                  نام فراگیر: <span>{{ c.soldire.name }} {{ c.soldire.family }}</span>
+                </p>
+                <p>فرزند : <span>{{ c.soldire.fathers_name }}</span></p>
+                <p>کد ملی : <span>{{ c.soldire.National_Code }}</span></p>
+            </div>
+            <div class="card-content" style="flex: 1;">
+              <p>توضیحات: <span>{{ c.description }}</span><p>
+            </div>
+            <div class="card-content">
+                  <a href="{% url 'PrintCheckoutLetter' pk=c.pk %}" style="min-width: 140px;" class="action-btn print-btn">
+                    <i class="fa fa-print"></i> چاپ تسویه حساب
+                  </a>
+              {% if c.c_type == "کمیسیون پزشکی" and   c.status != "تایید"  %}
+                  <a href="{% url 'CreateCommissionLetter' pk=c.number %}" class="action-btn commission-btn">
+                      <i class="fa fa-edit"></i> ثبت کمیسیون
+                  </a>
+              {% endif %}
+              {% if c.c_type == "کمیسیون پزشکی" and  c.status == "تایید" %}
+                  <a href="#" class="action-btn disabled-btn">
+                      <i class="fa fa-ban"></i> کمیسیون تایید شد
+                  </a>
+              {% endif %}
+            </div>
+            <div class="card-content">
+              <p style="min-width:240px;display: flex;align-items: center;justify-content: space-between;">
+                  <a style="color: black;">وضعیت : </a>
+                  <span 
+                    class="
+                      {% if c.status == "تایید شده" %}
+                        text-approved
+                      {% elif c.status == "رد شده" %}
+                        text-rejected
+                      {% elif c.status == 'چاپ برگه-درحال بررسی' %}
+                        text-pending
+                      {% elif c.status == 'ثبت اولیه' %}
+                      {% endif %}
+                    "
+                  >{{ c.status }}</span>
+              </p>
+                
+                <div style="display: flex;align-items: center;gap: 2px;">
+                  <a 
 
-            <a href="{% url 'status_ok_checkout' pk=c.pk %}" class="action-btn approve-btn">
-              <i class="fa fa-check"></i> تایید
-            </a> 
-          
-          <a
-            href="{% url 'delete_checkout' pk=c.pk %}"
-            class="action-btn delete-btn"
-            ><i class="fa fa-trash"></i> حذف</a
-          >
-        </div>
+                    href="{% url 'status_ok_checkout' pk=c.pk %}" style="flex: 1;" class="action-btn approve-btn">
+                    <i class="fa fa-check"></i> تایید
+                  </a> 
+                  <a href="{% url 'delete_checkout' pk=c.pk %}" style="flex: 1;" class="action-btn delete-btn">
+                    <i class="fa fa-trash"></i> حذف
+                  </a>
+                </div>
+            </div>
       </div>
-    </div>
     {% empty %}
     <div class="alert alert-info">هیچ نامه تسویه حسابی یافت نشد.</div>
     {% endfor %}

@@ -1,20 +1,12 @@
 {% extends "shared/_PanelMain.html" %}
 {%load static%}
-{% block header %}
-   <link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
-   <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
-   <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
-   <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
-   <script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
 
-{% endblock %}
 
 {% block main %}
-   <div class="skills-training-layout">
+   <div >
       <!-- include navbar -->
       {% include "./navbar.html" %}
-
-      <div class="skills-training-body mt-4">
+      <div >
          {% block content %}{% endblock %}
       </div>
    </div>

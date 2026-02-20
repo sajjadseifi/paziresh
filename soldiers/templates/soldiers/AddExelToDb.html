@@ -8,7 +8,6 @@
     .panel-card {
         background: #fff;
         border-radius: 10px;
-        padding: 20px;
         box-shadow: 0 8px 24px rgba(0,0,0,.06);
         margin-bottom: 20px;
     }
@@ -17,8 +16,7 @@
     .panel-title {
         font-size: 15px;
         font-weight: bold;
-        padding-bottom: 15px;
-        margin-bottom: 15px;
+        padding: 15px;
         border-bottom: 1px solid #aaa;
         color: #333;
         display: flex;
@@ -159,33 +157,78 @@
     color: white;
     border: 1px solid #4f46e5;
 }
+.form-groups {
+    display: flex;
+    flex-direction: column;
+    
+}
+.form-groups p {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #efefef;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+    position: relative;
+    direction: rtl;
+}
 
+.form-groups p input[type='checkbox']  {
+    margin: 5px 10px;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    left: 10px;
+    top: 5px;
+}
+.form-groups p label {
+    margin: 0;
+    height: 30px;
+    width: 100%;
+    padding: 5px 10px;
+}
+.helptext {
+    width: 100%;
+    display: block;
+    font-size: 10px;
+    color: orangered;
+    padding: 5px 5px 5px 50px;
+}
 </style>
 
 <div class="import-page">
     <div class="row">
         <!-- فرم کامل -->
-        <div class="col-md-4">
+        <div class="col-md-5">
                 <div class="panel-card">
                     <div class="panel-title">
                         <h3>بارگذاری اکسل (کامل)</h3>
+                        <a href="{% url 'download_import_samane_sample_excel' %}" class="btn-action success">
+                            دانلود فایل نمونه
+                        </a>
                     </div>
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button class="btn-action wfull info" type="submit">
-                            بررسی فایل
-                        </button>
-                    </form>
-                    {% if result_all %}
-                        <div class="result-box success">
-                            <div>کل رکوردها: {{ result_all.total }}</div>
-                            <div>ثبت موفق: {{ result_all.success }}</div>
-                            <div>دارای خطا: {{ result_all.errors }}</div>
-                        </div>
-                    {% endif %}
-                </div>
+                    <div class="panel-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-groups">
+                                {{ form.as_p }}
+                            </div>
+                            <button class="btn-action wfull info" type="submit">
+                                بررسی فایل
+                            </button>
+                        </form>
+                    </div>
 
+                </div>
+                {% if result_all %}
+                    <div class="result-box success">
+                        <div>کل رکوردها: {{ result_all.total }}</div>
+                        <div>ثبت موفق: {{ result_all.success }}</div>
+                        <div>دارای خطا: {{ result_all.errors }}</div>
+                    </div>
+                {% endif %}
+{% comment %} 
                 <div class="panel-card">
                     <div class="panel-title">
                         <h3>بروز رسانی گروهی وضعیت طرح قرارگاه سازندگی خاتم</h3>
@@ -204,225 +247,227 @@
                             </a>
                         </div>
                     </form>
-                </div>
+                </div> {% endcomment %}
         </div>
         <!-- راهنما -->
-        <div class="col-md-8">
+        <div class="col-md-7">
             <div class="panel-card excel-guide">
                 <div class="panel-title">
-                    <h3 style="flex: 1;">راهنمای فایل اکسل سامانه</h3>
-                    <a href="{% url 'download_import_samane_sample_excel' %}" class="btn-action success">
-                        دانلود فایل نمونه
-                    </a>
+                    <h3 style="flex: 1;margin-top: 10px;">راهنمای فایل اکسل سامانه</h3>
+
                 </div>
-                <p>
-                    فایل اکسل ورودی باید دقیقاً مطابق ترتیب و عناوین ستون‌های تعریف‌شده در سامانه باشد.
-                    هرگونه جابه‌جایی ستون، تغییر نام یا مقدار نامعتبر باعث خطا در پردازش خواهد شد.
-                </p>
-                <table class="guide-table">
-                    <colgroup>
-                        <col style="width:5%">
-                        <col style="width:15%">
-                        <col style="width:15%">
-                        <col style="width:65%">
-                    </colgroup>
+                <div class="panel-body" style="max-height: 60svh;overflow-y: auto;">
+                    <p style="font-size: 10px;">
+                        فایل اکسل ورودی باید دقیقاً مطابق ترتیب و عناوین ستون‌های تعریف‌شده در سامانه باشد.
+                        هرگونه جابه‌جایی ستون، تغییر نام یا مقدار نامعتبر باعث خطا در پردازش خواهد شد.
+                    </p>
+                    <table class="guide-table">
+                        <colgroup>
+                            <col style="width:5%">
+                            <col style="width:15%">
+                            <col style="width:15%">
+                            <col style="width:65%">
+                        </colgroup>
 
-                    <tr>
-                        <th>ردیف</th>
-                        <th>نام ستون</th>
-                        <th>نوع ورودی</th>
-                        <th>توضیحات</th>
-                    </tr>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام ستون</th>
+                            <th>نوع ورودی</th>
+                            <th>توضیحات</th>
+                        </tr>
 
-                    <tr>
-                        <td>1</td>
-                        <td>وضعیت</td>
-                        <td>متنی</td>
-                        <td>
-                            وضعیت برگه اعزام فرد
-                            <code>عادی</code>
-                            <code>امریه دار</code>
-                            <code>پیام آور بهداشت</code>
-                            <code>طرح خاتم</code>
-                            <code>قرگاه سازندگی</code>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>وضعیت</td>
+                            <td>متنی</td>
+                            <td>
+                                وضعیت برگه اعزام فرد
+                                <code>عادی</code>
+                                <code>امریه دار</code>
+                                <code>پیام آور بهداشت</code>
+                                <code>طرح خاتم</code>
+                                <code>قرگاه سازندگی</code>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>2</td>
-                        <td>کد ملی</td>
-                        <td>عددی</td>
-                        <td>کد ملی ۱۰ رقمی</td>
-                    </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>کد ملی</td>
+                            <td>عددی</td>
+                            <td>کد ملی ۱۰ رقمی</td>
+                        </tr>
 
-                    <tr>
-                        <td>3</td>
-                        <td>نام</td>
-                        <td>متنی</td>
-                        <td>نام فرد</td>
-                    </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>نام</td>
+                            <td>متنی</td>
+                            <td>نام فرد</td>
+                        </tr>
 
-                    <tr>
-                        <td>4</td>
-                        <td>نام خانوادگی</td>
-                        <td>متنی</td>
-                        <td>نام خانوادگی</td>
-                    </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>نام خانوادگی</td>
+                            <td>متنی</td>
+                            <td>نام خانوادگی</td>
+                        </tr>
 
-                    <tr>
-                        <td>5</td>
-                        <td>نام پدر</td>
-                        <td>متنی</td>
-                        <td>نام پدر</td>
-                    </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>نام پدر</td>
+                            <td>متنی</td>
+                            <td>نام پدر</td>
+                        </tr>
 
-                    <tr>
-                        <td>6</td>
-                        <td>محل تولد</td>
-                        <td>متنی</td>
-                        <td>شهر محل تولد</td>
-                    </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>محل تولد</td>
+                            <td>متنی</td>
+                            <td>شهر محل تولد</td>
+                        </tr>
 
-                    <tr>
-                        <td>7</td>
-                        <td>تاریخ تولد</td>
-                        <td>فرمت تاریخ</td>
-                        <td>فرمت معتبر تاریخ</td>
-                    </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>تاریخ تولد</td>
+                            <td>فرمت تاریخ</td>
+                            <td>فرمت معتبر تاریخ</td>
+                        </tr>
 
-                    <tr>
-                        <td>8</td>
-                        <td>محل صدور</td>
-                        <td>متنی</td>
-                        <td>محل صدور شناسنامه</td>
-                    </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>محل صدور</td>
+                            <td>متنی</td>
+                            <td>محل صدور شناسنامه</td>
+                        </tr>
 
-                    <tr>
-                        <td>9</td>
-                        <td>مذهب</td>
-                        <td>انتخابی </td>
-                        <td>
-                            مقادیر مجاز:
-                            <code>شیعه</code>،
-                            <code>اهل تسنن</code>،
-                            <code>نامشخص</code>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>مذهب</td>
+                            <td>انتخابی </td>
+                            <td>
+                                مقادیر مجاز:
+                                <code>شیعه</code>،
+                                <code>اهل تسنن</code>،
+                                <code>نامشخص</code>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>10</td>
-                        <td>مدرک تحصیلی</td>
-                        <td>انتخابی </td>
-                        <td>
-                            <code>بی‌سواد</code>،
-                            <code>نهضت سواد آموزی</code>،
-                            <code>ابتدایی</code>،
-                            <code>راهنمایی</code>،
-                            <code>سیکل</code>،
-                            <code>دبیرستان</code>،
-                            <code>زیر دیپلم</code>،
-                            <code>دیپلم</code>،
-                            <code>فوق دیپلم</code>،
-                            <code>لیسانس</code>،
-                            <code>فوق لیسانس</code>،
-                            <code>دکتری</code>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>مدرک تحصیلی</td>
+                            <td>انتخابی </td>
+                            <td>
+                                <code>بی‌سواد</code>،
+                                <code>نهضت سواد آموزی</code>،
+                                <code>ابتدایی</code>،
+                                <code>راهنمایی</code>،
+                                <code>سیکل</code>،
+                                <code>دبیرستان</code>،
+                                <code>زیر دیپلم</code>،
+                                <code>دیپلم</code>،
+                                <code>فوق دیپلم</code>،
+                                <code>لیسانس</code>،
+                                <code>فوق لیسانس</code>،
+                                <code>دکتری</code>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>11</td>
-                        <td>رشته تحصیلی</td>
-                        <td>متنی</td>
-                        <td>عنوان رشته تحصیلی</td>
-                    </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>رشته تحصیلی</td>
+                            <td>متنی</td>
+                            <td>عنوان رشته تحصیلی</td>
+                        </tr>
 
-                    <tr>
-                        <td>12</td>
-                        <td>تاریخ اعزام</td>
-                        <td>فرمت تاریخ</td>
-                        <td>فرمت معتبر تاریخ</td>
-                    </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>تاریخ اعزام</td>
+                            <td>فرمت تاریخ</td>
+                            <td>فرمت معتبر تاریخ</td>
+                        </tr>
 
-                    <tr>
-                        <td>13</td>
-                        <td>قد</td>
-                        <td>عددی</td>
-                        <td>به سانتی‌متر</td>
-                    </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>قد</td>
+                            <td>عددی</td>
+                            <td>به سانتی‌متر</td>
+                        </tr>
 
-                    <tr>
-                        <td>14</td>
-                        <td>وزن</td>
-                        <td>عددی</td>
-                        <td>به کیلوگرم</td>
-                    </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>وزن</td>
+                            <td>عددی</td>
+                            <td>به کیلوگرم</td>
+                        </tr>
 
-                    <tr>
-                        <td>15</td>
-                        <td>استان محل سکونت</td>
-                        <td>انتخابی </td>
-                        <td>
-                            مطابق لیست:
-                            <code>province_name_list</code>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>استان محل سکونت</td>
+                            <td>انتخابی </td>
+                            <td>
+                                مطابق لیست:
+                                <code>province_name_list</code>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>16</td>
-                        <td>شهر محل سکونت</td>
-                        <td>متنی</td>
-                        <td>نام شهر</td>
-                    </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>شهر محل سکونت</td>
+                            <td>متنی</td>
+                            <td>نام شهر</td>
+                        </tr>
 
-                    <tr>
-                        <td>17</td>
-                        <td>آدرس محل سکونت</td>
-                        <td>متنی</td>
-                        <td>آدرس کامل</td>
-                    </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>آدرس محل سکونت</td>
+                            <td>متنی</td>
+                            <td>آدرس کامل</td>
+                        </tr>
 
-                    <tr>
-                        <td>18</td>
-                        <td>شماره همراه</td>
-                        <td>عددی</td>
-                        <td>شماره موبایل</td>
-                    </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>شماره همراه</td>
+                            <td>عددی</td>
+                            <td>شماره موبایل</td>
+                        </tr>
 
-                    <tr>
-                        <td>19</td>
-                        <td>شماره منزل</td>
-                        <td>عددی</td>
-                        <td>تلفن ثابت</td>
-                    </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>شماره منزل</td>
+                            <td>عددی</td>
+                            <td>تلفن ثابت</td>
+                        </tr>
 
-                    <tr>
-                        <td>20</td>
-                        <td>وضعیت سلامت</td>
-                        <td>انتخابی </td>
-                        <td>
-                            <code>سالم</code>،
-                            <code>معاف از رزم</code>،
-                            <code>گروه ب</code>،
-                            <code>معاف+گروه ب</code>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>وضعیت سلامت</td>
+                            <td>انتخابی </td>
+                            <td>
+                                <code>سالم</code>،
+                                <code>معاف از رزم</code>،
+                                <code>گروه ب</code>،
+                                <code>معاف+گروه ب</code>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>21</td>
-                        <td>وضعیت تاهل</td>
-                        <td>انتخابی </td>
-                        <td>
-                            <code>مجرد</code>،
-                            <code>متاهل</code>
-                        </td>
-                    </tr>
-                </table>
+                        <tr>
+                            <td>21</td>
+                            <td>وضعیت تاهل</td>
+                            <td>انتخابی </td>
+                            <td>
+                                <code>مجرد</code>،
+                                <code>متاهل</code>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <ul style="font-size: 11px;">
+                        <li>فرمت فایل باید xlsx باشد</li>
+                        <li>ردیف اول شامل عنوان ستون‌ها است</li>
+                        <li>سلول‌های خالی باعث رد شدن رکورد می‌شوند</li>
+                    </ul>
+                </div>
 
-                <ul>
-                    <li>فرمت فایل باید xlsx باشد</li>
-                    <li>ردیف اول شامل عنوان ستون‌ها است</li>
-                    <li>سلول‌های خالی باعث رد شدن رکورد می‌شوند</li>
-                </ul>
             </div>
         </div>
 

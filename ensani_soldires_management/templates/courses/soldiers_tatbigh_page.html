@@ -6,25 +6,27 @@
         display: flex;
         justify-content: space-between;
         gap: 5px;
+        padding: 0 10px;
     }
     .card {
         background: #f8f9fa;
         border-radius: 10px;
-        padding: 20px;
+        padding: 10px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-bottom:20px;
+        margin-bottom:10px;
     }
     .tatbigh-left {
-        width: 320px;
+        width: 280px;
       
     }
     .tatbigh-right {
-        width: calc(100% - 320px)
+        width: calc(100% - 300px)
     }
     .tatbigh-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 15px;
+        margin-top: 5px;
+        font-size: 12px;
     }
     .tatbigh-table th, .tatbigh-table td {
         text-align: center;
@@ -32,6 +34,7 @@
         border: 1px solid #ddd;
     }
     .tatbigh-table th {
+        font-size: 14px;
         background: #e9ecef;
     }
     .filter-box select {
@@ -40,9 +43,6 @@
         margin-bottom: 10px;
     }
     .filter-box {
-        border-bottom: 2px solid #ddd;
-        padding-bottom: 10px;
-        margin-bottom: 15px;
     }
     .table-input {
         width: 90%;
@@ -95,12 +95,17 @@
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
 }
 
 /* حالت hover */
 .form-check-label:hover {
     background: rgba(255, 255, 255, 0.8);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
 }
 
 /* وقتی radio انتخاب شده */
@@ -110,21 +115,22 @@
     border-color: #4f46e5;
     box-shadow: 0 4px 12px rgba(79,70,229,0.4);
 }
-.form-check-input:checked + .form-check-label::after {
-    content: "✔";
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: white;
-    color: #4f46e5;
-    font-size: 14px;
-    width: 20px;
-    height: 20px;
+.form-check-label::after {
+    content: "";
+    font-size: 10px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #4f46e5;
+    border: 1px solid #4f46e566;
+}
+.form-check-input:checked + .form-check-label::after {
+    content: "✔" !important;
+    color: white;
+    
+
 }
 /* تب‌ها */
 .tabs-buttons-tatbig {
@@ -136,12 +142,12 @@
     gap: 6px;
 }
 .tab-btn-tatbig {
-    padding: 6px 8px;
+    padding: 3px 6px;
     border: none;
     border-radius: 6px 6px ;
     background: #e9ecef;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: bold;
 }
 .tab-btn-tatbig.active {
@@ -171,46 +177,55 @@
         background-color: #333;
         color:white;
         border-radius: 10px;
-        padding: 5px 15px;
 
     }
     .form-title {
+
+    }
+    .card-form {
+        padding: 0;
+    }
+    .card-form-title {
+        margin: 0;
+        font-size: 14px;
         font-weight: bold;
-        font-size: 20px;
         border-bottom: 4px solid white;
-        padding: 15px 0;
-        margin-bottom: 15px;
+        padding: 10px 0;
+        margin-bottom: 5px;
         background-color: #ffffff22;
         border-radius: 8px 8px  0 0;
+    }
+    .card-form-content {
+        padding:10px;
     }
     .soldier-info-content {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap:4px 20px; /* فاصله بین ردیف‌ها و ستون‌ها */
         align-items: center;
+        padding: 10px 20px;
     }
     #soldier-info {
         flex: 2;
         background-color: #333;
         color:white;
         border-radius: 10px;
-        padding:5px 15px;
 
     }
 
     .soldier-info-content p {
         margin: 0;
-        font-size: 14px;
+        font-size: 11px;
         line-height: 1.4;
         white-space: nowrap;
         display:flex;
         align-items:center;
         justify-content:space-between;
-        gap:10px;
+        gap:6px;
         color: #ccc;
     }
     .soldier-info-content strong {
-        font-size: 16px;
+        font-size: 12px;
         color: white;
     }
     @media (max-width: 768px) {
@@ -231,7 +246,9 @@
         font-weight: bold;
         white-space: nowrap;
         color: #ccc;
-        font-size: 13px;
+        font-size: 11px;
+        margin: 0;
+        padding: 0;
     }
     .form-group-2 .wrapper-input {
         flex: 5;
@@ -241,12 +258,11 @@
         padding: 8px 12px;
         border-radius: 6px;
         border: 1px solid #ccc;
-        font-size: 14px;
         transition: all 0.2s ease-in-out;
-        text-align:center;
         outline:none;
         border:none;
         color:#333;
+        font-size: 12px;
     }
     .select2-container .select2-selection--single {
         padding: 6px 12px;
@@ -354,26 +370,30 @@
     }
     .choice-title {
         margin-top: 0;
+        margin-bottom: 2px;
         font-weight:bold;
-        font-size:18px; 
+        font-size:16px; 
         border-left: 4px solid #3730a3;
         background-color: #4b7bec11; 
-        padding:10px 20px;
+        padding:10px 10px;
         border-radius: 5px;
     }
     .actions {
         display: flex;
-        gap: 10px;
+        gap: 2px;
         align-items: center;
     }
     .action-btn {
         border: none;
         border-radius: 8px;
-        padding: 8px 24px;
+        padding: 8px ;
+        width: 100%;
         font-size: 13px;
         font-weight: 600;
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        flex-direction: row-reverse;
         gap: 8px;
         cursor: pointer;
         color: #fff;
@@ -406,8 +426,7 @@
     }
     .action-title {
         font-weight: bold;
-        font-size: 14px;
-        color: gray;
+        font-size: 12px;
     }
     .card-title {
         margin: 0;
@@ -418,6 +437,13 @@
         padding: 10px;
         border-radius: 4px;
     }
+    .choice-grid label {
+        margin: 0;
+        width: 100%;
+    }
+    .choice-grid {
+
+    }
 </style>
 
 <div class="tatbigh-container">
@@ -425,46 +451,53 @@
     <div class="tatbigh-left">
         <div>
             <div class="card">
-                <h4 style="" class="text-center">
-                    <i class="fa fa-random"></i> تطبیق گردان و گروهان
-                </h4>
-                <hr style="margin:10px 0;padding: 0;"/>
                 <div id="error-box" class="error-box"></div>
                 <div class="filter-box text-right">
-                <form method="get" id="battalion-form">
-                    <h5 class="choice-title">انتخاب گردان</h5>
-                    <ul class="grid-2">
-                        {% for b in battalions %}
-                        <li>
-                            <input class="form-check-input" type="radio" name="battalion" id="battalion_{{ b.id }}" value="{{ b.id }}" {% if selected_battalion == b.id|stringformat:"s" %}checked{% endif %}>
-                            <label class="form-check-label" for="battalion_{{ b.id }}">{{ b.name }}</label>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    <h5 class="choice-title">انتخاب گروهان</h5>
-                    <ul class="grid-2">
-                        {% for g in groups %}
-                            {% if g.gordan.id|stringformat:"s" == selected_battalion %}
-                                <li>
-                                    <input class="form-check-input" type="radio" name="group" id="group_{{ g.id }}" value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}checked{% endif %}>
-                                    <label class="form-check-label" for="group_{{ g.id }}">گروهان {{ g.name }}</label>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    <input type="hidden" name="tab" id="tab-input" value="{{ request.GET.tab|default:'after-tab' }}">
-                    <input type="hidden" name="action" id="action-input" value="">
-                </form>
-            </div>
-            <h4><i class="fa fa-info-circle text-primary"></i> راهنما</h4>
-            <p>
-                در این صفحه می‌توانید تطبیق گردان و گروهان جدید سربازان را انجام دهید.
-                ابتدا گردان و گروهان مورد نظر را از فیلتر بالا انتخاب کنید.
-                سپس با وارد کردن <strong>کد ملی</strong>، اطلاعات سرباز به‌صورت خودکار بارگذاری می‌شود.
-            </p>
-            <p class="text-muted">
-                ⚠️ توجه: قبل از اعمال تغییرات، حتما گردان و گروهان انتخاب شده باشند.
-            </p>
+                    <form method="get" id="battalion-form">
+                        <h5 class="choice-title">انتخاب گردان</h5>
+                        <ul class="col-2 choice-grid">
+                            {% for b in battalions %}
+                            <li>
+                                <input class="form-check-input" type="radio" name="battalion" id="battalion_{{ b.id }}" value="{{ b.id }}" {% if selected_battalion == b.id|stringformat:"s" %}checked{% endif %}>
+                                <label class="form-check-label" for="battalion_{{ b.id }}">{{ b.name }}</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <h5 class="choice-title">انتخاب گروهان</h5>
+                        <ul class="col-2 choice-grid">
+                            {% for g in groups %}
+                                {% if g.gordan.id|stringformat:"s" == selected_battalion %}
+                                    <li>
+                                        <input class="form-check-input" type="radio" name="group" id="group_{{ g.id }}" value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}checked{% endif %}>
+                                        <label class="form-check-label" for="group_{{ g.id }}">گروهان {{ g.name }}</label>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <input type="hidden" name="tab" id="tab-input" value="{{ request.GET.tab|default:'after-tab' }}">
+                        <input type="hidden" name="action" id="action-input" value="">
+                    </form>
+                </div>
+                <div class="actions" style="display: flex;flex-direction: column;">
+                    <h6 class="action-title">عملیات های <span id="tab-selected"></span></h6>
+                    <button type="button" class="btn action-btn btn-excel" data-action="exportExcel" id="exportSelected">
+                        <i class="fa fa-file-excel-o"></i>
+                        <span>خروجی اکسل</span>
+                    </button>
+                    <button type="button" class="btn action-btn btn-print disabled" disabled data-action="exportPrint" id="printSelected">
+                        <i class="fa fa-print"></i>
+                        <span>چاپ</span>
+                    </button>
+                </div>
+                <h5 style="font-size: 14px;"><i class="fa fa-info-circle text-primary"></i> راهنما<h5>
+                <p style="font-size: 12px;line-height: 16px;">
+                    در این صفحه می‌توانید تطبیق گردان و گروهان جدید سربازان را انجام دهید.
+                    ابتدا گردان و گروهان مورد نظر را از فیلتر بالا انتخاب کنید.
+                    سپس با وارد کردن <strong>کد ملی</strong>، اطلاعات سرباز به‌صورت خودکار بارگذاری می‌شود.
+                </p>
+                <p style="font-size: 12px;" class="text-muted">
+                    ⚠️ توجه: قبل از اعمال تغییرات، حتما گردان و گروهان انتخاب شده باشند.
+                </p>
             </div>
         </div>
     </div>
@@ -474,8 +507,8 @@
         {% if access_edit %}
             <form  method="POST" id="soldier-match-form">
                     {% csrf_token %}
-                    <div id="soldier-form">
-                        <h4 class="text-center form-title">
+                    <div id="soldier-form" class="card-form">
+                        <h4 class="text-center form-title card-form-title">
                             فرم ثبت کد سازمانی سرباز در 
                             گردان:
                             <span class="text-primary">
@@ -486,51 +519,56 @@
                                 {{ selected_group_name|default:"—" }}
                             </span>
                         </h4>
-                                <!-- 👇 hidden inputs -->
-                        <input type="hidden" id="soldier-id" name="soldier_id">
-                        <input type="hidden" id="gordan-id" name="gordan_id">
-                        <input type="hidden" id="grohan-id" name="grohan_id">
+                        <div class="card-form-content">
+                            <!-- 👇 hidden inputs -->
+                            <input type="hidden" id="soldier-id" name="soldier_id">
+                            <input type="hidden" id="gordan-id" name="gordan_id">
+                            <input type="hidden" id="grohan-id" name="grohan_id">
 
-                        <div class="form-group-2">
-                            <label for="national-code">از {{soldiers_pre_t|length}} نفر سرباز (حاظر)</label>
-                            <div class="wrapper-input">
-                                <input style="width: 100%;"  name="national-code" type="text" id="national-code" placeholder="کد ملی  سرباز را وارد کنید" required>
-                                <select style="display: none;" class="select" id="soldiers_pre_t">
-                                    <option></option>
-                                    {% for st in soldiers_pre_t %}
-                                        <option 
-                                            data-id="{{st.id}}"
-                                            data-name="{{st.name}}"
-                                            data-family="{{st.family}}"
-                                            data-national-code="{{st.National_Code}}"
-                                        >
-                                            <span>{{st.name}} {{st.family}}</span>
-                                            <span>(کد ملی : {{st.National_Code}})</span>
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                            <div class="form-group-2">
+                                <label for="national-code">از {{soldiers_pre_t|length}} نفر سرباز (حاظر)</label>
+                                <div class="wrapper-input">
+                                    <input style="width: 100%;"  name="national-code" type="text" id="national-code" placeholder="کد ملی  سرباز را وارد کنید" required>
+                                    <select style="display: none;" class="select" id="soldiers_pre_t">
+                                        <option></option>
+                                        {% for st in soldiers_pre_t %}
+                                            <option 
+                                                data-id="{{st.id}}"
+                                                data-name="{{st.name}}"
+                                                data-family="{{st.family}}"
+                                                data-national-code="{{st.National_Code}}"
+                                            >
+                                                <span>{{st.name}} {{st.family}}</span>
+                                                <span>(کد ملی : {{st.National_Code}})</span>
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button id="fetch-soldier-btn" type="button"> 
+                                    <span>جستجو</span>
+                                    <span>🔍</span>
+                                </button>
                             </div>
-                            <button id="fetch-soldier-btn" type="button"> 
-                                <span>جستجو</span>
-                                <span>🔍</span>
-                            </button>
+
+                            <div class="form-group-2">
+                                <label for="new-org-code">کد سازمانی نهایی</label>
+                                <div class="wrapper-input">
+                                    <input style="width: 100%;"  name="new_org_code" type="text" id="new-org-code" placeholder="کد سازمانی را وارد کنید" required>
+                                </div>
+                                <button id="form-submit-btn" type="submit" disabled>
+                                    <span>ذخیره تغییرات</span>
+                                    <span>💾</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="form-group-2">
-                            <label for="new-org-code">کد سازمانی نهایی</label>
-                            <input name="new_org_code" type="text" id="new-org-code" placeholder="کد سازمانی را وارد کنید" required>
-                            <button id="form-submit-btn" type="submit" disabled>
-                                <span>ذخیره تغییرات</span>
-                                <span>💾</span>
-                            </button>
-                        </div>
                     </div>
 
-                    <div id="soldier-info" >
-                        <h4 class="form-title text-center">
+                    <div id="soldier-info" class="card-form">
+                        <h4 class="form-title text-center card-form-title">
                             اطلاعات سرباز فراگیر
                         </h4>
-                        <div class="soldier-info-content">
+                        <div class="soldier-info-content card-form-content">
                             <p><span>کد ملی</span> <strong id="soldier-national-code"></strong></p>
                             <p><span>نام و نام خانوادگی</span> <strong id="soldier-name"></strong></p>
                             <p><span>فرزند</span> <strong id="soldier-fathers_name"></strong></p>
@@ -548,7 +586,7 @@
 
         <div class="card">
            <div style="display: flex;align-items: center;justify-content: space-between;">
-                <h1 style="margin: 0;padding: 0;" class="form-title">
+                <h5 style="margin: 0;padding: 0;font-size: 16px;font-weight: bold;">
                     فهرست گروهان
                     <span class="text-primary">
                         {{ selected_group_name|default:"—" }}
@@ -557,18 +595,8 @@
                     <span class="text-primary">
                         {{ selected_battalion_name|default:"—" }}
                     </span>
-                </h1>
-                <div class="actions">
-                <h6 class="action-title">عملیات های <span id="tab-selected"></span></h6>
-                <button type="button" class="btn action-btn btn-print" data-action="exportPrint" id="printSelected">
-                    <i class="fa fa-print"></i>
-                    <span>چاپ</span>
-                </button>
-                <button type="button" class="btn action-btn btn-excel" data-action="exportExcel" id="exportSelected">
-                    <i class="fa fa-file-excel-o"></i>
-                    <span>خروجی اکسل</span>
-                </button>
-            </div>
+                </h5>
+
            </div>
             <hr style="margin: 5px 0;"/>
             <div class="tabs-buttons-tatbig" >
@@ -683,7 +711,7 @@
                                         {% csrf_token %}
                                         <button
                                             onclick="return confirm('آیا اطمینان دارید؟')"
-                                            class="btn btn-sm btn-danger"
+                                            class="btn btn-xs btn-danger"
                                             style="font-size: 10px;"
                                         >
                                             حذف از تطبیق

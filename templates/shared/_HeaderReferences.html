@@ -2,30 +2,35 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>سامانه هوشمند سپهر | رزم آموز</title>
-<link rel="icon" type="faveicon" href="{% static 'img/app/ak-47.png' %}">
+<link rel="icon" type="faveicon" href="{% static 'img/app/logo.png' %}">
 
 <!-- Tell the browser to be responsive to screen width -->
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-<!-- Bootstrap 3.3.7 -->
+<!-- Bootstrap 3.3.7 , Bootstrap rtl -->
 <link rel="stylesheet" href="{% static 'dist/css/bootstrap-theme.css' %}">
-<!-- Bootstrap rtl -->
 <link rel="stylesheet" href="{% static 'dist/css/rtl.css' %}">
-<!-- Font Awesome -->
+
+<!-- Icons -->
 <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
-<!-- Ionicons -->
 <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
+
 <!-- Theme style -->
 <link rel="stylesheet" href="{% static 'dist/css/AdminLTE.css' %}">
 <link rel="stylesheet" href="{% static 'dist/css/skins/skin-blue.min.css' %}">
-<link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
-<link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
-<link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
 
+<!-- Components -->
+<link rel="stylesheet" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+
+<script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'bower_components/select2/dist/js/select2.full.min.js' %}"></script>
 
 <style>
-      html body .content-header {
-            padding: 0 !important;
-      }
+    html body .content-header {
+        padding: 0 !important;
+    }
+    :root {
+        --sidebar-width : 280px;
+    }
       
 </style>
 <style>
@@ -136,8 +141,113 @@
     transition: all 0.3s ease;
 }
 </style>
+<style>
+        .app-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: #0d47a1; /* رنگ آبی */
+            padding: 10px 20px;
+            font-family: Vazir, Tahoma, sans-serif;
+            direction: rtl;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            gap: 10px;
 
+        }
 
+        .app-navbar .logo .nav-logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .app-navbar .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 4px;
+        }
+
+        /* حالت گوشی: دو تا دو تا کنار هم */
+        @media (max-width: 1000px) {
+            .app-navbar .nav-links {
+                flex-direction: row; /* افقی ولی با wrap */
+                justify-content: end;
+                align-content: end;
+                gap: 4px;
+                flex-wrap: wrap; /* اجازه می‌دهد لینک‌ها به خط بعد بروند */
+            }
+        }
+        .app-navbar .nav-links li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 5px;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        .app-navbar .nav-links li a {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+        .app-navbar .nav-links li a:hover {
+            background-color: #1565c0;
+        }
+
+        .app-navbar .nav-links li a.active {
+            background-color: #ffc107;
+            color: #000;
+            font-weight: bold;
+        }
+        .app-navbar .nav-title {
+            font-weight: bold;
+            margin: 0 0 10px;
+            padding: 0 0 10px;
+            color: white;
+            font-size: 12px;
+            padding: 4px 4px 10px;
+            border-bottom: 1px solid #ffffff55;
+        }
+</style>
+
+<style>
+    /* ستون‌ها */
+.col-2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5%;
+}
+
+/* هر آیتم داخل ستون */
+.col-2 > * {
+    flex: 1 1 45%; /* حداقل 45% عرض، ولی می‌تونه کوچک‌تر یا بزرگ‌تر بشه */
+    width: 45%;
+    box-sizing: border-box;
+}
+.col-2 > .full {
+    flex: 1 1 95%; /* حداقل 45% عرض، ولی می‌تونه کوچک‌تر یا بزرگ‌تر بشه */
+    width: 95%;
+}
+/* ریسپانسیو برای موبایل */
+@media (max-width: 768px) {
+    .col-2 > * {
+        flex: 1 1 100%; /* روی موبایل هر آیتم تمام عرض باشه */
+        max-width: 100%;
+    }
+    .col-2 {
+        gap: 10px; /* فاصله کمتر و مناسب موبایل */
+    }
+}
+
+</style>
 <script>
       const onCopyToClipBoard = async (text) => {
             try {
