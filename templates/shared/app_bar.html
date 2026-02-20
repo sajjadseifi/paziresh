@@ -310,7 +310,7 @@
                 <i class="fa fa-upload"></i>
             </a>
             <a  class="task-link {% active_link 'data_app' %}"  href="{% url 'data_app' %}">
-                <span>دریافت خروجی اطلاعات</span>
+                <span>بانک اطلاعات و دریافت خروجی</span>
                 <i class="fa fa-file-archive-o"></i>
             </a>
             <a class="task-link  {% active_link 'activity_logs' %}" href="{% url 'activity_logs' %}">
@@ -464,7 +464,7 @@ const menuData = [
         subTitle: "اسناد",
         staffOnly: true,
         taskLinks:[{
-            title : 'خروجی مدارک',
+            title : 'خروجی اسناد',
             href : "{% url 'export_to_excel_list_elame_hozor' %}",
             icon :'fa-file-zip-o',
             tooltip : '',
@@ -473,12 +473,12 @@ const menuData = [
     },
     {
         url: "{% url 'soldiers_problems_page' %}",
-        icon: "fa-file-text",
-        title: "مشکلات سربازان",
-        subTitle: "اسناد",
+        icon: "fa-question",
+        title: "مشکلات",
+        subTitle: "سربازان",
         staffOnly: true,
         taskLinks:[{
-            title : 'خروجی برای تقسیم',
+            title : 'خروجی تقسیم',
             href : "{% url 'unit_problems_export_excel' %}",
             icon :'fa-file-excel-o',
             tooltip : '',
@@ -488,11 +488,11 @@ const menuData = [
     {
         url: "{% url 'skills:technical_vocational' %}",
         icon: "fa-graduation-cap",
-        title: "مهارت آموزی",
-        subTitle: "فنی و حرفه ای",
+        title: "فنی و",
+        subTitle: "حرفه ای",
         staffOnly: true,
         taskLinks:[{
-            title : 'خروجی برای سامانه',
+            title : 'خروجی سامانه',
             href : "{% url 'skills:technical_vocational_export_zip' %}",
             icon :'fa-file-zip-o',
             tooltip : '',
