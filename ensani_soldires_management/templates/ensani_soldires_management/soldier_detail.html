@@ -341,9 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 </p>
                             </div>
                         </div>
-
-                     {% endif %}
-
+                    {% endif %}
                 </div>
             </div>
             {% if permissions.dep.niru_ensani and soldier %}
@@ -440,14 +438,14 @@ document.addEventListener("DOMContentLoaded", function () {
         <!-- ستون چپ: جزئیات کامل -->
         <div class="col-md-9 scroll-content">
             {% if message %}
-                           <div class="card card-custom">
-                                 <div class="card-header card-header-custom ">
-                                    <h5>پیام سیستم</h5> 💬
-                                 </div>
-                                 <div class="card-body">
-                                    {{message}}
-                                 </div>
-                           </div>
+                <div class="card card-custom">
+                        <div class="card-header card-header-custom ">
+                        <h5>پیام سیستم</h5> 💬
+                        </div>
+                        <div class="card-body">
+                        {{message}}
+                        </div>
+                </div>
             {% elif soldier %}
                 <!-- کارت مشخصات فردی -->
                  <div class="row"> 
@@ -503,8 +501,21 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <p><strong>کد سازمانی نهایی:</strong> {{ soldier.code_gorhan_nahai }}</p>
                                 </div>
                             </div>
-
-
+                            <div class="card card-custom">
+                                <div class="card-header card-header-custom ">
+                                    <h4>اسناد و مدارک</h4>
+                                </div>
+                                <div class="card-body">
+                                    {% if soldier.Sufficiency_of_mobilization and soldier.Sufficiency_of_mobilization_document %}
+                                        <div style="margin-top: 10px;">
+                                            <img src="{{soldier.Sufficiency_of_mobilization_document.url}}" width="100%" height="auto" />
+                                        </div>
+                                    {% else %}
+                                        <p style="font-size: 12px;" class="text-muted">سندی موجود نیست!</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                                       
                         </div>
                         <div class="col-md-8">
                             <div class="card card-custom">

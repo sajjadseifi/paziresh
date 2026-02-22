@@ -497,6 +497,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
         f_battalion_group = form_soldiers.cleaned_data['battalion_group']
         status_type = form_soldiers.cleaned_data['status_type']
         date_improt_type = form_soldiers.cleaned_data['date_improt_type']
+        b = None
         while True:
             try:
                 with transaction.atomic():
@@ -578,7 +579,7 @@ class sabte_paziresh(LoginRequiredMixin, View):
 
                     s.save()
 
-                    if Sufficiency_of_mobilization == "خیر":
+                    if b and Sufficiency_of_mobilization == "خیر":
                         if b.free_space < 1:
                             b.takmilzarmit = True
                         b.save()
@@ -804,7 +805,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
 
         status_type = form_soldiers.cleaned_data['status_type']
         date_improt_type = form_soldiers.cleaned_data['date_improt_type']
-
+        b = None
         while True:
             try:
                 with transaction.atomic():
@@ -880,7 +881,7 @@ class CreatePaziresh(LoginRequiredMixin, View):
                             # b.zarfiat = int(b.zarfiat) - 1
                     s.save()
                     
-                    if b.free_space < 1:
+                    if b and b.free_space < 1:
                         b.takmilzarmit = True
                     b.save()
                 break  # اگر ذخیره موفق بود، از حلقه خارج شویم
@@ -2149,10 +2150,14 @@ def mobilization_document_view(request):
         '-Sufficiency_of_mobilization'
     )
 
+    Previous_service_record_counts = soldiers.filter(Previous_service_record=True).count() 
+    Sufficiency_of_mobilization_counts = soldiers.filter(Sufficiency_of_mobilization=True).count()
     context = {
         'raw_files': raw_files,
         'linked_files': linked_files,
         'soldiers': soldiers,
+        'Previous_service_record_counts':Previous_service_record_counts,
+        'Sufficiency_of_mobilization_counts':Sufficiency_of_mobilization_counts,
     }
 
     return render(
@@ -2160,8 +2165,6 @@ def mobilization_document_view(request):
         'functionality/mobilization_document_view.html',
         context
     )
-
-
 
 def mobilization_document_upload(request):
     if request.method != 'POST':
@@ -2291,3 +2294,94 @@ def mobilization_document_delete(request):
             deleted.append(filename)
 
     return redirect('mobilization_document_view')
+
+import os
+import io
+import zipfile
+from openpyxl import Workbook
+from django.conf import settings
+from django.http import HttpResponse
+from django.db import transaction
+
+@transaction.atomic
+def mobilization_document_export_zip(request):
+    en = EnsaniSettings.objects.first()
+
+    soldiers = Soldier.objects.filter(
+        Q(Sufficiency_of_mobilization=True)| Q(Previous_service_record=True)
+    ).order_by('acceptance_code').select_related()
+    
+    # فایل ZIP در حافظه ساخته می‌شود
+    buffer = io.BytesIO()
+
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # ----------------------
+        # 1️⃣ ساخت اکسل
+        # ----------------------
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Kefayat"
+        # هدرها
+        ws.append([
+            "کد پذیرش",
+            "کد ملی",
+            "نام و نام خانوادگی",
+            "نام پدر",
+            "نوع کفایت",
+            "دارای سند",
+            "شماره تماس",
+            "شماره نسبت فراگیر",
+        ])
+        
+        # ----------------------
+        # 2️⃣ اضافه کردن تصاویر و ردیف اکسل
+        # ----------------------
+        for soldier in soldiers:
+            has_document = bool(soldier.Sufficiency_of_mobilization_document)
+            full_name = f"{soldier.name} {soldier.family}"
+            kb_type = []
+            if soldier.Previous_service_record:
+                kb_type.append('خدمت قبلی')
+            
+            if soldier.Sufficiency_of_mobilization:
+                kb_type.append('کفایت بسیج')
+            
+            kb_type = '،'.join(kb_type)
+            ws.append([
+                soldier.acceptance_code,
+                soldier.National_Code,
+                full_name,
+                soldier.fathers_name,
+                kb_type,
+                "بله" if has_document else "خیر",
+                soldier.phone_number,
+                soldier.Relative_to_inclusive_number,
+            ])
+
+            # اگر سند داشت، به zip اضافه شود
+            if has_document:
+                relative_path = soldier.Sufficiency_of_mobilization_document.name
+                full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+                if os.path.exists(full_path):
+                    ext = os.path.splitext(full_path)[1]
+                    new_filename = f"{soldier.National_Code}{ext}"
+                    with open(full_path, 'rb') as f:
+                        zip_file.writestr(f"images/{new_filename}",f.read())
+
+        # ذخیره اکسل داخل حافظه
+        excel_buffer = io.BytesIO()
+        wb.save(excel_buffer)
+        excel_buffer.seek(0)
+
+        zip_file.writestr("kefayat.xlsx", excel_buffer.read())
+
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer,
+        content_type='application/zip'
+    )
+    response['Content-Disposition'] = 'attachment; filename="mobilization_export.zip"'
+
+    return response

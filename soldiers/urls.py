@@ -46,4 +46,6 @@ urlpatterns = [
     path('mobilization/doc/unassign', mobilization_document_unassign, name='mobilization_document_unassign'),
     path('mobilization/doc/upload', mobilization_document_upload, name='mobilization_document_upload'),
     path('mobilization/doc/delete', mobilization_document_delete, name='mobilization_document_delete'),
+    path('mobilization/doc/export_zip', mobilization_document_export_zip, name='mobilization_document_export_zip'),
+
 ]

@@ -26,10 +26,18 @@
     .main-sidebar {
         padding-top: 120px;
         height: calc(100vh - 120px);
-        max-height: calc(100vh - 100px);
+        max-height: calc(100vh - 120px);
         display: flex;
         flex-direction: column;
     }
+    .content-wrapper {
+        padding-top: 20px;
+        box-sizing: border-box;
+    }
+    .content-wrapper, .main-footer {
+        margin-right: var(--sidebar-width);
+    }
+
     .sep-nav-logo {
         background-color: #ffffff;
         border-radius: 10px;
@@ -52,9 +60,6 @@
     }
     .main-header .logo  {
         width: var(--sidebar-width);
-    }
-    .content-wrapper, .main-footer {
-        margin-right: var(--sidebar-width);
     }
 
     a.admin-panel-link {

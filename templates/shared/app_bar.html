@@ -187,7 +187,7 @@
 }
 .task-link {
     display: inline-block;
-    font-size: 10px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -251,7 +251,6 @@
     content: :' : ';
 }
 </style>
-
 <div class="smart-menu-container">
     <div style="display: flex;align-items: center; gap: 10px;">
         <div class="app-side-wide ">
@@ -262,7 +261,7 @@
                 <div class="brand-info">
                     <h1 class="brand-title">سامانه هوشمند سپهر</h1>
                     <div style="display: flex;align-items: center;justify-content: space-between;">
-                        <h2 class="brand-subtitle">رزم آموز المهدی (عج)</h2>
+                        <h2 class="brand-subtitle">پذیرش رزم آموز المهدی (عج)</h2>
                     </div>
                 </div>
             </div>
@@ -362,21 +361,31 @@ const menuData = [
     {
         url: "{% url 'exel' %}",
         icon: "fa-file-excel-o",
-        title: "بارگزاری اطلاعات اکسل",
-        subTitle: "فهرست سامانه جامع",
+        title: "بارگزاری اطلاعات",
+        subTitle: "سامانه جامع",
         staffOnly: false,
         taskLinks:[{
-            title : 'آمار اولیه',
-            href : "{% url 'amar_avalie_samane' %}",
-            icon : 'fa-table',
-            tooltip : 'جهت بررسی جدول آماری تفکیک شده فراگیران جهت تقسیم بندی و گردان ها و گروهان ها بر روی پیوند کنید.',
-        },{
-            title : 'پذیرش فوری',
+            title : 'بروزرسانی اطلاعات',
+            href : "{% url 'MainViewBattalionGroup' %}",
+            icon :'fa-edit',
+        }],
+    },
+    {
+        url: "{% url 'amar_avalie_samane' %}",
+        title : 'آمار اولیه',
+        subTitle: "فهرست سامانه",
+        staffOnly: false,
+        icon : 'fa-table',
+        taskLinks:[{
+            title : 'تنظیمات پذیرش',
             href : "{% url 'MainViewBattalionGroup' %}",
             icon :'fa-cogs',
             tooltip : 'جهت پذیرش به صورت هوشمند وانتخاب اتوماتیک گردان و گروهان ها بر روی پیوند کلیک کنید.',
-        }],
+            noArrow:true,
+        }]
     },
+    'space',
+    'فرایند پذیرش',
     {
         url: "{% url 'MainViewSoldires' %}",
         icon: "fa-list",
@@ -390,8 +399,6 @@ const menuData = [
             icon:'fa-check',
         },]
     },
-    'space',
-    'فرایند پذیرش',
     {
         url: "{% url 'sarbaz_codemeli' %}",
         icon: "fa-id-card",
@@ -443,32 +450,38 @@ const menuData = [
     },
     {
         icon: "fa-cloud-upload",
-        title: "بارگزاری",
-        subTitle: "گروهی",
+        title: "بارگزاری گروهی",
+        subTitle: "شماره حساب",
         staffOnly: true,
+        url : "{% url 'import_bank_number_from_exel' %}",
         taskLinks:[{
-            title : 'شماره حساب',
-            href : "{% url 'import_bank_number_from_exel' %}",
-            icon:'fa-cloud-upload',
-            tooltip : '',
-            noArrow : true,
-
-        },{
             title : 'شماره تماس',
             href : "{% url 'exel_update_number' %}",
             tooltip : '',
             icon:'fa-cloud-upload',
             noArrow : true,
-
         }]
     },
     'space',
     'سامانه جامع',
     {
+        url: "{% url 'export_to_excel_list_elame_hozor' %}",
+        icon: "fa-check-square-o",
+        title: "اعلام حضور",
+        subTitle: "مغایرت سامانه",
+        staffOnly: true,
+        taskLinks:[{
+            title : 'اعلام حضور نشده',
+            icon :'fa-square-o',
+            tooltip : '',
+            noArrow:true,
+        }]
+    },
+    {
         url: "{% url 'mobilization_document_view' %}",
         icon: "fa-file-text",
         title: "کفایت آموزش",
-        subTitle: "اسناد",
+        subTitle: "بارگزاری اسناد",
         staffOnly: true,
         taskLinks:[{
             title : 'خروجی اسناد',
