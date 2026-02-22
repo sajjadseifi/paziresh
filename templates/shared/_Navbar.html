@@ -114,7 +114,19 @@
 </style>
 <aside class="main-sidebar">
     <section style="flex: 1;overflow-y:auto ;" class="sidebar">
-
+        {% if request.user.is_staff %}
+                <a  
+                    class="task-link sky "
+                    title="رابط کاربری مدیریت ادمین نرم افزار"
+                    href="/admin/"
+                    style="display: flex;align-items: center;justify-content: space-between;margin: 4px 8px;"
+                >
+                    <span>مدیریت نرم افزار - ادمین استقلال</span>
+                    <span style="border-radius: 4px;">
+                        <img src="{% static 'img/support/eslogo.png' %}" style="width: 24px;height: auto;"/>
+                    </span>
+                </a>
+        {% endif %}
         {% if request.user.is_staff and False %}
         <div>
             <a  target="_blank" class="admin-panel-link" href="/admin/">
@@ -320,9 +332,10 @@
         <p class="user-loggedin">
             <span class="user-status">{{ request.user.first_name }} {{ request.user.last_name }}</span>
             <a style="color:white;" href="{% url 'logout' %}"  class="header-icon logout-btn">
-               خروج <i class="fa fa-sign-out"></i> 
+                خروج <i class="fa fa-sign-out"></i> 
             </a>
         </p>
+
         <p class="sep-nav-title">نیروی زمینی سپاه</p>
     </div>
 </aside>

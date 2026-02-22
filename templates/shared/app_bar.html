@@ -274,18 +274,7 @@
                 <i class="fa fa-th-large"></i>
                 <span>کارپوشه</span>
             </a>
-            {% if request.user.is_staff %}
-                <a  
-                    class="task-link sky "
-                    title="برای مشاهده اطلاعات کامل از نرم افزار رمز آموز المهدی کلیک کنید." 
-                    href="/admin/"
-                >
-                    <span style="background-color: #68b8ff;padding:0 2px;border-radius: 4px;">
-                        <img src="{% static 'img/support/eslogo.png' %}" style="width: 8px; height: 8px;"/>
-                    </span>
-                    <span>مدیریت ادمین</span>
-                </a>
-            {% endif %}
+
             <span style="flex: 1;"></span>
             <a class="task-link  {% active_link 'support' %}" href="{% url 'support' %}">
                 <span>درباره سامانه</span>
